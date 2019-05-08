@@ -2,15 +2,23 @@
 
 Crypto streams for the browser.
 
-# Load data
+# Read
 ## .fetch()
 Fetch remote file as a ReadableStream.
 
 ## .blob()
 Load a blob as a ReadableStream.
 
+## Write
 ## .upload()
 Upload file to a remote URL.
+
+## .save()
+`penumbra.fetch(url).decrypt().save()`
+
+## .display()
+Display in HTML doc
+`penumbra.fetch(url).decrypt().display()`
 
 # Encryption
 ## .decrypt()
@@ -20,12 +28,4 @@ Decrypt a ReadableStream
 ## .encrypt()
 Encrypt a ReadableStream
 `penumbra.blob(someBlob).encrypt().upload()`
-
-# Usage
-## .display()
-`penumbra.fetch(url).decrypt().display()`
-
-## .save()
-`penumbra.fetch(url).decrypt().save()`
-
 
