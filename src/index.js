@@ -47,7 +47,6 @@ export function getDecryptedContent(url, mime, key, iv, authTag) {
         return getTextFromRS(rs);
       else return new Response(rs).blob();
     })
-    .catch(console.error);
 }
 
 /**

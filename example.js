@@ -4,7 +4,7 @@
  * see if we can create the dataUri before and buffer in
  */
 
-import { downloadEncryptedFile, getDecryptedContent } from '../src';
+import { downloadEncryptedFile, getDecryptedContent } from './src';
 import * as files from './files';
 // import * as render from 'render-media';
 
