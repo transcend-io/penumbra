@@ -12,19 +12,19 @@ export function fetchAndDecipher(url, key, iv, authTag) {
 
   decipher.setAuthTag(Buffer.from(authTag, 'base64'));
 
-  return (
-    fetch(url)
-      // Retrieve its body as ReadableStream
-      .then(response => {
-        const contentLength = response.headers.get('Content-Length');
-        return decryptStream(
-          response.body,
-          decipher,
-          Number(contentLength),
-          url
-        );
-      })
-  );
+  return fetch(url)
+    // Retrieve its body as ReadableStream
+    .then(response => {
+      const contentLength = response.headers.get('Content-Length');
+      return decryptStream(
+        response.body,
+        decipher,
+        Number(contentLength),
+        url
+      );
+    })
+    .catch(err => console.error('fetcherr', err));
+
 }
 
 function emitProgress(totalBytesRead, contentLength, url) {
