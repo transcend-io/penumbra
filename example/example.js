@@ -19,7 +19,7 @@ function displayText(file) {
   const text = document.createElement('p');
   app.appendChild(text);
 
-  getDecryptedContent(url, file.mime, file.key, file.iv, file.authTag).then(
+  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
     txt => (text.innerText = txt)
   );
 }
@@ -34,7 +34,7 @@ function displayImage(file) {
   app.appendChild(image);
 
   // Display image
-  getDecryptedContent(url, file.mime, file.key, file.iv, file.authTag).then(
+  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
     url => (image.src = url)
   );
 }
@@ -46,7 +46,7 @@ function displayImage(file) {
 //   addDownloadLink(file);
 
 //   // Display video
-//   getDecryptedContent(url, file.mime, file.key, file.iv, file.authTag)
+//   getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
 //     .then(rs => {
 //       render.append(
 //         {
@@ -84,7 +84,7 @@ function displayVideo(file) {
   // });
 
   // Display video
-  getDecryptedContent(url, file.mime, file.key, file.iv, file.authTag)
+  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
     .then(src => {
       video.type = file.mime;
       video.src = src;
@@ -123,18 +123,20 @@ function addDownloadLink(file) {
   button.onclick = () => {
     downloadEncryptedFile(
       `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`,
-      file.mime,
-      file.path.slice(0, file.path.length - 4),
       file.key,
       file.iv,
-      file.authTag
+      file.authTag,
+      {
+        fileName: null,
+        mime: file.mime,
+      }
     );
   };
   app.appendChild(button);
 }
 
-// displayText(files['NYT.txt']);
-// displayImage(files['river.jpg']);
+displayText(files['NYT.txt']);
+displayImage(files['river.jpg']);
 displayVideo(files['patreon.mp4']);
-// displayVideo(files['k.webm']);
-// displayImage(files['turtl.gif']);
+displayVideo(files['k.webm']);
+displayImage(files['turtl.gif']);

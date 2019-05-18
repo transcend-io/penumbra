@@ -1,3 +1,33 @@
+## Usage
+Display an encrypted file
+```js
+// Decrypt and display text
+getDecryptedContent(fileUrl, key, iv, authTag, 'text/plain')
+  .then(decryptedText => {
+    document.getElementById('my-paragraph').innerText = decryptedText;
+  });
+
+// Decrypt and display media
+getDecryptedContent(url, key, iv, authTag, 'image/jpeg')
+  .then(imageSrc => {
+    document.getElementById('my-img').src = imageSrc;
+  });
+```
+
+Download an encrypted file
+```js
+downloadEncryptedFile(
+  `https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc`,
+  key,
+  iv,
+  authTag,
+  {
+    fileName: 'myFile.json', // optional values
+    mime: 'application/json',
+  }
+);
+```
+
 ## Download Progress Event Emitter
 
 You can listen to a download progress event. The event _type_ is the same as the `url` parameter

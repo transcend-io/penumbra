@@ -198,14 +198,15 @@ function getTextFromRS(rs) {
 /**
  * Download, decrypt, and save a file
  * @param {string} url the URL to fetch the encrypted file from
- * @param {string} mime mime type: e.g. application/json
- * @param {string} fileName the filename to save it under
  * @param {string} key a base64 encoded decryption key
  * @param {string} iv a base64 encoded initialization vector
  * @param {string} authTag a base64 encoded authentication tag (for AES GCM)
+ * @param {Object?} options mime, fileName
  * @return {Promise<void>}
  */
-export function downloadEncryptedFile(url, mime, fileName, key, iv, authTag) {
+export function downloadEncryptedFile(url, key, iv, authTag, options = {}) {
+  const fileName = options.fileName || url.match(/(?!.*\/).+?(?=\.enc|\?|$)/)[0];
+
   return (
     fetchAndDecipher(url, key, iv, authTag)
       // Stream the file to disk
@@ -217,13 +218,13 @@ export function downloadEncryptedFile(url, mime, fileName, key, iv, authTag) {
 /**
  * Download, decrypt, and return string or object URL to display directly on the webpage
  * @param {string} url the URL to fetch an encrypted file from
- * @param {string} mime the mime type of the underlying file
  * @param {string|Buffer} key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
  * @param {string|Buffer} iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
  * @param {string|Buffer} authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
+ * @param {string} mime the mime type of the underlying file
  * @return {Promise<string>} depending on mime type, a string of text, or an src if it's media
  */
-export function getDecryptedContent(url, mime, key, iv, authTag) {
+export function getDecryptedContent(url, key, iv, authTag, mime) {
   const type = mime.split('/')[0];
 
   return fetchAndDecipher(url, key, iv, authTag)
