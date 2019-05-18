@@ -7,7 +7,8 @@
     "start": "nodemon --exec 'http-server dist -a localhost'",
     "start-ssl": "nodemon --exec 'http-server dist --cert ssl/certificate.pem --key ssl/private.key --ssl'",
     "clean": "rm dist/bundle.js",
-    "build-dev": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack -d --mode development"
+    "build-dev": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack -d --mode development",
+    "build-prod": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack -p --mode production"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
