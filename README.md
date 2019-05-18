@@ -1,31 +1,47 @@
-# Penumbra
+## Usage
+Display an encrypted file
+```js
+// Decrypt and display text
+getDecryptedContent(fileUrl, key, iv, authTag, 'text/plain')
+  .then(decryptedText => {
+    document.getElementById('my-paragraph').innerText = decryptedText;
+  });
 
-Crypto streams for the browser.
+// Decrypt and display media
+getDecryptedContent(url, key, iv, authTag, 'image/jpeg')
+  .then(imageSrc => {
+    document.getElementById('my-img').src = imageSrc;
+  });
+```
 
-# Read
-## .fetch()
-Fetch remote file as a ReadableStream.
+Download an encrypted file
+```js
+downloadEncryptedFile(
+  `https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc`,
+  key,
+  iv,
+  authTag,
+  {
+    fileName: 'myFile.json', // optional values
+    mime: 'application/json',
+  }
+);
+```
 
-## .blob()
-Load a blob as a ReadableStream.
+## Download Progress Event Emitter
 
-## Write
-## .upload()
-Upload file to a remote URL.
+You can listen to a download progress event. The event _type_ is the same as the `url` parameter
 
-## .save()
-`penumbra.fetch(url).decrypt().save()`
+```js
+window.addEventListener(url, e => {
+  console.log(`${e.detail}% done`);
+});
+```
 
-## .display()
-Display in HTML doc
-`penumbra.fetch(url).decrypt().display()`
+Note: this feature requires the `Content-Length` response header to be exposed. This works by adding `Access-Control-Expose-Headers: Content-Length` to the response header (read more [here](https://www.html5rocks.com/en/tutorials/cors/) and [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers))
 
-# Encryption
-## .decrypt()
-Decrypt a ReadableStream
-`penumbra.fetch(url).decrypt().display()`
+On Amazon S3, this means adding the following line to your bucket policy, inside the `<CORSRule>` block:
 
-## .encrypt()
-Encrypt a ReadableStream
-`penumbra.blob(someBlob).encrypt().upload()`
-
+```xml
+<ExposeHeader>Content-Length</ExposeHeader>
+```
