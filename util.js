@@ -4,7 +4,7 @@ import { createWriteStream } from 'streamsaver';
 import { saveAs } from 'file-saver';
 import toBuffer from 'typedarray-to-buffer';
 
-function fetchAndDecipher(url, key, iv, authTag) {
+export function fetchAndDecipher(url, key, iv, authTag) {
   const decipher = createDecipheriv(
     'aes-256-gcm',
     Buffer.from(key, 'base64'),
@@ -97,7 +97,7 @@ function decryptStream(rs, decipher, contentLength, url) {
   });
 }
 
-function saveFile(rs, fileName) {
+export function saveFile(rs, fileName) {
   // Feature detection for WritableStream
   if ('WritableStream' in window) return saveFileStream(rs, fileName);
 
