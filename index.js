@@ -4,7 +4,20 @@ import { createDecipheriv } from 'crypto-browserify';
 import { createWriteStream } from 'streamsaver';
 import toBuffer from 'typedarray-to-buffer';
 
+
+/**
+ * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
+ * @param {String} url the URL to fetch an encrypted file from
+ * @param {string|Buffer} key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
+ * @param {string|Buffer} iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
+ * @param {string|Buffer} authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
+ * @return {ReadableStream} a readable stream of the deciphered file
+ */
 function fetchAndDecipher(url, key, iv, authTag) {
+  if (typeof key === 'string') key = Buffer.from(key, 'base64');
+  if (typeof iv === 'string') iv = Buffer.from(iv, 'base64');
+  if (typeof authTag === 'string') authTag = Buffer.from(authTag, 'base64');
+
   const decipher = createDecipheriv(
     'aes-256-gcm',
     Buffer.from(key, 'base64'),
@@ -28,6 +41,14 @@ function fetchAndDecipher(url, key, iv, authTag) {
   );
 }
 
+
+/**
+ * An event emitter for the decryption progress
+ * @param {Number} totalBytesRead the number of bytes read so far
+ * @param {Number} contentLength the total number of bytes to read
+ * @param {String} url the URL being read from
+ * @return {void}
+ */
 function emitProgress(totalBytesRead, contentLength, url) {
   const percent = Math.round((totalBytesRead / contentLength) * 100);
   const event = new CustomEvent(url, {
@@ -40,6 +61,15 @@ function emitProgress(totalBytesRead, contentLength, url) {
   window.dispatchEvent(event);
 }
 
+
+/**
+ * Decrypts a readable stream
+ * @param {ReadableStream} rs a readable stream of encrypted data
+ * @param {Decipher} decipher the crypto module's decipher
+ * @param {Number} contentLength the content length of the file, in bytes
+ * @param {string} url the URL to read the encrypted file from (only used for the event emitter)
+ * @return {ReadableStream} a readable stream of decrypted data
+ */
 function decryptStream(rs, decipher, contentLength, url) {
   // TODO check authTag with decipher.final
 
@@ -97,14 +127,27 @@ function decryptStream(rs, decipher, contentLength, url) {
   });
 }
 
+/**
+ * Saves a readable stream to disk from the browser
+ * @param {ReadableStream} rs a stream of bytes to be saved to disk
+ * @param {string} fileName the name of the file to save
+ * @return {void|Promise<void>}
+ */
 function saveFile(rs, fileName) {
-  // Feature detection for WritableStream
+  // Feature detection for WritableStream - streams straight to disk
   if ('WritableStream' in window) return saveFileStream(rs, fileName);
 
   // No WritableStream; load into memory with a Blob
   return new Response(rs).blob().then(blob => saveAs(blob, fileName));
 }
 
+
+/**
+ * Streams a readable stream to disk
+ * @param {ReadableStream} rs a stream of bytes to be saved to disk
+ * @param {string} fileName the name of the file to save
+ * @return {Promise<void>}
+ */
 function saveFileStream(rs, fileName) {
   const fileStream = createWriteStream(fileName);
   const writer = fileStream.getWriter();
@@ -127,7 +170,28 @@ function saveFileStream(rs, fileName) {
     );
 
   // Start the reader
-  pump().then(() => console.log('Closed the stream, Done writing'));
+  return pump();
+}
+
+
+/**
+ * Returns an object URL to display media directly on a webpage
+ * @param {ReadableStream} rs a readable stream of decrypted bytes
+ * @return {string} the object URL to be added to an src attribute/prop
+ */
+function getMediaSrcFromRS(rs) {
+  // return rs;
+  return new Response(rs).blob().then(blob => URL.createObjectURL(blob));
+}
+
+
+/**
+ * Reads a stream to completion and returns the underlying text
+ * @param {ReadableStream} rs a readable stream of decrypted bytes
+ * @return {string} the decrypted text
+ */
+function getTextFromRS(rs) {
+  return new Response(rs).text();
 }
 
 
@@ -139,29 +203,25 @@ function saveFileStream(rs, fileName) {
  * @param {string} key a base64 encoded decryption key
  * @param {string} iv a base64 encoded initialization vector
  * @param {string} authTag a base64 encoded authentication tag (for AES GCM)
+ * @return {Promise<void>}
  */
 export function downloadEncryptedFile(url, mime, fileName, key, iv, authTag) {
   return (
     fetchAndDecipher(url, key, iv, authTag)
       // Stream the file to disk
       .then(rs => saveFile(rs, fileName))
-      .catch(console.error)
   );
 }
 
-// Reads a stream into a Blob and creates a URL for use in an img src tag
-function getMediaSrcFromRS(rs) {
-  // return rs;
-  return new Response(rs).blob().then(blob => URL.createObjectURL(blob));
-}
-
-// Reads a stream to completion and loads text
-function getTextFromRS(rs) {
-  return new Response(rs).text();
-}
 
 /**
- * Download, decrypt, and display a file in the browser
+ * Download, decrypt, and return string or object URL to display directly on the webpage
+ * @param {string} url the URL to fetch an encrypted file from
+ * @param {string} mime the mime type of the underlying file
+ * @param {string|Buffer} key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
+ * @param {string|Buffer} iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
+ * @param {string|Buffer} authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
+ * @return {Promise<string>} depending on mime type, a string of text, or an src if it's media
  */
 export function getDecryptedContent(url, mime, key, iv, authTag) {
   const type = mime.split('/')[0];
@@ -174,25 +234,4 @@ export function getDecryptedContent(url, mime, key, iv, authTag) {
         return getTextFromRS(rs);
       else return new Response(rs).blob();
     })
-}
-
-/**
- * felt cute might deprecate later
- * Download a string of text. If it's a JSON string it will be formatted.
- * @param {string} str text to save
- * @param {string} fileName the filename to save it under
- * @param {string} mime mime type: e.g. application/json
- */
-export function downloadDisplayedText(str, fileName, mime) {
-  try {
-    str = JSON.stringify(JSON.parse(str), null, 2);
-    mime = 'application/json';
-  } catch (err) {
-    if (!(err instanceof SyntaxError)) throw err;
-  }
-
-  const blob = new Blob([str], {
-    type: `${mime || 'text/plain'};charset=utf-8`,
-  });
-  saveAs(blob, fileName);
 }
