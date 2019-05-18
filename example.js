@@ -8,12 +8,10 @@ import { downloadEncryptedFile, getDecryptedContent } from './src';
 import * as files from './files';
 // import * as render from 'render-media';
 
-const baseUrl = __dirname; // local development
-// const baseUrl = 'https://s3-us-west-2.amazonaws.com/bencmbrook/';
 const app = document.getElementById('app');
 
 function displayText(file) {
-  const url = `${baseUrl}${file.path}`;
+  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -27,7 +25,7 @@ function displayText(file) {
 }
 
 function displayImage(file) {
-  const url = `${baseUrl}${file.path}`;
+  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -42,7 +40,7 @@ function displayImage(file) {
 }
 
 // function displayVideo(file) {
-//   const url = `${baseUrl}${file.path}`;
+//   const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
 //   addProgressIndicator(url);
 //   addDownloadLink(file);
@@ -70,7 +68,7 @@ function displayImage(file) {
 // }
 
 function displayVideo(file) {
-  const url = `${baseUrl}${file.path}`;
+  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -124,7 +122,7 @@ function addDownloadLink(file) {
   button.innerText = `Download ${file.path}`;
   button.onclick = () => {
     downloadEncryptedFile(
-      `${baseUrl}${file.path}`,
+      `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`,
       file.mime,
       file.path.slice(0, file.path.length - 4),
       file.key,

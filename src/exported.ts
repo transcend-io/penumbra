@@ -2,33 +2,13 @@
 import { createDecipheriv } from 'crypto-browserify';
 import { createWriteStream } from 'streamsaver';
 import { saveAs } from 'file-saver';
-import toBuffer from 'typedarray-to-buffer';
+import { Decipher } from 'crypto';
 
-export function fetchAndDecipher(url, key, iv, authTag) {
-  const decipher = createDecipheriv(
-    'aes-256-gcm',
-    Buffer.from(key, 'base64'),
-    Buffer.from(iv, 'base64')
-  );
-
-  decipher.setAuthTag(Buffer.from(authTag, 'base64'));
-
-  return (
-    fetch(url)
-      // Retrieve its body as ReadableStream
-      .then(response => {
-        const contentLength = response.headers.get('Content-Length');
-        return decryptStream(
-          response.body,
-          decipher,
-          Number(contentLength),
-          url
-        );
-      })
-  );
-}
-
-function emitProgress(totalBytesRead, contentLength, url) {
+function emitProgress(
+  totalBytesRead: number,
+  contentLength: number,
+  url: string
+): void {
   const percent = Math.round((totalBytesRead / contentLength) * 100);
   const event = new CustomEvent(url, {
     detail: {
@@ -40,7 +20,12 @@ function emitProgress(totalBytesRead, contentLength, url) {
   window.dispatchEvent(event);
 }
 
-function decryptStream(rs, decipher, contentLength, url) {
+function decryptStream(
+  rs: ReadableStream,
+  decipher: Decipher,
+  contentLength: number,
+  url: string
+) {
   // TODO check authTag with decipher.final
 
   let totalBytesRead = 0;
@@ -48,14 +33,8 @@ function decryptStream(rs, decipher, contentLength, url) {
   // TransformStreams are supported
   if ('TransformStream' in window) {
     return rs.pipeThrough(
-      new window.TransformStream({
+      new TransformStream({
         transform: async (chunk, controller) => {
-          try {
-            chunk = toBuffer(chunk);
-          } catch (err) {
-            console.error(err);
-          }
-
           // Decrypt chunk and send it out
           const decryptedChunk = decipher.update(chunk);
           controller.enqueue(decryptedChunk);
@@ -79,13 +58,11 @@ function decryptStream(rs, decipher, contentLength, url) {
             return;
           }
 
-          const chunk = toBuffer(value);
-
-          // Decrypt chunk
-          const decValue = decipher.update(chunk);
+          // Decrypt value
+          const decValue = decipher.update(value);
 
           // Emit a progress update
-          totalBytesRead += chunk.length;
+          totalBytesRead += value.length;
           emitProgress(totalBytesRead, contentLength, url);
 
           controller.enqueue(decValue);
@@ -97,7 +74,7 @@ function decryptStream(rs, decipher, contentLength, url) {
   });
 }
 
-export function saveFile(rs, fileName) {
+function saveFile(rs: ReadableStream, fileName: string) {
   // Feature detection for WritableStream
   if ('WritableStream' in window) return saveFileStream(rs, fileName);
 
@@ -105,7 +82,7 @@ export function saveFile(rs, fileName) {
   return new Response(rs).blob().then(blob => saveAs(blob, fileName));
 }
 
-function saveFileStream(rs, fileName) {
+function saveFileStream(rs: ReadableStream, fileName: string): Promise<void> {
   const fileStream = createWriteStream(fileName);
   const writer = fileStream.getWriter();
 
@@ -127,5 +104,57 @@ function saveFileStream(rs, fileName) {
     );
 
   // Start the reader
-  pump().then(() => console.log('Closed the stream, Done writing'));
+  return pump().then(() => console.log('Closed the stream, Done writing'));
+}
+
+function fetchAndDecipher(
+  url: string,
+  key: string,
+  iv: string,
+  authTag: string
+) {
+  const decipher = createDecipheriv(
+    'aes-256-gcm',
+    Buffer.from(key, 'base64'),
+    Buffer.from(iv, 'base64')
+  );
+
+  decipher.setAuthTag(Buffer.from(authTag, 'base64'));
+
+  return (
+    fetch(url)
+      // Retrieve its body as ReadableStream
+      .then(response => {
+        const contentLength = response.headers.get('Content-Length');
+        return decryptStream(
+          response.body,
+          decipher,
+          Number(contentLength),
+          url
+        );
+      })
+  );
+}
+
+/**
+ * Download, decrypt, and save a file
+ * @param {string} url the URL to fetch the encrypted file from
+ * @param {string} fileName the filename to save it under
+ * @param {string} key a base64 encoded decryption key
+ * @param {string} iv a base64 encoded initialization vector
+ * @param {string} authTag a base64 encoded authentication tag (for AES GCM)
+ */
+export function downloadEncryptedFile(
+  url: string,
+  fileName: string,
+  key: string,
+  iv: string,
+  authTag: string
+) {
+  return (
+    fetchAndDecipher(url, key, iv, authTag)
+      // Stream the file to disk
+      .then((rs: ReadableStream) => saveFile(rs, fileName))
+      .catch(console.error)
+  );
 }
