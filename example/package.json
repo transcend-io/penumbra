@@ -1,10 +1,11 @@
 {
-  "name": "browser-decryption-stream-w-o-transformstream",
+  "name": "browser-decryption-stream",
   "version": "1.0.0",
   "description": "",
   "main": "index.html",
   "scripts": {
-    "start": "live-server dist",
+    "start": "nodemon --exec 'http-server dist -a localhost'",
+    "start-ssl": "nodemon --exec 'http-server dist --cert ssl/certificate.pem --key ssl/private.key --ssl'",
     "clean": "rm dist/bundle.js",
     "build-dev": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack -d --mode development"
   },
@@ -19,10 +20,11 @@
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/plugin-transform-runtime": "^7.4.4",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0",
+    "@babel/preset-env": "^7.4.2",
     "babel-loader": "^8.0.5",
-    "@babel/preset-env": "^7.4.2"
+    "http-server": "^0.11.1",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "keywords": []
 }

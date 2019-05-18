@@ -27,7 +27,7 @@ function displayText(file) {
 function displayImage(file) {
   const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
-  addProgressIndicator(url);
+  addProgressIndicator(url); 
   addDownloadLink(file);
 
   const image = document.createElement('img');
@@ -76,19 +76,24 @@ function displayVideo(file) {
   const video = document.createElement('video');
   app.appendChild(video);
 
-  // // const source = document.createElement('source');
-  // // video.appendChild(source);
+  const source = document.createElement('source');
+  video.appendChild(source);
 
-  // video.addEventListener('error', err => {
-  //   console.error(video.error, err);
-  // });
+  video.addEventListener('error', err => {
+    console.error(video.error, err);
+  });
+
+  source.addEventListener('error', err => {
+    console.error(source.error, err);
+  });
 
   // Display video
   getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
-    .then(src => {
-      video.type = file.mime;
+    .then(src => { 
+      source.type = file.mime;
+      source.src = src;
       video.src = src;
-      // video.controls = true;
+      video.controls = true;
       video.muted = true;
       video.playsinline = true;
       video.autoplay = true;
@@ -136,7 +141,7 @@ function addDownloadLink(file) {
 }
 
 displayText(files['NYT.txt']);
-displayImage(files['river.jpg']);
+// displayImage(files['river.jpg']);
 displayVideo(files['patreon.mp4']);
-displayVideo(files['k.webm']);
-displayImage(files['turtl.gif']);
+// displayVideo(files['k.webm']);
+// displayImage(files['turtl.gif']);
