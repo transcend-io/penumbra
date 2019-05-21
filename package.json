@@ -1,5 +1,5 @@
 {
-  "name": "penumbra",
+  "name": "@transcend-io/penumbra",
   "version": "1.0.0",
   "description": "Crypto streams for the browser.",
   "main": "index.js",
