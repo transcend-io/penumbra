@@ -10,13 +10,13 @@ export function downloadEncryptedFile(
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
-  mime: string,
-): Promise<void>
-
+  options: FileOptions,
+  ): Promise<void>
+  
 export function getDecryptedContent(
   url: string | Buffer,
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
-  options: FileOptions,
+  mime: string,
 ): Promise<string>

@@ -127,6 +127,7 @@ function decryptStream(rs, decipher, contentLength, url) {
   });
 }
 
+
 /**
  * Saves a readable stream to disk from the browser
  * @param {ReadableStream} rs a stream of bytes to be saved to disk
