@@ -1,3 +1,5 @@
+declare module '@transcend-io/penumbra';
+
 export interface FileOptions {
   fileName?: string,
   mime?: string,
