@@ -1,8 +1,9 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Crypto streams for the browser.",
   "main": "index.js",
+  "types": "index.d.ts",
   "directories": {
     "example": "example"
   },
@@ -30,5 +31,8 @@
     "file-saver": "^2.0.2",
     "streamsaver": "^1.2.0",
     "typedarray-to-buffer": "^3.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.2"
   }
 }

@@ -84,7 +84,7 @@ function displayVideo(file) {
   });
 
   source.addEventListener('error', err => {
-    console.error(source.error, err);
+    console.error(err);
   });
 
   // Display video
