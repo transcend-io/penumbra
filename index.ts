@@ -2,7 +2,7 @@
 import { saveAs } from 'file-saver';
 import { createDecipheriv } from 'crypto-browserify';
 import { createWriteStream } from 'streamsaver';
-import toBuffer from 'typedarray-to-buffer';
+import * as toBuffer from 'typedarray-to-buffer';
 
 // Types
 import { Decipher } from 'crypto';
@@ -25,11 +25,7 @@ function fetchAndDecipher(
   if (typeof iv === 'string') iv = Buffer.from(iv, 'base64');
   if (typeof authTag === 'string') authTag = Buffer.from(authTag, 'base64');
 
-  const decipher = createDecipheriv(
-    'aes-256-gcm',
-    key,
-    iv,
-  );
+  const decipher = createDecipheriv('aes-256-gcm', key, iv);
 
   decipher.setAuthTag(authTag);
 
@@ -98,11 +94,7 @@ function decryptStream(
     return rs.pipeThrough(
       new TransformStream({
         transform: async (chunk, controller) => {
-          try {
-            chunk = toBuffer(chunk);
-          } catch (err) {
-            console.error(err);
-          }
+          chunk = toBuffer(chunk);
 
           // Decrypt chunk and send it out
           const decryptedChunk = decipher.update(chunk);

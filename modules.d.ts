@@ -19,7 +19,11 @@ declare module 'streamsaver' {
 
 declare module 'typedarray-to-buffer' {
   type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
-  export default function toBuffer(
+  function toBuffer(
     arr: TypedArray,
   ): Buffer;
+
+  namespace toBuffer {}
+
+  export = toBuffer;
 }

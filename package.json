@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:clean": "rimraf build && tsc",
+    "build:clean": "rimraf dist && tsc",
     "build:watch": "tsc --watch",
     "build:publish": "npm run build:clean && npm publish"
   },
