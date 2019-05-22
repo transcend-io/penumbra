@@ -23,7 +23,6 @@ downloadEncryptedFile(
   authTag,
   {
     fileName: 'myFile.json', // optional values
-    mime: 'application/json',
   }
 );
 ```
