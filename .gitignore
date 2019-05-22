@@ -1,5 +1,5 @@
 node_modules
-dist
+example/dist
 .cache
 .DS_Store
 *.key
