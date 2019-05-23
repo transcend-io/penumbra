@@ -229,9 +229,9 @@ interface DownloadEncryptedFileOptions {
 
 export async function downloadEncryptedFile(
   url: string,
-  key: string,
-  iv: string,
-  authTag: string,
+  key: string | Buffer,
+  iv: string | Buffer,
+  authTag: string | Buffer,
   options: DownloadEncryptedFileOptions = {}
 ): Promise<void> {
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;

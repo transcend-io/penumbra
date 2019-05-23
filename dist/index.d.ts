@@ -11,7 +11,7 @@
 interface DownloadEncryptedFileOptions {
     fileName?: string | null;
 }
-export declare function downloadEncryptedFile(url: string, key: string, iv: string, authTag: string, options?: DownloadEncryptedFileOptions): Promise<void>;
+export declare function downloadEncryptedFile(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, options?: DownloadEncryptedFileOptions): Promise<void>;
 /**
  * Download, decrypt, and return string, object URL, or Blob to display directly on the webpage
  * @param url the URL to fetch an encrypted file from
