@@ -8,13 +8,15 @@ import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
 import * as Comlink from 'comlink';
 
-const Fetcher = Comlink.wrap(
-  new Worker('./sw.js', { type: 'module' })
+const PenumbraSW = Comlink.wrap(
+  new Worker('./decryption.worker.js', { type: 'module' })
 );
 
-(new Fetcher()).then(fetcher => {
-  fetcher.logSomething();
-});
+(async () => {
+  const instance = await new PenumbraSW();
+
+  await instance.logSomething();
+})();
 
 // import * as render from 'render-media';
 
@@ -98,8 +100,9 @@ function displayVideo(file) {
   });
 
   // Display video
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
-    .then(src => { 
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+    .then(src => {
       source.type = file.mime;
       source.src = src;
       video.src = src;

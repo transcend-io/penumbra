@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --exec 'http-server dist -a localhost'",
     "start-ssl": "nodemon --exec 'http-server dist --cert ssl/certificate.pem --key ssl/private.key --ssl'",
-    "clean": "rm dist/bundle.js",
+    "clean": "rimraf dist/*",
     "build-dev": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack --watch -d --mode development",
     "build-prod": "mkdir -p dist && cp index.html dist/index.html && cp style.css dist/style.css && webpack -p --mode production"
   },
@@ -25,6 +25,7 @@
     "@babel/preset-env": "^7.4.2",
     "babel-loader": "^8.0.5",
     "http-server": "^0.11.1",
+    "rimraf": "^2.6.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
     "worker-plugin": "^3.1.0"

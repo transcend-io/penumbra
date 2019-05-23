@@ -40,6 +40,14 @@ var file_saver_1 = require("file-saver");
 var crypto_browserify_1 = require("crypto-browserify");
 var streamsaver_1 = require("streamsaver");
 var toBuffer = require("typedarray-to-buffer");
+var scope;
+try {
+    scope = window;
+}
+catch (err) {
+    scope = self;
+}
+console.log(scope);
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
  * @param url the URL to fetch an encrypted file from
@@ -97,7 +105,7 @@ function decryptStream(rs, decipher, contentLength, url) {
     var _this = this;
     var totalBytesRead = 0;
     // TransformStreams are supported
-    if ('TransformStream' in window) {
+    if ('TransformStream' in scope) {
         return rs.pipeThrough(new TransformStream({
             transform: function (chunk, controller) { return __awaiter(_this, void 0, void 0, function () {
                 var decryptedChunk;
@@ -146,7 +154,7 @@ function decryptStream(rs, decipher, contentLength, url) {
  */
 function saveFile(rs, fileName) {
     // Feature detection for WritableStream - streams straight to disk
-    if ('WritableStream' in window)
+    if ('WritableStream' in scope)
         return saveFileStream(rs, fileName);
     // No WritableStream; load into memory with a Blob
     return new Response(rs).blob().then(function (blob) { return file_saver_1.saveAs(blob, fileName); });

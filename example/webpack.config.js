@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const WorkerPlugin = require('worker-plugin');
 
 const config = {
   entry: './example.js',
@@ -16,7 +17,12 @@ const config = {
         exclude: /node_modules/
       }
     ]
-  }
+  },
+  plugins: [
+    new WorkerPlugin({
+      globalObject: false
+    })
+  ]
 }
 
 module.exports = config;
