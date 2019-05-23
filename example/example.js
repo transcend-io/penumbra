@@ -3,7 +3,6 @@
  * check authtag with decipher.final()
  * see if we can create the dataUri before and buffer in
  */
-
 import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
 import * as Comlink from 'comlink';
@@ -12,11 +11,13 @@ const PenumbraSW = Comlink.wrap(
   new Worker('./decryption.worker.js', { type: 'module' })
 );
 
-(async () => {
-  const instance = await new PenumbraSW();
-
-  await instance.logSomething();
-})();
+// function PenumbraSW() {
+//   // For testing without a service worker
+//   return Promise.resolve({
+//     downloadEncryptedFile,
+//     getDecryptedContent,
+//   });
+// }
 
 // import * as render from 'render-media';
 
@@ -48,9 +49,9 @@ function displayImage(file) {
   app.appendChild(image);
 
   // Display image
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
-    url => (image.src = url)
-  );
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+    .then(url => (image.src = url));
 }
 
 // function displayVideo(file) {
@@ -104,6 +105,7 @@ function displayVideo(file) {
   // Display video
   new PenumbraSW()
     .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+  // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
     .then(src => {
       source.type = file.mime;
       source.src = src;
@@ -141,7 +143,8 @@ function addDownloadLink(file) {
   const button = document.createElement('button');
   button.innerText = `Download ${file.path}`;
   button.onclick = () => {
-    downloadEncryptedFile(
+    new PenumbraSW()
+      .then(instance => instance.downloadEncryptedFile(
       `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`,
       file.key,
       file.iv,
@@ -150,13 +153,13 @@ function addDownloadLink(file) {
         fileName: null,
         mime: file.mime,
       }
-    );
+    ));
   };
   app.appendChild(button);
 }
 
 displayText(files['NYT.txt']);
-// displayImage(files['river.jpg']);
-// displayVideo(files['patreon.mp4']);
+displayImage(files['river.jpg']);
+displayVideo(files['patreon.mp4']);
 // displayVideo(files['k.webm']);
-// displayImage(files['turtl.gif']);
+displayImage(files['turtl.gif']);

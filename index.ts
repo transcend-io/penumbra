@@ -219,23 +219,7 @@ function getMediaSrcFromRS(rs: ReadableStream): Promise<string> {
  * @returns the decrypted text
  */
 async function getTextFromRS(rs: ReadableStream): Promise<string> {
-  let r;
-  try {
-    r = new Response(rs);
-    try {
-      const x = await r.text();
-      console.log(x);
-      return x;
-    } catch (err) {
-      console.error('err2', err);
-    }
-  } catch(err) { 
-    console.error('err1', err);
-  }
-
-  return Promise.resolve('asdf');
-
-  // return new Response(rs).text();
+  return new Response(rs).text();
 }
 
 
@@ -286,13 +270,6 @@ export async function getDecryptedContent(
   authTag: string | Buffer,
   mime: string,
 ): Promise<string | Blob> {
-  console.log(url,
-    key,
-    iv,
-    authTag,
-    mime,
-    )
-
   const type = mime.split('/')[0];
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
