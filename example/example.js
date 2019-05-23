@@ -6,6 +6,16 @@
 
 import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
+import * as Comlink from 'comlink';
+
+const Fetcher = Comlink.wrap(
+  new Worker('./sw.js', { type: 'module' })
+);
+
+(new Fetcher()).then(fetcher => {
+  fetcher.logSomething();
+});
+
 // import * as render from 'render-media';
 
 const app = document.getElementById('app');
