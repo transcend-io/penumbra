@@ -82,7 +82,7 @@ function emitProgress(totalBytesRead, contentLength, url) {
             contentLength: contentLength,
         },
     });
-    window.dispatchEvent(event);
+    self.dispatchEvent(event);
 }
 /**
  * Decrypts a readable stream
@@ -97,7 +97,7 @@ function decryptStream(rs, decipher, contentLength, url) {
     var _this = this;
     var totalBytesRead = 0;
     // TransformStreams are supported
-    if ('TransformStream' in window) {
+    if ('TransformStream' in self) {
         return rs.pipeThrough(new TransformStream({
             transform: function (chunk, controller) { return __awaiter(_this, void 0, void 0, function () {
                 var decryptedChunk;
@@ -146,7 +146,7 @@ function decryptStream(rs, decipher, contentLength, url) {
  */
 function saveFile(rs, fileName) {
     // Feature detection for WritableStream - streams straight to disk
-    if ('WritableStream' in window)
+    if ('WritableStream' in self)
         return saveFileStream(rs, fileName);
     // No WritableStream; load into memory with a Blob
     return new Response(rs).blob().then(function (blob) { return file_saver_1.saveAs(blob, fileName); });

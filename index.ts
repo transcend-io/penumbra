@@ -7,6 +7,7 @@ import * as toBuffer from 'typedarray-to-buffer';
 // Types
 import { Decipher } from 'crypto';
 
+
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
  * @param url the URL to fetch an encrypted file from
@@ -16,9 +17,9 @@ import { Decipher } from 'crypto';
  * @returns a readable stream of the deciphered file
  */
 function fetchAndDecipher(
-  url: string, 
-  key: string | Buffer, 
-  iv: string | Buffer, 
+  url: string,
+  key: string | Buffer,
+  iv: string | Buffer,
   authTag: string | Buffer,
 ): Promise<ReadableStream> {
   if (typeof key === 'string') key = Buffer.from(key, 'base64');
@@ -67,7 +68,7 @@ function emitProgress(
       contentLength,
     },
   });
-  window.dispatchEvent(event);
+  self.dispatchEvent(event);
 }
 
 
@@ -80,9 +81,9 @@ function emitProgress(
  * @returns a readable stream of decrypted data
  */
 function decryptStream(
-  rs: ReadableStream, 
-  decipher: Decipher, 
-  contentLength: number, 
+  rs: ReadableStream,
+  decipher: Decipher,
+  contentLength: number,
   url: string,
 ): ReadableStream {
   // TODO check authTag with decipher.final
@@ -90,7 +91,7 @@ function decryptStream(
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if ('TransformStream' in window) {
+  if ('TransformStream' in self) {
     return rs.pipeThrough(
       new TransformStream({
         transform: async (chunk, controller) => {
@@ -145,11 +146,11 @@ function decryptStream(
  * @returns
  */
 function saveFile(
-  rs: ReadableStream, 
+  rs: ReadableStream,
   fileName: string,
 ): void | Promise<void> {
   // Feature detection for WritableStream - streams straight to disk
-  if ('WritableStream' in window) return saveFileStream(rs, fileName);
+  if ('WritableStream' in self) return saveFileStream(rs, fileName);
 
   // No WritableStream; load into memory with a Blob
   return new Response(rs).blob().then(blob => saveAs(blob, fileName));
@@ -227,17 +228,17 @@ interface DownloadEncryptedFileOptions {
 }
 
 export async function downloadEncryptedFile(
-  url: string, 
-  key: string, 
-  iv: string, 
-  authTag: string,
+  url: string,
+  key: string | Buffer,
+  iv: string | Buffer,
+  authTag: string | Buffer,
   options: DownloadEncryptedFileOptions = {}
 ): Promise<void> {
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
   const fileName = options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
-  
+
   // Stream the file to disk
   return saveFile(rs, fileName);
 }
@@ -265,6 +266,6 @@ export async function getDecryptedContent(
 
   // Return the decrypted content
   if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
-  if (type === 'text' || mime === 'application/json')  return getTextFromRS(rs);
+  if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
   return new Response(rs).blob();
 }

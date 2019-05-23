@@ -3,9 +3,26 @@
  * check authtag with decipher.final()
  * see if we can create the dataUri before and buffer in
  */
-
 import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
+import * as Comlink from 'comlink';
+
+const USE_SERVICE_WORKER = true;
+
+const PenumbraSW = USE_SERVICE_WORKER
+  ? // Offload penumbra processing to service worker
+  Comlink.wrap(
+    new Worker('./decryption.worker.js', { type: 'module' })
+  )
+  : // Perform penumbra processing on main thread
+  function PenumbraSW() {
+  // For testing without a service worker
+  return Promise.resolve({
+    downloadEncryptedFile,
+    getDecryptedContent,
+  });
+}
+
 // import * as render from 'render-media';
 
 const app = document.getElementById('app');
@@ -19,9 +36,11 @@ function displayText(file) {
   const text = document.createElement('p');
   app.appendChild(text);
 
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
-    txt => (text.innerText = txt)
-  );
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+  // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
+    .then(txt => (text.innerText = txt))
+    .catch(console.error);
 }
 
 function displayImage(file) {
@@ -34,9 +53,9 @@ function displayImage(file) {
   app.appendChild(image);
 
   // Display image
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
-    url => (image.src = url)
-  );
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+    .then(url => (image.src = url));
 }
 
 // function displayVideo(file) {
@@ -88,8 +107,10 @@ function displayVideo(file) {
   });
 
   // Display video
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
-    .then(src => { 
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+  // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
+    .then(src => {
       source.type = file.mime;
       source.src = src;
       video.src = src;
@@ -141,7 +162,7 @@ function addDownloadLink(file) {
 }
 
 displayText(files['NYT.txt']);
-// displayImage(files['river.jpg']);
+displayImage(files['river.jpg']);
 displayVideo(files['patreon.mp4']);
 // displayVideo(files['k.webm']);
-// displayImage(files['turtl.gif']);
+displayImage(files['turtl.gif']);
