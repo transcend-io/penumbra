@@ -8,16 +8,6 @@ import * as toBuffer from 'typedarray-to-buffer';
 import { Decipher } from 'crypto';
 
 
-let scope: Window;
-try {
-  // On the main scope
-  scope = window;
-} catch(err) {
-  // This is in a service worker
-  scope = self;
-}
-
-
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
  * @param url the URL to fetch an encrypted file from
@@ -78,7 +68,7 @@ function emitProgress(
       contentLength,
     },
   });
-  scope.dispatchEvent(event);
+  self.dispatchEvent(event);
 }
 
 
@@ -101,7 +91,7 @@ function decryptStream(
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if ('TransformStream' in scope) {
+  if ('TransformStream' in self) {
     return rs.pipeThrough(
       new TransformStream({
         transform: async (chunk, controller) => {
@@ -160,7 +150,7 @@ function saveFile(
   fileName: string,
 ): void | Promise<void> {
   // Feature detection for WritableStream - streams straight to disk
-  if ('WritableStream' in scope) return saveFileStream(rs, fileName);
+  if ('WritableStream' in self) return saveFileStream(rs, fileName);
 
   // No WritableStream; load into memory with a Blob
   return new Response(rs).blob().then(blob => saveAs(blob, fileName));
@@ -218,7 +208,7 @@ function getMediaSrcFromRS(rs: ReadableStream): Promise<string> {
  * @param rs a readable stream of decrypted bytes
  * @returns the decrypted text
  */
-async function getTextFromRS(rs: ReadableStream): Promise<string> {
+function getTextFromRS(rs: ReadableStream): Promise<string> {
   return new Response(rs).text();
 }
 

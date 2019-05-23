@@ -7,17 +7,21 @@ import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
 import * as Comlink from 'comlink';
 
-const PenumbraSW = Comlink.wrap(
-  new Worker('./decryption.worker.js', { type: 'module' })
-);
+const USE_SERVICE_WORKER = true;
 
-// function PenumbraSW() {
-//   // For testing without a service worker
-//   return Promise.resolve({
-//     downloadEncryptedFile,
-//     getDecryptedContent,
-//   });
-// }
+const PenumbraSW = USE_SERVICE_WORKER
+  ? // Offload penumbra processing to service worker
+  Comlink.wrap(
+    new Worker('./decryption.worker.js', { type: 'module' })
+  )
+  : // Perform penumbra processing on main thread
+  function PenumbraSW() {
+  // For testing without a service worker
+  return Promise.resolve({
+    downloadEncryptedFile,
+    getDecryptedContent,
+  });
+}
 
 // import * as render from 'render-media';
 
@@ -143,8 +147,7 @@ function addDownloadLink(file) {
   const button = document.createElement('button');
   button.innerText = `Download ${file.path}`;
   button.onclick = () => {
-    new PenumbraSW()
-      .then(instance => instance.downloadEncryptedFile(
+    downloadEncryptedFile(
       `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`,
       file.key,
       file.iv,
@@ -153,7 +156,7 @@ function addDownloadLink(file) {
         fileName: null,
         mime: file.mime,
       }
-    ));
+    );
   };
   app.appendChild(button);
 }
