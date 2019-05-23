@@ -42,12 +42,13 @@ var streamsaver_1 = require("streamsaver");
 var toBuffer = require("typedarray-to-buffer");
 var scope;
 try {
+    // On the main scope
     scope = window;
 }
 catch (err) {
+    // This is in a service worker
     scope = self;
 }
-console.log(scope);
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
  * @param url the URL to fetch an encrypted file from
@@ -90,7 +91,7 @@ function emitProgress(totalBytesRead, contentLength, url) {
             contentLength: contentLength,
         },
     });
-    window.dispatchEvent(event);
+    scope.dispatchEvent(event);
 }
 /**
  * Decrypts a readable stream
@@ -203,7 +204,34 @@ function getMediaSrcFromRS(rs) {
  * @returns the decrypted text
  */
 function getTextFromRS(rs) {
-    return new Response(rs).text();
+    return __awaiter(this, void 0, void 0, function () {
+        var r, x, err_1, err_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 5, , 6]);
+                    r = new Response(rs);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, r.text()];
+                case 2:
+                    x = _a.sent();
+                    console.log(x);
+                    return [2 /*return*/, x];
+                case 3:
+                    err_1 = _a.sent();
+                    console.error('err2', err_1);
+                    return [3 /*break*/, 4];
+                case 4: return [3 /*break*/, 6];
+                case 5:
+                    err_2 = _a.sent();
+                    console.error('err1', err_2);
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/, Promise.resolve('asdf')];
+            }
+        });
+    });
 }
 function downloadEncryptedFile(url, key, iv, authTag, options) {
     if (options === void 0) { options = {}; }
@@ -239,6 +267,7 @@ function getDecryptedContent(url, key, iv, authTag, mime) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    console.log(url, key, iv, authTag, mime);
                     type = mime.split('/')[0];
                     return [4 /*yield*/, fetchAndDecipher(url, key, iv, authTag)];
                 case 1:

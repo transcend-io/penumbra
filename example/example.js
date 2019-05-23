@@ -31,9 +31,11 @@ function displayText(file) {
   const text = document.createElement('p');
   app.appendChild(text);
 
-  getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime).then(
-    txt => (text.innerText = txt)
-  );
+  new PenumbraSW()
+    .then(instance => instance.getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime))
+  // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
+    .then(txt => (text.innerText = txt))
+    .catch(console.error);
 }
 
 function displayImage(file) {
@@ -155,6 +157,6 @@ function addDownloadLink(file) {
 
 displayText(files['NYT.txt']);
 // displayImage(files['river.jpg']);
-displayVideo(files['patreon.mp4']);
+// displayVideo(files['patreon.mp4']);
 // displayVideo(files['k.webm']);
 // displayImage(files['turtl.gif']);

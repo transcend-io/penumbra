@@ -8,13 +8,14 @@ import * as toBuffer from 'typedarray-to-buffer';
 import { Decipher } from 'crypto';
 
 
-let scope: Object;
+let scope: Window;
 try {
+  // On the main scope
   scope = window;
 } catch(err) {
+  // This is in a service worker
   scope = self;
 }
-console.log(scope);
 
 
 /**
@@ -26,9 +27,9 @@ console.log(scope);
  * @returns a readable stream of the deciphered file
  */
 function fetchAndDecipher(
-  url: string, 
-  key: string | Buffer, 
-  iv: string | Buffer, 
+  url: string,
+  key: string | Buffer,
+  iv: string | Buffer,
   authTag: string | Buffer,
 ): Promise<ReadableStream> {
   if (typeof key === 'string') key = Buffer.from(key, 'base64');
@@ -77,7 +78,7 @@ function emitProgress(
       contentLength,
     },
   });
-  window.dispatchEvent(event);
+  scope.dispatchEvent(event);
 }
 
 
@@ -90,9 +91,9 @@ function emitProgress(
  * @returns a readable stream of decrypted data
  */
 function decryptStream(
-  rs: ReadableStream, 
-  decipher: Decipher, 
-  contentLength: number, 
+  rs: ReadableStream,
+  decipher: Decipher,
+  contentLength: number,
   url: string,
 ): ReadableStream {
   // TODO check authTag with decipher.final
@@ -155,7 +156,7 @@ function decryptStream(
  * @returns
  */
 function saveFile(
-  rs: ReadableStream, 
+  rs: ReadableStream,
   fileName: string,
 ): void | Promise<void> {
   // Feature detection for WritableStream - streams straight to disk
@@ -217,8 +218,24 @@ function getMediaSrcFromRS(rs: ReadableStream): Promise<string> {
  * @param rs a readable stream of decrypted bytes
  * @returns the decrypted text
  */
-function getTextFromRS(rs: ReadableStream): Promise<string> {
-  return new Response(rs).text();
+async function getTextFromRS(rs: ReadableStream): Promise<string> {
+  let r;
+  try {
+    r = new Response(rs);
+    try {
+      const x = await r.text();
+      console.log(x);
+      return x;
+    } catch (err) {
+      console.error('err2', err);
+    }
+  } catch(err) { 
+    console.error('err1', err);
+  }
+
+  return Promise.resolve('asdf');
+
+  // return new Response(rs).text();
 }
 
 
@@ -237,9 +254,9 @@ interface DownloadEncryptedFileOptions {
 }
 
 export async function downloadEncryptedFile(
-  url: string, 
-  key: string, 
-  iv: string, 
+  url: string,
+  key: string,
+  iv: string,
   authTag: string,
   options: DownloadEncryptedFileOptions = {}
 ): Promise<void> {
@@ -247,7 +264,7 @@ export async function downloadEncryptedFile(
   const fileName = options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
-  
+
   // Stream the file to disk
   return saveFile(rs, fileName);
 }
@@ -269,12 +286,19 @@ export async function getDecryptedContent(
   authTag: string | Buffer,
   mime: string,
 ): Promise<string | Blob> {
+  console.log(url,
+    key,
+    iv,
+    authTag,
+    mime,
+    )
+
   const type = mime.split('/')[0];
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
 
   // Return the decrypted content
   if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
-  if (type === 'text' || mime === 'application/json')  return getTextFromRS(rs);
+  if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
   return new Response(rs).blob();
 }

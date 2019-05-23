@@ -22,7 +22,8 @@ const config = {
     new WorkerPlugin({
       globalObject: false
     })
-  ]
+  ],
+  devtool: 'eval-source-map'
 }
 
 module.exports = config;
