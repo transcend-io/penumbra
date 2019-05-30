@@ -223,7 +223,7 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
  * @returns
  */
 
-interface DownloadEncryptedFileOptions {
+type DownloadEncryptedFileOptions = {
   fileName?: string | null;
 }
 
@@ -253,19 +253,27 @@ export async function downloadEncryptedFile(
  * @param mime the mime type of the underlying file
  * @returns depending on mime type, a string of text, or an src if it's media
  */
+type GetDecryptedContentOptions = {
+  // useServiceWorker?: boolean,
+  alwaysBlob?: boolean,
+}
+
 export async function getDecryptedContent(
   url: string,
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
   mime: string,
+  options: GetDecryptedContentOptions = {},
 ): Promise<string | Blob> {
   const type = mime.split('/')[0];
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
 
   // Return the decrypted content
-  if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
-  if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
+  if (!options.alwaysBlob) {
+    if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
+    if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
+  }
   return new Response(rs).blob();
 }

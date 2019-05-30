@@ -8,9 +8,9 @@
  * @param options mime, fileName
  * @returns
  */
-interface DownloadEncryptedFileOptions {
+declare type DownloadEncryptedFileOptions = {
     fileName?: string | null;
-}
+};
 export declare function downloadEncryptedFile(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, options?: DownloadEncryptedFileOptions): Promise<void>;
 /**
  * Download, decrypt, and return string, object URL, or Blob to display directly on the webpage
@@ -21,5 +21,8 @@ export declare function downloadEncryptedFile(url: string, key: string | Buffer,
  * @param mime the mime type of the underlying file
  * @returns depending on mime type, a string of text, or an src if it's media
  */
-export declare function getDecryptedContent(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, mime: string): Promise<string | Blob>;
+declare type GetDecryptedContentOptions = {
+    alwaysBlob?: boolean;
+};
+export declare function getDecryptedContent(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, mime: string, options?: GetDecryptedContentOptions): Promise<string | Blob>;
 export {};
