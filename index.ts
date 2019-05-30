@@ -253,12 +253,17 @@ export async function downloadEncryptedFile(
  * @param mime the mime type of the underlying file
  * @returns depending on mime type, a string of text, or an src if it's media
  */
+interface GetDecryptedContentOptions {
+  useServiceWorker?: boolean,
+}
+
 export async function getDecryptedContent(
   url: string,
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
   mime: string,
+  options: GetDecryptedContentOptions,
 ): Promise<string | Blob> {
   const type = mime.split('/')[0];
 

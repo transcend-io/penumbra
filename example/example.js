@@ -7,7 +7,7 @@ import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
 import * as files from './files';
 import * as Comlink from 'comlink';
 
-const USE_SERVICE_WORKER = true;
+const USE_SERVICE_WORKER = false;
 
 const PenumbraSW = USE_SERVICE_WORKER
   ? // Offload penumbra processing to service worker
