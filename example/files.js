@@ -62,11 +62,11 @@ module.exports = {
     iv: '6lNU+2vxJw6SFgse',
     authTag: 'Mqgmwj9IvLEeBjhwrkYpBg==',
   },
-  'Earth.jpg': {
-    path: 'Earth.jpg.enc',
-    mime: 'image/jpeg',
-    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-    iv: '6lNU+2vxJw6SFgse',
-    authTag: 'v86dSoD5yu4iaDZdPYWTDA==',
-  },
+  // 'Earth.jpg': {
+  //   path: 'Earth.jpg.enc',
+  //   mime: 'image/jpeg',
+  //   key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+  //   iv: '6lNU+2vxJw6SFgse',
+  //   authTag: 'v86dSoD5yu4iaDZdPYWTDA==',
+  // },
 };

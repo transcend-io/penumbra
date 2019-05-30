@@ -216,16 +216,8 @@ function downloadEncryptedFile(url, key, iv, authTag, options) {
     });
 }
 exports.downloadEncryptedFile = downloadEncryptedFile;
-/**
- * Download, decrypt, and return string, object URL, or Blob to display directly on the webpage
- * @param url the URL to fetch an encrypted file from
- * @param key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
- * @param iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
- * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
- * @param mime the mime type of the underlying file
- * @returns depending on mime type, a string of text, or an src if it's media
- */
-function getDecryptedContent(url, key, iv, authTag, mime) {
+function getDecryptedContent(url, key, iv, authTag, mime, options) {
+    if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
         var type, rs;
         return __generator(this, function (_a) {
@@ -236,10 +228,12 @@ function getDecryptedContent(url, key, iv, authTag, mime) {
                 case 1:
                     rs = _a.sent();
                     // Return the decrypted content
-                    if (type === 'image' || type === 'video' || type === 'audio')
-                        return [2 /*return*/, getMediaSrcFromRS(rs)];
-                    if (type === 'text' || mime === 'application/json')
-                        return [2 /*return*/, getTextFromRS(rs)];
+                    if (!options.alwaysBlob) {
+                        if (type === 'image' || type === 'video' || type === 'audio')
+                            return [2 /*return*/, getMediaSrcFromRS(rs)];
+                        if (type === 'text' || mime === 'application/json')
+                            return [2 /*return*/, getTextFromRS(rs)];
+                    }
                     return [2 /*return*/, new Response(rs).blob()];
             }
         });

@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver';
 import { createDecipheriv } from 'crypto-browserify';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
+// import { ZIP } from './zip.js';
 
 // Types
 import { Decipher } from 'crypto';
@@ -223,7 +224,7 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
  * @returns
  */
 
-interface DownloadEncryptedFileOptions {
+type DownloadEncryptedFileOptions = {
   fileName?: string | null;
 }
 
@@ -253,8 +254,9 @@ export async function downloadEncryptedFile(
  * @param mime the mime type of the underlying file
  * @returns depending on mime type, a string of text, or an src if it's media
  */
-interface GetDecryptedContentOptions {
-  useServiceWorker?: boolean,
+type GetDecryptedContentOptions = {
+  // useServiceWorker?: boolean,
+  alwaysBlob?: boolean,
 }
 
 export async function getDecryptedContent(
@@ -263,14 +265,16 @@ export async function getDecryptedContent(
   iv: string | Buffer,
   authTag: string | Buffer,
   mime: string,
-  options: GetDecryptedContentOptions,
+  options: GetDecryptedContentOptions = {},
 ): Promise<string | Blob> {
   const type = mime.split('/')[0];
 
   const rs = await fetchAndDecipher(url, key, iv, authTag);
 
   // Return the decrypted content
-  if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
-  if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
+  if (!options.alwaysBlob) {
+    if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
+    if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
+  }
   return new Response(rs).blob();
 }
