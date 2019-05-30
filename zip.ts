@@ -55,21 +55,25 @@ const getDataHelper = (byteLength: number): DataHelper => {
   }
 }
 
+interface FileLike extends File {
+  directory: string,
+  comment: string,
+  stream(): ReadableStream,
+}
 
 interface ZipObj {
-  crc: Crc32,
+  crc?: Crc32,
   uncompressedLength: number,
   compressedLength: number,
   ctrl: ReadableStreamDefaultController,
   writeFooter: Function,
+  writeHeader: Function,
   reader?: ReadableStreamDefaultReader,
   offset: number
-  header: DataHelper,
-}
-
-interface FileLike extends File {
-  directory: string,
-  comment: string,
+  header?: DataHelper,
+  fileLike: FileLike,
+  level: number,
+  directory: boolean,
 }
 
 const pump = (zipObj: ZipObj) => zipObj.reader.read().then(chunk => {
@@ -98,9 +102,9 @@ function createWriter(underlyingSource) {
     else if (closed) closeZip()
   }
   
-  var zipWriter = {
+  const zipWriter = {
     enqueue(fileLike: FileLike) {
-      if (closed) throw new TypeError('Cannot enqueue a chunk into a readable stream that is closed or has been requested to be closed')
+      if (closed) throw new TypeError('Cannot enqueue a chunk into a readable stream that is closed or has been requested to be closed');
 
       let name = fileLike.name.trim()
       const date = new Date(typeof fileLike.lastModified === 'undefined' ? Date.now() : fileLike.lastModified)
@@ -111,7 +115,7 @@ function createWriter(underlyingSource) {
       const nameBuf = encoder.encode(name)
       filenames.push(name)
 
-      const zipObject = files[name] = {
+      const zipObject: ZipObj = files[name] = {
         level: 0,
         ctrl,
         directory: !!fileLike.directory,
