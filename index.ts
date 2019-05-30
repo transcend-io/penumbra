@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver';
 import { createDecipheriv } from 'crypto-browserify';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
-// import { ZIP } from './zip.js';
 
 // Types
 import { Decipher } from 'crypto';
