@@ -48,7 +48,7 @@ var toBuffer = require("typedarray-to-buffer");
  * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
  * @returns a readable stream of the deciphered file
  */
-function fetchAndDecipher(url, key, iv, authTag) {
+function fetchAndDecipher(url, key, iv, authTag, progressEventName) {
     if (typeof key === 'string')
         key = Buffer.from(key, 'base64');
     if (typeof iv === 'string')
@@ -63,7 +63,7 @@ function fetchAndDecipher(url, key, iv, authTag) {
         if (response.body === null)
             throw new Error('Response body is empty!');
         var contentLength = response.headers.get('Content-Length');
-        return decryptStream(response.body, decipher, Number(contentLength), url);
+        return decryptStream(response.body, decipher, Number(contentLength), url, progressEventName);
     }));
 }
 /**
@@ -73,13 +73,15 @@ function fetchAndDecipher(url, key, iv, authTag) {
  * @param url the URL being read from
  * @returns
  */
-function emitProgress(totalBytesRead, contentLength, url) {
+function emitProgress(totalBytesRead, contentLength, url, progressEventName) {
+    if (progressEventName === void 0) { progressEventName = url; }
     var percent = Math.round((totalBytesRead / contentLength) * 100);
-    var event = new CustomEvent(url, {
+    var event = new CustomEvent(progressEventName, {
         detail: {
             percent: percent,
             totalBytesRead: totalBytesRead,
             contentLength: contentLength,
+            url: url,
         },
     });
     self.dispatchEvent(event);
@@ -92,7 +94,7 @@ function emitProgress(totalBytesRead, contentLength, url) {
  * @param url the URL to read the encrypted file from (only used for the event emitter)
  * @returns a readable stream of decrypted data
  */
-function decryptStream(rs, decipher, contentLength, url) {
+function decryptStream(rs, decipher, contentLength, url, progressEventName) {
     // TODO check authTag with decipher.final
     var _this = this;
     var totalBytesRead = 0;
@@ -107,7 +109,7 @@ function decryptStream(rs, decipher, contentLength, url) {
                     controller.enqueue(decryptedChunk);
                     // Emit a progress update
                     totalBytesRead += chunk.length;
-                    emitProgress(totalBytesRead, contentLength, url);
+                    emitProgress(totalBytesRead, contentLength, url, progressEventName);
                     return [2 /*return*/];
                 });
             }); },
@@ -129,7 +131,7 @@ function decryptStream(rs, decipher, contentLength, url) {
                     var decValue = decipher.update(chunk);
                     // Emit a progress update
                     totalBytesRead += chunk.length;
-                    emitProgress(totalBytesRead, contentLength, url);
+                    emitProgress(totalBytesRead, contentLength, url, progressEventName);
                     controller.enqueue(decValue);
                     push();
                 });
@@ -206,7 +208,7 @@ function downloadEncryptedFile(url, key, iv, authTag, options) {
                 case 0:
                     fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
                     fileName = options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
-                    return [4 /*yield*/, fetchAndDecipher(url, key, iv, authTag)];
+                    return [4 /*yield*/, fetchAndDecipher(url, key, iv, authTag, options.progressEventName)];
                 case 1:
                     rs = _a.sent();
                     // Stream the file to disk
@@ -224,7 +226,7 @@ function getDecryptedContent(url, key, iv, authTag, mime, options) {
             switch (_a.label) {
                 case 0:
                     type = mime.split('/')[0];
-                    return [4 /*yield*/, fetchAndDecipher(url, key, iv, authTag)];
+                    return [4 /*yield*/, fetchAndDecipher(url, key, iv, authTag, options.progressEventName)];
                 case 1:
                     rs = _a.sent();
                     // Return the decrypted content

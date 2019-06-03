@@ -51,7 +51,7 @@ function displayText(file) {
 function displayImage(file) {
   const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
 
-  addProgressIndicator(url); 
+  addProgressIndicator(url);
   addDownloadLink(file);
 
   const image = document.createElement('img');

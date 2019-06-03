@@ -23,6 +23,7 @@ downloadEncryptedFile(
   authTag,
   {
     fileName: 'myFile.json', // optional values
+    progressEventName: 'download-progress' // defaults to the url
   }
 );
 ```

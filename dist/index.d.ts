@@ -10,6 +10,7 @@
  */
 declare type DownloadEncryptedFileOptions = {
     fileName?: string | null;
+    progressEventName?: string;
 };
 export declare function downloadEncryptedFile(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, options?: DownloadEncryptedFileOptions): Promise<void>;
 /**
@@ -23,6 +24,7 @@ export declare function downloadEncryptedFile(url: string, key: string | Buffer,
  */
 declare type GetDecryptedContentOptions = {
     alwaysBlob?: boolean;
+    progressEventName?: string;
 };
 export declare function getDecryptedContent(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, mime: string, options?: GetDecryptedContentOptions): Promise<string | Blob>;
 export {};

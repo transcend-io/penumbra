@@ -21,6 +21,7 @@ function fetchAndDecipher(
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
+  progressEventName?: string,
 ): Promise<ReadableStream> {
   if (typeof key === 'string') key = Buffer.from(key, 'base64');
   if (typeof iv === 'string') iv = Buffer.from(iv, 'base64');
@@ -41,7 +42,8 @@ function fetchAndDecipher(
           response.body,
           decipher,
           Number(contentLength),
-          url
+          url,
+          progressEventName,
         );
       })
   );
@@ -59,13 +61,15 @@ function emitProgress(
   totalBytesRead: number,
   contentLength: number,
   url: string,
+  progressEventName: string = url,
 ): void {
   const percent = Math.round((totalBytesRead / contentLength) * 100);
-  const event = new CustomEvent(url, {
+  const event = new CustomEvent(progressEventName, {
     detail: {
       percent,
       totalBytesRead,
       contentLength,
+      url,
     },
   });
   self.dispatchEvent(event);
@@ -85,6 +89,7 @@ function decryptStream(
   decipher: Decipher,
   contentLength: number,
   url: string,
+  progressEventName?: string,
 ): ReadableStream {
   // TODO check authTag with decipher.final
 
@@ -103,7 +108,7 @@ function decryptStream(
 
           // Emit a progress update
           totalBytesRead += chunk.length;
-          emitProgress(totalBytesRead, contentLength, url);
+          emitProgress(totalBytesRead, contentLength, url, progressEventName);
         },
       })
     );
@@ -127,7 +132,7 @@ function decryptStream(
 
           // Emit a progress update
           totalBytesRead += chunk.length;
-          emitProgress(totalBytesRead, contentLength, url);
+          emitProgress(totalBytesRead, contentLength, url, progressEventName);
 
           controller.enqueue(decValue);
           push();
@@ -225,6 +230,7 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
 
 type DownloadEncryptedFileOptions = {
   fileName?: string | null;
+  progressEventName?: string;
 }
 
 export async function downloadEncryptedFile(
@@ -237,7 +243,7 @@ export async function downloadEncryptedFile(
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
   const fileName = options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
 
-  const rs = await fetchAndDecipher(url, key, iv, authTag);
+  const rs = await fetchAndDecipher(url, key, iv, authTag, options.progressEventName);
 
   // Stream the file to disk
   return saveFile(rs, fileName);
@@ -255,7 +261,8 @@ export async function downloadEncryptedFile(
  */
 type GetDecryptedContentOptions = {
   // useServiceWorker?: boolean,
-  alwaysBlob?: boolean,
+  alwaysBlob?: boolean;
+  progressEventName?: string;
 }
 
 export async function getDecryptedContent(
@@ -268,7 +275,7 @@ export async function getDecryptedContent(
 ): Promise<string | Blob> {
   const type = mime.split('/')[0];
 
-  const rs = await fetchAndDecipher(url, key, iv, authTag);
+  const rs = await fetchAndDecipher(url, key, iv, authTag, options.progressEventName);
 
   // Return the decrypted content
   if (!options.alwaysBlob) {
