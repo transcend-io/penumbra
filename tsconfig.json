@@ -3,6 +3,9 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
     "outDir": "./dist",
     "strict": true
   }

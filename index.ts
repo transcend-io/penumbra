@@ -49,6 +49,23 @@ function fetchAndDecipher(
   );
 }
 
+/**
+ * The type that is emitted as progress continues
+ */
+export type ProgressEmit = {
+  /** Detailed emit */
+  detail: {
+    /** Percentage completed */
+    percent: number,
+    /** Total bytes read */
+    totalBytesRead: number,
+    /** Total number of bytes to read */
+    contentLength: number,
+    /** The URL downloading from */
+    url: string;
+  }
+}
+
 
 /**
  * An event emitter for the decryption progress
@@ -64,14 +81,15 @@ function emitProgress(
   progressEventName: string = url,
 ): void {
   const percent = Math.round((totalBytesRead / contentLength) * 100);
-  const event = new CustomEvent(progressEventName, {
+  const emitContent: ProgressEmit = {
     detail: {
       percent,
       totalBytesRead,
       contentLength,
       url,
     },
-  });
+  }
+  const event = new CustomEvent(progressEventName, emitContent);
   self.dispatchEvent(event);
 }
 

@@ -28,3 +28,4 @@ declare type GetDecryptedContentOptions = {
 };
 export declare function getDecryptedContent(url: string, key: string | Buffer, iv: string | Buffer, authTag: string | Buffer, mime: string, options?: GetDecryptedContentOptions): Promise<string | Blob>;
 export {};
+//# sourceMappingURL=index.d.ts.map
