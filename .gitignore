@@ -4,3 +4,4 @@ example/dist
 .DS_Store
 *.key
 *.pem
+dist/
