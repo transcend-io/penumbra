@@ -1,53 +1,19 @@
-// External modules
-import { saveAs } from 'file-saver';
+/* eslint-disable no-restricted-globals */
+/* tslint:disable completed-docs */
+// TODO Move this into a src folder and split functions into own files
+// external modules
+import { Decipher } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
+import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
 
-// Types
-import { Decipher } from 'crypto';
-
-
 /**
- * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
- * @param url the URL to fetch an encrypted file from
- * @param key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
- * @param iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
- * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
- * @returns a readable stream of the deciphered file
+ * Convert to buffer
+ * @param i
  */
-function fetchAndDecipher(
-  url: string,
-  key: string | Buffer,
-  iv: string | Buffer,
-  authTag: string | Buffer,
-  progressEventName?: string,
-): Promise<ReadableStream> {
-  if (typeof key === 'string') key = Buffer.from(key, 'base64');
-  if (typeof iv === 'string') iv = Buffer.from(iv, 'base64');
-  if (typeof authTag === 'string') authTag = Buffer.from(authTag, 'base64');
-
-  const decipher = createDecipheriv('aes-256-gcm', key, iv);
-
-  decipher.setAuthTag(authTag);
-
-  return (
-    fetch(url)
-      // Retrieve its body as ReadableStream
-      .then(response => {
-        if (response.body === null) throw new Error('Response body is empty!');
-
-        const contentLength = response.headers.get('Content-Length');
-        return decryptStream(
-          response.body,
-          decipher,
-          Number(contentLength),
-          url,
-          progressEventName,
-        );
-      })
-  );
-}
+const toBuff = (i: Buffer | string): Buffer =>
+  typeof i === 'string' ? Buffer.from(i, 'base64') : i;
 
 /**
  * The type that is emitted as progress continues
@@ -56,16 +22,15 @@ export type ProgressEmit = {
   /** Detailed emit */
   detail: {
     /** Percentage completed */
-    percent: number,
+    percent: number;
     /** Total bytes read */
-    totalBytesRead: number,
+    totalBytesRead: number;
     /** Total number of bytes to read */
-    contentLength: number,
+    contentLength: number;
     /** The URL downloading from */
     url: string;
-  }
-}
-
+  };
+};
 
 /**
  * An event emitter for the decryption progress
@@ -88,11 +53,10 @@ function emitProgress(
       contentLength,
       url,
     },
-  }
+  };
   const event = new CustomEvent(progressEventName, emitContent);
   self.dispatchEvent(event);
 }
-
 
 /**
  * Decrypts a readable stream
@@ -116,27 +80,34 @@ function decryptStream(
   // TransformStreams are supported
   if ('TransformStream' in self) {
     return rs.pipeThrough(
+      // eslint-disable-next-line no-undef
       new TransformStream({
         transform: async (chunk, controller) => {
-          chunk = toBuffer(chunk);
+          const bufferChunk = toBuffer(chunk);
 
           // Decrypt chunk and send it out
-          const decryptedChunk = decipher.update(chunk);
+          const decryptedChunk = decipher.update(bufferChunk);
           controller.enqueue(decryptedChunk);
 
           // Emit a progress update
-          totalBytesRead += chunk.length;
+          totalBytesRead += bufferChunk.length;
           emitProgress(totalBytesRead, contentLength, url, progressEventName);
         },
-      })
+      }),
     );
   }
 
   // TransformStream not supported, revert to ReadableStream
   const reader = rs.getReader();
   return new ReadableStream({
+    /**
+     * Controller
+     */
     start(controller) {
-      function push() {
+      /**
+       * Push on
+       */
+      function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
             controller.close();
@@ -160,25 +131,49 @@ function decryptStream(
     },
   });
 }
-
-
 /**
- * Saves a readable stream to disk from the browser
- * @param rs a stream of bytes to be saved to disk
- * @param fileName the name of the file to save
- * @returns
+ * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
+ * @param url the URL to fetch an encrypted file from
+ * @param key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
+ * @param iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
+ * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
+ * @returns a readable stream of the deciphered file
  */
-function saveFile(
-  rs: ReadableStream,
-  fileName: string,
-): void | Promise<void> {
-  // Feature detection for WritableStream - streams straight to disk
-  if ('WritableStream' in self) return saveFileStream(rs, fileName);
+function fetchAndDecipher(
+  url: string,
+  key: string | Buffer,
+  iv: string | Buffer,
+  authTag: string | Buffer,
+  progressEventName?: string,
+): Promise<ReadableStream> {
+  // Convert to buffers
+  const bufferKey = toBuff(key);
+  const bufferIv = toBuff(iv);
+  const bufferAuthTag = toBuff(authTag);
 
-  // No WritableStream; load into memory with a Blob
-  return new Response(rs).blob().then(blob => saveAs(blob, fileName));
+  // Construct the decipher
+  const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
+  decipher.setAuthTag(bufferAuthTag);
+
+  return (
+    fetch(url)
+      // Retrieve its body as ReadableStream
+      .then((response) => {
+        if (response.body === null) {
+          throw new Error('Response body is empty!');
+        }
+
+        const contentLength = response.headers.get('Content-Length');
+        return decryptStream(
+          response.body,
+          decipher,
+          Number(contentLength),
+          url,
+          progressEventName,
+        );
+      })
+  );
 }
-
 
 /**
  * Streams a readable stream to disk
@@ -186,10 +181,7 @@ function saveFile(
  * @param fileName the name of the file to save
  * @returns
  */
-function saveFileStream(
-  rs: ReadableStream,
-  fileName: string,
-): Promise<void> {
+function saveFileStream(rs: ReadableStream, fileName: string): Promise<void> {
   const fileStream = createWriteStream(fileName);
   const writer = fileStream.getWriter();
 
@@ -204,16 +196,31 @@ function saveFileStream(
   const pump = (): Promise<void> =>
     reader.read().then(({ value, done }) =>
       done
-        // Close the stream so we stop writing
-        ? writer.close()
-        // Write one chunk, then get the next one
-        : writer.write(value).then(pump)
+        ? // Close the stream so we stop writing
+          writer.close()
+        : // Write one chunk, then get the next one
+          writer.write(value).then(pump),
     );
 
   // Start the reader
   return pump();
 }
 
+/**
+ * Saves a readable stream to disk from the browser
+ * @param rs a stream of bytes to be saved to disk
+ * @param fileName the name of the file to save
+ * @returns
+ */
+function saveFile(rs: ReadableStream, fileName: string): void | Promise<void> {
+  // Feature detection for WritableStream - streams straight to disk
+  if ('WritableStream' in self) {
+    return saveFileStream(rs, fileName);
+  }
+
+  // No WritableStream; load into memory with a Blob
+  return new Response(rs).blob().then((blob) => saveAs(blob, fileName));
+}
 
 /**
  * Returns an object URL to display media directly on a webpage
@@ -222,9 +229,8 @@ function saveFileStream(
  */
 function getMediaSrcFromRS(rs: ReadableStream): Promise<string> {
   // return rs;
-  return new Response(rs).blob().then(blob => URL.createObjectURL(blob));
+  return new Response(rs).blob().then((blob) => URL.createObjectURL(blob));
 }
-
 
 /**
  * Reads a stream to completion and returns the underlying text
@@ -234,7 +240,6 @@ function getMediaSrcFromRS(rs: ReadableStream): Promise<string> {
 function getTextFromRS(rs: ReadableStream): Promise<string> {
   return new Response(rs).text();
 }
-
 
 /**
  * Download, decrypt, and save a file
@@ -249,24 +254,40 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
 type DownloadEncryptedFileOptions = {
   fileName?: string | null;
   progressEventName?: string;
-}
+};
 
+/**
+ * Download an encrpyted file
+ *
+ * @param url - The url to download from
+ * @param key - The CEK
+ * @param iv - The file iv
+ * @param authTag - The auth tag
+ * @param options - Additional options
+ * @returns A promise saving to file
+ */
 export async function downloadEncryptedFile(
   url: string,
   key: string | Buffer,
   iv: string | Buffer,
   authTag: string | Buffer,
-  options: DownloadEncryptedFileOptions = {}
+  options: DownloadEncryptedFileOptions = {},
 ): Promise<void> {
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
-  const fileName = options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
+  const fileName =
+    options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
 
-  const rs = await fetchAndDecipher(url, key, iv, authTag, options.progressEventName);
+  const rs = await fetchAndDecipher(
+    url,
+    key,
+    iv,
+    authTag,
+    options.progressEventName,
+  );
 
   // Stream the file to disk
   return saveFile(rs, fileName);
 }
-
 
 /**
  * Download, decrypt, and return string, object URL, or Blob to display directly on the webpage
@@ -281,8 +302,19 @@ type GetDecryptedContentOptions = {
   // useServiceWorker?: boolean,
   alwaysBlob?: boolean;
   progressEventName?: string;
-}
+};
 
+/**
+ * Get the contents of an encrypted file
+ *
+ * @param url - The url to download from
+ * @param key - The CEK
+ * @param iv - The file iv
+ * @param authTag - The auth tag
+ * @param mime - The mimetype of the file
+ * @param options - File options
+ * @returns The file contents
+ */
 export async function getDecryptedContent(
   url: string,
   key: string | Buffer,
@@ -293,12 +325,22 @@ export async function getDecryptedContent(
 ): Promise<string | Blob> {
   const type = mime.split('/')[0];
 
-  const rs = await fetchAndDecipher(url, key, iv, authTag, options.progressEventName);
+  const rs = await fetchAndDecipher(
+    url,
+    key,
+    iv,
+    authTag,
+    options.progressEventName,
+  );
 
   // Return the decrypted content
   if (!options.alwaysBlob) {
-    if (type === 'image' || type === 'video' || type === 'audio') return getMediaSrcFromRS(rs);
-    if (type === 'text' || mime === 'application/json') return getTextFromRS(rs);
+    if (type === 'image' || type === 'video' || type === 'audio') {
+      return getMediaSrcFromRS(rs);
+    }
+    if (type === 'text' || mime === 'application/json') {
+      return getTextFromRS(rs);
+    }
   }
   return new Response(rs).blob();
 }
