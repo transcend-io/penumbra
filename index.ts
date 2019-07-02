@@ -184,7 +184,8 @@ function fetchAndDecipher(
 export function preconnect(...origins: string[]) {
   for (const origin of origins) {
     const link = document.createElement('link');
-    link.rel = origin;
+    link.rel = 'preconnect';
+    link.href = origin;
     document.head.appendChild(link);
   }
 }
@@ -200,18 +201,27 @@ const cleanOrigin = (url: string): string => {
   return '';
 };
 
+type RemoteResource = {
+  url: string
+  name?: string,
+  path?: string,
+  size?: number,
+  decryptionOptions?: GetDecryptedContentOptions
+}
+
 /**
- * Fetch multiple resources to be zipped
+ * Fetch multiple resources to be zipped. Annotates a RemoteResource
+ * list with fetch responses.
  * @param resources ...
- * @usage fetchMany(resources).then(zipAll)
+ * @usage fetchMany(...resources).then(zipAll)
  */
-export async function fetchMany(...resources: any[]): Promise<any> {
-  const requests: Promise<any>[] = [];
+export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
+  const requests: any[] = [];
   // for preconnect
   const origins: any = new Set();
   for (const resource of resources) {
-    const { url, name, path, size, decryptionOptions } = resource;
-    if (!name) {
+    const { url, name, path = '/', size, decryptionOptions } = resource;
+    if (!('name' in resource)) {
       const lastSlash = path.lastIndexOf('/');
       if (~lastSlash) {
         resource.name = path.substring(lastSlash);
@@ -219,16 +229,24 @@ export async function fetchMany(...resources: any[]): Promise<any> {
       }
     }
     origins.add(cleanOrigin(url));
+    requests.push(url);
   }
 
   preconnect(...origins);
 
-  return Promise.all(requests).then((reqs) =>
-    reqs.map((req) => fetch(req.url)),
+  return Promise.all(
+    requests.map(req => fetch(req).then(req => req.body))
+  ).then(responses =>
+    responses.map((rs, i) => ({body: rs, ...resources[i]}))
   );
-}
+};
 
-export async function zipAll(files: File[]): Promise<any> {
+let fetches = await fetchMany([{url:"/a", path:""}, {url:"/b"}])
+// fetches == [ReadableStream, ...]
+// fetches == {your options + body: readablestream}
+
+// TODO: use https://github.com/transcend-io/conflux for zipping
+/*export async function zipAll(files: File[]): Promise<any> {
   const zip = new ZIP({
     start(ctrl) {
       for (const file of files) {
@@ -237,7 +255,7 @@ export async function zipAll(files: File[]): Promise<any> {
       ctrl.close();
     },
   });
-}
+}*/
 
 /**
  * Streams a readable stream to disk
@@ -321,7 +339,7 @@ type DownloadEncryptedFileOptions = {
 };
 
 /**
- * Download an encrpyted file
+ * Download an encrypted file
  *
  * @param url - The url to download from
  * @param key - The CEK
