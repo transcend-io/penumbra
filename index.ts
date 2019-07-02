@@ -211,7 +211,7 @@ async function fetchMany(...resources: any[]) {
   const origins:any = new Set;
   for (let resource of resources) {
     //let rs: ReadableStream;
-    let {content, name, path, size, decryptionOptions} = resource;
+    let {url, name, path, size, decryptionOptions} = resource;
     if (!name) {
       let lastSlash = path.lastIndexOf("/");
       if (~lastSlash) {
@@ -219,19 +219,13 @@ async function fetchMany(...resources: any[]) {
         resource.path = path.substring(0, lastSlash);
       }
     }
-    if (typeof content === 'string') {
-      // URL resource
-      origins.add(cleanOrigin(content));
-    } else if (content instanceof ReadableStream) {
-      // ReadableStream resource
-      throw new Error("Unimplemented. TODO: support fetchMany([aReadableStream])");
-    }
+    origins.add(cleanOrigin(url));
   }
 
   preconnect(...origins);
 
   return Promise.all(requests
-    .map(req => fetch(req.content))
+    .map(req => fetch(req.url))
     //.then(req => {
     //  req.body
     //})
