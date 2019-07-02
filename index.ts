@@ -176,6 +176,82 @@ function fetchAndDecipher(
 }
 
 /**
+ * Initialize and open connections to origins that
+ * will soon be requested to speed up connection setup.
+ * @param ...origins Origin to pre-connect to
+ */
+function preconnect() {
+  for (let origin of arguments) {
+    let link = document.createElement('link');
+    link.rel = origin;
+    document.head.appendChild(link);
+  }
+}
+
+const origin_matcher = /^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/;
+
+// Strip a url to get the origin
+const cleanOrigin = (url: string): string => {
+  const origin = url.match(origin_matcher);
+  if (origin) {
+    return origin[0];
+  } else {
+    return '';
+  }
+}
+
+/**
+ * Fetch multiple resources to be zipped
+ * @param resources ...
+ * @usage fetchMany(resources).then(zipAll)
+*/
+async function fetchMany(...resources: any[]) {
+  const requests:Promise<void>[] = [];
+  // for preconnect
+  const origins:any = new Set;
+  for (let resource of resources) {
+    //let rs: ReadableStream;
+    let {content, name, path, size, decryptionOptions} = resource;
+    if (!name) {
+      let lastSlash = path.lastIndexOf("/");
+      if (~lastSlash) {
+        resource.name = path.substring(lastSlash);
+        resource.path = path.substring(0, lastSlash);
+      }
+    }
+    if (typeof content === 'string') {
+      // URL resource
+      origins.add(cleanOrigin(content));
+    } else if (content instanceof ReadableStream) {
+      // ReadableStream resource
+      throw new Error("Unimplemented. TODO: support fetchMany([aReadableStream])");
+    }
+  }
+
+  preconnect(...origins);
+
+  return Promise.all(requests
+    .map(req => fetch(req.content))
+    //.then(req => {
+    //  req.body
+    //})
+  ).then(response => {
+    ;
+  });
+}
+
+async function zipAll(files: File[]) {
+  const zip = new ZIP({
+    start(ctrl) {
+      for (let file of files) {
+        ctrl.enqueue(file);
+      }
+      ctrl.close();
+    }
+  });
+}
+
+/**
  * Streams a readable stream to disk
  * @param rs a stream of bytes to be saved to disk
  * @param fileName the name of the file to save
