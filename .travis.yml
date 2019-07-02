@@ -1,0 +1,89 @@
+# https://docs.travis-ci.com/user/languages/javascript-with-nodejs/
+language: node_js
+
+# Make sure that branch and PR triggers are enabled in Travis CI settings on the web UI, and then
+# it will run whenever a PR is opened and whenever a new commit is merged into one of these branches
+branches:
+  only:
+    - master
+
+git:
+  depth: 2
+
+# Node version
+node_js:
+  "10.15.0"
+
+before_install:
+  # Dynamically create an `.npmrc` file
+  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
+  # Ensure that npm version is 6.4.1
+  - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
+  # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
+  - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
+  # To ensure the aws command can be found
+  - pip3 install --user --upgrade awscli
+  - export PATH=$PATH:$HOME/.local/bin
+
+# Install top level dependencies
+install:
+  - npm i
+
+# the following line is needed to enable the TravisCI build conditions
+conditions: v1
+
+# Run these commands
+jobs:
+  include:
+    # ##### #
+    # Tests #
+    # ##### #
+
+    # Run pre-commit hooks on all files
+    - stage: test
+      name: Pre-Commits
+      script:
+        - pre-commit run --all-files
+
+    # Run tests
+    # - stage: test
+    #   name: Tests
+    #   script: npm run test
+
+    # ###### #
+    # Deploy #
+    # ###### #
+
+    # Deploy to npm
+    - stage: deploy
+      script: skip
+      deploy:
+        - provider: npm
+          email: "$NPM_EMAIL"
+          api_key: "$NPM_TOKEN"
+          skip_cleanup: true
+          on:
+            branch: master
+
+cache:
+  directories:
+    # Cache pip activities to speed up pre-commit installation
+    - $HOME/.cache/pip
+    - $HOME/.cache/pip3
+    # Cache pre-commit repos so that the pre-commit setup is faster
+    - $HOME/.cache/pre-commit
+    # Cache npm as specified by https://docs.npmjs.com/cli/ci#example
+    # - This will wipe node_modules (to ensure a valid build), so caching can't
+    #   be used to speed the install up
+    - $HOME/.npm
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+  - rm -f $HOME/.cache/pip3/log/debug.log
+  - rm -f $HOME/.cache/pre-commit/pre-commit.log
+  - rm -f $HOME/.npm/anonymous-cli-metrics.json
+
+addons:
+  apt:
+    packages:
+      - "python3"
+      - "python3-pip" # pip isn't installed by default with the python3 installation
