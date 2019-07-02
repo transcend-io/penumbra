@@ -218,7 +218,7 @@ type RemoteResource = {
 export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
   const requests: any[] = [];
   // for preconnect
-  const origins: any = new Set();
+  const origins: Set<string> = new Set();
   for (const resource of resources) {
     const { url, name, path = '/', size, decryptionOptions } = resource;
     if (!('name' in resource)) {
@@ -240,10 +240,6 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
     responses.map((rs, i) => ({body: rs, ...resources[i]}))
   );
 };
-
-let fetches = await fetchMany([{url:"/a", path:""}, {url:"/b"}])
-// fetches == [ReadableStream, ...]
-// fetches == {your options + body: readablestream}
 
 // TODO: use https://github.com/transcend-io/conflux for zipping
 /*export async function zipAll(files: File[]): Promise<any> {
