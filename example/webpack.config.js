@@ -6,7 +6,7 @@ const config = {
   entry: './example.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   watch: false,
   module: {
@@ -14,16 +14,16 @@ const config = {
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   plugins: [
     new WorkerPlugin({
-      globalObject: false
-    })
+      globalObject: false,
+    }),
   ],
-  devtool: 'eval-source-map'
-}
+  devtool: 'eval-source-map',
+};
 
 module.exports = config;

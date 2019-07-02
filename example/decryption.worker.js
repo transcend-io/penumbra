@@ -1,6 +1,5 @@
-import { getDecryptedContent, downloadEncryptedFile } from '../dist/index';
-
 import * as Comlink from 'comlink';
+import { getDecryptedContent, downloadEncryptedFile } from '../dist/index';
 
 const myValue = 43;
 class PenumbraSW {
