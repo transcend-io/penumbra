@@ -181,9 +181,9 @@ function fetchAndDecipher(
  * This should speed up HTTP/2 connections, but not HTTP/1.1.
  * @param ...origins Origin to pre-connect to
  */
-export function preconnect() {
-  for (let origin of arguments) {
-    let link = document.createElement('link');
+export function preconnect(...origins: string[]) {
+  for (const origin of origins) {
+    const link = document.createElement('link');
     link.rel = origin;
     document.head.appendChild(link);
   }
@@ -196,24 +196,23 @@ const cleanOrigin = (url: string): string => {
   const origin = url.match(origin_matcher);
   if (origin) {
     return origin[0];
-  } else {
-    return '';
   }
-}
+  return '';
+};
 
 /**
  * Fetch multiple resources to be zipped
  * @param resources ...
  * @usage fetchMany(resources).then(zipAll)
-*/
-export async function fetchMany(...resources: any[]) {
-  const requests:Promise<void>[] = [];
+ */
+export async function fetchMany(...resources: any[]): Promise<any> {
+  const requests: Promise<any>[] = [];
   // for preconnect
-  const origins:any = new Set;
-  for (let resource of resources) {
-    let {url, name, path, size, decryptionOptions} = resource;
+  const origins: any = new Set();
+  for (const resource of resources) {
+    const { url, name, path, size, decryptionOptions } = resource;
     if (!name) {
-      let lastSlash = path.lastIndexOf("/");
+      const lastSlash = path.lastIndexOf('/');
       if (~lastSlash) {
         resource.name = path.substring(lastSlash);
         resource.path = path.substring(0, lastSlash);
@@ -224,24 +223,19 @@ export async function fetchMany(...resources: any[]) {
 
   preconnect(...origins);
 
-  return Promise.all(requests
-    .map(req => fetch(req.url))
-    //.then(req => {
-    //  req.body
-    //})
-  ).then(response => {
-    ;
-  });
+  return Promise.all(requests).then((reqs) =>
+    reqs.map((req) => fetch(req.url)),
+  );
 }
 
-export async function zipAll(files: File[]) {
+export async function zipAll(files: File[]): Promise<any> {
   const zip = new ZIP({
     start(ctrl) {
-      for (let file of files) {
+      for (const file of files) {
         ctrl.enqueue(file);
       }
       ctrl.close();
-    }
+    },
   });
 }
 

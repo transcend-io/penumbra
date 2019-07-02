@@ -1,5 +1,7 @@
-## Usage
+# Usage
+
 Display an encrypted file
+
 ```js
 // Decrypt and display text
 getDecryptedContent(fileUrl, key, iv, authTag, 'text/plain')
@@ -15,6 +17,7 @@ getDecryptedContent(url, key, iv, authTag, 'image/jpeg')
 ```
 
 Download an encrypted file
+
 ```js
 downloadEncryptedFile(
   `https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc`,

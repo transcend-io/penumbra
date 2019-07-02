@@ -8,7 +8,11 @@
     "example": "example"
   },
   "scripts": {
+    "####### Linting #######": "",
+    "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
+    "####### Testing #######": "",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "####### Build #######": "",
     "prepare": "npm run build",
     "build": "rimraf dist && tsc",
     "build:watch": "tsc --watch"
@@ -39,6 +43,18 @@
     "@types/file-saver": "^2.0.1",
     "@types/node": "^10.14.7",
     "rimraf": "^2.6.3",
-    "typescript": "^3.4.5"
+    "@typescript-eslint/eslint-plugin": "^1.11.0",
+    "@typescript-eslint/parser": "^1.11.0",
+    "babel-eslint": "^10.0.2",
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-import-resolver-typescript": "^1.1.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "fetch-mock": "^7.3.3",
+    "npm-check": "^5.9.0",
+    "prettier": "^1.17.1",
+    "typescript": "^3.5.2"
   }
 }

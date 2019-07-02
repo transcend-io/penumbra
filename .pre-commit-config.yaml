@@ -1,0 +1,38 @@
+# See http://pre-commit.com for more information
+# See http://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    sha: v1.3.0
+    hooks:
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+    -   id: detect-private-key
+        exclude: (ssl/)
+    -   id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+    -   id: check-yaml
+        files: (yaml$|yml$)
+-   repo: local
+    hooks:
+    -   id: shellcheck-lint
+        name: Shellcheck
+        language: docker_image
+        # https://github.com/koalaman/shellcheck
+        entry: koalaman/shellcheck:v0.5.0
+        types: [shell]
+    -   id: markdown-lint
+        name: Markdown Lint
+        language: node
+        # https://github.com/igorshubovych/markdownlint-cli
+        additional_dependencies: [markdownlint-cli]
+        entry: markdownlint
+        types: [markdown]
+    -   id: eslint
+        name: ESLint
+        language: system
+        entry: ./node_modules/.bin/eslint
+        args: [--fix]
+        types: [file]
+        files: \.(js|jsx|ts|tsx)$
