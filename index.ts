@@ -178,9 +178,10 @@ function fetchAndDecipher(
 /**
  * Initialize and open connections to origins that
  * will soon be requested to speed up connection setup.
+ * This should speed up HTTP/2 connections, but not HTTP/1.1.
  * @param ...origins Origin to pre-connect to
  */
-function preconnect() {
+export function preconnect() {
   for (let origin of arguments) {
     let link = document.createElement('link');
     link.rel = origin;
@@ -205,12 +206,11 @@ const cleanOrigin = (url: string): string => {
  * @param resources ...
  * @usage fetchMany(resources).then(zipAll)
 */
-async function fetchMany(...resources: any[]) {
+export async function fetchMany(...resources: any[]) {
   const requests:Promise<void>[] = [];
   // for preconnect
   const origins:any = new Set;
   for (let resource of resources) {
-    //let rs: ReadableStream;
     let {url, name, path, size, decryptionOptions} = resource;
     if (!name) {
       let lastSlash = path.lastIndexOf("/");
@@ -234,7 +234,7 @@ async function fetchMany(...resources: any[]) {
   });
 }
 
-async function zipAll(files: File[]) {
+export async function zipAll(files: File[]) {
   const zip = new ZIP({
     start(ctrl) {
       for (let file of files) {
