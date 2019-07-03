@@ -131,21 +131,29 @@ function decryptStream(
     },
   });
 }
+
+type FetchAndDecipherOptions = {
+  // useServiceWorker?: boolean,
+  alwaysBlob?: boolean;
+  progressEventName?: string;
+  url: string;
+  key: string | Buffer;
+  iv: string | Buffer;
+  authTag: string | Buffer;
+  mime: string;
+};
+
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
- * @param url the URL to fetch an encrypted file from
- * @param key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
- * @param iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
- * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
+ * @param options GetDecryptedContentOptions for the encrypted file being requested
  * @returns a readable stream of the deciphered file
  */
 function fetchAndDecipher(
-  url: string,
-  key: string | Buffer,
-  iv: string | Buffer,
-  authTag: string | Buffer,
-  progressEventName?: string,
+  options: FetchAndDecipherOptions
 ): Promise<ReadableStream> {
+  const {url, key, iv, authTag, progressEventName = url}
+    = options;
+
   // Convert to buffers
   const bufferKey = toBuff(key);
   const bufferIv = toBuff(iv);
@@ -202,11 +210,11 @@ const cleanOrigin = (url: string): string => {
 };
 
 type RemoteResource = {
-  url: string
-  name?: string,
-  path?: string,
-  size?: number,
-  decryptionOptions?: GetDecryptedContentOptions
+  url: string;
+  name?: string;
+  path?: string;
+  size?: number;
+  decryptionOptions?: GetDecryptedContentOptions;
 }
 
 /**
@@ -332,36 +340,29 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
 type DownloadEncryptedFileOptions = {
   fileName?: string | null;
   progressEventName?: string;
+  alwaysBlob?: boolean;
+  url: string;
+  key: string | Buffer;
+  iv: string | Buffer;
+  authTag: string | Buffer;
 };
 
 /**
  * Download an encrypted file
  *
- * @param url - The url to download from
- * @param key - The CEK
- * @param iv - The file iv
- * @param authTag - The auth tag
  * @param options - Additional options
  * @returns A promise saving to file
  */
 export async function downloadEncryptedFile(
-  url: string,
-  key: string | Buffer,
-  iv: string | Buffer,
-  authTag: string | Buffer,
-  options: DownloadEncryptedFileOptions = {},
+  options: DownloadEncryptedFileOptions,
 ): Promise<void> {
+  const {url, key, iv, authTag, progressEventName} = options;
+
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
   const fileName =
     options.fileName || (url.match(fileFromUrlRegex) || [])[0] || 'download';
 
-  const rs = await fetchAndDecipher(
-    url,
-    key,
-    iv,
-    authTag,
-    options.progressEventName,
-  );
+  const rs = await fetchAndDecipher(options);
 
   // Stream the file to disk
   return saveFile(rs, fileName);
@@ -380,39 +381,33 @@ type GetDecryptedContentOptions = {
   // useServiceWorker?: boolean,
   alwaysBlob?: boolean;
   progressEventName?: string;
+  url: string;
+  key: string | Buffer;
+  iv: string | Buffer;
+  authTag: string | Buffer;
+  mime: string;
 };
 
 /**
  * Get the contents of an encrypted file
  *
- * @param url - The url to download from
- * @param key - The CEK
- * @param iv - The file iv
- * @param authTag - The auth tag
- * @param mime - The mimetype of the file
  * @param options - File options
  * @returns The file contents
  */
 export async function getDecryptedContent(
-  url: string,
-  key: string | Buffer,
-  iv: string | Buffer,
-  authTag: string | Buffer,
-  mime: string,
-  options: GetDecryptedContentOptions = {},
+  options: GetDecryptedContentOptions,
 ): Promise<string | Blob> {
+  const {
+    //url, key, iv, authTag,
+    mime, alwaysBlob, progressEventName
+  } = options;
+
   const type = mime.split('/')[0];
 
-  const rs = await fetchAndDecipher(
-    url,
-    key,
-    iv,
-    authTag,
-    options.progressEventName,
-  );
+  const rs = await fetchAndDecipher(options);
 
   // Return the decrypted content
-  if (!options.alwaysBlob) {
+  if (!alwaysBlob) {
     if (type === 'image' || type === 'video' || type === 'audio') {
       return getMediaSrcFromRS(rs);
     }
