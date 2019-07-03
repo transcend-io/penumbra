@@ -7,7 +7,7 @@ import { createDecipheriv } from 'crypto-browserify';
 import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
-//import { conflux } from '@transcend-io/conflux';
+import '@transcend-io/conflux';
 
 /**
  * Convert to buffer
@@ -149,7 +149,7 @@ type FetchAndDecipherOptions = {
  * @param options Options for the encrypted file being requested
  * @returns a readable stream of the deciphered file
  */
-function fetchAndDecipher(
+export function fetchAndDecipher(
   options: FetchAndDecipherOptions
 ): Promise<ReadableStream> {
   const {url, key, iv, authTag, progressEventName = url}
