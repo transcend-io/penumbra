@@ -7,6 +7,7 @@ import { createDecipheriv } from 'crypto-browserify';
 import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
+//import { conflux } from '@transcend-io/conflux';
 
 /**
  * Convert to buffer
@@ -145,7 +146,7 @@ type FetchAndDecipherOptions = {
 
 /**
  * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
- * @param options GetDecryptedContentOptions for the encrypted file being requested
+ * @param options Options for the encrypted file being requested
  * @returns a readable stream of the deciphered file
  */
 function fetchAndDecipher(
@@ -187,13 +188,27 @@ function fetchAndDecipher(
  * Initialize and open connections to origins that
  * will soon be requested to speed up connection setup.
  * This should speed up HTTP/2 connections, but not HTTP/1.1.
- * @param ...origins Origin to pre-connect to
+ * @param origins Origins to pre-connect to
  */
 export function preconnect(...origins: string[]) {
   for (const origin of origins) {
     const link = document.createElement('link');
     link.rel = 'preconnect';
     link.href = origin;
+    document.head.appendChild(link);
+  }
+}
+
+/**
+ * Connect to and start loading URLs before they are
+ * needed.
+ * @param URLs URLs to preload
+ */
+export function preload(...URLs: string[]) {
+  for (const url of URLs) {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = url;
     document.head.appendChild(link);
   }
 }
@@ -214,7 +229,8 @@ type RemoteResource = {
   name?: string;
   path?: string;
   size?: number;
-  decryptionOptions?: GetDecryptedContentOptions;
+  decryptionOptions?: FetchAndDecipherOptions;
+  body?: ReadableStream;
 }
 
 /**
@@ -229,7 +245,7 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
   const origins: Set<string> = new Set();
   for (const resource of resources) {
     const { url, name, path = '/', size, decryptionOptions } = resource;
-    if (!('name' in resource)) {
+    if (!('name' in resource)) { // name can be ''
       const lastSlash = path.lastIndexOf('/');
       if (~lastSlash) {
         resource.name = path.substring(lastSlash);
@@ -250,15 +266,14 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
 };
 
 // TODO: use https://github.com/transcend-io/conflux for zipping
-/*export async function zipAll(files: File[]): Promise<any> {
-  const zip = new ZIP({
-    start(ctrl) {
-      for (const file of files) {
-        ctrl.enqueue(file);
-      }
-      ctrl.close();
-    },
-  });
+/*export async function zipAll(...resources: RemoteResource[]): Promise<any> {
+  const writer = conflux.writable.getWriter();
+
+  for (const resource of resources) {
+    writer.write(resource.body);
+  }
+
+  writer.close();
 }*/
 
 /**
@@ -337,24 +352,14 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
  * @returns
  */
 
-type DownloadEncryptedFileOptions = {
-  fileName?: string | null;
-  progressEventName?: string;
-  alwaysBlob?: boolean;
-  url: string;
-  key: string | Buffer;
-  iv: string | Buffer;
-  authTag: string | Buffer;
-};
-
 /**
  * Download an encrypted file
  *
- * @param options - Additional options
+ * @param options - FetchDecryptedContentOptions
  * @returns A promise saving to file
  */
 export async function downloadEncryptedFile(
-  options: DownloadEncryptedFileOptions,
+  options: FetchDecryptedContentOptions,
 ): Promise<void> {
   const {url, key, iv, authTag, progressEventName} = options;
 
@@ -368,17 +373,9 @@ export async function downloadEncryptedFile(
   return saveFile(rs, fileName);
 }
 
-/**
- * Download, decrypt, and return string, object URL, or Blob to display directly on the webpage
- * @param url the URL to fetch an encrypted file from
- * @param key the decryption key to use for this encrypted file, as a Buffer or base64-encoded string
- * @param iv the initialization vector for this encrypted file, as a Buffer or base64-encoded string
- * @param authTag the authentication tag for this encrypted file, as a Buffer or base64-encoded string
- * @param mime the mime type of the underlying file
- * @returns depending on mime type, a string of text, or an src if it's media
- */
-type GetDecryptedContentOptions = {
+type FetchDecryptedContentOptions = {
   // useServiceWorker?: boolean,
+  fileName?: string | null;
   alwaysBlob?: boolean;
   progressEventName?: string;
   url: string;
@@ -391,11 +388,11 @@ type GetDecryptedContentOptions = {
 /**
  * Get the contents of an encrypted file
  *
- * @param options - File options
+ * @param options - FetchDecryptedContentOptions
  * @returns The file contents
  */
 export async function getDecryptedContent(
-  options: GetDecryptedContentOptions,
+  options: FetchDecryptedContentOptions,
 ): Promise<string | Blob> {
   const {
     //url, key, iv, authTag,
