@@ -7,7 +7,7 @@ import { createDecipheriv } from 'crypto-browserify';
 import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
-import '@transcend-io/conflux';
+const conflux = require('@transcend-io/conflux');
 
 /**
  * Convert to buffer
@@ -133,7 +133,7 @@ function decryptStream(
   });
 }
 
-type FetchAndDecipherOptions = {
+type FetchAndDecryptOptions = {
   // useServiceWorker?: boolean,
   alwaysBlob?: boolean;
   progressEventName?: string;
@@ -150,7 +150,7 @@ type FetchAndDecipherOptions = {
  * @returns a readable stream of the deciphered file
  */
 export function fetchAndDecipher(
-  options: FetchAndDecipherOptions
+  options: FetchAndDecryptOptions
 ): Promise<ReadableStream> {
   const {url, key, iv, authTag, progressEventName = url}
     = options;
@@ -182,6 +182,75 @@ export function fetchAndDecipher(
         );
       })
   );
+}
+
+/**
+ * Fetches encrypted files from provided URLs, deciphers it, and returns a ReadableStream
+ * @param options Options for the encrypted files being requested
+ * @returns a readable stream of the deciphered file
+ */
+export function fetchAndDecrypt(
+  ...resources: FetchAndDecryptOptions[]
+): RemoteResource[] {
+  const results: Promise<ReadableStream>[] = [];
+  const toFetch: RemoteResource[] = [];
+
+  for (const options of resources) {
+    const resource: RemoteResource = {
+      url: options.url,
+      decryptionOptions: options
+    };
+
+    toFetch.push(resource);
+  }
+
+  const r = fetchMany(...toFetch)
+    .then(responses => {
+      for (const resource of responses) {
+        if (resource.body === null) {
+          throw new Error('Response body is empty!');
+        }
+
+        const contentLength = resource.headers.get('Content-Length');
+
+        const {key, iv, authTag} = resource.decryptionOptions
+
+        // Convert to buffers
+        const bufferKey = toBuff(key);
+        const bufferIv = toBuff(iv);
+        const bufferAuthTag = toBuff(authTag);
+
+        // Construct the decipher
+        const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
+        decipher.setAuthTag(bufferAuthTag);
+
+        return decryptStream(
+          response.body,
+          decipher,
+          +contentLength,
+          url,
+          progressEventName,
+        );
+      }
+    });
+
+  let linter_go_away: RemoteResource[] = [];
+  return linter_go_away;
+    // Retrieve its body as ReadableStream
+    /*.then((...responses: any) => {
+      if (responses.body === null) {
+        throw new Error('Response body is empty!');
+      }
+
+      const contentLength = response.headers.get('Content-Length');
+      return decryptStream(
+        response.body,
+        decipher,
+        Number(contentLength),
+        url,
+        progressEventName,
+      );
+    });*/
 }
 
 /**
@@ -229,8 +298,10 @@ type RemoteResource = {
   name?: string;
   path?: string;
   size?: number;
-  decryptionOptions?: FetchAndDecipherOptions;
-  body?: ReadableStream;
+  decryptionOptions?: FetchAndDecryptOptions;
+  body?: ReadableStream<any> | null;
+  headers?: Headers | any | null;
+  mime?: any;
 }
 
 /**
@@ -239,7 +310,7 @@ type RemoteResource = {
  * @param resources ...
  * @usage fetchMany(...resources).then(zipAll)
  */
-export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
+export async function fetchMany(...resources: RemoteResource[]): Promise<RemoteResource[]> {
   const requests: any[] = [];
   // for preconnect
   const origins: Set<string> = new Set();
@@ -259,9 +330,9 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<any> {
   preconnect(...origins);
 
   return Promise.all(
-    requests.map(req => fetch(req).then(req => req.body))
+    requests.map(req => fetch(req).then(req => ({body: req.body, headers: req.headers})))
   ).then(responses =>
-    responses.map((rs, i) => ({body: rs, ...resources[i]}))
+    responses.map(({body, headers}, i) => ({body: body, headers: headers, ...resources[i]}))
   );
 };
 
