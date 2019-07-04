@@ -189,31 +189,23 @@ export function fetchAndDecipher(
  * @param options Options for the encrypted files being requested
  * @returns a readable stream of the deciphered file
  */
-export function fetchAndDecrypt(
-  ...resources: FetchAndDecryptOptions[]
-): RemoteResource[] {
-  const results: Promise<ReadableStream>[] = [];
-  const toFetch: RemoteResource[] = [];
-
-  for (const options of resources) {
-    const resource: RemoteResource = {
-      url: options.url,
-      decryptionOptions: options
-    };
-
-    toFetch.push(resource);
-  }
-
-  const r = fetchMany(...toFetch)
-    .then(responses => {
+export async function fetchAndDecrypt(
+  ...resources: RemoteResource[]
+): Promise<RemoteResource[] | ReadableStream | undefined> {
+  return await fetchMany(...resources)
+    .then((responses: RemoteResource[]) => {
       for (const resource of responses) {
-        if (resource.body === null) {
+        if (!resource.body) {
           throw new Error('Response body is empty!');
         }
 
-        const contentLength = resource.headers.get('Content-Length');
+        const contentLength = resource.headers && resource.headers.get('Content-Length');
 
-        const {key, iv, authTag} = resource.decryptionOptions
+        const {
+          url, decryptionOptions: {
+            key, iv, authTag, progressEventName = url
+          }
+        } = resource;
 
         // Convert to buffers
         const bufferKey = toBuff(key);
@@ -225,7 +217,7 @@ export function fetchAndDecrypt(
         decipher.setAuthTag(bufferAuthTag);
 
         return decryptStream(
-          response.body,
+          resource.body,
           decipher,
           +contentLength,
           url,
@@ -233,24 +225,6 @@ export function fetchAndDecrypt(
         );
       }
     });
-
-  let linter_go_away: RemoteResource[] = [];
-  return linter_go_away;
-    // Retrieve its body as ReadableStream
-    /*.then((...responses: any) => {
-      if (responses.body === null) {
-        throw new Error('Response body is empty!');
-      }
-
-      const contentLength = response.headers.get('Content-Length');
-      return decryptStream(
-        response.body,
-        decipher,
-        Number(contentLength),
-        url,
-        progressEventName,
-      );
-    });*/
 }
 
 /**
@@ -298,7 +272,7 @@ type RemoteResource = {
   name?: string;
   path?: string;
   size?: number;
-  decryptionOptions?: FetchAndDecryptOptions;
+  decryptionOptions: FetchAndDecryptOptions;
   body?: ReadableStream<any> | null;
   headers?: Headers | any | null;
   mime?: any;
