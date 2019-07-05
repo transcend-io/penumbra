@@ -191,10 +191,10 @@ export function fetchAndDecipher(
  */
 export async function fetchAndDecrypt(
   ...resources: RemoteResource[]
-): Promise<RemoteResource[] | ReadableStream | undefined> {
-  return await fetchMany(...resources)
-    .then((responses: RemoteResource[]) => {
-      for (const resource of responses) {
+): Promise<ReadableStream[]> {
+  return fetchMany(...resources)
+    .then((responses: RemoteResource[]) => Promise.all(responses
+      .map((resource) => {
         if (!resource.body) {
           throw new Error('Response body is empty!');
         }
@@ -223,8 +223,8 @@ export async function fetchAndDecrypt(
           url,
           progressEventName,
         );
-      }
-    });
+      })
+    ));
 }
 
 /**
