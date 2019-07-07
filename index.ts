@@ -7,7 +7,8 @@ import { createDecipheriv } from 'crypto-browserify';
 import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
-const conflux = require('@transcend-io/conflux');
+//const conflux = require('@transcend-io/conflux');
+import getOrigin from '@commons/utils/getOrigin';
 
 /**
  * Convert to buffer
@@ -133,6 +134,38 @@ function decryptStream(
   });
 }
 
+/**
+ * Fetch multiple resources to be zipped. Annotates a RemoteResource
+ * list with fetch responses.
+ * @param resources ...
+ * @usage fetchMany(...resources).then(zipAll)
+ */
+export async function fetchMany(...resources: RemoteResource[]): Promise<RemoteResource[]> {
+  const requests: any[] = [];
+  // for preconnect
+  const origins: Set<string> = new Set();
+  for (const resource of resources) {
+    const { url, name, path = '/', size, decryptionOptions } = resource;
+    if (!('name' in resource)) { // name can be ''
+      const lastSlash = path.lastIndexOf('/');
+      if (~lastSlash) {
+        resource.name = path.substring(lastSlash);
+        resource.path = path.substring(0, lastSlash);
+      }
+    }
+    origins.add(getOrigin(url));
+    requests.push(url);
+  }
+
+  preconnect(...origins);
+
+  return Promise.all(
+    requests.map(req => fetch(req).then(req => ({ body: req.body, headers: req.headers })))
+  ).then(responses =>
+    responses.map(({ body, headers }, i) => ({ body: body, headers: headers, ...resources[i] }))
+  );
+};
+
 type FetchAndDecryptOptions = {
   // useServiceWorker?: boolean,
   alwaysBlob?: boolean;
@@ -152,7 +185,7 @@ type FetchAndDecryptOptions = {
 export function fetchAndDecipher(
   options: FetchAndDecryptOptions
 ): Promise<ReadableStream> {
-  const {url, key, iv, authTag, progressEventName = url}
+  const { url, key, iv, authTag, progressEventName = url }
     = options;
 
   // Convert to buffers
@@ -208,9 +241,9 @@ export async function fetchAndDecrypt(
         } = resource;
 
         // Convert to buffers
-        const bufferKey = toBuff(key);
-        const bufferIv = toBuff(iv);
-        const bufferAuthTag = toBuff(authTag);
+        const bufferKey: Buffer = toBuff(key);
+        const bufferIv: Buffer = toBuff(iv);
+        const bufferAuthTag: Buffer = toBuff(authTag);
 
         // Construct the decipher
         const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
@@ -234,12 +267,12 @@ export async function fetchAndDecrypt(
  * @param origins Origins to pre-connect to
  */
 export function preconnect(...origins: string[]) {
-  for (const origin of origins) {
+  origins.forEach((origin) => {
     const link = document.createElement('link');
     link.rel = 'preconnect';
     link.href = origin;
     document.head.appendChild(link);
-  }
+  });
 }
 
 /**
@@ -248,24 +281,13 @@ export function preconnect(...origins: string[]) {
  * @param URLs URLs to preload
  */
 export function preload(...URLs: string[]) {
-  for (const url of URLs) {
+  URLs.forEach((url) => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.href = url;
     document.head.appendChild(link);
   }
 }
-
-const origin_matcher = /^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/;
-
-// Strip a url to get the origin
-const cleanOrigin = (url: string): string => {
-  const origin = url.match(origin_matcher);
-  if (origin) {
-    return origin[0];
-  }
-  return '';
-};
 
 type RemoteResource = {
   url: string;
@@ -277,38 +299,6 @@ type RemoteResource = {
   headers?: Headers | any | null;
   mime?: any;
 }
-
-/**
- * Fetch multiple resources to be zipped. Annotates a RemoteResource
- * list with fetch responses.
- * @param resources ...
- * @usage fetchMany(...resources).then(zipAll)
- */
-export async function fetchMany(...resources: RemoteResource[]): Promise<RemoteResource[]> {
-  const requests: any[] = [];
-  // for preconnect
-  const origins: Set<string> = new Set();
-  for (const resource of resources) {
-    const { url, name, path = '/', size, decryptionOptions } = resource;
-    if (!('name' in resource)) { // name can be ''
-      const lastSlash = path.lastIndexOf('/');
-      if (~lastSlash) {
-        resource.name = path.substring(lastSlash);
-        resource.path = path.substring(0, lastSlash);
-      }
-    }
-    origins.add(cleanOrigin(url));
-    requests.push(url);
-  }
-
-  preconnect(...origins);
-
-  return Promise.all(
-    requests.map(req => fetch(req).then(req => ({body: req.body, headers: req.headers})))
-  ).then(responses =>
-    responses.map(({body, headers}, i) => ({body: body, headers: headers, ...resources[i]}))
-  );
-};
 
 // TODO: use https://github.com/transcend-io/conflux for zipping
 /*export async function zipAll(...resources: RemoteResource[]): Promise<any> {
@@ -343,9 +333,9 @@ function saveFileStream(rs: ReadableStream, fileName: string): Promise<void> {
     reader.read().then(({ value, done }) =>
       done
         ? // Close the stream so we stop writing
-          writer.close()
+        writer.close()
         : // Write one chunk, then get the next one
-          writer.write(value).then(pump),
+        writer.write(value).then(pump),
     );
 
   // Start the reader
@@ -406,7 +396,7 @@ function getTextFromRS(rs: ReadableStream): Promise<string> {
 export async function downloadEncryptedFile(
   options: FetchDecryptedContentOptions,
 ): Promise<void> {
-  const {url, key, iv, authTag, progressEventName} = options;
+  const { url, key, iv, authTag, progressEventName } = options;
 
   const fileFromUrlRegex = /(?!.*\/).+?(?=\.enc|\?|$)/;
   const fileName =
