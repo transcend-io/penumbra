@@ -56,7 +56,7 @@ export function preconnect(...origins: string[]) {
  * @param URLs URLs to preload
  * @returns Cleanup function
  */
-export function preload(...URLs: string[]): Function {
+export function preload(...URLs: string[]) {
   URLs.forEach((url) => {
     const link = document.createElement('link');
     link.rel = 'preload';
