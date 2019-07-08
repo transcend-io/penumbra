@@ -8,7 +8,6 @@ import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
 //const conflux = require('@transcend-io/conflux');
-import getOrigin from '@commons/utils/getOrigin';
 
 /**
  * Convert to buffer
@@ -16,6 +15,26 @@ import getOrigin from '@commons/utils/getOrigin';
  */
 const toBuff = (i: Buffer | string): Buffer =>
   typeof i === 'string' ? Buffer.from(i, 'base64') : i;
+
+const origin_matcher = /^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/;
+
+/**
+ * Gets the origin from a URL
+ *
+ * @memberof module:utils
+ *
+ * @param url - The URL to extract an origin from
+ * @returns The origin of the URL
+ */
+function getOrigin(url: string): string {
+  const origin = url.match(origin_matcher);
+  if (origin) {
+    return origin[0];
+  } else {
+    throw new Error("No origin found. Possible invalid URL");
+  }
+}
+
 
 /**
  * The type that is emitted as progress continues
