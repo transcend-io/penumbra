@@ -16,7 +16,7 @@ import * as toBuffer from 'typedarray-to-buffer';
 const toBuff = (i: Buffer | string): Buffer =>
   typeof i === 'string' ? Buffer.from(i, 'base64') : i;
 
-const origin_matcher = /^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/;
+const origin_matcher = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
 
 /**
  * Gets the origin from a URL
@@ -35,6 +35,57 @@ function getOrigin(url: string): string {
   }
 }
 
+/**
+ * Initialize and open connections to origins that
+ * will soon be requested to speed up connection setup.
+ * This should speed up HTTP/2 connections, but not HTTP/1.1.
+ * @param origins Origins to pre-connect to
+ * @returns Cleanup function
+ */
+export function preconnect(...origins: string[]): Function {
+  const links: HTMLLinkElement[] = [];
+  origins.forEach((origin) => {
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = origin;
+    links.push(link);
+    document.head.appendChild(link);
+  });
+  return function() {
+    links.length = 0;
+  };
+}
+
+/**
+ * Connect to and start loading URLs before they are
+ * needed.
+ * @param URLs URLs to preload
+ * @returns Cleanup function
+ */
+export function preload(...URLs: string[]): Function {
+  const links: HTMLLinkElement[] = [];
+  URLs.forEach((url) => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = url;
+    links.push(link);
+    document.head.appendChild(link);
+  });
+  return function() {
+    links.length = 0;
+  };
+}
+
+type RemoteResource = {
+  url: string;
+  name?: string;
+  path?: string;
+  size?: number;
+  decryptionOptions: FetchAndDecryptOptions;
+  body?: ReadableStream<any> | null;
+  headers?: Headers | any | null;
+  mime?: any;
+}
 
 /**
  * The type that is emitted as progress continues
@@ -164,7 +215,7 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<RemoteR
   // for preconnect
   const origins: Set<string> = new Set();
   for (const resource of resources) {
-    const { url, name, path = '/', size, decryptionOptions } = resource;
+    const { url, path = '/' /*, name, size, decryptionOptions */ } = resource;
     if (!('name' in resource)) { // name can be ''
       const lastSlash = path.lastIndexOf('/');
       if (~lastSlash) {
@@ -179,7 +230,7 @@ export async function fetchMany(...resources: RemoteResource[]): Promise<RemoteR
   preconnect(...origins);
 
   return Promise.all(
-    requests.map(req => fetch(req).then(req => ({ body: req.body, headers: req.headers })))
+    requests.map(r1 => fetch(r1).then(r2 => ({ body: r2.body, headers: r2.headers })))
   ).then(responses =>
     responses.map(({ body, headers }, i) => ({ body: body, headers: headers, ...resources[i] }))
   );
@@ -277,46 +328,6 @@ export async function fetchAndDecrypt(
         );
       })
     ));
-}
-
-/**
- * Initialize and open connections to origins that
- * will soon be requested to speed up connection setup.
- * This should speed up HTTP/2 connections, but not HTTP/1.1.
- * @param origins Origins to pre-connect to
- */
-export function preconnect(...origins: string[]) {
-  origins.forEach((origin) => {
-    const link = document.createElement('link');
-    link.rel = 'preconnect';
-    link.href = origin;
-    document.head.appendChild(link);
-  });
-}
-
-/**
- * Connect to and start loading URLs before they are
- * needed.
- * @param URLs URLs to preload
- */
-export function preload(...URLs: string[]) {
-  URLs.forEach((url) => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = url;
-    document.head.appendChild(link);
-  });
-}
-
-type RemoteResource = {
-  url: string;
-  name?: string;
-  path?: string;
-  size?: number;
-  decryptionOptions: FetchAndDecryptOptions;
-  body?: ReadableStream<any> | null;
-  headers?: Headers | any | null;
-  mime?: any;
 }
 
 // TODO: use https://github.com/transcend-io/conflux for zipping
