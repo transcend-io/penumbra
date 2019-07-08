@@ -40,20 +40,14 @@ function getOrigin(url: string): string {
  * will soon be requested to speed up connection setup.
  * This should speed up HTTP/2 connections, but not HTTP/1.1.
  * @param origins Origins to pre-connect to
- * @returns Cleanup function
  */
-export function preconnect(...origins: string[]): Function {
-  const links: HTMLLinkElement[] = [];
+export function preconnect(...origins: string[]) {
   origins.forEach((origin) => {
     const link = document.createElement('link');
     link.rel = 'preconnect';
     link.href = origin;
-    links.push(link);
     document.head.appendChild(link);
   });
-  return function() {
-    links.length = 0;
-  };
 }
 
 /**
@@ -63,17 +57,12 @@ export function preconnect(...origins: string[]): Function {
  * @returns Cleanup function
  */
 export function preload(...URLs: string[]): Function {
-  const links: HTMLLinkElement[] = [];
   URLs.forEach((url) => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.href = url;
-    links.push(link);
     document.head.appendChild(link);
   });
-  return function() {
-    links.length = 0;
-  };
 }
 
 type RemoteResource = {
