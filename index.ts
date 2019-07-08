@@ -286,7 +286,7 @@ export function preload(...URLs: string[]) {
     link.rel = 'preload';
     link.href = url;
     document.head.appendChild(link);
-  }
+  });
 }
 
 type RemoteResource = {
