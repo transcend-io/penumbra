@@ -7,6 +7,7 @@
  */
 
 // exports
+export * from './types';
 export { default as decryptStream } from './decryptStream';
 export { default as downloadEncryptedFile } from './downloadEncryptedFile';
 export { default as fetchAndDecrypt } from './fetchAndDecrypt';
