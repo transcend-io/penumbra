@@ -1,5 +1,5 @@
 /*
- * TODOs
+ * TODO
  * check authtag with decipher.final()
  * see if we can create the dataUri before and buffer in
  * import * as render from 'render-media';
@@ -8,7 +8,7 @@
 import * as Comlink from 'comlink';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { downloadEncryptedFile, getDecryptedContent } from '../build/index';
+import { downloadEncryptedFile, getDecryptedContent } from '../build/src/index';
 import * as files from './files';
 
 const USE_SERVICE_WORKER = true;
@@ -30,7 +30,8 @@ const Penumbra = USE_SERVICE_WORKER
 
 /**
  * Add progress indicator to app
- * @param url URL to listen for progress updates
+ *
+ * @param url - URL to listen for progress updates
  */
 function addProgressIndicator(url) {
   const progressElt = document.createElement('h3');
@@ -40,7 +41,9 @@ function addProgressIndicator(url) {
   window.addEventListener(url, (e) => {
     const kb = Math.round(e.detail.contentLength / 1024);
     let mb;
-    if (kb > 1024) mb = Math.round(kb / 1024);
+    if (kb > 1024) {
+      mb = Math.round(kb / 1024);
+    }
     const sizeStr = mb ? `${mb}MB` : `${kb}KB`;
 
     if (e.detail.percent < 100) {
@@ -53,7 +56,8 @@ function addProgressIndicator(url) {
 
 /**
  * Add download link to the app
- * @param file File path to load
+ *
+ * @param file - File path to load
  */
 function addDownloadLink(file) {
   const button = document.createElement('button');
@@ -66,7 +70,8 @@ function addDownloadLink(file) {
 
 /**
  * Display text in the demo
- * @param file File path to load
+ *
+ * @param file - File path to load
  */
 function displayText(file) {
   const url = S3_URL + file.path;
@@ -90,7 +95,8 @@ function displayText(file) {
 
 /**
  * Display image in the demo
- * @param file File path to load
+ *
+ * @param file - File path to load
  */
 function displayImage(file) {
   const url = S3_URL + file.path;
@@ -113,7 +119,8 @@ function displayImage(file) {
 
 /**
  * Display video in the demo
- * @param file File path to load
+ *
+ * @param - file File path to load
  */
 function displayVideo(file) {
   const url = S3_URL + file.path;
@@ -155,7 +162,8 @@ function displayVideo(file) {
 
 /**
  * Downloads many files, creates a ZIP, and saves it
- * @param file File path to load
+ *
+ * @param file - File path to load
  */
 function downloadMany(fileList) {
   const zip = new JSZip();
@@ -167,13 +175,12 @@ function downloadMany(fileList) {
 
   Object.keys(fileList).forEach((fileName) => {
     const decryptedBlobPromise = getDecryptedContent(
-      Object.assign(
-        {
-          url: S3_URL + fileList[fileName].path,
-          alwaysBlob: true,
-        },
-        fileList[fileName],
-      ),
+      {
+        ...fileList[fileName],
+        url: S3_URL + fileList[fileName].filePrefix,
+      },
+      fileList[fileName],
+      true,
     );
 
     tick = !tick;

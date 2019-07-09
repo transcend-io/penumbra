@@ -20,7 +20,7 @@ export type RemoteResource = {
   /** If the file is encrypted, these are the required params */
   decryptionOptions?: {
     /** A base64 encoded decryption key */
-    unwrappedCEK: string | Buffer;
+    key: string | Buffer;
     /** A base64 encoded initialization vector */
     iv: string | Buffer;
     /** A base64 encoded authentication tag (for AES GCM) */

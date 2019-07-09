@@ -32,10 +32,10 @@ export default function fetchAndDecrypt({
         }
 
         // Else we need to decrypt the blob
-        const { iv, authTag, unwrappedCEK } = decryptionOptions;
+        const { iv, authTag, key } = decryptionOptions;
 
         // Convert to buffers
-        const bufferKey = toBuff(unwrappedCEK);
+        const bufferKey = toBuff(key);
         const bufferIv = toBuff(iv);
         const bufferAuthTag = toBuff(authTag);
 

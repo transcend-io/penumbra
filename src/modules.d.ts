@@ -1,6 +1,14 @@
+/* tslint:disable completed-docs */
+
+/**
+ * copies crypto definitions
+ */
 declare module 'crypto-browserify' {
   import { CipherGCMOptions, CipherGCMTypes, DecipherGCM } from 'crypto';
 
+  /**
+   * Create decipher iv
+   */
   export function createDecipheriv(
     algorithm: CipherGCMTypes,
     key: string | Buffer | NodeJS.TypedArray | DataView,
@@ -9,7 +17,13 @@ declare module 'crypto-browserify' {
   ): DecipherGCM;
 }
 
+/**
+ * Saving streams
+ */
 declare module 'streamsaver' {
+  /**
+   * Create a write stream
+   */
   export function createWriteStream(
     filename: string,
     size?: number,

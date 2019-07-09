@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-import { getDecryptedContent, downloadEncryptedFile } from '../build/index';
+import { getDecryptedContent, downloadEncryptedFile } from '../build/src/index';
 
 const myValue = 43;
 /**
