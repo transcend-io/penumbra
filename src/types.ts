@@ -11,11 +11,11 @@
  * A file to download from a remote resource, that is optionally encrypted
  */
 export type RemoteResource = {
-  /** The URL to fetch the encrypted file from */
+  /** The URL to fetch the encrypted or unencrypted file from */
   url: string;
   /** The mimetype of the resulting file */
   mimetype: string;
-  /** Prefix to the download file when encrypted */
+  /** The name of the underlying file without the extension */
   filePrefix: string;
   /** If the file is encrypted, these are the required params */
   decryptionOptions?: {

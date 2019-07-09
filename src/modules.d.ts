@@ -1,5 +1,5 @@
 declare module 'crypto-browserify' {
-  import { CipherGCMTypes, CipherGCMOptions, DecipherGCM } from 'crypto';
+  import { CipherGCMOptions, CipherGCMTypes, DecipherGCM } from 'crypto';
 
   export function createDecipheriv(
     algorithm: CipherGCMTypes,
