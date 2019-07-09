@@ -1,4 +1,5 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "incremental": true,
     "target": "ES2018",
@@ -9,10 +10,16 @@
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": false,
-    "baseUrl": "src",
-    "outDir": "./build",
+    "baseUrl": ".",
+    "outDir": "build",
+    "types": ["node"],
+    "composite": true,
+    "moduleResolution": "node",
     "strict": true
   },
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "build"
