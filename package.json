@@ -14,9 +14,9 @@
     "####### Testing #######": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "####### Build #######": "",
-    "prepare": "npm run build",
     "build": "rimraf build && tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "build-example": "npm install && npm run build && cd example && npm install && npm run build-prod"
   },
   "repository": {
     "type": "git",

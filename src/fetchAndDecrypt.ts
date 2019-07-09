@@ -7,7 +7,7 @@ import { RemoteResource } from './types';
 import { toBuff } from './utils';
 
 /**
- * Fetches an encrypted file from a URL deciphers it, and returns a ReadableStream
+ * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
  *
  * @param resource - The remote resource to download
  * @returns A readable stream of the deciphered file

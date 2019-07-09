@@ -51,7 +51,7 @@ export function preconnect(...resources: RemoteResource[]): () => void {
  * Connect to and start loading URLs before they are needed.
  *
  * @param urls - The URLs to preload
- * @returns A function removing the links that were appended to the DOM
+ * @returns A function that removes the link tags that were appended to the DOM
  */
 export function preload(...resources: RemoteResource[]): () => void {
   return createResourceHintHelper(
@@ -67,8 +67,8 @@ export function preload(...resources: RemoteResource[]): () => void {
  * fetchMany(...resources).then((results) => zipAll(results, resources))
  * ```
  *
- * @param resources - The decrpyted files to download
- * @returns The resources primed to be zipped together
+ * @param resources - The remote files to download
+ * @returns Readable streams of the decrypted files
  */
 export default async function fetchMany(
   ...resources: RemoteResource[]
