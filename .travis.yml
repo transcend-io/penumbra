@@ -27,7 +27,7 @@ before_install:
 
 # Install top level dependencies
 install:
-  - npm i
+  - npm i && cd example && npm i
 
 # the following line is needed to enable the TravisCI build conditions
 conditions: v1

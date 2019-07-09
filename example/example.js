@@ -192,7 +192,7 @@ function downloadMany(fileList) {
 /**
  * Call downloadMany() with a pre-set file list
  */
-function downloadManyFiles() {
+export function downloadManyFiles() {
   downloadMany(files);
 }
 
