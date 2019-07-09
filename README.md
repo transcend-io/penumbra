@@ -1,36 +1,89 @@
-## Usage
+# Usage
+
 Display an encrypted file
+
 ```js
 // Decrypt and display text
-getDecryptedContent(fileUrl, key, iv, authTag, 'text/plain')
+getDecryptedContent({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  filePrefix: 'NYT',
+  mimetype: 'text/plain',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+})
   .then(decryptedText => {
     document.getElementById('my-paragraph').innerText = decryptedText;
   });
 
 // Decrypt and display media
-getDecryptedContent(url, key, iv, authTag, 'image/jpeg')
+getDecryptedContent({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+  filePrefix: 'tortoise',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+})
   .then(imageSrc => {
     document.getElementById('my-img').src = imageSrc;
   });
 ```
 
 Download an encrypted file
+
 ```js
-downloadEncryptedFile(
-  `https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc`,
-  key,
-  iv,
-  authTag,
-  {
-    fileName: 'myFile.json', // optional values
-    progressEventName: 'download-progress' // defaults to the url
-  }
-);
+downloadEncryptedFile({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
+  filePrefix: 'africa',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+  progressEventName: 'download-progress' // defaults to the url
+});
+```
+
+## Prepare connections for file downloads in advance
+
+```js
+// Resources to load
+const resources = [{
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  filePrefix: 'NYT',
+  mimetype: 'text/plain',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+}, {
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+  filePrefix: 'tortoise',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+}]
+
+// preconnect to the origins
+preconnect(...resources);
+
+// or preload all of the URLS
+preload(...resources);
 ```
 
 ## Download Progress Event Emitter
 
-You can listen to a download progress event. The event _type_ is the same as the `url` parameter
+You can listen to a download progress event. The event name is the same as the `url` parameter
 
 ```js
 window.addEventListener(url, e => {

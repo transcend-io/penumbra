@@ -1,12 +1,27 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
-    "target": "es5",
+    "incremental": true,
+    "target": "ES2018",
     "module": "commonjs",
+    "lib": ["esnext", "dom", "es2015", "es2016", "es2017", "dom"],
+    "allowJs": false,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": false,
-    "outDir": "./dist",
+    "baseUrl": ".",
+    "outDir": "build",
+    "types": ["node"],
+    "composite": true,
+    "moduleResolution": "node",
     "strict": true
-  }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
 }
