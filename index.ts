@@ -52,7 +52,6 @@ export function preconnect(...origins: string[]): void {
  * Connect to and start loading URLs before they are
  * needed.
  * @param URLs URLs to preload
- * @returns Cleanup function
  */
 export function preload(...URLs: string[]): void {
   URLs.forEach((url) => {

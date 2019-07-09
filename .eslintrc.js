@@ -54,7 +54,7 @@ module.exports = {
     // "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
     "no-bitwise": ["error", { "allow": ["~"] }],
     "no-confusing-arrow": 0,
-    "no-console": 1,
+    "no-console": 0,
     "no-multi-spaces": ["error"],
     "no-use-before-define": ["error"],
     // "object-curly-newline": ["error", { "multiline": true, "minProperties": 4, "consistent": true }],

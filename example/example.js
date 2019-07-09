@@ -14,6 +14,8 @@ import * as files from './files';
 const USE_SERVICE_WORKER = true;
 const app = document.getElementById('app');
 
+const S3_URL = 'https://s3-us-west-2.amazonaws.com/bencmbrook/';
+
 const Penumbra = USE_SERVICE_WORKER
   ? // Offload penumbra processing to service worker
     Comlink.wrap(new Worker('./decryption.worker.js', { type: 'module' }))
@@ -26,8 +28,48 @@ const Penumbra = USE_SERVICE_WORKER
       });
     };
 
+/**
+ * Add progress indicator to app
+ * @param url URL to listen for progress updates
+ */
+function addProgressIndicator(url) {
+  const progressElt = document.createElement('h3');
+  app.appendChild(progressElt);
+
+  // Display load progress for image
+  window.addEventListener(url, (e) => {
+    const kb = Math.round(e.detail.contentLength / 1024);
+    let mb;
+    if (kb > 1024) mb = Math.round(kb / 1024);
+    const sizeStr = mb ? `${mb}MB` : `${kb}KB`;
+
+    if (e.detail.percent < 100) {
+      progressElt.innerText = `${url}\n${sizeStr}\ndecryption progress ${e.detail.percent}%`;
+    } else {
+      progressElt.innerText = `${url}\n${sizeStr}`;
+    }
+  });
+}
+
+/**
+ * Add download link to the app
+ * @param file File path to load
+ */
+function addDownloadLink(file) {
+  const button = document.createElement('button');
+  button.innerText = `Download ${file.path}`;
+  button.onclick = () => {
+    downloadEncryptedFile(Object.assign({ url: S3_URL + file.path }, file));
+  };
+  app.appendChild(button);
+}
+
+/**
+ * Display text in the demo
+ * @param file File path to load
+ */
 function displayText(file) {
-  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
+  const url = S3_URL + file.path;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -37,21 +79,21 @@ function displayText(file) {
 
   new Penumbra()
     .then((instance) =>
-      instance.getDecryptedContent(
-        url,
-        file.key,
-        file.iv,
-        file.authTag,
-        file.mime,
-      ),
+      instance.getDecryptedContent(Object.assign({ url }, file)),
     )
     // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
-    .then((txt) => (text.innerText = txt))
+    .then((txt) => {
+      text.innerText = txt;
+    })
     .catch(console.error);
 }
 
+/**
+ * Display image in the demo
+ * @param file File path to load
+ */
 function displayImage(file) {
-  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
+  const url = S3_URL + file.path;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -62,19 +104,19 @@ function displayImage(file) {
   // Display image
   new Penumbra()
     .then((instance) =>
-      instance.getDecryptedContent(
-        url,
-        file.key,
-        file.iv,
-        file.authTag,
-        file.mime,
-      ),
+      instance.getDecryptedContent(Object.assign({ url }, file)),
     )
-    .then((url) => (image.src = url));
+    .then((url2) => {
+      image.src = url2;
+    });
 }
 
+/**
+ * Display video in the demo
+ * @param file File path to load
+ */
 function displayVideo(file) {
-  const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`;
+  const url = S3_URL + file.path;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -96,13 +138,7 @@ function displayVideo(file) {
   // Display video
   new Penumbra()
     .then((instance) =>
-      instance.getDecryptedContent(
-        url,
-        file.key,
-        file.iv,
-        file.authTag,
-        file.mime,
-      ),
+      instance.getDecryptedContent(Object.assign({ url }, file)),
     )
     // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
     .then((src) => {
@@ -117,7 +153,11 @@ function displayVideo(file) {
     .catch(console.error);
 }
 
-function downloadMany(files) {
+/**
+ * Downloads many files, creates a ZIP, and saves it
+ * @param file File path to load
+ */
+function downloadMany(fileList) {
   const zip = new JSZip();
 
   const folder1 = zip.folder('Profile Data');
@@ -125,17 +165,15 @@ function downloadMany(files) {
 
   let tick = false;
 
-  Object.keys(files).forEach((fileName) => {
-    const { key, iv, authTag, mime, path } = files[fileName];
-    const url = `https://s3-us-west-2.amazonaws.com/bencmbrook/${path}`;
-
+  Object.keys(fileList).forEach((fileName) => {
     const decryptedBlobPromise = getDecryptedContent(
-      url,
-      key,
-      iv,
-      authTag,
-      mime,
-      { alwaysBlob: true },
+      Object.assign(
+        {
+          url: S3_URL + fileList[fileName].path,
+          alwaysBlob: true,
+        },
+        fileList[fileName],
+      ),
     );
 
     tick = !tick;
@@ -151,43 +189,9 @@ function downloadMany(files) {
   });
 }
 
-function addProgressIndicator(url) {
-  const progressElt = document.createElement('h3');
-  app.appendChild(progressElt);
-
-  // Display load progress for image
-  window.addEventListener(url, (e) => {
-    const kb = Math.round(e.detail.contentLength / 1024);
-    let mb;
-    if (kb > 1024) mb = Math.round(kb / 1024);
-    const sizeStr = mb ? `${mb}MB` : `${kb}KB`;
-
-    if (e.detail.percent < 100) {
-      progressElt.innerText = `${url}\n${sizeStr}\ndecryption progress ${e.detail.percent}%`;
-    } else {
-      progressElt.innerText = `${url}\n${sizeStr}`;
-    }
-  });
-}
-
-function addDownloadLink(file) {
-  const button = document.createElement('button');
-  button.innerText = `Download ${file.path}`;
-  button.onclick = () => {
-    downloadEncryptedFile(
-      `https://s3-us-west-2.amazonaws.com/bencmbrook/${file.path}`,
-      file.key,
-      file.iv,
-      file.authTag,
-      {
-        fileName: null,
-        mime: file.mime,
-      },
-    );
-  };
-  app.appendChild(button);
-}
-
+/**
+ * Call downloadMany() with a pre-set file list
+ */
 function downloadManyFiles() {
   downloadMany(files);
 }
