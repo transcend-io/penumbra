@@ -11,8 +11,10 @@
 	<div id="app">
 		<h1>Penumbra: Browser Decryption Demo</h1>
 		<button onclick="downloadManyFiles()">Download all data</button>
-	</div>
-	<script src="bundle.js"></script> 
+  </div>
+  <script type="application/ecmascript">
+  document.body.appendChild(document.createElement("script")).src = "bundle.js?" + Math.random()
+  </script>
 </body>
 
 </html>
