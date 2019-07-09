@@ -6,9 +6,9 @@
   "scripts": {
     "start": "nodemon --exec 'http-server build -a localhost'",
     "start-ssl": "nodemon --exec 'http-server build --cert ssl/certificate.pem --key ssl/private.key --ssl'",
-    "clean": "rimraf build/*",
-    "build-dev": "mkdir -p build && cp index.html build/index.html && cp style.css build/style.css && webpack --watch",
-    "build-prod": "mkdir -p build && cp index.html build/index.html && cp style.css build/style.css && webpack -p --mode production"
+    "clean": "rimraf build",
+    "build-dev": "npm run clean && mkdir -p build && cp index.html build/index.html && cp style.css build/style.css && webpack --watch",
+    "build-prod": "npm run clean && mkdir -p build && cp index.html build/index.html && cp style.css build/style.css && webpack -p --mode production"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
