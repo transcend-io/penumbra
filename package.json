@@ -2,19 +2,20 @@
   "name": "@transcend-io/penumbra",
   "version": "2.0.0",
   "description": "Crypto streams for the browser.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "directories": {
     "example": "example"
   },
   "scripts": {
     "####### Linting #######": "",
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
+    "ts:lint": "tslint --project .",
     "####### Testing #######": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "####### Build #######": "",
     "prepare": "npm run build",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf build && tsc",
     "build:watch": "tsc --watch"
   },
   "repository": {
@@ -42,7 +43,6 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.1",
     "@types/node": "^10.14.7",
-    "rimraf": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
     "babel-eslint": "^10.0.2",
@@ -55,6 +55,9 @@
     "fetch-mock": "^7.3.3",
     "npm-check": "^5.9.0",
     "prettier": "^1.17.1",
+    "rimraf": "^2.6.3",
+    "tslint": "^5.18.0",
+    "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "^3.5.2"
   }
 }

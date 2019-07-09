@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-globals */
 /* tslint:disable completed-docs */
-// TODO Move this into a src folder and split functions into own files
 // external modules
 import { Decipher } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
@@ -8,30 +7,8 @@ import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 import * as toBuffer from 'typedarray-to-buffer';
 
-/**
- * Convert to buffer
- * @param i
- */
-const toBuff = (i: Buffer | string): Buffer =>
-  typeof i === 'string' ? Buffer.from(i, 'base64') : i;
-
-const origin_matcher = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
-
-/**
- * Gets the origin from a URL
- *
- * @memberof module:utils
- *
- * @param url - The URL to extract an origin from
- * @returns The origin of the URL
- */
-function getOrigin(url: string): string {
-  const origin = url.match(origin_matcher);
-  if (origin) {
-    return origin[0];
-  }
-  throw new Error('No origin found. Possible invalid URL');
-}
+// local
+import { getOrigin, toBuff } from './utils';
 
 /**
  * Initialize and open connections to origins that

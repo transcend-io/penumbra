@@ -1,0 +1,59 @@
+{
+  "extends": "tslint:recommended",
+  "jsEnable": false,
+  "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
+  "esSpecCompliant": true,
+  "rules": {
+    "array-type": false,
+    "camel-case": false,
+    "completed-docs": [
+      true,
+      "classes",
+      "enums",
+      "enum-members",
+      "functions",
+      "interfaces",
+      "methods",
+      "namespaces",
+      "properties",
+      "types"
+    ],
+    "export-name": false,
+    "interface-over-type-literal": false,
+    "max-line-length": false,
+    "new-parens": true,
+    "prefer-for-of": false,
+    "no-arg": true,
+    "object-literal-key-quotes": false,
+    "no-bitwise": false,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": false,
+    "no-console": false,
+    "no-namespace": false,
+    "no-shadowed-variable": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys":false,
+    "quotemark": [false, "single", "avoid-escape", "avoid-template"],
+    "variable-name": false,
+    "trailing-comma": false,
+    "semicolon": false
+  },
+  "jsRules": {
+    "array-type": false,
+    "align": false,
+    "camel-case": false,
+    "completed-docs": false,
+    "max-line-length": false,
+    "quotemark": [false, "single", "avoid-escape", "avoid-template"],
+    "no-console": false,
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-var-requires": false,
+    "variable-name": false,
+    "trailing-comma": false,
+    "semicolon": false
+  },
+  "linterOptions": {
+    "exclude": ["node_modules/**/*.ts", "dist/**/*.ts", "build/**/*.js", "builds/**/*.js"]
+  }
+}

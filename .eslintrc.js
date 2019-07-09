@@ -50,7 +50,7 @@ module.exports = {
     "indent": 0,
     // "jsdoc/check-types":  ["error"],
     "max-len": ["error", 125, { "comments": 200 }],
-    "max-lines": ["error", 1000],
+    "max-lines": ["error", 250],
     // "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
     "no-bitwise": ["error", { "allow": ["~"] }],
     "no-confusing-arrow": 0,

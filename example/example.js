@@ -8,7 +8,7 @@
 import * as Comlink from 'comlink';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { downloadEncryptedFile, getDecryptedContent } from '../dist/index';
+import { downloadEncryptedFile, getDecryptedContent } from '../build/index';
 import * as files from './files';
 
 const USE_SERVICE_WORKER = true;

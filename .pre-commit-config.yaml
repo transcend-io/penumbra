@@ -36,3 +36,10 @@ repos:
         args: [--fix]
         types: [file]
         files: \.(js|jsx|ts|tsx)$
+    -   id: tslint
+        name: TSLint
+        language: system
+        entry: ./node_modules/.bin/tslint
+        args: [--fix]
+        types: [file]
+        files: \.(js|jsx|ts|tsx)$

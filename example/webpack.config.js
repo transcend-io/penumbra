@@ -4,7 +4,7 @@ const WorkerPlugin = require('worker-plugin');
 const config = {
   entry: './example.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
   },
   watch: false,
