@@ -29,6 +29,21 @@ downloadEncryptedFile({
 });
 ```
 
+## Prepare connections for file downloads in advance
+
+```js
+// Pre-connect to a list of origins
+const origins = ["https://origin1.example", "https://origin2.example"]
+preconnect(...origins);
+```
+
+
+```js
+// Start pre-loading some URLs
+const URLs = ["https://url.example/some-content/1.json", "https://url.example/some-content/2.json"]
+preload(...URLs);
+```
+
 ## Download Progress Event Emitter
 
 You can listen to a download progress event. The event name is the same as the `url` parameter
