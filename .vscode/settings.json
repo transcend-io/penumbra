@@ -6,6 +6,8 @@
         "jszip",
         "koalaman",
         "playsinline",
+        "preconnect",
+        "preload",
         "streamsaver",
         "symlinks",
         "to",
