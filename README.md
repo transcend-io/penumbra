@@ -4,13 +4,31 @@ Display an encrypted file
 
 ```js
 // Decrypt and display text
-getDecryptedContent({url, key, iv, authTag, mime /*== 'text/plain'*/})
+getDecryptedContent({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  filePrefix: 'NYT',
+  mimetype: 'text/plain',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+})
   .then(decryptedText => {
     document.getElementById('my-paragraph').innerText = decryptedText;
   });
 
 // Decrypt and display media
-getDecryptedContent({url, key, iv, authTag, mime /*== 'image/jpeg'*/})
+getDecryptedContent({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+  filePrefix: 'tortoise',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+})
   .then(imageSrc => {
     document.getElementById('my-img').src = imageSrc;
   });
@@ -21,10 +39,13 @@ Download an encrypted file
 ```js
 downloadEncryptedFile({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
-  key,
-  iv,
-  authTag,
-  fileName: 'myFile.json', // optional values
+  filePrefix: 'africa',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
   progressEventName: 'download-progress' // defaults to the url
 });
 ```
@@ -32,15 +53,32 @@ downloadEncryptedFile({
 ## Prepare connections for file downloads in advance
 
 ```js
-// Pre-connect to a list of origins
-const origins = ["https://origin1.example", "https://origin2.example"]
-preconnect(...origins);
-```
+// Resources to load
+const resources = [{
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  filePrefix: 'NYT',
+  mimetype: 'text/plain',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+}, {
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+  filePrefix: 'tortoise',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+}]
 
-```js
-// Start pre-loading some URLs
-const URLs = ["https://url.example/some-content/1.json", "https://url.example/some-content/2.json"]
-preload(...URLs);
+// preconnect to the origins
+preconnect(...resources);
+
+// or preload all of the URLS
+preload(...resources);
 ```
 
 ## Download Progress Event Emitter

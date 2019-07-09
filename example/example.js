@@ -63,7 +63,7 @@ function addDownloadLink(file) {
   const button = document.createElement('button');
   button.innerText = `Download ${file.path}`;
   button.onclick = () => {
-    downloadEncryptedFile(Object.assign({ url: S3_URL + file.path }, file));
+    downloadEncryptedFile({ url: S3_URL + file.path, ...file });
   };
   app.appendChild(button);
 }
@@ -83,9 +83,7 @@ function displayText(file) {
   app.appendChild(text);
 
   new Penumbra()
-    .then((instance) =>
-      instance.getDecryptedContent(Object.assign({ url }, file)),
-    )
+    .then((instance) => instance.getDecryptedContent({ url, ...file }))
     // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
     .then((txt) => {
       text.innerText = txt;
@@ -109,9 +107,7 @@ function displayImage(file) {
 
   // Display image
   new Penumbra()
-    .then((instance) =>
-      instance.getDecryptedContent(Object.assign({ url }, file)),
-    )
+    .then((instance) => instance.getDecryptedContent({ url, ...file }))
     .then((url2) => {
       image.src = url2;
     });
@@ -144,9 +140,7 @@ function displayVideo(file) {
 
   // Display video
   new Penumbra()
-    .then((instance) =>
-      instance.getDecryptedContent(Object.assign({ url }, file)),
-    )
+    .then((instance) => instance.getDecryptedContent({ url, ...file }))
     // getDecryptedContent(url, file.key, file.iv, file.authTag, file.mime)
     .then((src) => {
       source.type = file.mime;
