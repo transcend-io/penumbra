@@ -4,6 +4,7 @@ import { RemoteResource } from './types';
 import { getMediaSrcFromRS, getTextFromRS } from './utils';
 
 const MEDIA_TYPES = ['image', 'video', 'audio'];
+const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*\/\S*\+json)\s*(?:$|;)/;
 
 /**
  * Get the contents of an encrypted file
@@ -19,12 +20,12 @@ export default async function getDecryptedContent(
   const rs = await fetchAndDecrypt(resource);
 
   // Return the decrypted content
-  const type = resource.mimetype.split('/')[0];
+  const type = resource.mimetype.split('/')[0].trim().toLowerCase();
   if (!alwaysBlob) {
     if (MEDIA_TYPES.includes(type)) {
       return getMediaSrcFromRS(rs);
     }
-    if (type === 'text' || resource.mimetype === 'application/json') {
+    if (type === 'text' || TEXT_TYPES.test(resource.mimetype)) {
       return getTextFromRS(rs);
     }
   }
