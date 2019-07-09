@@ -20,7 +20,10 @@ export default async function getDecryptedContent(
   const rs = await fetchAndDecrypt(resource);
 
   // Return the decrypted content
-  const type = resource.mimetype.split('/')[0].trim().toLowerCase();
+  const type = resource.mimetype
+    .split('/')[0]
+    .trim()
+    .toLowerCase();
   if (!alwaysBlob) {
     if (MEDIA_TYPES.includes(type)) {
       return getMediaSrcFromRS(rs);
