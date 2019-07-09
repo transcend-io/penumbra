@@ -22,7 +22,6 @@ before_install:
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
   - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
   # To ensure the aws command can be found
-  - pip3 install --user --upgrade awscli
   - export PATH=$PATH:$HOME/.local/bin
 
 # Install top level dependencies
