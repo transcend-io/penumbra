@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Crypto streams for the browser.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -33,6 +33,11 @@
   "bugs": {
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
+  "files": [
+    "build/**/*",
+    "src/**/*",
+    "tsconfig.json"
+  ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "crypto-browserify": "^3.12.0",
