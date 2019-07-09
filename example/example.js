@@ -61,9 +61,9 @@ function addProgressIndicator(url) {
  */
 function addDownloadLink(file) {
   const button = document.createElement('button');
-  button.innerText = `Download ${file.path}`;
+  button.innerText = `Download ${file.filePrefix}`;
   button.onclick = () => {
-    downloadEncryptedFile({ url: S3_URL + file.path, ...file });
+    downloadEncryptedFile({ url: S3_URL + file.filePrefix, ...file });
   };
   app.appendChild(button);
 }
@@ -74,7 +74,7 @@ function addDownloadLink(file) {
  * @param file - File path to load
  */
 function displayText(file) {
-  const url = S3_URL + file.path;
+  const url = S3_URL + file.filePrefix;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -97,7 +97,7 @@ function displayText(file) {
  * @param file - File path to load
  */
 function displayImage(file) {
-  const url = S3_URL + file.path;
+  const url = S3_URL + file.filePrefix;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -119,7 +119,7 @@ function displayImage(file) {
  * @param - file File path to load
  */
 function displayVideo(file) {
-  const url = S3_URL + file.path;
+  const url = S3_URL + file.filePrefix;
 
   addProgressIndicator(url);
   addDownloadLink(file);
@@ -170,10 +170,9 @@ function downloadMany(fileList) {
   Object.keys(fileList).forEach((fileName) => {
     const decryptedBlobPromise = getDecryptedContent(
       {
-        ...fileList[fileName],
         url: S3_URL + fileList[fileName].filePrefix,
+        ...fileList[fileName],
       },
-      fileList[fileName],
       true,
     );
 
