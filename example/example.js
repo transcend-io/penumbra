@@ -190,12 +190,14 @@ function downloadMany(fileList) {
   });
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Call downloadMany() with a pre-set file list
  */
-export function downloadManyFiles() {
+function downloadManyFiles() {
   downloadMany(files);
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 displayText(files['NYT.txt']);
 displayImage(files['river.jpg']);
