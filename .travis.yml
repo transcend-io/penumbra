@@ -99,3 +99,6 @@ addons:
     packages:
       - "python3"
       - "python3-pip" # pip isn't installed by default with the python3 installation
+  sauce_connect: true
+  hosts:
+    - airtap.local
