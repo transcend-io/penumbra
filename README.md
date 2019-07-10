@@ -1,9 +1,11 @@
 # Penumbra (work in progress)
-  
+
 Note: this repo is a work in progress and should not be used in production yet.
 
 [![Build Status](https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master)](https://travis-ci.com/transcend-io/penumbra)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status)](https://app.netlify.com/sites/penumbra-demo/deploys)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e)](https://saucelabs.com/u/penumbra)
 
 ## Usage
 
@@ -107,3 +109,9 @@ On Amazon S3, this means adding the following line to your bucket policy, inside
 ```xml
 <ExposeHeader>Content-Length</ExposeHeader>
 ```
+
+### Big Thanks
+
+Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][homepage]
+
+[homepage]: https://saucelabs.com

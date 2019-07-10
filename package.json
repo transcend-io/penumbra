@@ -17,7 +17,7 @@
     "####### Build #######": "",
     "build": "rimraf build && tsc",
     "build:watch": "tsc --watch",
-    "build-example": "npm install && npm run build && cd example && npm install && npm run build-prod"
+    "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {
     "type": "git",
