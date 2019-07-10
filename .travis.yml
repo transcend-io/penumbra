@@ -26,7 +26,7 @@ before_install:
 
 # Install top level dependencies
 install:
-  - npm ci && cd example && npm ci
+  - npm ci && cd example && npm ci && cd ..
   - npm install -g codecov
 
 # the following line is needed to enable the TravisCI build conditions
