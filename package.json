@@ -8,6 +8,7 @@
     "example": "example"
   },
   "scripts": {
+    "prepare": "npm run build",
     "####### Linting #######": "",
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
     "ts:lint": "tslint --project .",

@@ -1,4 +1,6 @@
-# Penumbra
+# Penumbra (work in progress)
+  
+Note: this repo is a work in progress and should not be used in production yet.
 
 [![Build Status](https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master)](https://travis-ci.com/transcend-io/penumbra)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status)](https://app.netlify.com/sites/penumbra-demo/deploys)
