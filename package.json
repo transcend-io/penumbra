@@ -14,6 +14,9 @@
     "ts:lint": "tslint --project .",
     "####### Testing #######": "",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "####### Check Dependencies #######": "",
+    "check:deps": "npm-check --ignore \"{}\"",
+    "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "build": "rimraf build && tsc",
     "build:watch": "tsc --watch",
@@ -50,22 +53,23 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.1",
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^10.14.12",
+    "@types/node": "^12.6.2",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
     "babel-eslint": "^10.0.2",
+    "check-deps": "^1.4.1",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-import-resolver-typescript": "^1.1.1",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "fetch-mock": "^7.3.3",
+    "fetch-mock": "^7.3.6",
     "npm-check": "^5.9.0",
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   }
 }
