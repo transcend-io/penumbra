@@ -45,11 +45,12 @@ jobs:
       script:
         - pre-commit run --all-files
 
-    # Run tests
+    # Run tests locally
     - stage: test
       name: Tests
       script: npm run test
 
+    # Run tests on multiple browsers and publish code coverage
     - stage: test
       name: Cross-Browser Tests
       script:
