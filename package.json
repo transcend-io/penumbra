@@ -13,7 +13,7 @@
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
     "ts:lint": "tslint --project .",
     "####### Testing #######": "",
-    "test": "node test.js",
+    "test": "echo no test.js yet",
     "browser-test": "airtap --loopback airtap.local --coverage test.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "####### Build #######": "",
