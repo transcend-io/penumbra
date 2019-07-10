@@ -8,15 +8,16 @@
     "example": "example"
   },
   "scripts": {
+    "prepare": "npm run build",
     "####### Linting #######": "",
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
     "ts:lint": "tslint --project .",
     "####### Testing #######": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "####### Build #######": "",
-    "prepare": "npm run build",
     "build": "rimraf build && tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {
     "type": "git",

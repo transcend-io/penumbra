@@ -12,6 +12,7 @@ schema.json
 # Secrets
 *.env.secret
 *.secret
+example/ssl
 
 # Npmrc
 .npmrc
