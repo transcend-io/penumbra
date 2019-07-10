@@ -26,7 +26,7 @@ before_install:
 
 # Install top level dependencies
 install:
-  - npm ci && cd example && npm ci
+  - npm ci && cd example && npm ci && cd ..
   - npm install -g codecov
 
 # the following line is needed to enable the TravisCI build conditions
@@ -45,11 +45,12 @@ jobs:
       script:
         - pre-commit run --all-files
 
-    # Run tests
+    # Run tests locally
     - stage: test
       name: Tests
       script: npm run test
 
+    # Run tests on multiple browsers and publish code coverage
     - stage: test
       name: Cross-Browser Tests
       script:
