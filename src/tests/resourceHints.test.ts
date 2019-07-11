@@ -2,12 +2,6 @@ import { preconnect, preload } from '../fetchMany';
 
 import test from 'tape';
 
-/** Get the SHA-256 hash of an ArrayBuffer */
-async function sha256(ab: ArrayBuffer): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', await ab));
-  return digest.reduce((memo, i) => memo + i.toString(16).padStart(2, '0'), '');
-};
-
 test('preconnect', async (t) => {
   const measurePreconnects = () => document.querySelectorAll('link[rel="preconnect"]').length;
   const start = measurePreconnects();

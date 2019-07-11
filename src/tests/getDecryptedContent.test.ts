@@ -1,6 +1,8 @@
 import getDecryptedContent from '../getDecryptedContent';
 import { ProgressEmit } from '../types';
 
+import { hash } from './helpers';
+
 import test from 'tape';
 
 /** Get the SHA-256 hash of an ArrayBuffer */
@@ -21,7 +23,7 @@ test('getDecryptedContent: text', async (t) => {
     },
   });
   t.equal(
-    await sha256(new TextEncoder().encode(decryptedText as string)),
+    await hash("SHA-256", new TextEncoder().encode(decryptedText as string)),
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5'
   );
   t.end();
@@ -34,7 +36,7 @@ test('getDecryptedContent: unencrypted content', async (t) => {
     mimetype: 'text/plain',
   });
   t.equal(
-    await sha256(new TextEncoder().encode(text as string)),
+    await hash("SHA-256", new TextEncoder().encode(text as string)),
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5'
   );
   t.end();
@@ -60,7 +62,10 @@ test('getDecryptedContent: images', async (t) => {
   }
   t.assert(isURL);
   const imageBytes = await fetch(url as string).then((r) => r.arrayBuffer());
-  t.equals(await sha256(imageBytes), "1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95");
+  t.equals(
+    await hash("SHA-256", imageBytes),
+    "1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95"
+  );
   t.end();
 });
 

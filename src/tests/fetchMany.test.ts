@@ -1,12 +1,8 @@
 import fetchMany from '../fetchMany';
 
-import test from 'tape';
+import { hash } from './helpers';
 
-/** Get the SHA-256 hash of an ArrayBuffer */
-async function sha256(ab: ArrayBuffer): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', await ab));
-  return digest.reduce((memo, i) => memo + i.toString(16).padStart(2, '0'), '');
-};
+import test from 'tape';
 
 test('fetchMany', async (t) => {
   const resources = await fetchMany({
@@ -29,7 +25,7 @@ test('fetchMany', async (t) => {
     },
   });
   const hashes = await Promise.all(resources.map(async (rs) =>
-    sha256(await new Response(rs).arrayBuffer())
+    hash("SHA-256", await new Response(rs).arrayBuffer())
   ));
   t.deepEqual(hashes, [
     "4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5",
