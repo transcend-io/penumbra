@@ -28,7 +28,6 @@ test('getDecryptedContent: text', async (t) => {
 });
 
 test('getDecryptedContent: images', async (t) => {
-  console.log('a')
   const url = await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
     filePrefix: 'tortoise',
@@ -52,8 +51,6 @@ test('getDecryptedContent: images', async (t) => {
   t.equals(result, "1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95");
   t.end();
 });
-
-// Testing preconnect() and preload() is difficult with airtap alone
 
 test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
   const progressEventName = 'my-custom-event';
