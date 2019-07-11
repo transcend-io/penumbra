@@ -7,13 +7,23 @@ const MEDIA_TYPES = ['image', 'video', 'audio'];
 const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*\/\S*\+json)\s*(?:$|;)/i;
 
 /**
+ * Make selected object keys defined by K optional in type T
+ */
+export type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+
+/**
+ * File is optional
+ */
+type RemoteResourceWithoutFile = Optionalize<RemoteResource, 'filePrefix'>;
+
+/**
  * Get the contents of an encrypted file
  *
  * @param options - FetchDecryptedContentOptions
  * @returns The file contents
  */
 export default async function getDecryptedContent(
-  resource: RemoteResource,
+  resource: RemoteResourceWithoutFile,
   alwaysBlob = false,
 ): Promise<string | Blob> {
   // Fetch the resource
