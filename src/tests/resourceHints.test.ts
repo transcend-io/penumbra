@@ -9,7 +9,7 @@ async function sha256(ab: ArrayBuffer): Promise<string> {
 };
 
 test('preconnect', async (t) => {
-  const measurePreconnects = () => document.querySelectorAll('link[rel="preconnect"]');
+  const measurePreconnects = () => document.querySelectorAll('link[rel="preconnect"]').length;
   const start = measurePreconnects();
   const cleanup = preconnect({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -28,9 +28,9 @@ test('preconnect', async (t) => {
 });
 
 test('preload', async (t) => {
-  const measurePreloads = () => document.querySelectorAll('link[rel="preload"]');
+  const measurePreloads = () => document.querySelectorAll('link[rel="preload"]').length;
   const start = measurePreloads();
-  const cleanup = preconnect({
+  const cleanup = preload({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
     mimetype: 'text/plain',
