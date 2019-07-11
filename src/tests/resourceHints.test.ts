@@ -1,4 +1,4 @@
-import { preconnect, preload } from '../fetchMany'
+import { preconnect, preload } from '../fetchMany';
 
 import test from 'tape';
 

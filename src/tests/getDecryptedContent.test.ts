@@ -1,4 +1,4 @@
-import getDecryptedContent from '../getDecryptedContent'
+import getDecryptedContent from '../getDecryptedContent';
 import { ProgressEmit } from '../types';
 
 import test from 'tape';
