@@ -11,8 +11,7 @@ git:
   depth: 2
 
 # Node version
-node_js:
-  "10.15.0"
+node_js: "10.15.0"
 
 before_install:
   # Dynamically create an `.npmrc` file
@@ -26,7 +25,8 @@ before_install:
 
 # Install top level dependencies
 install:
-  - npm i && cd example && npm i
+  - npm ci && cd example && npm ci && cd ..
+  - npm install -g codecov
 
 # the following line is needed to enable the TravisCI build conditions
 conditions: v1
@@ -44,10 +44,18 @@ jobs:
       script:
         - pre-commit run --all-files
 
-    # Run tests
+    # Run tests locally
     # - stage: test
-    #   name: Tests
-    #   script: npm run test
+    #  name: Tests
+    #  script: npm run test
+
+    # Run tests on multiple browsers and publish code coverage
+    - stage: test
+      name: Cross-Browser Tests
+      script:
+        - npm run browser-test
+        - npm run coverage
+        - codecov
 
     # ###### #
     # Deploy #
@@ -81,8 +89,15 @@ before_cache:
   - rm -f $HOME/.cache/pre-commit/pre-commit.log
   - rm -f $HOME/.npm/anonymous-cli-metrics.json
 
+after_success:
+  - npm run coverage
+  - codecov
+
 addons:
   apt:
     packages:
       - "python3"
       - "python3-pip" # pip isn't installed by default with the python3 installation
+  sauce_connect: true
+  hosts:
+    - airtap.local

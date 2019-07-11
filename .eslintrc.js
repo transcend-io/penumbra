@@ -30,6 +30,7 @@ module.exports = {
     "@typescript-eslint/indent": 0,
     '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
     "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/no-useless-constructor": 2,
     "@typescript-eslint/interface-name-prefix": 0,
     "@typescript-eslint/no-var-requires": 0,
     "template-curly-spacing": 0,
@@ -38,6 +39,7 @@ module.exports = {
     "class-methods-use-this": ["error"],
     "comma-dangle": 0, // [2, "always-multiline"] handled by prettier
     "function-paren-newline": 0,
+    "no-useless-constructor": 0,
     "import/imports-first": ["error"],
     "import/newline-after-import": ["error"],
     "import/no-dynamic-require": ["error"],
@@ -72,6 +74,14 @@ module.exports = {
     "require-yield": ["error"],
     "sort-vars": ["error", { "ignoreCase": true }],
   },
+  "overrides": [
+    {
+      "files": [ "**/*.test.ts"],
+      "rules": {
+        '@typescript-eslint/explicit-function-return-type': 0,
+      }
+    },
+  ],
   "settings": {
     "import/resolver": {
       "typescript": {},

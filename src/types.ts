@@ -8,6 +8,11 @@
  */
 
 /**
+ * Make selected object keys defined by K optional in type T
+ */
+export type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+
+/**
  * A file to download from a remote resource, that is optionally encrypted
  */
 export type RemoteResource = {
@@ -31,18 +36,23 @@ export type RemoteResource = {
 };
 
 /**
+ * File is optional
+ */
+export type RemoteResourceWithoutFile = Optionalize<
+  RemoteResource,
+  'filePrefix'
+>;
+
+/**
  * The type that is emitted as progress continues
  */
-export type ProgressEmit = {
-  /** Detailed emit */
-  detail: {
-    /** Percentage completed */
-    percent: number;
-    /** Total bytes read */
-    totalBytesRead: number;
-    /** Total number of bytes to read */
-    contentLength: number;
-    /** The URL downloading from */
-    url: string;
-  };
-};
+export type ProgressEmit = CustomEvent<{
+  /** Percentage completed */
+  percent: number;
+  /** Total bytes read */
+  totalBytesRead: number;
+  /** Total number of bytes to read */
+  contentLength: number;
+  /** The URL downloading from */
+  url: string;
+}>;

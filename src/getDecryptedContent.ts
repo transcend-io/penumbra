@@ -1,6 +1,6 @@
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
-import { RemoteResource } from './types';
+import { RemoteResourceWithoutFile } from './types';
 import { getMediaSrcFromRS, getTextFromRS } from './utils';
 
 const MEDIA_TYPES = ['image', 'video', 'audio'];
@@ -13,7 +13,7 @@ const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*
  * @returns The file contents
  */
 export default async function getDecryptedContent(
-  resource: RemoteResource,
+  resource: RemoteResourceWithoutFile,
   alwaysBlob = false,
 ): Promise<string | Blob> {
   // Fetch the resource

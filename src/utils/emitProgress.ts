@@ -16,7 +16,7 @@ export default function emitProgress(
 ): void {
   // Calculate the progress remaining
   const percent = Math.round((totalBytesRead / contentLength) * 100);
-  const emitContent: ProgressEmit = {
+  const emitContent: Pick<ProgressEmit, 'detail'> = {
     detail: {
       percent,
       totalBytesRead,

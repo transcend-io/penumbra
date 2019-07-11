@@ -100,7 +100,7 @@ You can listen to a download progress event. The event name is the same as the `
 
 ```js
 window.addEventListener(url, e => {
-  console.log(`${e.detail}% done`);
+  console.log(`${e.detail.percent}% done`);
 });
 ```
 

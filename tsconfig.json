@@ -10,6 +10,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": false,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "outDir": "build",
     "types": ["node"],

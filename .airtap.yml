@@ -1,0 +1,5 @@
+browsers:
+- name: safari
+  version: latest
+- name: iphone
+  version: latest
