@@ -36,7 +36,7 @@ module.exports = {
     "arrow-parens": ["error", "always"],
     "arrow-body-style": [2, "as-needed"],
     "class-methods-use-this": ["error"],
-    "comma-dangle": [2, "always-multiline"],
+    "comma-dangle": 0, // [2, "always-multiline"] handled by prettier
     "function-paren-newline": 0,
     "import/imports-first": ["error"],
     "import/newline-after-import": ["error"],
