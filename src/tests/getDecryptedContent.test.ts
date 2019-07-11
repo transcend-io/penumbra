@@ -60,8 +60,7 @@ test('getDecryptedContent: images', async (t) => {
   }
   t.assert(isURL);
   const imageBytes = await fetch(url as string).then((r) => r.arrayBuffer());
-  const result = await sha256(imageBytes);
-  t.equals(result, "1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95");
+  t.equals(await sha256(imageBytes), "1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95");
   t.end();
 });
 
