@@ -11,7 +11,7 @@ async function sha256(ab: ArrayBuffer): Promise<string> {
 test('preconnect', async (t) => {
   const measurePreconnects = () => document.querySelectorAll('link[rel="preconnect"]');
   const start = measurePreconnects();
-  preconnect({
+  const cleanup = preconnect({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
     mimetype: 'text/plain',
@@ -22,6 +22,7 @@ test('preconnect', async (t) => {
     },
   });
   const after = measurePreconnects();
+  cleanup();
   t.assert(start < after);
   t.end();
 });
@@ -29,7 +30,7 @@ test('preconnect', async (t) => {
 test('preload', async (t) => {
   const measurePreloads = () => document.querySelectorAll('link[rel="preload"]');
   const start = measurePreloads();
-  preconnect({
+  const cleanup = preconnect({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
     mimetype: 'text/plain',
@@ -40,6 +41,7 @@ test('preload', async (t) => {
     },
   });
   const after = measurePreloads();
+  cleanup();
   t.assert(start < after);
   t.end();
 });
