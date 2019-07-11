@@ -2,7 +2,7 @@
 
 // external modules
 import { Decipher } from 'crypto';
-import * as toBuffer from 'typedarray-to-buffer';
+import toBuffer from 'typedarray-to-buffer';
 
 // utils
 import { emitProgress } from './utils';

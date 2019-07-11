@@ -13,8 +13,8 @@
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
     "ts:lint": "tslint --project .",
     "####### Testing #######": "",
-    "test": "echo no test.js yet",
-    "browser-test": "airtap --loopback airtap.local --coverage test.js",
+    "test": "airtap --local build/src/tests/*.test.js",
+    "browser-test": "airtap --loopback airtap.local --coverage *.test.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "####### Build #######": "",
     "build": "rimraf build && tsc",
@@ -31,8 +31,8 @@
     "stream",
     "client"
   ],
-  "author": "Transcend Privacy Inc.",
-  "license": "MIT",
+  "author": "Transcend Inc.",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
@@ -50,6 +50,7 @@
     "typedarray-to-buffer": "^3.1.5"
   },
   "devDependencies": {
+    "@types/tape": "^4.2.33",
     "@types/file-saver": "^2.0.1",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^12.6.2",
@@ -69,6 +70,7 @@
     "nyc": "^14.1.1",
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
+    "tape": "^4.11.0",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "^3.5.3"
