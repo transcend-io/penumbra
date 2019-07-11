@@ -3,7 +3,7 @@ import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import decryptStream from './decryptStream';
-import { RemoteResource } from './types';
+import { RemoteResourceWithoutFile } from './types';
 import { toBuff } from './utils';
 
 /**
@@ -16,7 +16,7 @@ export default function fetchAndDecrypt({
   url,
   decryptionOptions,
   progressEventName = url,
-}: RemoteResource): Promise<ReadableStream> {
+}: RemoteResourceWithoutFile): Promise<ReadableStream> {
   return (
     fetch(url)
       // Retrieve its body as ReadableStream
