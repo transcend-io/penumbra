@@ -1,3 +1,5 @@
+/* tslint:disable completed-docs */
+
 // penumbra
 import { ProgressEmit } from './types';
 

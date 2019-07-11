@@ -1,0 +1,17 @@
+.gitignore
+.git/*
+.github/*
+**/docs/*
+**/node_modules/*
+**/build/*
+**/dist/*
+**/builds/*
+**/coverage/*
+**/deprecated/*
+**/.storybook-dist/*
+**/cypress/*
+**/docs/*
+**/Internal-Documentation/*
+*.testjs
+*.testts
+*__snapshots__/*

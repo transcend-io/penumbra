@@ -38,7 +38,10 @@ export type RemoteResource = {
 /**
  * File is optional
  */
-export type RemoteResourceWithoutFile = Optionalize<RemoteResource, 'filePrefix'>;
+export type RemoteResourceWithoutFile = Optionalize<
+  RemoteResource,
+  'filePrefix'
+>;
 
 /**
  * The type that is emitted as progress continues

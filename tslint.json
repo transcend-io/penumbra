@@ -20,6 +20,7 @@
     ],
     "export-name": false,
     "interface-over-type-literal": false,
+    "interface-name": false,
     "max-line-length": false,
     "new-parens": true,
     "prefer-for-of": false,
@@ -32,7 +33,7 @@
     "no-namespace": false,
     "no-shadowed-variable": false,
     "no-var-requires": false,
-    "object-literal-sort-keys":false,
+    "object-literal-sort-keys": false,
     "quotemark": [false, "single", "avoid-escape", "avoid-template"],
     "variable-name": false,
     "trailing-comma": false,
@@ -54,6 +55,11 @@
     "semicolon": false
   },
   "linterOptions": {
-    "exclude": ["node_modules/**/*.ts", "dist/**/*.ts", "build/**/*.js", "builds/**/*.js"]
+    "exclude": [
+      "node_modules/**/*.ts",
+      "dist/**/*.ts",
+      "build/**/*.js",
+      "builds/**/*.js"
+    ]
   }
 }
