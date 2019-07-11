@@ -21,9 +21,8 @@ test('getDecryptedContent: text', async (t) => {
     },
   });
   t.equal(
-    decryptedText,
-    // eslint-disable-next-line max-len
-    'Since the mid-1970s, The New York Times has greatly expanded its layout and organization, adding special weekly sections on various topics supplementing the regular news, editorials, sports, and features. Since 2008,[15] the Times has been organized into the following sections: News, Editorials/Opinions-Columns/Op-Ed, New York (metropolitan), Business, Sports of The Times, Arts, Science, Styles, Home, Travel, and other features.[16] On Sunday, the Times is supplemented by the Sunday Review (formerly the Week in Review),[17] The New York Times Book Review,[18] The New York Times Magazine[19] and T: The New York Times Style Magazine.[20] The Times stayed with the broadsheet full-page set-up and an eight-column format for several years after most papers switched to six,[21] and was one of the last newspapers to adopt color photography, especially on the front page.',
+    await sha256(new TextEncoder().encode(decryptedText as string)),
+    '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5'
   );
   t.end();
 });
