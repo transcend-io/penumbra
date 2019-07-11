@@ -27,6 +27,19 @@ test('getDecryptedContent: text', async (t) => {
   t.end();
 });
 
+test('getDecryptedContent: unencrypted content', async (t) => {
+  const text = await getDecryptedContent({
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt',
+    filePrefix: 'NYT',
+    mimetype: 'text/plain',
+  });
+  t.equal(
+    await sha256(new TextEncoder().encode(text as string)),
+    '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5'
+  );
+  t.end();
+});
+
 test('getDecryptedContent: images', async (t) => {
   const url = await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
