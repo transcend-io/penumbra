@@ -7,13 +7,14 @@ export type TimeoutManager = {
 };
 
 /**
- * Get the cryptographic hash of an ArrayBuffer
+ * Set and manage a timeout
  *
  * @param callback - Timeout callback
  * @param delay - Time in seconds to wait before calling the callback
  * @returns Timeout cancellation helper
  */
 export default function timeout(
+  // tslint:disable-next-line: ban-types
   callback: Function,
   delay: number,
 ): TimeoutManager {
