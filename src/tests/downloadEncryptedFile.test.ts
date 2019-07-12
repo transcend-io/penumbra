@@ -31,7 +31,7 @@ test('downloadEncryptedFile', async (t) => {
           progressStarted = true;
         }
       }
-      if (progressStarted && evt.detail.percent > 25) {
+      if (progressStarted && percent > 25) {
         window.removeEventListener(progressEventName, onprogress);
         t.pass();
         t.end();
