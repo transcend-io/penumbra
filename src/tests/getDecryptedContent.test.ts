@@ -2,7 +2,8 @@ import test from 'tape';
 import getDecryptedContent from '../getDecryptedContent';
 import { ProgressEmit } from '../types';
 
-import { hash } from './helpers';
+import { hash, timeout } from './helpers';
+import { TimeoutManager } from './helpers/timeout';
 
 test('getDecryptedContent: text', async (t) => {
   const decryptedText = await getDecryptedContent({
@@ -64,12 +65,39 @@ test('getDecryptedContent: images', async (t) => {
 
 test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
   const progressEventName = 'my-custom-event';
-  const onprogress = (evt: ProgressEmit): void => {
-    // eslint-disable-next-line no-restricted-globals
-    t.assert(!isNaN(evt.detail.percent));
+  const fail = () => {
+    t.fail();
     t.end();
-    window.removeEventListener(progressEventName, onprogress);
   };
+  const initTimeout: TimeoutManager = timeout(fail, 60);
+  let stallTimeout: TimeoutManager;
+  let initFinished = false;
+  let progressStarted = false;
+  let lastPercent: number;
+  const onprogress = (evt: ProgressEmit): void => {
+    const { percent } = evt.detail;
+    // eslint-disable-next-line no-restricted-globals
+    if (!isNaN(percent)) {
+      if (!initFinished) {
+        initTimeout.clear();
+        stallTimeout = timeout(fail, 10);
+        initFinished = true;
+        lastPercent = percent;
+      } else if (!progressStarted) {
+        if (percent > lastPercent) {
+          stallTimeout.clear();
+          progressStarted = true;
+        }
+      }
+      if (progressStarted && evt.detail.percent > 25) {
+        window.removeEventListener(progressEventName, onprogress);
+        t.pass();
+        t.end();
+      }
+    }
+    lastPercent = percent;
+  };
+
   window.addEventListener(progressEventName, onprogress);
   await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
