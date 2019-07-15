@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Crypto streams for the browser.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -61,7 +61,7 @@
     "@types/tape": "^4.2.33",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
-    "airtap": "^2.0.2",
+    "airtap": "^2.0.3",
     "babel-eslint": "^10.0.2",
     "check-deps": "^1.4.1",
     "eslint": "^6.0.1",
