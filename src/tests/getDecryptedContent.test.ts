@@ -36,7 +36,29 @@ test('getDecryptedContent: unencrypted content', async (t) => {
   t.end();
 });
 
-test('getDecryptedContent: images', async (t) => {
+test('getDecryptedContent: images (as Response)', async (t) => {
+  const content = await getDecryptedContent(
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+      filePrefix: 'tortoise',
+      mimetype: 'image/jpeg',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+      },
+    },
+    true,
+  );
+  const imageBytes = await (content as Response).arrayBuffer();
+  t.equals(
+    await hash('SHA-256', imageBytes),
+    '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95',
+  );
+  t.end();
+});
+
+test('getDecryptedContent: images (as URL)', async (t) => {
   const url = await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
     filePrefix: 'tortoise',

@@ -14,8 +14,8 @@ const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*
  */
 export default async function getDecryptedContent(
   resource: RemoteResourceWithoutFile,
-  alwaysBlob = false,
-): Promise<string | Blob> {
+  alwaysResponse = false,
+): Promise<string | Response> {
   // Fetch the resource
   const rs = await fetchAndDecrypt(resource);
 
@@ -24,7 +24,7 @@ export default async function getDecryptedContent(
     .split('/')[0]
     .trim()
     .toLowerCase();
-  if (!alwaysBlob) {
+  if (!alwaysResponse) {
     if (MEDIA_TYPES.includes(type)) {
       return getMediaSrcFromRS(rs);
     }
@@ -33,6 +33,6 @@ export default async function getDecryptedContent(
     }
   }
 
-  // Always return a blob
-  return new Response(rs).blob();
+  // Always return a response
+  return new Response(rs);
 }

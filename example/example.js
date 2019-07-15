@@ -167,20 +167,20 @@ function downloadMany(fileList) {
 
   let tick = false;
 
-  Object.keys(fileList).forEach((fileName) => {
-    const decryptedBlobPromise = getDecryptedContent(
+  Object.keys(fileList).forEach(async (fileName) => {
+    const decryptedResponsePromise = await getDecryptedContent(
       {
         url: S3_URL + fileList[fileName].filePrefix,
         ...fileList[fileName],
       },
       true,
-    );
+    ).arrayBuffer();
 
     tick = !tick;
     if (tick) {
-      folder1.file(fileName, decryptedBlobPromise);
+      folder1.file(fileName, decryptedResponsePromise);
     } else {
-      folder2.file(fileName, decryptedBlobPromise);
+      folder2.file(fileName, decryptedResponsePromise);
     }
   });
 
