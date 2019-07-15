@@ -49,6 +49,7 @@
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "crypto-browserify": "^3.12.0",
+    "comlink": "^4.0.1",
     "file-saver": "^2.0.2",
     "mime-types": "^2.1.24",
     "streamsaver": "^2.0.3",
