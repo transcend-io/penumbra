@@ -86,36 +86,28 @@ export default function decryptStream(
   });
 }
 
-const workerCache = JSON.parse(localStorage.workerCache || '[]');
+// const workerCache = JSON.parse(localStorage.workerCache || '[]');
 
 /**
  * De-allocate temporary Worker object URLs
  */
-function cleanup(): void {
-  workerCache.forEach((url: string) => {
-    URL.revokeObjectURL(url);
-  });
-  workerCache.length = 0;
-  localStorage.workerCache = JSON.stringify(workerCache);
-}
+// function cleanup(): void {
+//   workerCache.forEach((url: string) => {
+//     URL.revokeObjectURL(url);
+//   });
+//   workerCache.length = 0;
+//   localStorage.workerCache = JSON.stringify(workerCache);
+// }
 
-const workerURL = URL.createObjectURL(
-  new Blob([
-    // 'importScripts("https://cdn.jsdelivr.net/npm/comlinkjs/comlink.global.min.js");\n',
-    `import * as Comlink from "https://unpkg.com/comlink?module";\n`,
-    decryptStream.toString(),
-    `const state = {
-      currentCount: 0,
-      inc() {
-        this.currentCount++;
-      }
-    }
-    Comlink.expose(state);`,
-  ]),
-);
+// const workerURL = URL.createObjectURL(
+//   new Blob([
+//     // 'importScripts("https://cdn.jsdelivr.net/npm/comlinkjs/comlink.global.min.js");\n',
+//     `...`,
+//   ]),
+// );
 
-workerCache.push(workerURL);
+// workerCache.push(workerURL);
 
-export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
+// export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
 
-window.addEventListener('beforeunload', cleanup);
+// window.addEventListener('beforeunload', cleanup);
