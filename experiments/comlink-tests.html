@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- Make sure to enable "Experimental Web Platform features" on chrome://flags -->
+<script type="module">
+  // import * as Comlink from 'https://unpkg.com/comlink@alpha/dist/esm/comlink.mjs';
+  // import * as Comlink from "../../../dist/esm/comlink.mjs";
+  async function init() {
+    const Comlink = (window.C = await import(
+      'https://unpkg.com/comlink?module'
+    ).then((module) => module));
+    const worker = new Worker(
+      URL.createObjectURL(
+        new Blob([
+          `
+        async function init() {
+          const Comlink = await import("https://unpkg.com/comlink?module").then(module => module);
+          const state = {
+            currentCount: 0,
+            inc() {
+              this.currentCount++;
+            }
+          };
+          Comlink.expose(state);
+        };
+        init();`,
+        ]),
+      ),
+    );
+
+    const obj = (window.W = Comlink.wrap(worker));
+    console.log(`Counter: ${await obj.currentCount}`);
+
+    await obj.inc();
+    console.log(`Counter: ${await obj.currentCount}`);
+  }
+
+  init();
+</script>

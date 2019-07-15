@@ -4,6 +4,9 @@
 import { Decipher } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
 
+// Comlink
+import * as Comlink from 'comlink';
+
 // utils
 import { emitProgress } from './utils';
 
@@ -82,3 +85,37 @@ export default function decryptStream(
     },
   });
 }
+
+const workerCache = JSON.parse(localStorage.workerCache || '[]');
+
+/**
+ * De-allocate temporary Worker object URLs
+ */
+function cleanup(): void {
+  workerCache.forEach((url: string) => {
+    URL.revokeObjectURL(url);
+  });
+  workerCache.length = 0;
+  localStorage.workerCache = JSON.stringify(workerCache);
+}
+
+const workerURL = URL.createObjectURL(
+  new Blob([
+    // 'importScripts("https://cdn.jsdelivr.net/npm/comlinkjs/comlink.global.min.js");\n',
+    `import * as Comlink from "https://unpkg.com/comlink?module";\n`,
+    decryptStream.toString(),
+    `const state = {
+      currentCount: 0,
+      inc() {
+        this.currentCount++;
+      }
+    }
+    Comlink.expose(state);`,
+  ]),
+);
+
+workerCache.push(workerURL);
+
+export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
+
+window.addEventListener('beforeunload', cleanup);
