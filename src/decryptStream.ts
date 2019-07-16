@@ -86,40 +86,50 @@ export default function decryptStream(
   });
 }
 
-// const workerCache = JSON.parse(localStorage.workerCache || '[]');
+const workerCache = JSON.parse(localStorage.workerCache || '[]');
 
-// /**
-//  * De-allocate temporary Worker object URLs
-//  */
-// function cleanup(): void {
-//   workerCache.forEach((url: string) => {
-//     URL.revokeObjectURL(url);
-//   });
-//   workerCache.length = 0;
-//   localStorage.workerCache = JSON.stringify(workerCache);
-// }
+/**
+ * De-allocate temporary Worker object URLs
+ */
+function cleanup(): void {
+  workerCache.forEach((url: string) => {
+    URL.revokeObjectURL(url);
+  });
+  workerCache.length = 0;
+  localStorage.workerCache = JSON.stringify(workerCache);
+}
 
-// const workerURL = URL.createObjectURL(
-//   new Blob([
-//     // 'importScripts("https://cdn.jsdelivr.net/npm/comlinkjs/comlink.global.min.js");\n',
-//     `import { Decipher } from 'crypto';
-//     import toBuffer from 'typedarray-to-buffer';
-//     // Comlink
-//     //import * as Comlink from 'comlink';
-//     import * as Comlink from "https://unpkg.com/comlink?module";
-//     ${decryptStream.toString()}
-//     const state = {
-//       currentCount: 0,
-//       inc() {
-//         this.currentCount++;
-//       }
-//     }
-//     Comlink.expose(state);`,
-//   ]),
-// );
+const workerURL = URL.createObjectURL(
+  new Blob(
+    [
+      `let module = false;
+    try { module = import.meta } catch (ex) {}
+    if (module) {
+      eval("import * as Comlink from 'https://unpkg.com/comlink@4.0.1/dist/esm/comlink.min.mjs';");
+    } else {
+      importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
+    }
+    ${decryptStream.toString()}
+    const state = {
+      decryptStream,
+      currentCount: 0,
+      inc() {
+        this.currentCount++;
+      }
+    };
+    console.log(decryptStream);
+    Comlink.expose(state);`,
+    ],
+    {
+      type: 'application/ecmascript',
+    },
+  ),
+);
 
-// workerCache.push(workerURL);
+workerCache.push(workerURL);
 
-// export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
+export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
 
-// window.addEventListener('beforeunload', cleanup);
+console.log(worker);
+
+window.addEventListener('beforeunload', cleanup);
