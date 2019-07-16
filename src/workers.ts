@@ -27,7 +27,7 @@ export type WorkerLocation = {
 };
 
 if (!document.currentScript) {
-  throw new Error('This script must be included in a document');
+  throw new Error('Penumbra must be included in a document');
 }
 
 const penumbra = document.currentScript.dataset;
