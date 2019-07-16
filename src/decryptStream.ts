@@ -10,6 +10,9 @@ import * as Comlink from 'comlink';
 // utils
 import { emitProgress } from './utils';
 
+// local
+import { getWorkerLocation } from './workers';
+
 /**
  * Decrypts a readable stream
  *
@@ -86,44 +89,58 @@ export default function decryptStream(
   });
 }
 
-const workerCache = JSON.parse(localStorage.workerCache || '[]');
+const getWorkerCache = () => JSON.parse(localStorage.workerCache || '[]');
+const modifyWorkerCache = (modify: (input: string[]) => void): void => {
+  const workerCache = getWorkerCache();
+  modify(workerCache);
+  localStorage.workerCache = JSON.stringify(workerCache);
+};
+
+// const workerURL = URL.createObjectURL(
+//   new Blob(
+//     [
+//       `importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
+//     ${decryptStream.toString()}
+//     const state = {
+//       decryptStream,
+//       currentCount: 0,
+//       inc() {
+//         this.currentCount++;
+//       }
+//     };
+//     console.log(decryptStream);
+//     Comlink.expose(state);`,
+//     ],
+//     {
+//       type: 'application/ecmascript',
+//     },
+//   ),
+// );
+//
+// workerCache.push(workerURL);
+
+const workerURL = String(getWorkerLocation().decrypt);
+
+modifyWorkerCache((workerCache) => {
+  workerCache.push(workerURL);
+});
+export const decryptStreamWorker = new Worker(workerURL);
+export const decryptStreamComlink = Comlink.wrap(decryptStreamWorker);
 
 /**
  * De-allocate temporary Worker object URLs
  */
 function cleanup(): void {
-  workerCache.forEach((url: string) => {
-    URL.revokeObjectURL(url);
+  decryptStreamWorker.terminate();
+  modifyWorkerCache((workerCache) => {
+    workerCache.forEach((url: string) => {
+      URL.revokeObjectURL(url);
+    });
+    // eslint-disable-next-line no-param-reassign
+    workerCache.length = 0;
   });
-  workerCache.length = 0;
-  localStorage.workerCache = JSON.stringify(workerCache);
 }
 
-const workerURL = URL.createObjectURL(
-  new Blob(
-    [
-      `importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
-    ${decryptStream.toString()}
-    const state = {
-      decryptStream,
-      currentCount: 0,
-      inc() {
-        this.currentCount++;
-      }
-    };
-    console.log(decryptStream);
-    Comlink.expose(state);`,
-    ],
-    {
-      type: 'application/ecmascript',
-    },
-  ),
-);
-
-workerCache.push(workerURL);
-
-export const worker = Comlink.wrap(new Worker(workerURL));
-
-console.log(worker);
+console.log(decryptStreamWorker);
 
 window.addEventListener('beforeunload', cleanup);

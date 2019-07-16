@@ -11,7 +11,7 @@ const ORIGIN_MATCHER = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
 export function extractOrigin(url: string): string {
   const origin = url.match(ORIGIN_MATCHER);
   if (!origin) {
-    throw new Error('No origin found. Possible invalid URL');
+    throw new Error('No origin found. Possibly invalid URL');
   }
   return origin[0];
 }
