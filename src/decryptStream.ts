@@ -102,13 +102,7 @@ function cleanup(): void {
 const workerURL = URL.createObjectURL(
   new Blob(
     [
-      `let module = false;
-    try { module = import.meta } catch (ex) {}
-    if (module) {
-      eval("import * as Comlink from 'https://unpkg.com/comlink@4.0.1/dist/esm/comlink.min.mjs';");
-    } else {
-      importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
-    }
+      `importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
     ${decryptStream.toString()}
     const state = {
       decryptStream,
@@ -128,7 +122,7 @@ const workerURL = URL.createObjectURL(
 
 workerCache.push(workerURL);
 
-export const worker = Comlink.wrap(new Worker(workerURL, { type: 'module' }));
+export const worker = Comlink.wrap(new Worker(workerURL));
 
 console.log(worker);
 
