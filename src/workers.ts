@@ -61,7 +61,7 @@ function resolve(url: string): URL {
  */
 export function getWorkerLocation(): WorkerLocation {
   const { base, decrypt, zip, StreamSaver } = JSON.parse(
-    (document.currentScript && document.currentScript.dataset.workers) || WORKER_DEFAULTS,
+    penumbra.workers || WORKER_DEFAULTS,
   );
 
   const missing: string[] = [];
@@ -102,14 +102,5 @@ export default function setWorkerLocation(
     console.warn('Penumbra Workers are already active. Reinitializing...');
     // TODO: implement worker reinitialization logic
   }
-  const currentOptions = getWorkerLocation();
-  // eslint-disable-next-line no-restricted-globals
-  const { base = location.href, decrypt, zip, StreamSaver } = options;
-  const context = new URL(base);
-
-  if (decrypt) {
-    const newOpts = { ...currentOptions, ...options };
-  }
-
-  penumbra.workers = JSON.stringify({ ...currentOptions, ...options });
+  penumbra.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
 }
