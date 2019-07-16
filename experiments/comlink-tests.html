@@ -1,36 +1,31 @@
 <!DOCTYPE html>
-<!-- Make sure to enable "Experimental Web Platform features" on chrome://flags -->
+<!-- Enable "Experimental Web Platform features" on chrome://flags to use ES6 modules in workers -->
 <script type="module">
-  // import * as Comlink from 'https://unpkg.com/comlink@alpha/dist/esm/comlink.mjs';
-  // import * as Comlink from "../../../dist/esm/comlink.mjs";
+  import * as Comlink from 'https://unpkg.com/comlink@4.0.1/dist/esm/comlink.min.mjs';
   async function init() {
-    const Comlink = (window.C = await import(
-      'https://unpkg.com/comlink?module'
-    ).then((module) => module));
+    //const Comlink = await import('https://unpkg.com/comlink?module').then(
+    //  (module) => module,
+    //);
     const worker = new Worker(
       URL.createObjectURL(
         new Blob([
-          `
-        async function init() {
-          const Comlink = await import("https://unpkg.com/comlink?module").then(module => module);
+          `importScripts("https://unpkg.com/comlink@4.0.1/dist/umd/comlink.js");
           const state = {
             currentCount: 0,
             inc() {
               this.currentCount++;
             }
           };
-          Comlink.expose(state);
-        };
-        init();`,
+          Comlink.expose(state);`,
         ]),
       ),
     );
 
-    const obj = (window.W = Comlink.wrap(worker));
-    console.log(`Counter: ${await obj.currentCount}`);
+    const obj = Comlink.wrap(worker);
+    alert(`Counter: ${await obj.currentCount}`);
 
     await obj.inc();
-    console.log(`Counter: ${await obj.currentCount}`);
+    alert(`Counter: ${await obj.currentCount}`);
   }
 
   init();

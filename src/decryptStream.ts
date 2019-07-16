@@ -88,9 +88,9 @@ export default function decryptStream(
 
 // const workerCache = JSON.parse(localStorage.workerCache || '[]');
 
-/**
- * De-allocate temporary Worker object URLs
- */
+// /**
+//  * De-allocate temporary Worker object URLs
+//  */
 // function cleanup(): void {
 //   workerCache.forEach((url: string) => {
 //     URL.revokeObjectURL(url);
@@ -102,7 +102,19 @@ export default function decryptStream(
 // const workerURL = URL.createObjectURL(
 //   new Blob([
 //     // 'importScripts("https://cdn.jsdelivr.net/npm/comlinkjs/comlink.global.min.js");\n',
-//     `...`,
+//     `import { Decipher } from 'crypto';
+//     import toBuffer from 'typedarray-to-buffer';
+//     // Comlink
+//     //import * as Comlink from 'comlink';
+//     import * as Comlink from "https://unpkg.com/comlink?module";
+//     ${decryptStream.toString()}
+//     const state = {
+//       currentCount: 0,
+//       inc() {
+//         this.currentCount++;
+//       }
+//     }
+//     Comlink.expose(state);`,
 //   ]),
 // );
 
