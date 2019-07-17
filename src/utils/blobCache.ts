@@ -6,13 +6,15 @@ export type BlobCacheManager = {
   set: (cache: URL[] | string[]) => void;
   /** Clear Blob cache */
   clear: () => void;
-}
+};
 
 /** Get Blob cache (list of in-use object URLs) */
 const blobCache: BlobCacheManager = {
   /** Get Blob cache (list of in-use object URLs) */
   get(): URL[] {
-    return JSON.parse(localStorage.blobCache || '[]').map((u: string) => new URL(u));
+    return JSON.parse(localStorage.blobCache || '[]').map(
+      (u: string) => new URL(u),
+    );
   },
   /** Write to Blob cache */
   set(cache: URL[] | string[]): void {
@@ -24,7 +26,7 @@ const blobCache: BlobCacheManager = {
       URL.revokeObjectURL(String(url));
     });
     this.set([]);
-  }
+  },
 };
 
 export default blobCache;
