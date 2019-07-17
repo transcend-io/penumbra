@@ -6,7 +6,7 @@
  */
 
 import * as Comlink from 'comlink';
-import * as JSZip from 'jszip'; // TODO switch to @transcend-io/conflux
+import * as JSZip from 'jszip'; // TODO: switch to @transcend-io/conflux
 import { saveAs } from 'file-saver';
 import { downloadEncryptedFile, getDecryptedContent } from '../build/src/index';
 import * as files from './files';
