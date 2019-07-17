@@ -22,6 +22,7 @@
     "check:deps": "npm-check --ignore \"{}\"",
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
+    "webpack:temp": "webpack",
     "build": "rimraf build && tsc && webpack",
     "build:watch": "tsc --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
@@ -56,6 +57,7 @@
     "typedarray-to-buffer": "^3.1.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.4",
     "@types/file-saver": "^2.0.1",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^12.6.2",
@@ -64,6 +66,7 @@
     "@typescript-eslint/parser": "^1.11.0",
     "airtap": "^2.0.3",
     "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
     "check-deps": "^1.4.1",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -77,6 +80,7 @@
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
     "tape": "^4.11.0",
+    "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "^3.5.3",

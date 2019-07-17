@@ -1,18 +1,36 @@
 const path = require('path');
 const WorkerPlugin = require('worker-plugin');
 
+const babelLoader = {
+  loader: 'babel-loader',
+};
+
 const config = {
-  entry: './example.js',
+  entry: `${path.resolve(__dirname, 'src')}/index.ts`,
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
   },
+  mode: 'development',
   watch: false,
   module: {
     rules: [
       {
-        test: /\.js$/,
-        use: 'babel-loader',
+        test: /^.*\.(ts)?$/,
+        use: [
+          babelLoader,
+          {
+            loader: 'ts-loader',
+            options: {
+              allowTsInNodeModules: false,
+              configFile: 'tsconfig.json',
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(js)?$/, // Transform all .js/.jsx files required somewhere with Babel
+        use: babelLoader,
         exclude: /node_modules/,
       },
     ],
@@ -23,6 +41,7 @@ const config = {
     }),
   ],
   devtool: 'eval-source-map',
+  // target: 'web',
 };
 
 module.exports = config;

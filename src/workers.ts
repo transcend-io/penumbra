@@ -76,7 +76,7 @@ export function getWorkerLocation(): WorkerLocation {
   }
 
   if (missing.length) {
-    throw new Error(`Missing workers: ${missing.join(', ')}`);
+    throw new Error(`Missing workers: "${missing.join('", "')}"`);
   }
 
   // eslint-disable-next-line no-restricted-globals
@@ -87,7 +87,7 @@ export function getWorkerLocation(): WorkerLocation {
     decrypt: new URL(decrypt, context),
     zip: new URL(zip, context),
     StreamSaver: new URL(StreamSaver, context),
-  }
+  };
 }
 
 /**
