@@ -10,9 +10,6 @@ import * as Comlink from 'comlink';
 // utils
 import { emitProgress } from './utils';
 
-// local
-import { getWorkerLocation } from './workers';
-
 /**
  * Decrypts a readable stream
  *

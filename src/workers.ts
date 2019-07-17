@@ -123,6 +123,7 @@ export function createPenumbraWorker(url: URL | string): PenumbraWorker {
   return { worker, comlink: Comlink.wrap(worker) };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const workers: any = {};
 
 /** Initializes web worker threads */
