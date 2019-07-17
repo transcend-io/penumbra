@@ -119,7 +119,7 @@ export function getWorkerLocation(): WorkerLocation {
 
 /** Instantiate a Penumbra Worker */
 export function createPenumbraWorker(url: URL | string): PenumbraWorker {
-  const worker = new Worker(String(url));
+  const worker = new Worker((url as unknown) as string);
   return { worker, comlink: Comlink.wrap(worker) };
 }
 
@@ -127,7 +127,7 @@ export function createPenumbraWorker(url: URL | string): PenumbraWorker {
 const workers: any = {};
 
 /** Initializes web worker threads */
-function initWorkers(): void {
+export function initWorkers(): void {
   if (!penumbra.initialized) {
     const { decrypt, zip } = getWorkerLocation();
     workers.decrypt = createPenumbraWorker(decrypt);
@@ -140,16 +140,13 @@ function initWorkers(): void {
  * De-allocate temporary Worker object URLs
  */
 function cleanup(): void {
-  const { decrypt, zip, StreamSaver } = workers;
-  if (decrypt) {
-    decrypt.worker.terminate();
-  }
-  if (zip) {
-    zip.worker.terminate();
-  }
-  if (StreamSaver) {
-    StreamSaver.worker.terminate();
-  }
+  const threads = Object.keys(workers);
+  threads.forEach((thread: string) => {
+    const { worker } = workers[thread];
+    if (worker) {
+      worker.terminate();
+    }
+  });
 }
 
 window.addEventListener('beforeunload', cleanup);
@@ -157,11 +154,8 @@ window.addEventListener('beforeunload', cleanup);
 /** Returns the list of active worker threads */
 export function getWorkers(): PenumbraWorkers {
   const { decrypt, zip } = getWorkerLocation();
-  if (!workers.decrypt) {
-    workers.decrypt = createPenumbraWorker(decrypt);
-  }
-  if (!workers.zip) {
-    workers.zip = createPenumbraWorker(zip);
+  if (!penumbra.initialized) {
+    initWorkers();
   }
   return workers as PenumbraWorkers;
 }
@@ -174,7 +168,7 @@ export function getWorkers(): PenumbraWorkers {
 export default function setWorkerLocation(
   options: WorkerLocationOptions,
 ): void {
-  if (penumbra['active-workers']) {
+  if (penumbra.initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
     cleanup();
   }
