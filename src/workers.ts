@@ -1,9 +1,6 @@
 // comlink
 import Comlink, { Remote } from 'comlink';
 
-// local
-import { decryptStreamComlink } from './decryptStream';
-
 /**
  * Worker location options. All options support relative URLs.
  */
@@ -138,6 +135,24 @@ function initWorkers(): void {
   }
 }
 
+/**
+ * De-allocate temporary Worker object URLs
+ */
+function cleanup(): void {
+  const { decrypt, zip, StreamSaver } = workers;
+  if (decrypt) {
+    decrypt.worker.terminate();
+  }
+  if (zip) {
+    zip.worker.terminate();
+  }
+  if (StreamSaver) {
+    StreamSaver.worker.terminate();
+  }
+}
+
+window.addEventListener('beforeunload', cleanup);
+
 /** Returns the list of active worker threads */
 export function getWorkers(): PenumbraWorkers {
   const { decrypt, zip } = getWorkerLocation();
@@ -160,6 +175,7 @@ export default function setWorkerLocation(
 ): void {
   if (penumbra['active-workers']) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
+    cleanup();
   }
   penumbra.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
   initWorkers();

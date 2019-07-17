@@ -88,17 +88,3 @@ export default function decryptStream(
     },
   });
 }
-
-const workerURL = String(getWorkerLocation().decrypt);
-
-export const decryptStreamWorker = new Worker(workerURL);
-export const decryptStreamComlink = Comlink.wrap(decryptStreamWorker);
-
-/**
- * De-allocate temporary Worker object URLs
- */
-function cleanup(): void {
-  decryptStreamWorker.terminate();
-}
-
-window.addEventListener('beforeunload', cleanup);
