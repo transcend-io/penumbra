@@ -10,7 +10,7 @@
 /**
  * Make selected object keys defined by K optional in type T
  */
-export type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 /**
  * A file to download from a remote resource, that is optionally encrypted
