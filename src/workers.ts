@@ -1,3 +1,9 @@
+// comlink
+import Comlink, { Remote } from 'comlink';
+
+// local
+import { decryptStreamComlink } from './decryptStream';
+
 /**
  * Worker location options. All options support relative URLs.
  */
@@ -26,13 +32,37 @@ export type WorkerLocation = {
   StreamSaver: URL;
 };
 
+/** An individual Penumbra Worker's interfaces */
+export type PenumbraWorker = {
+  /** The worker's DOM interface */
+  worker: Worker;
+  /** The worker's comlink interface */
+  comlink: Remote<Worker>;
+};
+
+/** An individual Penumbra ServiceWorker's interfaces */
+export type PenumbraServiceWorker = {
+  /** The worker's DOM interface */
+  worker: ServiceWorker;
+  /** The worker's comlink interface */
+  comlink: Remote<Worker>;
+};
+
+/** The penumbra workers themselves */
+export type PenumbraWorkers = {
+  /** The decryption Worker */
+  decrypt: PenumbraWorker;
+  /** The zip Worker */
+  zip: PenumbraWorker;
+  /** The StreamSaver ServiceWorker */
+  StreamSaver?: PenumbraServiceWorker;
+};
+
 if (!document.currentScript) {
   throw new Error('Penumbra must be included in a document');
 }
 
 const penumbra = document.currentScript.dataset;
-
-export const workers: Worker[] = [];
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -90,6 +120,36 @@ export function getWorkerLocation(): WorkerLocation {
   };
 }
 
+/** Instantiate a Penumbra Worker */
+export function createPenumbraWorker(url: URL | string): PenumbraWorker {
+  const worker = new Worker(String(url));
+  return { worker, comlink: Comlink.wrap(worker) };
+}
+
+const workers: any = {};
+
+/** Initializes web worker threads */
+function initWorkers(): void {
+  if (!penumbra.initialized) {
+    const { decrypt, zip } = getWorkerLocation();
+    workers.decrypt = createPenumbraWorker(decrypt);
+    workers.zip = createPenumbraWorker(zip);
+    penumbra.initialized = (true as unknown) as string;
+  }
+}
+
+/** Returns the list of active worker threads */
+export function getWorkers(): PenumbraWorkers {
+  const { decrypt, zip } = getWorkerLocation();
+  if (!workers.decrypt) {
+    workers.decrypt = createPenumbraWorker(decrypt);
+  }
+  if (!workers.zip) {
+    workers.zip = createPenumbraWorker(zip);
+  }
+  return workers as PenumbraWorkers;
+}
+
 /**
  * Sets worker location configuration
  *
@@ -100,7 +160,7 @@ export default function setWorkerLocation(
 ): void {
   if (penumbra['active-workers']) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
-    // TODO: implement worker reinitialization logic
   }
   penumbra.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
+  initWorkers();
 }
