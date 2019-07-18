@@ -88,6 +88,6 @@ export type PenumbraAPI = {
   /** Zip files retrieved by Penumbra */
   zip: (
     data: PenumbraFiles,
-    compressionLevel: number,
+    compressionLevel?: number,
   ) => Promise<ReadableStream>;
 };

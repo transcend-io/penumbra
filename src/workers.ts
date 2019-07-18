@@ -122,28 +122,34 @@ export function getWorkerLocation(): WorkerLocation {
 /** Instantiate a Penumbra Worker */
 export function createPenumbraWorker(url: URL | string): PenumbraWorker {
   // Use string literals to provide default worker URL hints to webpack
-  switch (String(url)) {
-    case DEFAULT_WORKERS.decrypt: {
-      const worker = new Worker('penumbra-decrypt.worker.js', {
-        type: 'module',
-      });
-      return { worker, comlink: Comlink.wrap(worker) };
-    }
-    case DEFAULT_WORKERS.zip: {
-      const worker = new Worker('penumbra-zip.worker.js', {
-        type: 'module',
-      });
-      return { worker, comlink: Comlink.wrap(worker) };
-    }
-    // case DEFAULT_WORKERS.StreamSaver: {
-    //   const worker = new Worker('./streamsaver.js', { type: 'module' });
-    //   return { worker, comlink: Comlink.wrap(worker) };
-    // }
-    default: {
-      const worker = new Worker((url as unknown) as string, { type: 'module' });
-      return { worker, comlink: Comlink.wrap(worker) };
-    }
-  }
+  // switch (String(url)) {
+  //   case DEFAULT_WORKERS.decrypt: {
+  //     const worker = new Worker(
+  //       '/Users/elijahgrey/transcend/penumbra/src/workers/penumbra-decrypt.worker.js',
+  //       {
+  //         type: 'module',
+  //       },
+  //     );
+  //     return { worker, comlink: Comlink.wrap(worker) };
+  //   }
+  //   case DEFAULT_WORKERS.zip: {
+  //     const worker = new Worker(
+  //       '/Users/elijahgrey/transcend/penumbra/src/workers/penumbra-zip.worker.js',
+  //       {
+  //         type: 'module',
+  //       },
+  //     );
+  //     return { worker, comlink: Comlink.wrap(worker) };
+  //   }
+  //   // case DEFAULT_WORKERS.StreamSaver: {
+  //   //   const worker = new Worker('./streamsaver.js', { type: 'module' });
+  //   //   return { worker, comlink: Comlink.wrap(worker) };
+  //   // }
+  //   default: {
+  const worker = new Worker((url as unknown) as string, { type: 'module' });
+  return { worker, comlink: Comlink.wrap(worker) };
+  //   }
+  // }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

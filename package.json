@@ -22,8 +22,8 @@
     "check:deps": "npm-check --ignore \"{}\"",
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
-    "webpack:temp": "webpack",
-    "build": "rimraf build && tsc && webpack",
+    "webpack:workers": "cd workers/zip/ && webpack && cd ../decrypt/ && webpack && cd ../..",
+    "build": "rimraf build && tsc && webpack && npm run webpack:workers",
     "build:watch": "tsc --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },

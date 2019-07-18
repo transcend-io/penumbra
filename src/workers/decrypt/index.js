@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-import { getDecryptedContent, decryptStream } from '../build/src/index';
+import { getDecryptedContent, decryptStream } from '../../../build/src/index';
 
 /**
  * Penumbra Worker class
