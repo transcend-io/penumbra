@@ -2,7 +2,7 @@
 import { PenumbraAPI, PenumbraFiles, RemoteResourceWithoutFile } from './types';
 
 // Local
-import setWorkerLocation, { getWorkerLocation, getWorkers } from '../workers';
+import setWorkerLocation, { getWorkerLocation, getWorkers } from './workers';
 
 const API: PenumbraAPI = {
   get: async (...resources: RemoteResourceWithoutFile[]) =>
