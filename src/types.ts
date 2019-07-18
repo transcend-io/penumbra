@@ -61,7 +61,7 @@ export type ProgressEmit = CustomEvent<{
 export type PenumbraFile = File | ReadableStream;
 
 /** Files returned by penumbra.get() */
-export type PenumbraFiles = File[] | PenumbraFile;
+export type PenumbraFiles = File[] | ReadableStream;
 
 /** Compression levels */
 export enum compression {
