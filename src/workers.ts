@@ -66,11 +66,13 @@ const resolver = document.createElementNS(
   'a',
 ) as HTMLAnchorElement;
 
-const WORKER_DEFAULTS = JSON.stringify({
-  decrypt: '/penumbra-decrypt.worker.js',
-  zip: '/penumbra-zip.worker.js',
-  StreamSaver: '/streamsaver.js',
-});
+const DEFAULT_WORKERS = {
+  decrypt: 'penumbra-decrypt.worker.js',
+  zip: 'penumbra-zip.worker.js',
+  StreamSaver: 'streamsaver.js',
+};
+
+const DEFAULT_WORKERS_JSON = JSON.stringify(DEFAULT_WORKERS);
 
 /**
  * Resolve a potentially relative URL into an absolute URL
@@ -88,7 +90,7 @@ function resolve(url: string): URL {
  */
 export function getWorkerLocation(): WorkerLocation {
   const { base, decrypt, zip, StreamSaver } = JSON.parse(
-    penumbra.workers || WORKER_DEFAULTS,
+    penumbra.workers || DEFAULT_WORKERS_JSON,
   );
 
   const missing: string[] = [];
@@ -119,8 +121,29 @@ export function getWorkerLocation(): WorkerLocation {
 
 /** Instantiate a Penumbra Worker */
 export function createPenumbraWorker(url: URL | string): PenumbraWorker {
-  const worker = new Worker((url as unknown) as string);
-  return { worker, comlink: Comlink.wrap(worker) };
+  // Use string literals to provide default worker URL hints to webpack
+  switch (String(url)) {
+    case DEFAULT_WORKERS.decrypt: {
+      const worker = new Worker('penumbra-decrypt.worker.js', {
+        type: 'module',
+      });
+      return { worker, comlink: Comlink.wrap(worker) };
+    }
+    case DEFAULT_WORKERS.zip: {
+      const worker = new Worker('penumbra-zip.worker.js', {
+        type: 'module',
+      });
+      return { worker, comlink: Comlink.wrap(worker) };
+    }
+    // case DEFAULT_WORKERS.StreamSaver: {
+    //   const worker = new Worker('./streamsaver.js', { type: 'module' });
+    //   return { worker, comlink: Comlink.wrap(worker) };
+    // }
+    default: {
+      const worker = new Worker((url as unknown) as string, { type: 'module' });
+      return { worker, comlink: Comlink.wrap(worker) };
+    }
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
