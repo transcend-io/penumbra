@@ -33,7 +33,7 @@ export type WorkerLocation = {
 export type PenumbraWorker = {
   /** The worker's DOM interface */
   worker: Worker;
-  /** The worker's comlink interface */
+  /** The worker's Comlink interface */
   comlink: Remote<Worker>;
 };
 

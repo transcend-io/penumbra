@@ -1,7 +1,16 @@
+import { saveAs } from 'file-saver';
+import { createWriteStream } from 'streamsaver';
+
 // Types
-import { PenumbraAPI, PenumbraFiles, RemoteResourceWithoutFile } from './types';
+import {
+  compression,
+  PenumbraAPI,
+  PenumbraFiles,
+  RemoteResourceWithoutFile,
+} from './types';
 
 // Local
+import { blobCache, isViewableText } from './utils';
 import setWorkerLocation, { getWorkerLocation, getWorkers } from './workers';
 
 const workers = getWorkers();
@@ -10,28 +19,72 @@ const workers = getWorkers();
 async function get(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<PenumbraFiles> {
+  // workers.decrypt.comlink;
+  console.error('penumbra.get() is unimplemented');
   return ['', ''].map((s) => new File([s], s));
-}
-
-/** Save files retrieved by Penumbra */
-async function save(data: PenumbraFiles): Promise<void> {}
-
-/** Load files retrieved by Penumbra into memory as a Blob */
-async function getBlob(data: PenumbraFiles): Promise<Blob> {
-  return new Blob(['']);
-}
-
-/** Get file text (if content is viewable) or URI (if content is not viewable) */
-async function getTextOrURI(data: PenumbraFiles): Promise<string> {
-  return '';
 }
 
 /** Zip files retrieved by Penumbra */
 async function zip(
   data: PenumbraFiles,
-  compressionLevel: number,
+  compressionLevel: number = compression.store,
 ): Promise<ReadableStream> {
+  console.error('penumbra.zip() is unimplemented');
   return new ReadableStream();
+}
+
+const DEFAULT_FILENAME = 'download';
+
+/** Detect if a PenumbraFiles instance is a File[] list */
+function isFileList(data: PenumbraFiles): boolean {
+  return (
+    !(data instanceof ReadableStream) &&
+    ((data as unknown) as File[]).length > 1 &&
+    ((data as unknown) as File[])[0] instanceof File
+  );
+}
+
+/** Save files retrieved by Penumbra */
+async function save(data: PenumbraFiles, fileName?: string): Promise<void> {
+  if (isFileList(data)) {
+    // data as File[]
+    // TODO: Use streaming zip through conflux
+    const archive = await zip(data);
+    archive.pipeTo(createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`));
+  }
+  if (data instanceof File) {
+    // data as File
+    saveAs(data, data.name);
+  }
+  if (data instanceof ReadableStream) {
+    // data as ReadableStream
+    data.pipeTo(createWriteStream(fileName || DEFAULT_FILENAME));
+  }
+}
+
+/** Load files retrieved by Penumbra into memory as a Blob */
+async function getBlob(data: PenumbraFiles): Promise<Blob> {
+  if (isFileList(data)) {
+    // data as File[]
+    return getBlob(await zip(data));
+  }
+  // data as File | ReadableStream
+  return new Response((data as unknown) as ReadableStream | File).blob();
+}
+
+/** Get file text (if content is viewable) or URI (if content is not viewable) */
+async function getTextOrURI(data: PenumbraFiles): Promise<string> {
+  const mimetype = ((data as unknown) as File).type;
+  if (mimetype && isViewableText(mimetype)) {
+    return new Response((data as unknown) as File | ReadableStream).text();
+  }
+  const uri = URL.createObjectURL(
+    await getBlob(isFileList(data) ? await zip(data) : data),
+  );
+  const cache = blobCache.get();
+  cache.push(new URL(uri));
+  blobCache.set(cache);
+  return uri;
 }
 
 const API: PenumbraAPI = { get, save, getBlob, getTextOrURI, zip };

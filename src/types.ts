@@ -57,8 +57,11 @@ export type ProgressEmit = CustomEvent<{
   url: string;
 }>;
 
+/** File returned by penumbra.get() */
+export type PenumbraFile = File | ReadableStream;
+
 /** Files returned by penumbra.get() */
-export type PenumbraFiles = File[] | ReadableStream;
+export type PenumbraFiles = File[] | PenumbraFile;
 
 /** Compression levels */
 export enum compression {
@@ -77,7 +80,7 @@ export type PenumbraAPI = {
   /** Retrieve and decrypt files */
   get: (...resources: RemoteResourceWithoutFile[]) => Promise<PenumbraFiles>;
   /** Save files retrieved by Penumbra */
-  save: (data: PenumbraFiles) => Promise<void>;
+  save: (data: PenumbraFiles, fileName?: string) => Promise<void>;
   /** Load files retrieved by Penumbra into memory as a Blob */
   getBlob: (data: PenumbraFiles) => Promise<Blob>;
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
