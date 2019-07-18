@@ -12,6 +12,9 @@ const config = {
     filename: 'bundle.js',
   },
   mode: 'development',
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
   watch: false,
   module: {
     rules: [
