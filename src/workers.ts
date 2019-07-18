@@ -153,7 +153,6 @@ window.addEventListener('beforeunload', cleanup);
 
 /** Returns the list of active worker threads */
 export function getWorkers(): PenumbraWorkers {
-  const { decrypt, zip } = getWorkerLocation();
   if (!penumbra.initialized) {
     initWorkers();
   }

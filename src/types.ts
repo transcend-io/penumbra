@@ -56,3 +56,35 @@ export type ProgressEmit = CustomEvent<{
   /** The URL downloading from */
   url: string;
 }>;
+
+/** Files returned by penumbra.get() */
+export type PenumbraFiles = File[] | ReadableStream;
+
+/** Compression levels */
+export enum compression {
+  /** No compression */
+  store = 0,
+  /** Low compression */
+  low = 1,
+  /** Medium compression */
+  medium = 2,
+  /** High compression */
+  high = 3,
+}
+
+/** Penumbra API */
+export type PenumbraAPI = {
+  /** Retrieve and decrypt files */
+  get: (resources: RemoteResource[]) => Promise<PenumbraFiles>;
+  /** Save files retrieved by Penumbra */
+  save: (data: PenumbraFiles) => Promise<void>;
+  /** Load files retrieved by Penumbra into memory as a Blob */
+  getBlob: (data: PenumbraFiles) => Promise<Blob>;
+  /** Get file text (if content is viewable) or URI (if content is not viewable) */
+  getTextOrURI: (data: PenumbraFiles) => Promise<string>;
+  /** Zip files retrieved by Penumbra */
+  zip: (
+    data: PenumbraFiles,
+    compressionLevel: number,
+  ) => Promise<ReadableStream>;
+};
