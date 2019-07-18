@@ -75,7 +75,7 @@ export enum compression {
 /** Penumbra API */
 export type PenumbraAPI = {
   /** Retrieve and decrypt files */
-  get: (resources: RemoteResource[]) => Promise<PenumbraFiles>;
+  get: (...resources: RemoteResourceWithoutFile[]) => Promise<PenumbraFiles>;
   /** Save files retrieved by Penumbra */
   save: (data: PenumbraFiles) => Promise<void>;
   /** Load files retrieved by Penumbra into memory as a Blob */
