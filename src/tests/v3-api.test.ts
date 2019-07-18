@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import penumbra from '../API';
+import { penumbra } from '../index';
 import { ProgressEmit, RemoteResource } from '../types';
 
 import { hash, timeout } from './helpers';

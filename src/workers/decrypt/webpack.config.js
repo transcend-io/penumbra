@@ -6,9 +6,9 @@ const babelLoader = {
 };
 
 const config = {
-  entry: `${path.resolve(__dirname, 'src')}/index.js`,
+  entry: './index.js',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: '../../../build/workers/decrypt/',
     filename: 'worker.bundle.js',
   },
   mode: 'development',

@@ -6,10 +6,10 @@ const babelLoader = {
 };
 
 const config = {
-  entry: `${path.resolve(__dirname, 'src')}/index.js`,
+  entry: './index.js',
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'worker.bundle.js',
+    path: '../../../build/workers/zip/',
+    filename: '[name].js',
   },
   mode: 'development',
   resolve: {

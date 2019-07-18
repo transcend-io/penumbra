@@ -94,6 +94,7 @@ export function getWorkerLocation(): WorkerLocation {
   );
 
   const missing: string[] = [];
+
   if (!decrypt) {
     missing.push('decrypt');
   }

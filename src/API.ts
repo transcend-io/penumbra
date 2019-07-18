@@ -11,11 +11,10 @@ import {
 } from './types';
 
 // Local
-import fetchMany from './fetchMany';
-import { blobCache, isViewableText, spreadify } from './utils';
-import { getWorkers } from './workers';
+import { blobCache, isViewableText } from './utils';
+// import { getWorkers } from './workers';
 
-const workers = getWorkers();
+// const workers = getWorkers();
 
 /** Retrieve and decrypt files */
 async function get(
@@ -41,7 +40,8 @@ const DEFAULT_FILENAME = 'download';
 function isFileList(data: PenumbraFiles): boolean {
   return (
     !(data instanceof ReadableStream) &&
-    [...{ ...data, ...spreadify }].every((item) => item instanceof File)
+    // [...{ ...data, ...spreadify }].every((item) => item instanceof File)
+    Array.prototype.every.call(data, (item) => item instanceof File)
   );
 }
 

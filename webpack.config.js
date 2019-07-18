@@ -32,7 +32,7 @@ const config = {
         ],
       },
       {
-        test: /\.(js)?$/, // Transform all .js/.jsx files required somewhere with Babel
+        test: /\.(js|jsx)?$/, // Transform all .js/.jsx files required somewhere with Babel
         use: babelLoader,
         exclude: /node_modules/,
       },
