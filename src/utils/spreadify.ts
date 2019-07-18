@@ -8,7 +8,7 @@
  * }
  */
 const spreadify = {
-  /** Always spread */
+  /** General array-like iterator */
   *[Symbol.iterator](): any {
     const iterator = this[Symbol.iterator];
     delete this[Symbol.iterator];
