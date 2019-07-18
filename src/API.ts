@@ -5,13 +5,14 @@ import { createWriteStream } from 'streamsaver';
 import {
   compression,
   PenumbraAPI,
+  PenumbraFile,
   PenumbraFiles,
   RemoteResourceWithoutFile,
 } from './types';
 
 // Local
-import { blobCache, isViewableText } from './utils';
-import setWorkerLocation, { getWorkerLocation, getWorkers } from './workers';
+import { blobCache, isViewableText, spreadify } from './utils';
+import { getWorkers } from './workers';
 
 const workers = getWorkers();
 
@@ -39,8 +40,7 @@ const DEFAULT_FILENAME = 'download';
 function isFileList(data: PenumbraFiles): boolean {
   return (
     !(data instanceof ReadableStream) &&
-    ((data as unknown) as File[]).length > 1 &&
-    ((data as unknown) as File[])[0] instanceof File
+    [...{ ...data, ...spreadify }].every((item) => item instanceof File)
   );
 }
 
@@ -69,14 +69,14 @@ async function getBlob(data: PenumbraFiles): Promise<Blob> {
     return getBlob(await zip(data));
   }
   // data as File | ReadableStream
-  return new Response((data as unknown) as ReadableStream | File).blob();
+  return new Response((data as unknown) as PenumbraFile).blob();
 }
 
 /** Get file text (if content is viewable) or URI (if content is not viewable) */
 async function getTextOrURI(data: PenumbraFiles): Promise<string> {
   const mimetype = ((data as unknown) as File).type;
   if (mimetype && isViewableText(mimetype)) {
-    return new Response((data as unknown) as File | ReadableStream).text();
+    return new Response((data as unknown) as PenumbraFile).text();
   }
   const uri = URL.createObjectURL(
     await getBlob(isFileList(data) ? await zip(data) : data),
