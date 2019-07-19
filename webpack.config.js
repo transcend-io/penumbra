@@ -1,5 +1,5 @@
 const path = require('path');
-const WorkerPlugin = require('worker-plugin');
+// const WorkerPlugin = require('worker-plugin');
 
 const babelLoader = {
   loader: 'babel-loader',
@@ -18,6 +18,13 @@ const config = {
   watch: false,
   module: {
     rules: [
+      {
+        test: /\.worker\.ts$/,
+        use: {
+          loader: 'worker-loader',
+          // options: { inline: true },
+        },
+      },
       {
         test: /^.*\.(ts|js)?$/,
         use: [
@@ -38,11 +45,11 @@ const config = {
       },
     ],
   },
-  plugins: [
-    new WorkerPlugin({
-      globalObject: false,
-    }),
-  ],
+  // plugins: [
+  //   new WorkerPlugin({
+  //     globalObject: false,
+  //   }),
+  // ],
   devtool: 'eval-source-map',
   // target: 'web',
 };

@@ -87,8 +87,9 @@ test('v3 API: get() decrypt & getTextOrURI()', async (t) => {
       },
     }),
   );
+  t.equal(decryptedText.type, 'text');
   t.equal(
-    await hash('SHA-256', new TextEncoder().encode(decryptedText)),
+    await hash('SHA-256', new TextEncoder().encode(decryptedText.data)),
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5',
     'get() decryption test',
   );

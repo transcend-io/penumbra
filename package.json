@@ -24,7 +24,7 @@
     "####### Build #######": "",
     "webpack:workers": "cd workers/zip/ && webpack && cd ../decrypt/ && webpack && cd ../..",
     "build": "webpack",
-    "build:watch": "tsc --watch",
+    "build:watch": "webpack --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {
@@ -54,7 +54,8 @@
     "file-saver": "^2.0.2",
     "mime-types": "^2.1.24",
     "streamsaver": "^2.0.3",
-    "typedarray-to-buffer": "^3.1.5"
+    "typedarray-to-buffer": "^3.1.5",
+    "worker-loader": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",

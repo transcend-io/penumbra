@@ -1,12 +1,12 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-import { getDecryptedContent, decryptStream } from 'src/index';
+// import { decryptStream, getDecryptedContent } from 'src/index';
 
 /**
  * Penumbra Worker class
  */
-class PenumbraDecryptionWorker {
+class PenumbraZipWorker {
   /**
    * Get the contents of an encrypted file
    *
@@ -23,7 +23,7 @@ class PenumbraDecryptionWorker {
    * @param decipher Decipher instance
    * @param contentLength Content size
    * @param url URL being requested (for progress events, not fetched )
-  progressEventName?: string,
+   * @param progressEventName?: string,
    * @returns Decrypted ReadableStream
    */
   // decryptStream(...args) {
@@ -31,4 +31,4 @@ class PenumbraDecryptionWorker {
   // }
 }
 
-Comlink.expose(PenumbraDecryptionWorker);
+export default Comlink.expose(PenumbraZipWorker);
