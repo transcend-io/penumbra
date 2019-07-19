@@ -2,9 +2,9 @@ import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 
 // Types
+import { isFileList } from './typeGuards';
 import {
   compression,
-  PenumbraAPI,
   PenumbraFile,
   PenumbraFiles,
   RemoteResourceWithoutFile,
@@ -36,62 +36,74 @@ async function zip(
 
 const DEFAULT_FILENAME = 'download';
 
-/** Detect if a PenumbraFiles instance is a File[] list */
-function isFileList(data: PenumbraFiles): boolean {
-  return (
-    !(data instanceof ReadableStream) &&
-    // [...{ ...data, ...spreadify }].every((item) => item instanceof File)
-    Array.prototype.every.call(data, (item) => item instanceof File)
-  );
-}
-
 /**
  * Get the only file/stream from a single-stream PenumbraFiles.
  * Otherwise, it returns false
  */
 function getFirstStream(data: PenumbraFiles): PenumbraFile {
-  return data instanceof ReadableStream
-    ? data
-    : ((data as unknown) as File[])[0];
+  return data instanceof ReadableStream ? data : data[0];
 }
 
-/** Save files retrieved by Penumbra */
-async function save(data: PenumbraFiles, fileName?: string): Promise<void> {
-  if (isFileList(data)) {
-    // data as File[]
-    // TODO: Use streaming zip through conflux
-    const archive = await zip(data);
-    archive.pipeTo(createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`));
-  }
+/**
+ * Save files retrieved by Penumbra
+ *
+ * @param data - The data files to save
+ * @param fileName - The name of the file to save to
+ * @returns A promise that saves the files
+ */
+async function save(
+  data: PenumbraFiles,
+  fileName: string = DEFAULT_FILENAME,
+): Promise<void> {
+  // Write a readable stream to file
   if (data instanceof ReadableStream) {
-    // data as ReadableStream
-    data.pipeTo(createWriteStream(fileName || DEFAULT_FILENAME));
+    data.pipeTo(createWriteStream(fileName));
+    return saveAs(await new Response(data).blob(), fileName);
   }
-  // data as File[1]
-  const file: File = (data as File[])[0];
-  saveAs(file, file.name);
+
+  // Zip a list of files
+  // TODO: Use streaming zip through conflux
+  if (data.length > 1) {
+    const archive = await zip(data);
+    await archive.pipeTo(
+      createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`),
+    );
+    return undefined;
+  }
+  return saveAs(data[0], data[0].name);
 }
 
-/** Load files retrieved by Penumbra into memory as a Blob */
+/**
+ * Load files retrieved by Penumbra into memory as a Blob
+ *
+ * @param data - The data to load
+ * @returns A blob of the data
+ */
 async function getBlob(data: PenumbraFiles): Promise<Blob> {
   if (isFileList(data)) {
-    // data as File[]
     return getBlob(await zip(data));
   }
-  // data as File[1] | ReadableStream
   return new Response(getFirstStream(data)).blob();
 }
 
-/** Get file text (if content is viewable) or URI (if content is not viewable) */
+/**
+ * Get file text (if content is viewable) or URI (if content is not viewable)
+ *
+ * @param data - The data to get the text of
+ * @returns The text itself or a URI encoding the image if applicable
+ */
 async function getTextOrURI(data: PenumbraFiles): Promise<string> {
   const fileList = isFileList(data);
-  const stream = getFirstStream(data);
-  const { type } = stream as File;
-  if (!fileList && type && isViewableText(type)) {
-    return new Response(stream as PenumbraFile).text();
+  if (fileList) {
+    const dataAsList = data as File[];
+    const { type } = dataAsList[0];
+    if (type && isViewableText(type)) {
+      return new Response(dataAsList[0]).text();
+    }
   }
+
   const uri = URL.createObjectURL(
-    await getBlob(isFileList(data) ? await zip(data) : data),
+    await getBlob(fileList ? await zip(data) : data),
   );
   const cache = blobCache.get();
   cache.push(new URL(uri));
@@ -99,6 +111,4 @@ async function getTextOrURI(data: PenumbraFiles): Promise<string> {
   return uri;
 }
 
-const API: PenumbraAPI = { get, save, getBlob, getTextOrURI, zip };
-
-export default API;
+export default { get, save, getBlob, getTextOrURI, zip };
