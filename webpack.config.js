@@ -18,13 +18,13 @@ const config = {
   watch: false,
   module: {
     rules: [
-      {
-        test: /\.worker\.ts$/,
-        use: {
-          loader: 'worker-loader',
-          // options: { inline: true },
-        },
-      },
+      // {
+      //   test: /\.worker\.ts$/,
+      //   use: {
+      //     loader: 'worker-loader',
+      //     // options: { inline: true },
+      //   },
+      // },
       {
         test: /^.*\.(ts|js)?$/,
         use: [
@@ -36,6 +36,20 @@ const config = {
               configFile: 'tsconfig.json',
             },
           },
+        ],
+      },
+      {
+        test: /\.worker\.ts$/,
+        use: [
+          babelLoader,
+          {
+            loader: 'ts-loader',
+            options: {
+              allowTsInNodeModules: false,
+              configFile: 'tsconfig.json',
+            },
+          },
+          { loader: 'worker-loader' },
         ],
       },
       {

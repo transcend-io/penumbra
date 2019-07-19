@@ -2,10 +2,10 @@
 import Comlink, { Remote } from 'comlink';
 
 // local
-// eslint-disable-next-line import/extensions
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import PenumbraDecryptionWorker from 'worker-loader!./src/workers/decrypt.worker.ts';
-import PenumbraZipWorker from 'worker-loader!./src/workers/zip.worker.ts';
+// eslint-disable-next-line import/extensions import/no-webpack-loader-syntax
+import PenumbraDecryptionWorker from 'worker-loader!./workers/decrypt.worker';
+// eslint-disable-next-line import/extensions import/no-webpack-loader-syntax
+import PenumbraZipWorker from 'worker-loader!./workers/zip.worker';
 import getKeys from './utils/getKeys';
 
 // ///// //

@@ -23,8 +23,8 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "webpack:workers": "cd workers/zip/ && webpack && cd ../decrypt/ && webpack && cd ../..",
-    "build": "webpack",
-    "build:watch": "webpack --watch",
+    "build": "rimraf build && webpack",
+    "build:watch": "rimraf build && webpack --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {
