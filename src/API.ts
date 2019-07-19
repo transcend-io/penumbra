@@ -92,13 +92,23 @@ async function getBlob(data: PenumbraFiles): Promise<Blob> {
  * @param data - The data to get the text of
  * @returns The text itself or a URI encoding the image if applicable
  */
-async function getTextOrURI(data: PenumbraFiles): Promise<string> {
+async function getTextOrURI(
+  data: PenumbraFiles,
+): Promise<{
+  /** Data type */
+  type: 'text' | 'uri';
+  /** Data */
+  data: string;
+}> {
   const fileList = isFileList(data);
   if (fileList) {
     const dataAsList = data as File[];
     const { type } = dataAsList[0];
     if (type && isViewableText(type)) {
-      return new Response(dataAsList[0]).text();
+      return {
+        type: 'text',
+        data: await new Response(dataAsList[0]).text(),
+      };
     }
   }
 
@@ -108,7 +118,7 @@ async function getTextOrURI(data: PenumbraFiles): Promise<string> {
   const cache = blobCache.get();
   cache.push(new URL(uri));
   blobCache.set(cache);
-  return uri;
+  return { type: 'uri', data: uri };
 }
 
 export default { get, save, getBlob, getTextOrURI, zip };
