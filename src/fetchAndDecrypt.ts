@@ -19,7 +19,7 @@ export default function fetchAndDecrypt({
 }: RemoteResourceWithoutFile): Promise<ReadableStream> {
   return (
     fetch(url)
-      // Retrieve its body as ReadableStream
+      // Retrieve ReadableStream body
       .then((response) => {
         // Throw an error if we have no body to parse
         if (!response.body) {

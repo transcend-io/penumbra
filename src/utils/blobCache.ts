@@ -22,7 +22,7 @@ const blobCache: BlobCacheManager = {
   },
   /** Clear Blob cache */
   clear(): void {
-    this.get().forEach((url: URL) => {
+    this.get().forEach((url) => {
       URL.revokeObjectURL((url as unknown) as string);
     });
     this.set([]);

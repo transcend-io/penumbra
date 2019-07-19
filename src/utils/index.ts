@@ -8,6 +8,7 @@
 
 // local
 export { default as emitProgress } from './emitProgress';
+export { default as getKeys } from './getKeys';
 export { default as getOrigins } from './getOrigins';
 export { default as getMediaSrcFromRS } from './getMediaSrcFromRS';
 export { default as getTextFromRS } from './getTextFromRS';

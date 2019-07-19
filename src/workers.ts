@@ -1,6 +1,13 @@
 // comlink
 import Comlink, { Remote } from 'comlink';
 
+// local
+import getKeys from './utils/getKeys';
+
+// ///// //
+// Types //
+// ///// //
+
 /**
  * Worker location options. All options support relative URLs.
  */
@@ -29,7 +36,9 @@ export type WorkerLocation = {
   StreamSaver: URL;
 };
 
-/** An individual Penumbra Worker's interfaces */
+/**
+ * An individual Penumbra Worker's interfaces
+ */
 export type PenumbraWorker = {
   /** The worker's DOM interface */
   worker: Worker;
@@ -37,7 +46,9 @@ export type PenumbraWorker = {
   comlink: Remote<Worker>;
 };
 
-/** An individual Penumbra ServiceWorker's interfaces */
+/**
+ * An individual Penumbra ServiceWorker's interfaces
+ */
 export type PenumbraServiceWorker = {
   /** The worker's DOM interface */
   worker: ServiceWorker;
@@ -54,6 +65,10 @@ export type PenumbraWorkers = {
   /** The StreamSaver ServiceWorker */
   StreamSaver?: PenumbraServiceWorker;
 };
+
+// //// //
+// Init //
+// //// //
 
 if (!document.currentScript) {
   throw new Error('Penumbra must be included in a document');
@@ -82,6 +97,10 @@ function resolve(url: string): URL {
   // eslint-disable-next-line no-restricted-globals
   return new URL(resolver.href, location.href);
 }
+
+// /////// //
+// Methods //
+// /////// //
 
 /**
  * Gets worker location configuration
@@ -147,14 +166,13 @@ export function createPenumbraWorker(url: URL | string): PenumbraWorker {
   //   //   return { worker, comlink: Comlink.wrap(worker) };
   //   // }
   //   default: {
-  const worker = new Worker((url as unknown) as string, { type: 'module' });
+  const worker = new Worker(url, { type: 'module' });
   return { worker, comlink: Comlink.wrap(worker) };
   //   }
   // }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const workers: any = {};
+const workers: Partial<PenumbraWorkers> = {};
 
 /** Initializes web worker threads */
 export function initWorkers(): void {
@@ -162,32 +180,41 @@ export function initWorkers(): void {
     const { decrypt, zip } = getWorkerLocation();
     workers.decrypt = createPenumbraWorker(decrypt);
     workers.zip = createPenumbraWorker(zip);
-    penumbra.initialized = (true as unknown) as string;
+    penumbra.initialized = 'true';
   }
 }
 
 /**
- * De-allocate temporary Worker object URLs
+ * Get the initialize the workers (only does this once).s
+ *
+ * @returns The list of active worker threads
  */
-function cleanup(): void {
-  const threads = Object.keys(workers);
-  threads.forEach((thread: string) => {
-    const { worker } = workers[thread];
-    if (worker) {
-      worker.terminate();
-    }
-  });
-}
-
-window.addEventListener('beforeunload', cleanup);
-
-/** Returns the list of active worker threads */
 export function getWorkers(): PenumbraWorkers {
   if (!penumbra.initialized) {
     initWorkers();
   }
   return workers as PenumbraWorkers;
 }
+
+/**
+ * De-allocate temporary Worker object URLs
+ */
+function cleanup(): void {
+  const initializedWorked = getWorkers();
+  const threads = getKeys(initializedWorked);
+  threads.forEach((thread) => {
+    const workerInstance = initializedWorked[thread];
+    if (
+      workerInstance &&
+      workerInstance.worker &&
+      workerInstance.worker instanceof Worker
+    ) {
+      workerInstance.worker.terminate();
+    }
+  });
+}
+
+window.addEventListener('beforeunload', cleanup);
 
 /**
  * Sets worker location configuration
