@@ -31,4 +31,4 @@ class PenumbraDecryptionWorker {
   // }
 }
 
-export default Comlink.expose(PenumbraDecryptionWorker);
+Comlink.expose(PenumbraDecryptionWorker);

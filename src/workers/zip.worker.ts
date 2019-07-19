@@ -31,4 +31,4 @@ class PenumbraZipWorker {
   // }
 }
 
-export default Comlink.expose(PenumbraZipWorker);
+Comlink.expose(PenumbraZipWorker);

@@ -49,7 +49,10 @@ const config = {
               configFile: 'tsconfig.json',
             },
           },
-          { loader: 'worker-loader' },
+          {
+            loader: 'worker-loader',
+            options: { inline: true },
+          },
         ],
       },
       {

@@ -1,10 +1,10 @@
+/* eslint-disable import/no-webpack-loader-syntax */
+
 // comlink
 import Comlink, { Remote } from 'comlink';
 
 // local
-// eslint-disable-next-line import/extensions import/no-webpack-loader-syntax
 import PenumbraDecryptionWorker from 'worker-loader!./workers/decrypt.worker';
-// eslint-disable-next-line import/extensions import/no-webpack-loader-syntax
 import PenumbraZipWorker from 'worker-loader!./workers/zip.worker';
 import getKeys from './utils/getKeys';
 
@@ -143,19 +143,22 @@ export function getWorkerLocation(): WorkerLocation {
   };
 }
 
+const workers: Partial<PenumbraWorkers> = {};
+
 /** Instantiate a Penumbra Worker */
 export function createPenumbraWorker(url: URL | string): PenumbraWorker {
+  const workerConf = getWorkerLocation();
   // Use string literals to provide default worker URL hints to webpack
   switch (String(url)) {
-    case DEFAULT_WORKERS.decrypt: {
+    case String(workerConf.decrypt): {
       const worker = new PenumbraDecryptionWorker();
       return { worker, comlink: Comlink.wrap(worker) };
     }
-    case DEFAULT_WORKERS.zip: {
+    case String(workerConf.zip): {
       const worker = new PenumbraZipWorker();
       return { worker, comlink: Comlink.wrap(worker) };
     }
-    // case DEFAULT_WORKERS.StreamSaver: {
+    // case String(workerConf).StreamSaver: {
     //   const worker = new Worker('./streamsaver.js', { type: 'module' });
     //   return { worker, comlink: Comlink.wrap(worker) };
     // }
@@ -166,15 +169,13 @@ export function createPenumbraWorker(url: URL | string): PenumbraWorker {
   }
 }
 
-const workers: Partial<PenumbraWorkers> = {};
-
 /** Initializes web worker threads */
 export function initWorkers(): void {
   if (!penumbra.initialized) {
     const { decrypt, zip } = getWorkerLocation();
     workers.decrypt = createPenumbraWorker(decrypt);
     workers.zip = createPenumbraWorker(zip);
-    penumbra.initialized = 'true';
+    penumbra.initialized = 'yes';
   }
 }
 
@@ -194,10 +195,10 @@ export function getWorkers(): PenumbraWorkers {
  * De-allocate temporary Worker object URLs
  */
 function cleanup(): void {
-  const initializedWorked = getWorkers();
-  const threads = getKeys(initializedWorked);
+  const initializedWorkers = getWorkers();
+  const threads = getKeys(initializedWorkers);
   threads.forEach((thread) => {
-    const workerInstance = initializedWorked[thread];
+    const workerInstance = initializedWorkers[thread];
     if (
       workerInstance &&
       workerInstance.worker &&
