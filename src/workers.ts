@@ -124,13 +124,13 @@ export function createPenumbraWorker(url: URL | string): PenumbraWorker {
   // Use string literals to provide default worker URL hints to webpack
   switch (String(url)) {
     case DEFAULT_WORKERS.decrypt: {
-      const worker = new Worker('penumbra-decrypt.worker.js', {
+      const worker = new Worker('./penumbra-decrypt.worker.ts', {
         type: 'module',
       });
       return { worker, comlink: Comlink.wrap(worker) };
     }
     case DEFAULT_WORKERS.zip: {
-      const worker = new Worker('penumbra-zip.worker.js', {
+      const worker = new Worker('./penumbra-zip.worker.ts', {
         type: 'module',
       });
       return { worker, comlink: Comlink.wrap(worker) };

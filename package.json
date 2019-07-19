@@ -23,7 +23,7 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "webpack:temp": "webpack",
-    "build": "rimraf build && tsc && webpack",
+    "build": "webpack",
     "build:watch": "tsc --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },

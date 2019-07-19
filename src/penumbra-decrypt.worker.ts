@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-import { getDecryptedContent, decryptStream } from '../build/src/index';
+import { Decipher } from 'crypto';
+import { decryptStream, getDecryptedContent } from '.';
+import { RemoteResourceWithoutFile } from './types';
 
 /**
  * Penumbra Worker class
@@ -13,8 +15,11 @@ class PenumbraDecryptionWorker {
    * @param options - FetchDecryptedContentOptions
    * @returns The file contents
    */
-  getDecryptedContent(...args) {
-    return getDecryptedContent(...args);
+  public getDecryptedContent(
+    resource: RemoteResourceWithoutFile,
+    alwaysResponse: boolean,
+  ): Promise<string | Response> {
+    return getDecryptedContent(resource, alwaysResponse);
   }
 
   /**
@@ -27,8 +32,14 @@ class PenumbraDecryptionWorker {
   progressEventName?: string,
    * @returns Decrypted ReadableStream
    */
-  decryptStream(...args) {
-    return decryptStream(...args);
+  public decryptStream(
+    rs: ReadableStream,
+    decipher: Decipher,
+    contentLength: number,
+    url: string,
+    progressEventName?: string,
+  ): ReadableStream {
+    return decryptStream(rs, decipher, contentLength, url, progressEventName);
   }
 }
 

@@ -5,7 +5,7 @@ import { Decipher } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
 
 // Comlink
-import * as Comlink from 'comlink';
+// import * as Comlink from 'comlink';
 
 // utils
 import { emitProgress } from './utils';
