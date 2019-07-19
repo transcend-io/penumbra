@@ -11,7 +11,7 @@ import { saveAs } from 'file-saver';
 import { downloadEncryptedFile, getDecryptedContent } from '../build/src/index';
 import * as files from './files';
 
-const USE_SERVICE_WORKER = false;
+const USE_SERVICE_WORKER = true;
 const app = document.getElementById('app');
 
 const S3_URL = 'https://s3-us-west-2.amazonaws.com/bencmbrook/';

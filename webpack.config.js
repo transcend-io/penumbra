@@ -1,15 +1,21 @@
 const path = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
-const babelLoader = {
-  loader: 'babel-loader',
-};
-
 const config = {
-  entry: `${path.resolve(__dirname, 'src')}/index.ts`,
+  entry: {
+    bundle: `${path.resolve(__dirname, 'src')}/index.ts`,
+    'decrypt.penumbra.worker': `${path.resolve(
+      __dirname,
+      'src',
+    )}/decrypt.penumbra.worker.js`,
+    'zip.penumbra.worker': `${path.resolve(
+      __dirname,
+      'src',
+    )}/zip.penumbra.worker.js`,
+  },
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js',
+    filename: '[name].js',
   },
   mode: 'development',
   resolve: {
@@ -18,17 +24,9 @@ const config = {
   watch: false,
   module: {
     rules: [
-      // {
-      //   test: /\.worker\.ts$/,
-      //   use: {
-      //     loader: 'worker-loader',
-      //     // options: { inline: true },
-      //   },
-      // },
       {
-        test: /^.*\.(ts|js)?$/,
+        test: /\.ts$/,
         use: [
-          babelLoader,
           {
             loader: 'ts-loader',
             options: {
@@ -37,29 +35,38 @@ const config = {
             },
           },
         ],
-      },
-      {
-        test: /\.worker\.ts$/,
-        use: [
-          babelLoader,
-          {
-            loader: 'ts-loader',
-            options: {
-              allowTsInNodeModules: false,
-              configFile: 'tsconfig.json',
-            },
-          },
-          {
-            loader: 'worker-loader',
-            options: { inline: true },
-          },
-        ],
-      },
-      {
-        test: /\.(js|jsx)?$/, // Transform all .js/.jsx files required somewhere with Babel
-        use: babelLoader,
         exclude: /node_modules/,
       },
+      {
+        test: /\.js$/,
+        use: 'babel-loader',
+        exclude: /node_modules/,
+      },
+      // {
+      //   test: /\.worker\.js$/,
+      //   use: [
+      //     {
+      //       loader: 'babel-loader',
+      //     },
+      //     {
+      //       loader: 'ts-loader',
+      //       options: {
+      //         allowTsInNodeModules: false,
+      //         configFile: 'tsconfig.json',
+      //       },
+      //     },
+      //     // {
+      //     //   loader: 'worker-loader',
+      //     //   // options: { inline: true },
+      //     // },
+      //   ],
+      //   // exclude: /node_modules/,
+      // },
+      // {
+      //   test: /\.(js|jsx)?$/, // Transform all .js/.jsx files required somewhere with Babel
+      //   use: babelLoader,
+      //   exclude: /node_modules/,
+      // },
     ],
   },
   // plugins: [

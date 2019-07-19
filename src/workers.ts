@@ -4,8 +4,8 @@
 import Comlink, { Remote } from 'comlink';
 
 // local
-import PenumbraDecryptionWorker from 'worker-loader!./workers/decrypt.worker';
-import PenumbraZipWorker from 'worker-loader!./workers/zip.worker';
+// import PenumbraDecryptionWorker from 'worker-loader!./decrypt.penumbra.worker';
+// import PenumbraZipWorker from 'worker-loader!./zip.penumbra.worker';
 import getKeys from './utils/getKeys';
 
 // ///// //
@@ -86,9 +86,9 @@ const resolver = document.createElementNS(
 ) as HTMLAnchorElement;
 
 const DEFAULT_WORKERS = {
-  decrypt: 'penumbra-decrypt.worker.js',
-  zip: 'penumbra-zip.worker.js',
-  StreamSaver: 'streamsaver.js',
+  decrypt: 'decrypt.penumbra.worker.js',
+  zip: 'zip.penumbra.worker.js',
+  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
 const DEFAULT_WORKERS_JSON = JSON.stringify(DEFAULT_WORKERS);
@@ -147,19 +147,20 @@ const workers: Partial<PenumbraWorkers> = {};
 
 /** Instantiate a Penumbra Worker */
 export function createPenumbraWorker(url: URL | string): PenumbraWorker {
-  const workerConf = getWorkerLocation();
   // Use string literals to provide default worker URL hints to webpack
   switch (String(url)) {
-    case String(workerConf.decrypt): {
-      const worker = new PenumbraDecryptionWorker();
-      return { worker, comlink: Comlink.wrap(worker) };
-    }
-    case String(workerConf.zip): {
-      const worker = new PenumbraZipWorker();
-      return { worker, comlink: Comlink.wrap(worker) };
-    }
-    // case String(workerConf).StreamSaver: {
-    //   const worker = new Worker('./streamsaver.js', { type: 'module' });
+    // case DEFAULT_WORKERS.decrypt: {
+    //   const worker = new Worker('decrypt.penumbra.worker.js', {
+    //     type: 'module',
+    //   });
+    //   return { worker, comlink: Comlink.wrap(worker) };
+    // }
+    // case DEFAULT_WORKERS.zip: {
+    //   const worker = new Worker('zip.penumbra.worker.js', { type: 'module' });
+    //   return { worker, comlink: Comlink.wrap(worker) };
+    // }
+    // case DEFAULT_WORKERS.StreamSaver: {
+    //   const worker = new Worker('./streamsaver.penumbra.serviceworker.js', { type: 'module' });
     //   return { worker, comlink: Comlink.wrap(worker) };
     // }
     default: {
