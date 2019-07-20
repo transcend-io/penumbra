@@ -7,16 +7,14 @@
   <br /><br />
   <i>Coming soon. This repo is currently a work in progress.</i>
   <br /><br />
-  <img href="https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master" alt="Travis (.com)" src="https://travis-ci.com/transcend-io/penumbra.svg">
+  <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a>
+  <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
+  <a href="https://codecov.io/gh/transcend-io/penumbra"><img src="https://codecov.io/gh/transcend-io/penumbra/branch/master/graph/badge.svg" alt="Code Coverage"></a>
+  <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
+  <br /><br />
+  <a href="https://saucelabs.com/u/penumbra"><img src="https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e" alt="Sauce Test Status"></a>
 </p>
 <br />
-
-[![Build Status](https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master)](https://travis-ci.com/transcend-io/penumbra)
-[![Known Vulnerabilities](https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json)](https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json)
-[![codecov](https://codecov.io/gh/transcend-io/penumbra/branch/master/graph/badge.svg)](https://codecov.io/gh/transcend-io/penumbra)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status)](https://app.netlify.com/sites/penumbra-demo/deploys)
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e)](https://saucelabs.com/u/penumbra)
 
 ## Usage
 
