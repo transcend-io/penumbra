@@ -20,19 +20,19 @@
 
 ### .get
 Fetch and decrypt remote files
-```js
+```ts
 penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFiles[]>
 ```
 
 ### .save
 Save files retrieved by Penumbra
-```js
+```ts
 penumbra.save(data: PenumbraFiles, fileName?: string): Promise<void>
 ```
 
 ### .getBlob
 Load files retrieved by Penumbra into memory as a Blob
-```js
+```ts
 penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
 ```
 
@@ -46,7 +46,7 @@ penumbra.getTextOrURI(data: PenumbraFiles): Promise<{ type: 'text'|'uri', data: 
 ### .zip
 Zip files retrieved by Penumbra
 
-```js
+```ts
 penumbra.zip(data: PenumbraFiles, compressionLevel?: number): Promise<ReadableStream>
 ```
 
