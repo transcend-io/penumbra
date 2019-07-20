@@ -53,7 +53,8 @@
     "file-saver": "^2.0.2",
     "mime-types": "^2.1.24",
     "streamsaver": "^2.0.3",
-    "typedarray-to-buffer": "^3.1.5"
+    "typedarray-to-buffer": "^3.1.5",
+    "@transcend-io/penumbra": "^2.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",

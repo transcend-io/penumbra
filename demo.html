@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Penumbra Demo</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <h1>Penumbra: Browser Decryption Demo</h1>
+      <button onclick="downloadManyFiles()">Download all data</button>
+    </div>
+    <script type="application/ecmascript">
+      document.body.appendChild(document.createElement("script")).src = "build/bundle.js?" + Math.random() // cache-buster
+    </script>
+    <script type="application/javascript">
+      console.log(typeof penumbra);
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-// import { decryptStream, getDecryptedContent } from 'src/index';
+import { decryptStream, getDecryptedContent } from '@transcend-io/penumbra';
 
 /**
  * Penumbra Worker class
@@ -13,9 +13,10 @@ class PenumbraDecryptionWorker {
    * @param options - FetchDecryptedContentOptions
    * @returns The file contents
    */
-  // getDecryptedContent(...args) {
-  //   return getDecryptedContent(...args);
-  // }
+  getDecryptedContent(...args) {
+    return getDecryptedContent(...args);
+  }
+
   /**
    * Get the contents of an encrypted file
    *
@@ -26,9 +27,9 @@ class PenumbraDecryptionWorker {
    * @param progressEventName?: string,
    * @returns Decrypted ReadableStream
    */
-  // decryptStream(...args) {
-  //   return decryptStream(...args);
-  // }
+  decryptStream(...args) {
+    return decryptStream(...args);
+  }
 }
 
 Comlink.expose(PenumbraDecryptionWorker);
