@@ -18,26 +18,60 @@
 
 ## Usage
 
-Display an encrypted file
+### .get
+Fetch and decrypt remote files
+```js
+penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFiles[]>
+```
+
+### .save
+Save files retrieved by Penumbra
+```js
+penumbra.save(data: PenumbraFiles, fileName?: string): Promise<void>
+```
+
+### .getBlob
+Load files retrieved by Penumbra into memory as a Blob
+```js
+penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
+```
+
+### .getTextOrURI 
+Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) (if content is not viewable).
 
 ```js
-// Decrypt and display text
-const decryptedText = await penumbra.getDecryptedContent({
+penumbra.getTextOrURI(data: PenumbraFiles): Promise<{ type: 'text'|'uri', data: string }>
+```
+
+### .zip
+Zip files retrieved by Penumbra
+
+```js
+penumbra.zip(data: PenumbraFiles, compressionLevel?: number): Promise<ReadableStream>
+```
+
+## Examples
+
+### Display encrypted text
+
+```js
+const decryptedText = await penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-  filePrefix: 'NYT',
   mimetype: 'text/plain',
+  filePrefix: 'NYT',
   decryptionOptions: {
     key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
     iv: '6lNU+2vxJw6SFgse',
     authTag: 'gadZhS1QozjEmfmHLblzbg==',
   },
-});
+}).then(file => penumbra.getTextOrURI(file));
 
 document.getElementById('my-paragraph').innerText = decryptedText;
+```
 
-
-// Decrypt and display media
-const imageSrc = await penumbra.getDecryptedContent({
+### Display encrypted image
+```js
+const imageSrc = await penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
   filePrefix: 'tortoise',
   mimetype: 'image/jpeg',
@@ -46,15 +80,14 @@ const imageSrc = await penumbra.getDecryptedContent({
     iv: '6lNU+2vxJw6SFgse',
     authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
   },
-})
+}).then(file => penumbra.getTextOrURI(file));
 
 document.getElementById('my-img').src = imageSrc;
 ```
 
-Download an encrypted file
-
+### Download an encrypted file
 ```js
-penumbra.downloadEncryptedFile({
+penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
   filePrefix: 'africa',
   mimetype: 'image/jpeg',
@@ -63,11 +96,43 @@ penumbra.downloadEncryptedFile({
     iv: '6lNU+2vxJw6SFgse',
     authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
   },
-  progressEventName: 'download-progress' // defaults to the url
-});
+}).then(file => penumbra.save(file));
+
+// saves africa.jpg file to disk
 ```
 
-## Prepare connections for file downloads in advance
+### Download many encrypted files
+```js
+penumbra.get([{
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
+  filePrefix: 'africa',
+  mimetype: 'image/jpeg',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+  },
+}, {
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  mimetype: 'text/plain',
+  filePrefix: 'NYT',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+}, {
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg', // this is not encrypted
+  filePrefix: 'tortoise',
+  mimetype: 'image/jpeg',
+}]).then(files => penumbra.save({ data: files, fileName: 'example' }));
+
+// saves example.zip file to disk
+```
+
+## Advanced
+
+### Prepare connections for file downloads in advance
 
 ```js
 // Resources to load
@@ -101,14 +166,29 @@ penumbra.preconnect(...resources);
 penumbra.preload(...resources);
 ```
 
-## Download Progress Event Emitter
+### Download Progress Event Emitter
 
-You can listen to a download progress event. The event name is the same as the `url` parameter
+You can listen to a download progress event. The event name defaults to the `url` parameter of the `RemoteResource` argument to `.get`. 
 
 ```js
 window.addEventListener(url, e => {
   console.log(`${e.detail.percent}% done`);
 });
+```
+
+You may also pass in a custom progress event name with `progressEventName`.
+```js
+penumbra.get({
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  mimetype: 'text/plain',
+  filePrefix: 'NYT',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+  progressEventName: 'MY_CUSTOM_NAME',
+})
 ```
 
 Note: this feature requires the `Content-Length` response header to be exposed. This works by adding `Access-Control-Expose-Headers: Content-Length` to the response header (read more [here](https://www.html5rocks.com/en/tutorials/cors/) and [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers))
