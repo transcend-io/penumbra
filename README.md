@@ -1,6 +1,15 @@
-# Penumbra (work in progress)
-
-Note: this repo is a work in progress and should not be used in production yet.
+<p align="center">
+  <img alt="Penumbra by Transcend" src="https://user-images.githubusercontent.com/7354176/61583246-43519500-aaea-11e9-82a2-e7470f3d4e00.png"/>
+</p>
+<h1 align="center">Penumbra</h1>
+<p align="center">
+  <strong>Fetch and decrypt files in the browser using whatwg streams.</strong>
+  <br /><br />
+  <i>Coming soon. This repo is currently a work in progress.</i>
+  <br /><br />
+  <img href="https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master" alt="Travis (.com)" src="https://travis-ci.com/transcend-io/penumbra.svg">
+</p>
+<br />
 
 [![Build Status](https://travis-ci.com/transcend-io/penumbra.svg?token=XTquxQxQzsVSbyH7sopX&branch=master)](https://travis-ci.com/transcend-io/penumbra)
 [![Known Vulnerabilities](https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json)](https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json)
