@@ -16,8 +16,13 @@ test('getDecryptedContent: text', async (t) => {
       authTag: 'gadZhS1QozjEmfmHLblzbg==',
     },
   });
+
+  if (typeof decryptedText !== 'string') {
+    throw new Error('Decrypted text expected to be a string!');
+  }
+
   t.equal(
-    await hash('SHA-256', new TextEncoder().encode(decryptedText as string)),
+    await hash('SHA-256', new TextEncoder().encode(decryptedText)),
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5',
   );
   t.end();
@@ -29,14 +34,46 @@ test('getDecryptedContent: unencrypted content', async (t) => {
     filePrefix: 'NYT',
     mimetype: 'text/plain',
   });
+
+  if (typeof text !== 'string') {
+    throw new Error('Decrypted text expected to be a string!');
+  }
+
   t.equal(
-    await hash('SHA-256', new TextEncoder().encode(text as string)),
+    await hash('SHA-256', new TextEncoder().encode(text)),
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5',
   );
   t.end();
 });
 
-test('getDecryptedContent: images', async (t) => {
+test('getDecryptedContent: images (as Response)', async (t) => {
+  const content = await getDecryptedContent(
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+      filePrefix: 'tortoise',
+      mimetype: 'image/jpeg',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+      },
+    },
+    true,
+  );
+
+  if (typeof content === 'string') {
+    throw new Error('Decrypted content expected to be a Response!');
+  }
+
+  const imageBytes = await content.arrayBuffer();
+  t.equals(
+    await hash('SHA-256', imageBytes),
+    '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95',
+  );
+  t.end();
+});
+
+test('getDecryptedContent: images (as URL)', async (t) => {
   const url = await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
     filePrefix: 'tortoise',
@@ -48,14 +85,19 @@ test('getDecryptedContent: images', async (t) => {
     },
   });
   let isURL = true;
+
+  if (typeof url !== 'string') {
+    throw new Error('url expected to be a string!');
+  }
+
   try {
     // tslint:disable-next-line: no-unused-expression
-    new URL(url as string, location.href); // eslint-disable-line no-new,no-restricted-globals
+    new URL(url, location.href); // eslint-disable-line no-new,no-restricted-globals
   } catch (ex) {
     isURL = false;
   }
   t.assert(isURL);
-  const imageBytes = await fetch(url as string).then((r) => r.arrayBuffer());
+  const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
   t.equals(
     await hash('SHA-256', imageBytes),
     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95',

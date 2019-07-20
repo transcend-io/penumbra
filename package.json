@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "2.0.7",
+  "version": "3.0.0",
   "description": "Crypto streams for the browser.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -22,8 +22,8 @@
     "check:deps": "npm-check --ignore \"{}\"",
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
-    "build": "rimraf build && tsc",
-    "build:watch": "tsc --watch",
+    "build": "rimraf build && webpack",
+    "build:watch": "rimraf build && webpack --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {
@@ -49,20 +49,23 @@
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "crypto-browserify": "^3.12.0",
+    "comlink": "^4.0.1",
     "file-saver": "^2.0.2",
     "mime-types": "^2.1.24",
     "streamsaver": "^2.0.3",
     "typedarray-to-buffer": "^3.1.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.4",
     "@types/file-saver": "^2.0.1",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^12.6.2",
     "@types/tape": "^4.2.33",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
-    "airtap": "^2.0.2",
+    "airtap": "^2.0.3",
     "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
     "check-deps": "^1.4.1",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -76,8 +79,12 @@
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
     "tape": "^4.11.0",
+    "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.5",
+    "worker-plugin": "^3.1.0"
   }
 }

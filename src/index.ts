@@ -13,3 +13,5 @@ export { default as downloadEncryptedFile } from './downloadEncryptedFile';
 export { default as fetchAndDecrypt } from './fetchAndDecrypt';
 export { default as fetchMany, preconnect, preload } from './fetchMany';
 export { default as getDecryptedContent } from './getDecryptedContent';
+export { default as setWorkerLocation } from './workers';
+export { default as penumbra } from './API';

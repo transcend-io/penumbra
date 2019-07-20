@@ -18,8 +18,7 @@ test('downloadEncryptedFile', async (t) => {
   let lastPercent: number;
   const onprogress = (evt: ProgressEmit): void => {
     const { percent } = evt.detail;
-    // eslint-disable-next-line no-restricted-globals
-    if (!isNaN(percent)) {
+    if (!Number.isNaN(percent)) {
       if (!initFinished) {
         initTimeout.clear();
         stallTimeout = timeout(fail, 10);

@@ -6,12 +6,12 @@
  */
 
 import * as Comlink from 'comlink';
-import * as JSZip from 'jszip'; // TODO switch to @transcend-io/conflux
+import * as JSZip from 'jszip'; // TODO: switch to @transcend-io/conflux
 import { saveAs } from 'file-saver';
 import { downloadEncryptedFile, getDecryptedContent } from '../build/src/index';
 import * as files from './files';
 
-const USE_SERVICE_WORKER = false;
+const USE_SERVICE_WORKER = true;
 const app = document.getElementById('app');
 
 const S3_URL = 'https://s3-us-west-2.amazonaws.com/bencmbrook/';
@@ -167,20 +167,20 @@ function downloadMany(fileList) {
 
   let tick = false;
 
-  Object.keys(fileList).forEach((fileName) => {
-    const decryptedBlobPromise = getDecryptedContent(
+  Object.keys(fileList).forEach(async (fileName) => {
+    const decryptedResponsePromise = await getDecryptedContent(
       {
         url: S3_URL + fileList[fileName].filePrefix,
         ...fileList[fileName],
       },
       true,
-    );
+    ).arrayBuffer();
 
     tick = !tick;
     if (tick) {
-      folder1.file(fileName, decryptedBlobPromise);
+      folder1.file(fileName, decryptedResponsePromise);
     } else {
-      folder2.file(fileName, decryptedBlobPromise);
+      folder2.file(fileName, decryptedResponsePromise);
     }
   });
 

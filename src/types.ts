@@ -10,7 +10,7 @@
 /**
  * Make selected object keys defined by K optional in type T
  */
-export type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 /**
  * A file to download from a remote resource, that is optionally encrypted
@@ -56,3 +56,21 @@ export type ProgressEmit = CustomEvent<{
   /** The URL downloading from */
   url: string;
 }>;
+
+/** File returned by penumbra.get() */
+export type PenumbraFile = File | ReadableStream;
+
+/** Files returned by penumbra.get() */
+export type PenumbraFiles = File[] | ReadableStream;
+
+/** Compression levels */
+export enum compression {
+  /** No compression */
+  store = 0,
+  /** Low compression */
+  low = 1,
+  /** Medium compression */
+  medium = 2,
+  /** High compression */
+  high = 3,
+}
