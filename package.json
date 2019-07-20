@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "2.0.8",
+  "version": "3.0.0",
   "description": "Crypto streams for the browser.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -22,7 +22,6 @@
     "check:deps": "npm-check --ignore \"{}\"",
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
-    "webpack:workers": "cd workers/zip/ && webpack && cd ../decrypt/ && webpack && cd ../..",
     "build": "rimraf build && webpack",
     "build:watch": "rimraf build && webpack --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
