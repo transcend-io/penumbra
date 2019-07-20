@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Penumbra</h1>
 <p align="center">
-  <strong>Fetch and decrypt files in the browser using whatwg streams.</strong>
+  <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
   <br /><br />
   <i>Coming soon. This repo is currently a work in progress.</i>
   <br /><br />
