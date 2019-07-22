@@ -5,8 +5,10 @@ import { createWriteStream } from 'streamsaver';
 import { isFileList } from './typeGuards';
 import {
   compression,
+  PenumbraAPI,
   PenumbraFile,
   PenumbraFiles,
+  PenumbraView,
   RemoteResourceWithoutFile,
 } from './types';
 
@@ -121,4 +123,6 @@ async function getTextOrURI(
   return { type: 'uri', data: uri };
 }
 
-export default { get, save, getBlob, getTextOrURI, zip };
+const penumbra: PenumbraAPI = { get, save, getBlob, getTextOrURI, zip };
+
+export default penumbra;

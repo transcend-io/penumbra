@@ -74,3 +74,33 @@ export enum compression {
   /** High compression */
   high = 3,
 }
+
+/** Penumbra API */
+export type PenumbraAPI = {
+  /** Retrieve and decrypt files */
+  get: (...resources: RemoteResourceWithoutFile[]) => Promise<PenumbraFiles>;
+  /** Save files retrieved by Penumbra */
+  save: (data: PenumbraFiles, fileName?: string) => Promise<void>;
+  /** Load files retrieved by Penumbra into memory as a Blob */
+  getBlob: (data: PenumbraFiles) => Promise<Blob>;
+  /** Get file text (if content is viewable) or URI (if content is not viewable) */
+  getTextOrURI: (
+    data: PenumbraFiles,
+  ) => Promise<{
+    /** Type of response data */
+    type: 'text' | 'uri';
+    /** The response data */
+    data: string;
+  }>;
+  /** Zip files retrieved by Penumbra */
+  zip: (
+    data: PenumbraFiles,
+    compressionLevel?: number,
+  ) => Promise<ReadableStream>;
+};
+
+/** Penumbra API as exposed on the current DOM AbstractView */
+export type PenumbraView = Window & {
+  /** Root API property */
+  penumbra?: PenumbraAPI;
+};
