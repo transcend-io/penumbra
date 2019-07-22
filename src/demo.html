@@ -10,7 +10,22 @@
       <h1>Penumbra Demo</h1>
     </div>
     <script type="application/ecmascript">
-      document.body.appendChild(document.createElement("script")).src = "bundle.js?" + Math.random() // cache buster
+      (() => {
+        let script = document.createElement("script");
+        let cacheBuster = Math.random().toString(10).slice(2);
+
+        script.async = true;
+        script.defer = true;
+
+        script.dataset.workers = JSON.stringify({
+          decrypt: "decrypt.penumbra.worker.js?" + cacheBuster,
+          zip: "zip.penumbra.worker.js?" + cacheBuster,
+          StreamSaver: "streamsaver.penumbra.serviceworker.js?" + cacheBuster,
+        });
+        script.src = "penumbra.js?" + cacheBuster;
+
+        document.body.appendChild(script);
+      })();
     </script>
   </body>
 </html>

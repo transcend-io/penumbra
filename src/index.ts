@@ -21,5 +21,5 @@ export { default as setWorkerLocation } from './workers';
 
 export default penumbra;
 
-const penumbraView: PenumbraView = (self || exports) as Window;
-penumbraView.penumbra = penumbra;
+const view: PenumbraView = (self || exports) as Window;
+view.penumbra = penumbra;

@@ -3,7 +3,7 @@ const path = require('path');
 
 const config = {
   entry: {
-    bundle: `${path.resolve(__dirname, 'src')}/index.ts`,
+    penumbra: `${path.resolve(__dirname, 'src')}/index.ts`,
     'decrypt.penumbra.worker': `${path.resolve(
       __dirname,
       'src',
@@ -35,12 +35,12 @@ const config = {
             },
           },
         ],
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
       },
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
       },
       // {
       //   test: /\.worker\.js$/,

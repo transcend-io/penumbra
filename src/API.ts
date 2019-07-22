@@ -14,16 +14,16 @@ import {
 
 // Local
 import { blobCache, isViewableText } from './utils';
-// import { getWorkers } from './workers';
+import { getWorkers } from './workers';
 
-// const workers = getWorkers();
+const workers = getWorkers();
 
 /** Retrieve and decrypt files */
 async function get(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<PenumbraFiles> {
   // workers.decrypt.comlink;
-  console.error('penumbra.get() is unimplemented');
+  console.log('penumbra.get() called');
   return ['', ''].map((s) => new File([s], s));
 }
 
