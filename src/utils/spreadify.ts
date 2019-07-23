@@ -7,20 +7,20 @@
  *   item.doStuff();
  * }
  */
-const spreadify = {
-  /** General array-like iterator */
-  *[Symbol.iterator](): any {
-    const iterator = this[Symbol.iterator];
-    delete this[Symbol.iterator];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of Array.from(this)) {
-      yield item;
-    }
-    this[Symbol.iterator] = iterator;
-  },
-};
+// const spreadify = {
+//   /** General array-like iterator */
+//   *[Symbol.iterator](): any {
+//     const iterator = this[Symbol.iterator];
+//     delete this[Symbol.iterator];
+//     // eslint-disable-next-line no-restricted-syntax
+//     for (const item of Array.from(this)) {
+//       yield item;
+//     }
+//     this[Symbol.iterator] = iterator;
+//   },
+// };
 
-export default spreadify;
+// export default spreadify;
 
 // /** Alternative spreadify implementation with `...spreadify.once` */
 // const spreadify = {
