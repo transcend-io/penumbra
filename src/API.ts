@@ -2,13 +2,13 @@ import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 
 // Types
-import { isFileList } from './typeGuards';
+import { isStreamList } from './typeGuards';
 import {
   compression,
   PenumbraAPI,
+  PenumbraDecryptionWorkerAPI,
   PenumbraFile,
   PenumbraFiles,
-  PenumbraView,
   RemoteResourceWithoutFile,
 } from './types';
 
@@ -16,16 +16,33 @@ import {
 import { blobCache, isViewableText } from './utils';
 import { getWorkers } from './workers';
 
-const workers = getWorkers();
+// const workers = await getWorkers();
 
 /** Retrieve and decrypt files */
 async function get(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<PenumbraFiles> {
-  // workers.decrypt.comlink;
+  // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
+  // eslint-disable-next-line no-restricted-globals
+  const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
+  const text = await new DecryptionChannel().then((thread) =>
+    (thread as PenumbraDecryptionWorkerAPI).fetchMany(...resources),
+  );
   console.log('penumbra.get() called');
+  console.log(text);
   return ['', ''].map((s) => new File([s], s));
 }
+
+get.TEST = {
+  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  filePrefix: 'NYT',
+  mimetype: 'text/plain',
+  decryptionOptions: {
+    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+    iv: '6lNU+2vxJw6SFgse',
+    authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  },
+};
 
 /** Zip files retrieved by Penumbra */
 async function zip(
@@ -57,22 +74,25 @@ async function save(
   data: PenumbraFiles,
   fileName: string = DEFAULT_FILENAME,
 ): Promise<void> {
-  // Write a readable stream to file
+  // Write a single readable stream to file
   if (data instanceof ReadableStream) {
     data.pipeTo(createWriteStream(fileName));
-    return saveAs(await new Response(data).blob(), fileName);
+    // return saveAs(await new Response(data).blob(), fileName);
   }
 
   // Zip a list of files
   // TODO: Use streaming zip through conflux
-  if (data.length > 1) {
+  if ('length' in data && data.length > 1) {
     const archive = await zip(data);
     await archive.pipeTo(
-      createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`),
+      createWriteStream(
+        fileName === DEFAULT_FILENAME ? `${DEFAULT_FILENAME}.zip` : fileName,
+      ),
     );
     return undefined;
   }
-  return saveAs(data[0], data[0].name);
+
+  return saveAs(await new Response(getFirstStream(data)).blob(), fileName);
 }
 
 /**
@@ -82,7 +102,7 @@ async function save(
  * @returns A blob of the data
  */
 async function getBlob(data: PenumbraFiles): Promise<Blob> {
-  if (isFileList(data)) {
+  if (isStreamList(data)) {
     return getBlob(await zip(data));
   }
   return new Response(getFirstStream(data)).blob();
@@ -96,20 +116,20 @@ async function getBlob(data: PenumbraFiles): Promise<Blob> {
  */
 async function getTextOrURI(
   data: PenumbraFiles,
+  mimetype: string = 'application/octet-stream',
 ): Promise<{
   /** Data type */
   type: 'text' | 'uri';
   /** Data */
   data: string;
 }> {
-  const fileList = isFileList(data);
-  if (fileList) {
-    const dataAsList = data as File[];
-    const { type } = dataAsList[0];
-    if (type && isViewableText(type)) {
+  const streamList = isStreamList(data);
+  if (!streamList) {
+    const dataAsList = data as ReadableStream;
+    if (isViewableText(mimetype)) {
       return {
         type: 'text',
-        data: await new Response(dataAsList[0]).text(),
+        data: await new Response(dataAsList).text(),
       };
     }
   }

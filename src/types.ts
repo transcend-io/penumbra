@@ -57,12 +57,6 @@ export type ProgressEmit = CustomEvent<{
   url: string;
 }>;
 
-/** File returned by penumbra.get() */
-export type PenumbraFile = File | ReadableStream;
-
-/** Files returned by penumbra.get() */
-export type PenumbraFiles = File[] | ReadableStream;
-
 /** Compression levels */
 export enum compression {
   /** No compression */
@@ -74,6 +68,12 @@ export enum compression {
   /** High compression */
   high = 3,
 }
+
+/** File returned by penumbra.get() */
+export type PenumbraFile = File | ReadableStream;
+
+/** Files returned by penumbra.get() */
+export type PenumbraFiles = PenumbraFile[] | ReadableStream;
 
 /** Penumbra API */
 export type PenumbraAPI = {
@@ -103,4 +103,17 @@ export type PenumbraAPI = {
 export type PenumbraView = Window & {
   /** Root API property */
   penumbra?: PenumbraAPI;
+};
+
+/**
+ * Penumbra Decryption Worker API
+ */
+export type PenumbraDecryptionWorkerAPI = {
+  /**
+   * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
+   *
+   * @param resource - The remote resource to download
+   * @returns A readable stream of the deciphered file
+   */
+  fetchMany: (...resources: RemoteResourceWithoutFile[]) => string;
 };

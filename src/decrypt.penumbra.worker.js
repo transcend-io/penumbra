@@ -1,34 +1,20 @@
 /* eslint-disable class-methods-use-this */
 
 import * as Comlink from 'comlink';
-import { decryptStream, getDecryptedContent } from '@transcend-io/penumbra';
+import { fetchMany } from '@transcend-io/penumbra';
 
 /**
- * Penumbra Worker class
+ * Penumbra Decryption Worker class
  */
 class PenumbraDecryptionWorker {
   /**
-   * Get the contents of an encrypted file
+   * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
    *
-   * @param options - FetchDecryptedContentOptions
-   * @returns The file contents
+   * @param resource - The remote resource to download
+   * @returns A readable stream of the deciphered file
    */
-  getDecryptedContent(...args) {
-    return getDecryptedContent(...args);
-  }
-
-  /**
-   * Get the contents of an encrypted file
-   *
-   * @param rs ReadableStream to decode
-   * @param decipher Decipher instance
-   * @param contentLength Content size
-   * @param url URL being requested (for progress events, not fetched )
-   * @param progressEventName?: string,
-   * @returns Decrypted ReadableStream
-   */
-  decryptStream(...args) {
-    return decryptStream(...args);
+  fetchMany(...args) {
+    return fetchMany(...args);
   }
 }
 

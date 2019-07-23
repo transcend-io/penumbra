@@ -26,7 +26,8 @@
     "####### Build #######": "",
     "clean": "rimraf build",
     "build": "npm run clean && mkdir -p build && webpack && cp src/demo.html build/index.html",
-    "build:watch": "npm run clean && webpack --watch",
+    "build:watch": "tsc --watch",
+    "webpack:watch": "npm run clean && webpack --watch",
     "build-example": "npm install && cd example && npm install && npm run build-prod"
   },
   "repository": {

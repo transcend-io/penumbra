@@ -6,6 +6,7 @@ import { Remote, wrap } from 'comlink';
 // local
 // import PenumbraDecryptionWorker from 'worker-loader!./decrypt.penumbra.worker';
 // import PenumbraZipWorker from 'worker-loader!./zip.penumbra.worker';
+import { PenumbraDecryptionWorkerAPI } from './types';
 import getKeys from './utils/getKeys';
 
 // ///// //
@@ -44,30 +45,31 @@ export type WorkerLocation = {
  * An individual Penumbra Worker's interfaces
  */
 export type PenumbraWorker = {
-  /** The worker's DOM interface */
+  /** PenumbraWorker's Worker interface */
   worker: Worker;
-  /** The worker's Comlink interface */
-  comlink: Remote<Worker>;
+  /** PenumbraWorker's Comlink interface */
+  comlink: new () => Promise<Remote<Worker> | PenumbraDecryptionWorkerAPI>;
 };
 
 /**
  * An individual Penumbra ServiceWorker's interfaces
  */
 export type PenumbraServiceWorker = {
-  /** The worker's DOM interface */
+  /** PenumbraWorker's Worker interface */
   worker: ServiceWorker;
-  /** The worker's comlink interface */
-  comlink: Remote<Worker>;
+  /** PenumbraWorker's Comlink interface */
+  comlink: new () => Promise<Remote<ServiceWorker>>;
 };
 
 /** The penumbra workers themselves */
 export type PenumbraWorkers = {
   /** The decryption Worker */
-  decrypt: PenumbraWorker;
+  Decrypt: PenumbraWorker;
   /** The zip Worker */
-  zip: PenumbraWorker;
+  Zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
-  StreamSaver?: PenumbraServiceWorker;
+  StreamSaver?: PenumbraServiceWorker &
+    (new (...args: any[]) => Promise<PenumbraServiceWorker>);
 };
 
 // //// //
@@ -166,9 +168,8 @@ export async function createPenumbraWorker(
   //     return { worker, comlink: Comlink.wrap(worker) };
   //   }
   //   default: {
-  // const Comlink = await import('comlink');
   const worker = new Worker(url, { type: 'module' });
-  return { worker, comlink: wrap(worker) };
+  return { worker, comlink: await wrap(worker) };
   //   }
   // }
 }
@@ -177,8 +178,8 @@ export async function createPenumbraWorker(
 export async function initWorkers(): Promise<void> {
   if (!script.initialized) {
     const { decrypt, zip } = getWorkerLocation();
-    workers.decrypt = await createPenumbraWorker(decrypt);
-    workers.zip = await createPenumbraWorker(zip);
+    workers.Decrypt = await createPenumbraWorker(decrypt);
+    workers.Zip = await createPenumbraWorker(zip);
     script.initialized = 'yes';
   }
 }
@@ -203,7 +204,11 @@ async function cleanup(): Promise<void> {
   const threads = getKeys(initializedWorkers);
   threads.forEach((thread) => {
     const workerInstance = initializedWorkers[thread];
-    if (workerInstance && workerInstance.worker instanceof Worker) {
+    if (
+      workerInstance &&
+      workerInstance.worker &&
+      workerInstance.worker instanceof Worker
+    ) {
       workerInstance.worker.terminate();
     }
   });

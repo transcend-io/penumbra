@@ -7,4 +7,4 @@
  */
 
 // local
-export { default as isFileList } from './isFileList';
+export { default as isStreamList } from './isStreamList';

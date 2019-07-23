@@ -1,6 +1,6 @@
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
-import { RemoteResource } from './types';
+import { RemoteResource, RemoteResourceWithoutFile } from './types';
 import { getOrigins } from './utils';
 
 /**
@@ -41,7 +41,9 @@ export function createResourceHintHelper(
  * @param origins - Origins of the files to pre-connect to
  * @returns A function removing the links that were appended to the DOM
  */
-export function preconnect(...resources: RemoteResource[]): () => void {
+export function preconnect(
+  ...resources: RemoteResourceWithoutFile[]
+): () => void {
   // preconnect to the origins
   const origins = getOrigins(...resources.map((resource) => resource.url));
   return createResourceHintHelper(origins, 'preconnect');
@@ -61,7 +63,7 @@ export function preload(...resources: RemoteResource[]): () => void {
 }
 
 /**
- * Fetch multiple resources to be zipped. Annotates a RemoteResource list with fetch responses.
+ * Fetch multiple resources to be zipped. Returns a list of ReadableStreams for each fetch request.
  *
  * ```ts
  * fetchMany(...resources).then((results) => zipAll(results, resources))
@@ -71,7 +73,7 @@ export function preload(...resources: RemoteResource[]): () => void {
  * @returns Readable streams of the decrypted files
  */
 export default async function fetchMany(
-  ...resources: RemoteResource[]
+  ...resources: RemoteResourceWithoutFile[]
 ): Promise<ReadableStream[]> {
   const cleanup = preconnect(...resources);
   const results = await Promise.all(resources.map(fetchAndDecrypt));
