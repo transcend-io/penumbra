@@ -40,9 +40,6 @@ async function get(
     // eslint-disable-next-line new-cap
     console.log('in worker');
     const responses = await thread.fetchMany(...resources);
-    responses.map(async (response: ReadableStream) =>
-      new Response(response).text(),
-    );
     console.log(responses);
     return responses;
   });
