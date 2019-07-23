@@ -5,6 +5,7 @@ import * as Comlink from 'comlink';
 
 // local
 import fetchMany from './fetchMany';
+import getDecryptedContent from './getDecryptedContent';
 
 /**
  * Penumbra Decryption Worker class
@@ -18,6 +19,11 @@ class PenumbraDecryptionWorker {
    */
   fetchMany(...args) {
     return fetchMany(...args);
+  }
+
+  /** Test using getDecryptedContent */
+  getDecryptedContent(...args) {
+    return getDecryptedContent(...args);
   }
 }
 

@@ -10,6 +10,7 @@
       <h1>Penumbra Demo</h1>
     </div>
     <script type="application/ecmascript">
+      document.currentScript.remove();
       (() => {
         let script = document.createElement("script");
         let cacheBuster = Math.random().toString(10).slice(2);

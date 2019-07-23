@@ -38,13 +38,17 @@ async function get(
   const text = new DecryptionChannel().then(async (thread: any) => {
     // PenumbraDecryptionWorkerAPI) => {
     // eslint-disable-next-line new-cap
-    console.log(Object.keys(thread));
-    const ret = await thread.fetchMany(...resources);
-    console.log(ret);
-    return ret;
+    console.log('in worker');
+    const responses = await thread.fetchMany(...resources);
+    responses.map(async (response: ReadableStream) =>
+      new Response(response).text(),
+    );
+    console.log(responses);
+    return responses;
   });
+  const res = await text;
   console.log('penumbra.get() called');
-  console.log(Object.keys(await text));
+  console.log(res);
   return ['', ''].map(() => new ReadableStream());
 }
 

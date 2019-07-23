@@ -9,7 +9,7 @@ import { getOrigins } from './utils';
 export type LinkRel = 'preconnect' | 'preload';
 
 /**
- * A function that will clenaup all resource hints
+ * A function that will cleanup all resource hints
  */
 export type CleanupResourceHints = () => void;
 
@@ -83,9 +83,11 @@ export function preload(...resources: RemoteResource[]): () => void {
  */
 export default async function fetchMany(
   ...resources: RemoteResourceWithoutFile[]
-): Promise<ReadableStream[]> {
+): Promise<string[]> {
   const cleanup = preconnect(...resources);
   const results = await Promise.all(resources.map(fetchAndDecrypt));
   cleanup();
-  return results;
+  return Promise.all(
+    results.map(async (result) => new Response(result).text()),
+  );
 }
