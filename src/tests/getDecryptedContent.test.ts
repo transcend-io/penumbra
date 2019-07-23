@@ -132,7 +132,8 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
         }
       }
       if (progressStarted && evt.detail.percent > 25) {
-        window.removeEventListener(progressEventName, onprogress);
+        // eslint-disable-next-line no-restricted-globals
+        self.removeEventListener(progressEventName, onprogress);
         t.pass();
         t.end();
       }
@@ -140,7 +141,8 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
     lastPercent = percent;
   };
 
-  window.addEventListener(progressEventName, onprogress);
+  // eslint-disable-next-line no-restricted-globals
+  self.addEventListener(progressEventName, onprogress);
   await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
     filePrefix: 'k',

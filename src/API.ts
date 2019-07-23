@@ -1,6 +1,3 @@
-import { saveAs } from 'file-saver';
-import { createWriteStream } from 'streamsaver';
-
 // Types
 import {
   compression,
@@ -11,7 +8,6 @@ import {
 
 // Local
 import { blobCache, isViewableText } from './utils';
-import { getWorkers } from './workers';
 
 // const workers = await getWorkers();
 
@@ -19,31 +15,38 @@ import { getWorkers } from './workers';
 async function get(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<ReadableStream[]> {
+  if (arguments.length === 0) {
+    console.warn('penumbra.get() called without arguments -- using test data');
+    // eslint-disable-next-line no-param-reassign
+    resources = [
+      {
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+        filePrefix: 'NYT',
+        mimetype: 'text/plain',
+        decryptionOptions: {
+          key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+          iv: '6lNU+2vxJw6SFgse',
+          authTag: 'gadZhS1QozjEmfmHLblzbg==',
+        },
+      },
+    ];
+  }
+  const { getWorkers } = await import('./workers');
   // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
   // eslint-disable-next-line no-restricted-globals
   const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
-  const text = new DecryptionChannel()
-    .then((thread: PenumbraDecryptionWorkerAPI) => {
-      const ret = thread.fetchMany(...resources);
-      console.log(ret);
-      return ret;
-    })
-    .then(console.log);
+  const text = new DecryptionChannel().then(async (thread: any) => {
+    // PenumbraDecryptionWorkerAPI) => {
+    // eslint-disable-next-line new-cap
+    console.log(Object.keys(thread));
+    const ret = await thread.fetchMany(...resources);
+    console.log(ret);
+    return ret;
+  });
   console.log('penumbra.get() called');
-  // console.log(text[0]);
+  console.log(Object.keys(await text));
   return ['', ''].map(() => new ReadableStream());
 }
-
-get.TEST = {
-  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-  filePrefix: 'NYT',
-  mimetype: 'text/plain',
-  decryptionOptions: {
-    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-    iv: '6lNU+2vxJw6SFgse',
-    authTag: 'gadZhS1QozjEmfmHLblzbg==',
-  },
-};
 
 /** Zip files retrieved by Penumbra */
 async function zip(
@@ -67,6 +70,8 @@ async function save(
   data: ReadableStream[],
   fileName: string = DEFAULT_FILENAME,
 ): Promise<void> {
+  const { createWriteStream } = await import('streamsaver');
+
   // Write a single readable stream to file
   if (data instanceof ReadableStream) {
     data.pipeTo(createWriteStream(fileName));
@@ -86,6 +91,7 @@ async function save(
     return undefined;
   }
 
+  const { saveAs } = await import('file-saver');
   return saveAs(await new Response(data[0]).blob(), fileName);
 }
 

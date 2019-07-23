@@ -32,7 +32,8 @@ test('v3 API: progress', async (t) => {
         }
       }
       if (progressStarted && percent > 25) {
-        window.removeEventListener(progressEventName, onprogress);
+        // eslint-disable-next-line no-restricted-globals
+        self.removeEventListener(progressEventName, onprogress);
         t.pass('get() progress event test');
         t.end();
       }
@@ -40,7 +41,8 @@ test('v3 API: progress', async (t) => {
     lastPercent = percent;
   };
 
-  window.addEventListener(progressEventName, onprogress);
+  // eslint-disable-next-line no-restricted-globals
+  self.addEventListener(progressEventName, onprogress);
   await penumbra.get({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',
     mimetype: 'video/webm',

@@ -4,7 +4,7 @@
 import * as Comlink from 'comlink';
 
 // local
-import { fetchMany } from './index';
+import fetchMany from './fetchMany';
 
 /**
  * Penumbra Decryption Worker class

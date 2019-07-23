@@ -1,7 +1,7 @@
 // external modules
 import { saveAs } from 'file-saver';
 import { extension } from 'mime-types';
-import { createWriteStream } from 'streamsaver';
+// import { createWriteStream } from 'streamsaver';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
@@ -14,29 +14,35 @@ import { RemoteResource } from './types';
  * @param fileName - The name of the file to save
  * @returns A promise saving the stream to file
  */
-function saveFileStream(rs: ReadableStream, fileName: string): Promise<void> {
-  const fileStream = createWriteStream(fileName);
-  const writer = fileStream.getWriter();
+async function saveFileStream(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  rs: ReadableStream,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fileName: string,
+): Promise<void> {
+  return undefined;
+  // const fileStream = createWriteStream(fileName);
+  // const writer = fileStream.getWriter();
 
-  // Feature detection for pipeTo (more efficient)
-  if (rs.pipeTo) {
-    // like as we never did fileStream.getWriter()
-    writer.releaseLock();
-    return rs.pipeTo(fileStream);
-  }
+  // // Feature detection for pipeTo (more efficient)
+  // if (rs.pipeTo) {
+  //   // like as we never did fileStream.getWriter()
+  //   writer.releaseLock();
+  //   return rs.pipeTo(fileStream);
+  // }
 
-  const reader = rs.getReader();
-  const pump = (): Promise<void> =>
-    reader.read().then(({ value, done }) =>
-      done
-        ? // Close the stream so we stop writing
-          writer.close()
-        : // Write one chunk, then get the next one
-          writer.write(value).then(pump),
-    );
+  // const reader = rs.getReader();
+  // const pump = (): Promise<void> =>
+  //   reader.read().then(({ value, done }) =>
+  //     done
+  //       ? // Close the stream so we stop writing
+  //         writer.close()
+  //       : // Write one chunk, then get the next one
+  //         writer.write(value).then(pump),
+  //   );
 
-  // Start the reader
-  return pump();
+  // // Start the reader
+  // return pump();
 }
 
 /**

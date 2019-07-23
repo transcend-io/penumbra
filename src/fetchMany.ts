@@ -13,6 +13,10 @@ export type LinkRel = 'preconnect' | 'preload';
  */
 export type CleanupResourceHints = () => void;
 
+/** No-op function generator */
+// tslint:disable-next-line: no-empty
+const nooper = (): (() => void) => (): void => {};
+
 /**
  * A helper function that creates a set resource hints
  *
@@ -24,7 +28,7 @@ export function createResourceHintHelper(
   rel: LinkRel,
 ): CleanupResourceHints {
   // eslint-disable-next-line no-restricted-globals
-  if (!self.document) {
+  if (self.document) {
     const links = urls.map((href) => {
       const link = document.createElement('link');
       link.rel = rel;
@@ -35,8 +39,7 @@ export function createResourceHintHelper(
     return () => links.map((link) => link.remove());
   }
 
-  // tslint:disable-next-line: no-empty
-  return () => {};
+  return nooper();
 }
 
 /**

@@ -31,7 +31,8 @@ test('downloadEncryptedFile', async (t) => {
         }
       }
       if (progressStarted && percent > 25) {
-        window.removeEventListener(progressEventName, onprogress);
+        // eslint-disable-next-line no-restricted-globals
+        self.removeEventListener(progressEventName, onprogress);
         t.pass();
         t.end();
       }
@@ -39,7 +40,8 @@ test('downloadEncryptedFile', async (t) => {
     lastPercent = percent;
   };
 
-  window.addEventListener(progressEventName, onprogress);
+  // eslint-disable-next-line no-restricted-globals
+  self.addEventListener(progressEventName, onprogress);
   await downloadEncryptedFile({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',
     filePrefix: 'video.mp4',

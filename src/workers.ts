@@ -213,7 +213,8 @@ async function cleanup(): Promise<void> {
   });
 }
 
-window.addEventListener('beforeunload', cleanup);
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener('beforeunload', cleanup);
 
 /**
  * Sets worker location configuration
