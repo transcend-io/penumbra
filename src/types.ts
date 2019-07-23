@@ -110,5 +110,7 @@ export type PenumbraDecryptionWorkerAPI = {
    * @param resource - The remote resource to download
    * @returns A readable stream of the deciphered file
    */
-  fetchMany: (...resources: RemoteResourceWithoutFile[]) => string;
+  fetchMany: (
+    ...resources: RemoteResourceWithoutFile[]
+  ) => Promise<ReadableStream[]>;
 };

@@ -28,6 +28,10 @@ const config = {
         test: /\.ts$/,
         use: [
           {
+            loader: 'babel-loader',
+            // exclude: /node_modules/,
+          },
+          {
             loader: 'ts-loader',
             options: {
               allowTsInNodeModules: false,

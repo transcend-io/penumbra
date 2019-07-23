@@ -7,4 +7,3 @@
  */
 
 // local
-export { default as isStreamList } from './isStreamList';

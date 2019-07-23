@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --ext .js,.ts,.tsx,.jsx --fix",
     "ts:lint": "tslint --project .",
     "####### Start #########": "",
-    "start": "nodemon --exec 'http-server build -a localhost'",
+    "start": "http-server build -a localhost",
     "####### Testing #######": "",
     "test:interactive": "airtap --local build/src/tests/*.test.js",
     "browser-test": "airtap --loopback airtap.local --coverage build/src/tests/*.test.js",

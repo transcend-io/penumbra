@@ -23,14 +23,20 @@ export function createResourceHintHelper(
   urls: string[],
   rel: LinkRel,
 ): CleanupResourceHints {
-  const links = urls.map((href) => {
-    const link = document.createElement('link');
-    link.rel = rel;
-    link.href = href;
-    document.head.appendChild(link);
-    return link;
-  });
-  return () => links.map((link) => link.remove());
+  // eslint-disable-next-line no-restricted-globals
+  if (!self.document) {
+    const links = urls.map((href) => {
+      const link = document.createElement('link');
+      link.rel = rel;
+      link.href = href;
+      document.head.appendChild(link);
+      return link;
+    });
+    return () => links.map((link) => link.remove());
+  }
+
+  // tslint:disable-next-line: no-empty
+  return () => {};
 }
 
 /**

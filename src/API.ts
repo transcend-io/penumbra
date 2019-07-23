@@ -22,11 +22,15 @@ async function get(
   // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
   // eslint-disable-next-line no-restricted-globals
   const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
-  const text = await new DecryptionChannel().then((thread) =>
-    (thread as PenumbraDecryptionWorkerAPI).fetchMany(...resources),
-  );
+  const text = new DecryptionChannel()
+    .then((thread: PenumbraDecryptionWorkerAPI) => {
+      const ret = thread.fetchMany(...resources);
+      console.log(ret);
+      return ret;
+    })
+    .then(console.log);
   console.log('penumbra.get() called');
-  console.log(text);
+  // console.log(text[0]);
   return ['', ''].map(() => new ReadableStream());
 }
 

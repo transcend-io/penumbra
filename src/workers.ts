@@ -48,7 +48,7 @@ export type PenumbraWorker = {
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */
-  comlink: new () => Promise<Remote<Worker> | PenumbraDecryptionWorkerAPI>;
+  comlink: any;
 };
 
 /**
@@ -58,7 +58,7 @@ export type PenumbraServiceWorker = {
   /** PenumbraWorker's Worker interface */
   worker: ServiceWorker;
   /** PenumbraWorker's Comlink interface */
-  comlink: new () => Promise<Remote<ServiceWorker>>;
+  comlink: any;
 };
 
 /** The penumbra workers themselves */
@@ -68,8 +68,7 @@ export type PenumbraWorkers = {
   /** The zip Worker */
   Zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
-  StreamSaver?: PenumbraServiceWorker &
-    (new (...args: any[]) => Promise<PenumbraServiceWorker>);
+  StreamSaver?: PenumbraServiceWorker;
 };
 
 // //// //
@@ -169,7 +168,7 @@ export async function createPenumbraWorker(
   //   }
   //   default: {
   const worker = new Worker(url, { type: 'module' });
-  return { worker, comlink: await wrap(worker) };
+  return { worker, comlink: wrap(worker) };
   //   }
   // }
 }
