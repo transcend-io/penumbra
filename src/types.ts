@@ -69,23 +69,18 @@ export enum compression {
   high = 3,
 }
 
-/** File returned by penumbra.get() */
-export type PenumbraFile = File | ReadableStream;
-
-/** Files returned by penumbra.get() */
-export type PenumbraFiles = PenumbraFile[] | ReadableStream;
-
 /** Penumbra API */
 export type PenumbraAPI = {
   /** Retrieve and decrypt files */
-  get: (...resources: RemoteResourceWithoutFile[]) => Promise<PenumbraFiles>;
+  get: (...resources: RemoteResourceWithoutFile[]) => Promise<ReadableStream[]>;
   /** Save files retrieved by Penumbra */
-  save: (data: PenumbraFiles, fileName?: string) => Promise<void>;
+  save: (data: ReadableStream[], fileName?: string) => Promise<void>;
   /** Load files retrieved by Penumbra into memory as a Blob */
-  getBlob: (data: PenumbraFiles) => Promise<Blob>;
+  getBlob: (data: ReadableStream[] | ReadableStream) => Promise<Blob>;
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
   getTextOrURI: (
-    data: PenumbraFiles,
+    data: ReadableStream[],
+    mimetype?: string,
   ) => Promise<{
     /** Type of response data */
     type: 'text' | 'uri';
@@ -94,7 +89,7 @@ export type PenumbraAPI = {
   }>;
   /** Zip files retrieved by Penumbra */
   zip: (
-    data: PenumbraFiles,
+    data: ReadableStream[],
     compressionLevel?: number,
   ) => Promise<ReadableStream>;
 };

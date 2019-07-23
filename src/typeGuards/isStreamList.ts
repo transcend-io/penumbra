@@ -1,5 +1,3 @@
-import { PenumbraFiles } from 'src/types';
-
 /**
  * Detect if a PenumbraFiles instance is a File[] list
  *
@@ -8,7 +6,7 @@ import { PenumbraFiles } from 'src/types';
  * @param data - The data to verify
  * @returns 'files' if a list of files, 'streams' if a list of streams, or false if it is not a list.
  */
-export default function isStreamList(data: PenumbraFiles): boolean {
+export default function isStreamList(data: ReadableStream[]): boolean {
   return (
     !(data instanceof ReadableStream) &&
     // [...{ ...data, ...spreadify }].every((item) => item instanceof ReadableStream)

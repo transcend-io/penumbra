@@ -2,13 +2,10 @@ import { saveAs } from 'file-saver';
 import { createWriteStream } from 'streamsaver';
 
 // Types
-import { isStreamList } from './typeGuards';
 import {
   compression,
   PenumbraAPI,
   PenumbraDecryptionWorkerAPI,
-  PenumbraFile,
-  PenumbraFiles,
   RemoteResourceWithoutFile,
 } from './types';
 
@@ -21,7 +18,7 @@ import { getWorkers } from './workers';
 /** Retrieve and decrypt files */
 async function get(
   ...resources: RemoteResourceWithoutFile[]
-): Promise<PenumbraFiles> {
+): Promise<ReadableStream[]> {
   // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
   // eslint-disable-next-line no-restricted-globals
   const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
@@ -30,7 +27,7 @@ async function get(
   );
   console.log('penumbra.get() called');
   console.log(text);
-  return ['', ''].map((s) => new File([s], s));
+  return ['', ''].map(() => new ReadableStream());
 }
 
 get.TEST = {
@@ -46,7 +43,7 @@ get.TEST = {
 
 /** Zip files retrieved by Penumbra */
 async function zip(
-  data: PenumbraFiles,
+  data: ReadableStream[],
   compressionLevel: number = compression.store,
 ): Promise<ReadableStream> {
   console.error('penumbra.zip() is unimplemented');
@@ -56,14 +53,6 @@ async function zip(
 const DEFAULT_FILENAME = 'download';
 
 /**
- * Get the only file/stream from a single-stream PenumbraFiles.
- * Otherwise, it returns false
- */
-function getFirstStream(data: PenumbraFiles): PenumbraFile {
-  return data instanceof ReadableStream ? data : data[0];
-}
-
-/**
  * Save files retrieved by Penumbra
  *
  * @param data - The data files to save
@@ -71,12 +60,13 @@ function getFirstStream(data: PenumbraFiles): PenumbraFile {
  * @returns A promise that saves the files
  */
 async function save(
-  data: PenumbraFiles,
+  data: ReadableStream[],
   fileName: string = DEFAULT_FILENAME,
 ): Promise<void> {
   // Write a single readable stream to file
   if (data instanceof ReadableStream) {
     data.pipeTo(createWriteStream(fileName));
+    return undefined;
     // return saveAs(await new Response(data).blob(), fileName);
   }
 
@@ -92,7 +82,7 @@ async function save(
     return undefined;
   }
 
-  return saveAs(await new Response(getFirstStream(data)).blob(), fileName);
+  return saveAs(await new Response(data[0]).blob(), fileName);
 }
 
 /**
@@ -101,11 +91,13 @@ async function save(
  * @param data - The data to load
  * @returns A blob of the data
  */
-async function getBlob(data: PenumbraFiles): Promise<Blob> {
-  if (isStreamList(data)) {
-    return getBlob(await zip(data));
+async function getBlob(data: ReadableStream[] | ReadableStream): Promise<Blob> {
+  if ('length' in data && data.length > 1) {
+    return getBlob([await zip(data)]);
   }
-  return new Response(getFirstStream(data)).blob();
+
+  const stream = data instanceof ReadableStream ? data : data[0];
+  return new Response(stream).blob();
 }
 
 /**
@@ -115,7 +107,7 @@ async function getBlob(data: PenumbraFiles): Promise<Blob> {
  * @returns The text itself or a URI encoding the image if applicable
  */
 async function getTextOrURI(
-  data: PenumbraFiles,
+  data: ReadableStream[],
   mimetype: string = 'application/octet-stream',
 ): Promise<{
   /** Data type */
@@ -123,19 +115,15 @@ async function getTextOrURI(
   /** Data */
   data: string;
 }> {
-  const streamList = isStreamList(data);
-  if (!streamList) {
-    const dataAsList = data as ReadableStream;
-    if (isViewableText(mimetype)) {
-      return {
-        type: 'text',
-        data: await new Response(dataAsList).text(),
-      };
-    }
+  if (data.length === 1 && isViewableText(mimetype)) {
+    return {
+      type: 'text',
+      data: await new Response(data[0]).text(),
+    };
   }
 
   const uri = URL.createObjectURL(
-    await getBlob(fileList ? await zip(data) : data),
+    await getBlob(data.length > 1 ? await zip(data) : data),
   );
   const cache = blobCache.get();
   cache.push(new URL(uri));
