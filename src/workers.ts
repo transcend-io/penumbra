@@ -167,7 +167,7 @@ export async function createPenumbraWorker(
   //     return { worker, comlink: Comlink.wrap(worker) };
   //   }
   //   default: {
-  const worker = new Worker(url, { type: 'module' });
+  const worker = new Worker(url /* , { type: 'module' } */);
   return { worker, comlink: wrap(worker) };
   //   }
   // }

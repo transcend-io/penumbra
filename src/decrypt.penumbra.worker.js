@@ -1,7 +1,10 @@
 /* eslint-disable class-methods-use-this */
 
+// external modules
 import * as Comlink from 'comlink';
-import { fetchMany } from '@transcend-io/penumbra';
+
+// local
+import { fetchMany } from './index';
 
 /**
  * Penumbra Decryption Worker class
