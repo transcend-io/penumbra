@@ -52,7 +52,6 @@
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
-    "@transcend-io/penumbra": "^2.0.7",
     "comlink": "^4.0.1",
     "core-js": "^3.1.4",
     "crypto-browserify": "^3.12.0",
