@@ -1,10 +1,13 @@
-import { fromWritablePort, RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
+import {
+  fromWritablePort,
+  RemoteReadableStream,
+  RemoteWritableStream,
+} from 'remote-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
 import { RemoteResource, RemoteResourceWithoutFile } from './types';
 import { getOrigins } from './utils';
-
 
 /**
  * Types of rels that a link can take on
@@ -78,17 +81,28 @@ export function preload(...resources: RemoteResource[]): () => void {
  * Fetch multiple resources to be zipped. Returns a list of ReadableStreams for each fetch request.
  *
  * ```ts
- * fetchMany(...resources).then((results) => zipAll(results, resources))
+ * get({resources}).then((results) => zipAll(results, resources))
  * ```
  *
  * @param resources - The remote files to download
  * @returns Readable streams of the decrypted files
  */
-export default async function fetchMany(
-  ...resources: RemoteResourceWithoutFile[]
-): Promise<ReadableStream[]> {
+export default async function get({
+  resources,
+  streams,
+}: {
+  resources: RemoteResourceWithoutFile[];
+  streams?: WritableStream[];
+}): Promise<ReadableStream[]> {
   const cleanup = preconnect(...resources);
   const results = await Promise.all(resources.map(fetchAndDecrypt));
   cleanup();
+  if (streams) {
+    results.forEach(async (result, i) => {
+      const writer = streams[i].getWriter();
+    });
+  }
+  const { readable, writablePort } = new RemoteReadableStream();
+
   return results;
 }

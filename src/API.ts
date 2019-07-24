@@ -1,3 +1,6 @@
+// Remote
+import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
+
 // Types
 import {
   compression,
@@ -7,6 +10,7 @@ import {
 } from './types';
 
 // Local
+import { Remote } from 'comlink';
 import { blobCache, isViewableText } from './utils';
 
 // const workers = await getWorkers();
@@ -31,10 +35,14 @@ async function get(
       },
     ];
   }
-  const { getWorkers } = await import('./workers');
+  const { getWorkers, createReadStreams } = await import('./workers');
   // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
   // eslint-disable-next-line no-restricted-globals
   const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
+  const comlink: Remote<Worker> = new DecryptionChannel();
+  const streams = await createReadStreams(comlink, resources);
+
+  // streams == [{ writable1, readablePort1 }, ..., { writableN, readablePortN }]
   const text = new DecryptionChannel().then(async (thread: any) => {
     // PenumbraDecryptionWorkerAPI) => {
     // eslint-disable-next-line new-cap

@@ -114,3 +114,61 @@ export type PenumbraDecryptionWorkerAPI = {
     ...resources: RemoteResourceWithoutFile[]
   ) => Promise<ReadableStream[]>;
 };
+
+/**
+ * Worker location options. All options support relative URLs.
+ */
+export type WorkerLocationOptions = {
+  /** The directory where the workers scripts are available */
+  base?: string;
+  /** The location of the decryption Worker script */
+  decrypt?: string;
+  /** The location of the zip Worker script */
+  zip?: string;
+  /** The location of the StreamSaver ServiceWorker script */
+  StreamSaver?: string;
+};
+
+/**
+ * Worker location URLs. All fields are absolute URLs.
+ */
+export type WorkerLocation = {
+  /** The directory where the workers scripts are available */
+  base: URL;
+  /** The location of the decryption Worker script */
+  decrypt: URL;
+  /** The location of the zip Worker script */
+  zip: URL;
+  /** The location of the StreamSaver ServiceWorker script */
+  StreamSaver: URL;
+};
+
+/**
+ * An individual Penumbra Worker's interfaces
+ */
+export type PenumbraWorker = {
+  /** PenumbraWorker's Worker interface */
+  worker: Worker;
+  /** PenumbraWorker's Comlink interface */
+  comlink: any;
+};
+
+/**
+ * An individual Penumbra ServiceWorker's interfaces
+ */
+export type PenumbraServiceWorker = {
+  /** PenumbraWorker's Worker interface */
+  worker: ServiceWorker;
+  /** PenumbraWorker's Comlink interface */
+  comlink: any;
+};
+
+/** The penumbra workers themselves */
+export type PenumbraWorkers = {
+  /** The decryption Worker */
+  Decrypt: PenumbraWorker;
+  /** The zip Worker */
+  Zip: PenumbraWorker;
+  /** The StreamSaver ServiceWorker */
+  StreamSaver?: PenumbraServiceWorker;
+};

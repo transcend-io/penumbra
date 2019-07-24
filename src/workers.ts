@@ -6,70 +6,15 @@ import { Remote, wrap } from 'comlink';
 // local
 // import PenumbraDecryptionWorker from 'worker-loader!./decrypt.penumbra.worker';
 // import PenumbraZipWorker from 'worker-loader!./zip.penumbra.worker';
-import { PenumbraDecryptionWorkerAPI } from './types';
+import { RemoteReadableStream } from 'remote-web-streams';
+import {
+  PenumbraDecryptionWorkerAPI,
+  PenumbraWorker,
+  PenumbraWorkers,
+  WorkerLocation,
+  WorkerLocationOptions,
+} from './types';
 import getKeys from './utils/getKeys';
-
-// ///// //
-// Types //
-// ///// //
-
-/**
- * Worker location options. All options support relative URLs.
- */
-export type WorkerLocationOptions = {
-  /** The directory where the workers scripts are available */
-  base?: string;
-  /** The location of the decryption Worker script */
-  decrypt?: string;
-  /** The location of the zip Worker script */
-  zip?: string;
-  /** The location of the StreamSaver ServiceWorker script */
-  StreamSaver?: string;
-};
-
-/**
- * Worker location URLs. All fields are absolute URLs.
- */
-export type WorkerLocation = {
-  /** The directory where the workers scripts are available */
-  base: URL;
-  /** The location of the decryption Worker script */
-  decrypt: URL;
-  /** The location of the zip Worker script */
-  zip: URL;
-  /** The location of the StreamSaver ServiceWorker script */
-  StreamSaver: URL;
-};
-
-/**
- * An individual Penumbra Worker's interfaces
- */
-export type PenumbraWorker = {
-  /** PenumbraWorker's Worker interface */
-  worker: Worker;
-  /** PenumbraWorker's Comlink interface */
-  comlink: any;
-};
-
-/**
- * An individual Penumbra ServiceWorker's interfaces
- */
-export type PenumbraServiceWorker = {
-  /** PenumbraWorker's Worker interface */
-  worker: ServiceWorker;
-  /** PenumbraWorker's Comlink interface */
-  comlink: any;
-};
-
-/** The penumbra workers themselves */
-export type PenumbraWorkers = {
-  /** The decryption Worker */
-  Decrypt: PenumbraWorker;
-  /** The zip Worker */
-  Zip: PenumbraWorker;
-  /** The StreamSaver ServiceWorker */
-  StreamSaver?: PenumbraServiceWorker;
-};
 
 // //// //
 // Init //
@@ -221,13 +166,23 @@ self.addEventListener('beforeunload', cleanup);
  *
  * @param options - Worker location options
  */
-export default function setWorkerLocation(
-  options: WorkerLocationOptions,
-): void {
+export function setWorkerLocation(options: WorkerLocationOptions): void {
   if (script.initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
     cleanup();
   }
   script.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
   initWorkers();
+}
+
+/**
+ * Create RemoteReadableStreams for ReadableStream transfers between workers and the main thread
+ */
+export async function createReadStreams(
+  worker: any,
+  resources: any[],
+): Promise<RemoteReadableStream[]> {
+  const streams = resources.map(() => new RemoteReadableStream());
+  await worker.createStreams(); // TODO:
+  return streams;
 }

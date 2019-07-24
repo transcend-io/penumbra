@@ -18,13 +18,38 @@ class PenumbraDecryptionWorker {
    * @returns A readable stream of the deciphered file
    */
   fetchMany(...args) {
-    return fetchMany(...args);
+    return fetchMany.apply(this, args);
   }
 
   /** Test using getDecryptedContent */
   getDecryptedContent(...args) {
     return getDecryptedContent(...args);
   }
+
+  /** Create RemoteReadableStreams for main thread */
+  createReadStreams(...args) {
+    return;
+  }
+
+  /* public */ remoteStreamPorts = [];
 }
+
+/**
+ * RemoteWebStream connection setup handler
+ *
+ * @param {MessageEvent} event
+ */
+function remoteWebStreamHandler(event) {
+  if (
+    event.data &&
+    event.data.penumbra === 'Penumbra RemoteReadableStream setup'
+  ) {
+    const { writablePort } = event.data;
+
+  }
+}
+
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener('message', remoteWebStreamHandler);
 
 Comlink.expose(PenumbraDecryptionWorker);
