@@ -4,7 +4,9 @@
 import * as Comlink from 'comlink';
 
 // local
-import fetchMany from './fetchMany';
+import { RemoteWritableStream, fromWritablePort } from 'remote-web-streams';
+import fetchAndDecrypt from './fetchAndDecrypt';
+// import get from './get';
 import getDecryptedContent from './getDecryptedContent';
 
 /**
@@ -12,13 +14,30 @@ import getDecryptedContent from './getDecryptedContent';
  */
 class PenumbraDecryptionWorker {
   /**
-   * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
+   * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    *
-   * @param resource - The remote resource to download
-   * @returns A readable stream of the deciphered file
+   * @param ...resources - The remote resource to download
+   * @returns ReadableStream[] of the deciphered files
    */
-  fetchMany(...args) {
-    return fetchMany.apply(this, args);
+  async get(writablePorts, resources) {
+    const writableCount = writablePorts.length;
+    const resourceCount = resources.length;
+    if (writableCount !== resourceCount) {
+      console.warn(
+        'Writable ports <-> Resources count mismatch. Truncating to common subset.',
+      );
+      // eslint-disable-next-line no-multi-assign, no-param-reassign
+      resources.length = writablePorts.length = Math.min(
+        writableCount,
+        resourceCount,
+      );
+    }
+    resources.forEach(async (resource, i) => {
+      const remoteStream = fromWritablePort(writablePorts[i]);
+      const localStream = await fetchAndDecrypt(resource);
+      localStream.pipeTo(remoteStream);
+    });
+    // return get(...args);
   }
 
   /** Test using getDecryptedContent */
@@ -26,12 +45,10 @@ class PenumbraDecryptionWorker {
     return getDecryptedContent(...args);
   }
 
-  /** Create RemoteReadableStreams for main thread */
-  createReadStreams(...args) {
-    return;
+  /** TODO: remove from worker */
+  fetchAndDecrypt(...args) {
+    return fetchAndDecrypt(...args);
   }
-
-  /* public */ remoteStreamPorts = [];
 }
 
 /**
@@ -45,11 +62,11 @@ function remoteWebStreamHandler(event) {
     event.data.penumbra === 'Penumbra RemoteReadableStream setup'
   ) {
     const { writablePort } = event.data;
-
+    const writable = fromWritablePort(writablePort);
   }
 }
 
 // eslint-disable-next-line no-restricted-globals
-self.addEventListener('message', remoteWebStreamHandler);
+// self.addEventListener('message', remoteWebStreamHandler);
 
 Comlink.expose(PenumbraDecryptionWorker);

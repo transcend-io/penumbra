@@ -20,11 +20,20 @@ import getKeys from './utils/getKeys';
 // Init //
 // //// //
 
-if (!document.currentScript) {
-  throw new Error('Penumbra must be included in a document');
+// eslint-disable-next-line no-restricted-globals
+if (!self.document) {
+  throw new Error(
+    'Penumbra must be included in a document as an unbundled script element.',
+  );
 }
 
-const script = document.currentScript.dataset;
+const scriptElement = document.currentScript || document.querySelector('script[data-penumbra]');
+
+if (!scriptElement) {
+  throw new Error('Unable to locate Penumbra script element.');
+}
+
+const script = scriptElement.dataset;
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -173,16 +182,4 @@ export function setWorkerLocation(options: WorkerLocationOptions): void {
   }
   script.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
   initWorkers();
-}
-
-/**
- * Create RemoteReadableStreams for ReadableStream transfers between workers and the main thread
- */
-export async function createReadStreams(
-  worker: any,
-  resources: any[],
-): Promise<RemoteReadableStream[]> {
-  const streams = resources.map(() => new RemoteReadableStream());
-  await worker.createStreams(); // TODO:
-  return streams;
 }

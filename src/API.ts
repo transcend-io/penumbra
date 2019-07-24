@@ -2,15 +2,16 @@
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 
 // Types
-import {
-  compression,
-  PenumbraAPI,
-  PenumbraDecryptionWorkerAPI,
-  RemoteResourceWithoutFile,
-} from './types';
 
 // Local
 import { Remote } from 'comlink';
+import { MessagePortSink } from 'remote-web-streams/dist/types/writable';
+import {
+  compression,
+  PenumbraAPI,
+  // PenumbraDecryptionWorkerAPI,
+  RemoteResourceWithoutFile,
+} from './types';
 import { blobCache, isViewableText } from './utils';
 
 // const workers = await getWorkers();
@@ -35,26 +36,25 @@ async function get(
       },
     ];
   }
-  const { getWorkers, createReadStreams } = await import('./workers');
+  const { getWorkers } = await import('./workers');
+  const workers = await getWorkers();
   // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
-  // eslint-disable-next-line no-restricted-globals
-  const DecryptionChannel = (await getWorkers()).Decrypt.comlink;
-  const comlink: Remote<Worker> = new DecryptionChannel();
-  const streams = await createReadStreams(comlink, resources);
+  const DecryptionChannel = workers.Decrypt.comlink;
+  const remoteStreams = resources.map(() => new RemoteReadableStream());
 
-  // streams == [{ writable1, readablePort1 }, ..., { writableN, readablePortN }]
-  const text = new DecryptionChannel().then(async (thread: any) => {
+  // remoteStreams == [{ writable1, readablePort1 }, ..., { writableN, readablePortN }]
+  const decryptJob = new DecryptionChannel().then(async (thread: any) => {
     // PenumbraDecryptionWorkerAPI) => {
-    // eslint-disable-next-line new-cap
-    console.log('in worker');
-    const responses = await thread.fetchMany(...resources);
+    console.log('in worker context');
+    const responses = await thread.get(remoteStreams, resources);
     console.log(responses);
     return responses;
   });
-  const res = await text;
+  const streams = await decryptJob;
   console.log('penumbra.get() called');
-  console.log(res);
-  return ['', ''].map(() => new ReadableStream());
+  console.log(streams);
+  // return ['', ''].map(() => new ReadableStream());
+  return streams;
 }
 
 /** Zip files retrieved by Penumbra */
@@ -79,11 +79,11 @@ async function save(
   data: ReadableStream[],
   fileName: string = DEFAULT_FILENAME,
 ): Promise<void> {
-  const { createWriteStream } = await import('streamsaver');
+  const createStreamSaver = (await import('streamsaver')).createWriteStream;
 
   // Write a single readable stream to file
   if (data instanceof ReadableStream) {
-    data.pipeTo(createWriteStream(fileName));
+    data.pipeTo(createStreamSaver(fileName));
     return undefined;
     // return saveAs(await new Response(data).blob(), fileName);
   }
@@ -93,7 +93,7 @@ async function save(
   if ('length' in data && data.length > 1) {
     const archive = await zip(data);
     await archive.pipeTo(
-      createWriteStream(
+      createStreamSaver(
         fileName === DEFAULT_FILENAME ? `${DEFAULT_FILENAME}.zip` : fileName,
       ),
     );

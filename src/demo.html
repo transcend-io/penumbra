@@ -18,6 +18,7 @@
         script.async = true;
         script.defer = true;
 
+        script.dataset.penumbra = '';
         script.dataset.workers = JSON.stringify({
           decrypt: "decrypt.penumbra.worker.js?" + cacheBuster,
           zip: "zip.penumbra.worker.js?" + cacheBuster,
