@@ -2,12 +2,10 @@
 
 // external modules
 import * as Comlink from 'comlink';
+import { fromWritablePort } from 'remote-web-streams';
 
 // local
-import { RemoteWritableStream, fromWritablePort } from 'remote-web-streams';
 import fetchAndDecrypt from './fetchAndDecrypt';
-// import get from './get';
-import getDecryptedContent from './getDecryptedContent';
 
 /**
  * Penumbra Decryption Worker class
@@ -50,23 +48,5 @@ class PenumbraDecryptionWorker {
     return fetchAndDecrypt(...args);
   }
 }
-
-/**
- * RemoteWebStream connection setup handler
- *
- * @param {MessageEvent} event
- */
-function remoteWebStreamHandler(event) {
-  if (
-    event.data &&
-    event.data.penumbra === 'Penumbra RemoteReadableStream setup'
-  ) {
-    const { writablePort } = event.data;
-    const writable = fromWritablePort(writablePort);
-  }
-}
-
-// eslint-disable-next-line no-restricted-globals
-// self.addEventListener('message', remoteWebStreamHandler);
 
 Comlink.expose(PenumbraDecryptionWorker);

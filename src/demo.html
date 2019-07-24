@@ -9,22 +9,25 @@
     <div id="app">
       <h1>Penumbra Demo</h1>
     </div>
-    <script type="application/ecmascript">
+    <!--<script src="penumbra.js" data-penumbra></script>-->
+    <script>
       document.currentScript.remove();
       (() => {
-        let script = document.createElement("script");
-        let cacheBuster = Math.random().toString(10).slice(2);
+        let script = document.createElement('script');
+        let cacheBuster = Math.random()
+          .toString(10)
+          .slice(2);
 
         script.async = true;
         script.defer = true;
 
         script.dataset.penumbra = '';
         script.dataset.workers = JSON.stringify({
-          decrypt: "decrypt.penumbra.worker.js?" + cacheBuster,
-          zip: "zip.penumbra.worker.js?" + cacheBuster,
-          StreamSaver: "streamsaver.penumbra.serviceworker.js?" + cacheBuster,
+          decrypt: 'decrypt.penumbra.worker.js?' + cacheBuster,
+          zip: 'zip.penumbra.worker.js?' + cacheBuster,
+          StreamSaver: 'streamsaver.penumbra.serviceworker.js?' + cacheBuster,
         });
-        script.src = "penumbra.js?" + cacheBuster;
+        script.src = 'penumbra.js?' + cacheBuster;
 
         document.body.appendChild(script);
       })();

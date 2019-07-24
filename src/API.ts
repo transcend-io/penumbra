@@ -1,60 +1,54 @@
 // Remote
+import * as Comlink from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
+import { MessagePortSink } from 'remote-web-streams/dist/types/writable';
 
 // Types
 
 // Local
-import { Remote } from 'comlink';
-import { MessagePortSink } from 'remote-web-streams/dist/types/writable';
 import {
   compression,
   PenumbraAPI,
   // PenumbraDecryptionWorkerAPI,
+  PenumbraDecryptionWorkerAPI,
   RemoteResourceWithoutFile,
 } from './types';
 import { blobCache, isViewableText } from './utils';
 
 // const workers = await getWorkers();
 
-/** Retrieve and decrypt files */
+/**
+ * Retrieve and decrypt files
+ *
+ * ```ts
+ * // Load a resource and get a ReadableStream
+ * await penumbra.get(resource);
+ *
+ * // Buffer all responses & read them as text
+ * await Promise.all((await penumbra.get(resources)).map((stream) =>
+ *  new Response(stream).text()
+ * ));
+ *
+ * // Buffer a response & read as an ArrayBuffer
+ * await new Response(await penumbra.get(resource)).arrayBuffer();
+ * ```
+ */
 async function get(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<ReadableStream[]> {
   if (arguments.length === 0) {
-    console.warn('penumbra.get() called without arguments -- using test data');
-    // eslint-disable-next-line no-param-reassign
-    resources = [
-      {
-        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-        filePrefix: 'NYT',
-        mimetype: 'text/plain',
-        decryptionOptions: {
-          key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-          iv: '6lNU+2vxJw6SFgse',
-          authTag: 'gadZhS1QozjEmfmHLblzbg==',
-        },
-      },
-    ];
+    throw new Error('penumbra.get() called without arguments');
   }
   const { getWorkers } = await import('./workers');
   const workers = await getWorkers();
-  // type PenumbraWorkerDebugView = Window & { workers?: PenumbraWorkers };
   const DecryptionChannel = workers.Decrypt.comlink;
   const remoteStreams = resources.map(() => new RemoteReadableStream());
-
-  // remoteStreams == [{ writable1, readablePort1 }, ..., { writableN, readablePortN }]
-  const decryptJob = new DecryptionChannel().then(async (thread: any) => {
-    // PenumbraDecryptionWorkerAPI) => {
-    console.log('in worker context');
-    const responses = await thread.get(remoteStreams, resources);
-    console.log(responses);
-    return responses;
+  const readables = remoteStreams.map((stream) => stream.readable);
+  const writablePorts = remoteStreams.map((stream) => stream.writablePort);
+  new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
+    await thread.get(Comlink.transfer(writablePorts, writablePorts), resources);
   });
-  const streams = await decryptJob;
-  console.log('penumbra.get() called');
-  console.log(streams);
-  // return ['', ''].map(() => new ReadableStream());
-  return streams;
+  return readables;
 }
 
 /** Zip files retrieved by Penumbra */
