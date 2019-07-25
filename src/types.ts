@@ -33,6 +33,8 @@ export type RemoteResource = {
   };
   /** The name of the custom event emitted, default (TODO) is the URL fetching from */
   progressEventName?: string;
+  /** Relative file path (needed for zipping) */
+  path?: string;
 };
 
 /**
@@ -42,6 +44,18 @@ export type RemoteResourceWithoutFile = Optionalize<
   RemoteResource,
   'filePrefix'
 >;
+
+/** Penumbra file composition */
+export type PenumbraFile = {
+  /** Backing stream */
+  stream: ReadableStream;
+  /** File mimetype */
+  mimetype: string;
+  /** Filename (excluding extension) */
+  filePrefix: string;
+  /** Relative file path (needed for zipping) */
+  path: string;
+};
 
 /**
  * The type that is emitted as progress continues
@@ -72,14 +86,16 @@ export enum compression {
 /** Penumbra API */
 export type PenumbraAPI = {
   /** Retrieve and decrypt files */
-  get: (...resources: RemoteResourceWithoutFile[]) => Promise<ReadableStream[]>;
+  get: (...resources: RemoteResource[]) => Promise<PenumbraFile[]>;
   /** Save files retrieved by Penumbra */
-  save: (data: ReadableStream[], fileName?: string) => Promise<void>;
+  save: (data: PenumbraFile[], fileName?: string) => Promise<void>;
   /** Load files retrieved by Penumbra into memory as a Blob */
-  getBlob: (data: ReadableStream[] | ReadableStream) => Promise<Blob>;
+  getBlob: (
+    data: PenumbraFile[] | PenumbraFile | ReadableStream,
+  ) => Promise<Blob>;
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
   getTextOrURI: (
-    data: ReadableStream[],
+    data: PenumbraFile[],
     mimetype?: string,
   ) => Promise<{
     /** Type of response data */
@@ -89,7 +105,7 @@ export type PenumbraAPI = {
   }>;
   /** Zip files retrieved by Penumbra */
   zip: (
-    data: ReadableStream[],
+    data: PenumbraFile[],
     compressionLevel?: number,
   ) => Promise<ReadableStream>;
 };
@@ -110,8 +126,9 @@ export type PenumbraDecryptionWorkerAPI = {
    * @param resource - The remote resource to download
    * @returns A readable stream of the deciphered file
    */
-  fetchMany: (
-    ...resources: RemoteResourceWithoutFile[]
+  get: (
+    writablePorts: MessagePort[],
+    resources: RemoteResource[],
   ) => Promise<ReadableStream[]>;
 };
 

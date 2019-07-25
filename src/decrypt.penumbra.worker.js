@@ -38,11 +38,6 @@ class PenumbraDecryptionWorker {
     // return get(...args);
   }
 
-  /** Test using getDecryptedContent */
-  getDecryptedContent(...args) {
-    return getDecryptedContent(...args);
-  }
-
   /** TODO: remove from worker */
   fetchAndDecrypt(...args) {
     return fetchAndDecrypt(...args);

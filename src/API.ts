@@ -11,11 +11,15 @@ import {
   PenumbraAPI,
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
-  RemoteResourceWithoutFile,
+  PenumbraFile,
+  RemoteResource,
 } from './types';
 import { blobCache, isViewableText } from './utils';
 
-// const workers = await getWorkers();
+const resolver = document.createElementNS(
+  'http://www.w3.org/1999/xhtml',
+  'a',
+) as HTMLAnchorElement;
 
 /**
  * Retrieve and decrypt files
@@ -25,17 +29,27 @@ import { blobCache, isViewableText } from './utils';
  * await penumbra.get(resource);
  *
  * // Buffer all responses & read them as text
- * await Promise.all((await penumbra.get(resources)).map((stream) =>
- *  new Response(stream).text()
+ * await Promise.all((await penumbra.get(resources)).map((data: PenumbraFile) =>
+ *  new Response(data.stream).text()
  * ));
  *
- * // Buffer a response & read as an ArrayBuffer
- * await new Response(await penumbra.get(resource)).arrayBuffer();
+ * // Buffer a response & read as text
+ * await new Response((await penumbra.get(resource))[0].stream).text();
+ *
+ * // Example call with an included resource
+ * await penumbra.get({
+ *   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+ *   filePrefix: 'NYT',
+ *   mimetype: 'text/plain',
+ *   decryptionOptions: {
+ *     key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+ *     iv: '6lNU+2vxJw6SFgse',
+ *     authTag: 'gadZhS1QozjEmfmHLblzbg==',
+ *   },
+ * });
  * ```
  */
-async function get(
-  ...resources: RemoteResourceWithoutFile[]
-): Promise<ReadableStream[]> {
+async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (arguments.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
@@ -43,7 +57,17 @@ async function get(
   const workers = await getWorkers();
   const DecryptionChannel = workers.Decrypt.comlink;
   const remoteStreams = resources.map(() => new RemoteReadableStream());
-  const readables = remoteStreams.map((stream) => stream.readable);
+  const readables = remoteStreams.map((stream, i) => {
+    const { url } = resources[i];
+    resolver.href = url;
+    const path = resolver.pathname; // derive path from URL
+    return {
+      stream: stream.readable,
+      path,
+      // derived path is overridden if PenumbraFile contains path
+      ...resources[i],
+    };
+  });
   const writablePorts = remoteStreams.map((stream) => stream.writablePort);
   new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
     await thread.get(Comlink.transfer(writablePorts, writablePorts), resources);
@@ -53,11 +77,11 @@ async function get(
 
 /** Zip files retrieved by Penumbra */
 async function zip(
-  data: ReadableStream[],
+  data: PenumbraFile[],
   compressionLevel: number = compression.store,
 ): Promise<ReadableStream> {
-  console.error('penumbra.zip() is unimplemented');
-  return new ReadableStream();
+  throw new Error('penumbra.zip() is unimplemented');
+  // return new ReadableStream();
 }
 
 const DEFAULT_FILENAME = 'download';
@@ -69,33 +93,26 @@ const DEFAULT_FILENAME = 'download';
  * @param fileName - The name of the file to save to
  * @returns A promise that saves the files
  */
-async function save(
-  data: ReadableStream[],
-  fileName: string = DEFAULT_FILENAME,
-): Promise<void> {
+async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const createStreamSaver = (await import('streamsaver')).createWriteStream;
-
-  // Write a single readable stream to file
-  if (data instanceof ReadableStream) {
-    data.pipeTo(createStreamSaver(fileName));
-    return undefined;
-    // return saveAs(await new Response(data).blob(), fileName);
-  }
 
   // Zip a list of files
   // TODO: Use streaming zip through conflux
   if ('length' in data && data.length > 1) {
     const archive = await zip(data);
     await archive.pipeTo(
-      createStreamSaver(
-        fileName === DEFAULT_FILENAME ? `${DEFAULT_FILENAME}.zip` : fileName,
-      ),
+      createStreamSaver(fileName || `${DEFAULT_FILENAME}.zip`),
     );
     return undefined;
   }
 
-  const { saveAs } = await import('file-saver');
-  return saveAs(await new Response(data[0]).blob(), fileName);
+  const file: PenumbraFile = 'stream' in data ? data : data[0];
+  console.warn('TODO: get filename extension');
+  const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
+
+  // Write a single readable stream to file
+  file.stream.pipeTo(createStreamSaver(singleFileName));
+  return undefined;
 }
 
 /**
@@ -104,13 +121,21 @@ async function save(
  * @param data - The data to load
  * @returns A blob of the data
  */
-async function getBlob(data: ReadableStream[] | ReadableStream): Promise<Blob> {
+async function getBlob(
+  data: PenumbraFile[] | PenumbraFile | ReadableStream,
+): Promise<Blob> {
   if ('length' in data && data.length > 1) {
-    return getBlob([await zip(data)]);
+    return getBlob(await zip(data));
   }
 
-  const stream = data instanceof ReadableStream ? data : data[0];
-  return new Response(stream).blob();
+  let file: ReadableStream;
+  if (data instanceof ReadableStream) {
+    file = data;
+  } else {
+    file = ('stream' in data ? data : data[0]).stream;
+  }
+
+  return new Response(file).blob();
 }
 
 /**
@@ -120,7 +145,7 @@ async function getBlob(data: ReadableStream[] | ReadableStream): Promise<Blob> {
  * @returns The text itself or a URI encoding the image if applicable
  */
 async function getTextOrURI(
-  data: ReadableStream[],
+  data: PenumbraFile[],
   mimetype: string = 'application/octet-stream',
 ): Promise<{
   /** Data type */
@@ -131,7 +156,7 @@ async function getTextOrURI(
   if (data.length === 1 && isViewableText(mimetype)) {
     return {
       type: 'text',
-      data: await new Response(data[0]).text(),
+      data: await new Response(data[0].stream).text(),
     };
   }
 

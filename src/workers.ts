@@ -27,7 +27,8 @@ if (!self.document) {
   );
 }
 
-const scriptElement = document.currentScript || document.querySelector('script[data-penumbra]');
+const scriptElement =
+  document.currentScript || document.querySelector('script[data-penumbra]');
 
 if (!scriptElement) {
   throw new Error('Unable to locate Penumbra script element.');

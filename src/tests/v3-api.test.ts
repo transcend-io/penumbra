@@ -45,6 +45,7 @@ test('v3 API: progress', async (t) => {
   self.addEventListener(progressEventName, onprogress);
   await penumbra.get({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',
+    filePrefix: 'patreon',
     mimetype: 'video/webm',
     decryptionOptions: {
       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
