@@ -19,24 +19,31 @@
 ## Usage
 
 ### .get
+
 Fetch and decrypt remote files
+
 ```ts
 penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFiles[]>
 ```
 
 ### .save
+
 Save files retrieved by Penumbra
+
 ```ts
 penumbra.save(data: PenumbraFiles, fileName?: string): Promise<void>
 ```
 
 ### .getBlob
+
 Load files retrieved by Penumbra into memory as a Blob
+
 ```ts
 penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
 ```
 
-### .getTextOrURI 
+### .getTextOrURI
+
 Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) (if content is not viewable).
 
 ```js
@@ -44,6 +51,7 @@ penumbra.getTextOrURI(data: PenumbraFiles): Promise<{ type: 'text'|'uri', data: 
 ```
 
 ### .zip
+
 Zip files retrieved by Penumbra
 
 ```ts
@@ -70,6 +78,7 @@ document.getElementById('my-paragraph').innerText = decryptedText;
 ```
 
 ### Display encrypted image
+
 ```js
 const imageSrc = await penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
@@ -86,6 +95,7 @@ document.getElementById('my-img').src = imageSrc;
 ```
 
 ### Download an encrypted file
+
 ```js
 penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
@@ -102,6 +112,7 @@ penumbra.get({
 ```
 
 ### Download many encrypted files
+
 ```js
 penumbra.get([{
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
@@ -168,7 +179,7 @@ penumbra.preload(...resources);
 
 ### Download Progress Event Emitter
 
-You can listen to a download progress event. The event name defaults to the `url` parameter of the `RemoteResource` argument to `.get`. 
+You can listen to a download progress event. The event name defaults to the `url` parameter of the `RemoteResource` argument to `.get`.
 
 ```js
 window.addEventListener(url, e => {
@@ -177,6 +188,7 @@ window.addEventListener(url, e => {
 ```
 
 You may also pass in a custom progress event name with `progressEventName`.
+
 ```js
 penumbra.get({
   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
