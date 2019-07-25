@@ -7,6 +7,11 @@ import { fromWritablePort } from 'remote-web-streams';
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
 
+// eslint-disable-next-line no-restricted-globals
+if (self.document) {
+  throw new Error('Worker thread should not be included in document');
+}
+
 /**
  * Penumbra Decryption Worker class
  */
