@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Penumbra Demo</title>
+    <meta charset="UTF-8" />
+    <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
+  </head>
+  <body>
+    <div id="app">
+      <h1>Penumbra Demo</h1>
+    </div>
+    <!--
+    <script src="demo.js" async defer></script>
+    <script src="penumbra.js" data-penumbra async defer></script>
+    -->
+    <script async defer>
+      document.currentScript.remove();
+      (() => {
+        const scripts = document.createDocumentFragment();
+        const penumbra = document.createElement('script');
+        const cacheBuster = Math.random()
+          .toString(10)
+          .slice(2);
+
+        penumbra.async = true;
+        penumbra.defer = true;
+
+        const demo = penumbra.cloneNode();
+
+        penumbra.dataset.penumbra = '';
+        // penumbra.dataset.workers = JSON.stringify({
+        //   base: '/',
+        //   decrypt: 'decrypt.penumbra.worker.js?' + cacheBuster,
+        //   zip: 'zip.penumbra.worker.js?' + cacheBuster,
+        //   StreamSaver: 'streamsaver.penumbra.serviceworker.js?' + cacheBuster,
+        // });
+        penumbra.src = 'penumbra.js?' + cacheBuster;
+        demo.src = 'demo.js?' + cacheBuster;
+
+        scripts.appendChild(penumbra);
+        scripts.appendChild(demo);
+        document.body.appendChild(scripts);
+      })();
+    </script>
+  </body>
+</html>
