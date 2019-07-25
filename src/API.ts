@@ -146,7 +146,7 @@ async function getBlob(
  */
 async function getTextOrURI(
   data: PenumbraFile[],
-  mimetype: string = 'application/octet-stream',
+  mimetype: string = data[0].mimetype,
 ): Promise<{
   /** Data type */
   type: 'text' | 'uri';
