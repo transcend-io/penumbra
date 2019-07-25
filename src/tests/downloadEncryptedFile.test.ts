@@ -6,7 +6,7 @@
 // import { TimeoutManager } from './helpers/timeout';
 
 // test('downloadEncryptedFile', async (t) => {
-//   const progressEventName = 'my-custom-event';
+//   const progressEventName = 'penumbra-progress-emit-test';
 //   const fail = () => {
 //     t.fail();
 //     t.end();

@@ -16,3 +16,5 @@ export default penumbra;
 
 const view: PenumbraView = (self || exports) as Window;
 view.penumbra = penumbra;
+
+self.dispatchEvent(new CustomEvent('penumbra-ready', { detail: penumbra }));

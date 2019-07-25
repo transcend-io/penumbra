@@ -71,6 +71,15 @@ export type ProgressEmit = CustomEvent<{
   url: string;
 }>;
 
+/**
+ * The type that is emitted when penumbra is ready
+ * to be used
+ */
+export type PenumbraReady = CustomEvent<{
+  /** Penumbra API object */
+  penumbra: PenumbraAPI;
+}>;
+
 /** Compression levels */
 export enum compression {
   /** No compression */

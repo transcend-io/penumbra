@@ -181,7 +181,7 @@ self.addEventListener('beforeunload', cleanup);
  * penumbra.setWorkerLocation('/penumbra-workers/')
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
- *   base: '/penumbra-workers',
+ *   base: '/penumbra-workers/',
  *   decrypt: 'decrypt.js'
  *   zip: 'zip-debug.js' // e.g. manually use a debug worker
  *   StreamSaver: 'StreamSaver.js'
@@ -197,10 +197,12 @@ export async function setWorkerLocation(
     console.warn('Penumbra Workers are already active. Reinitializing...');
     cleanup();
   }
-  script.workers = JSON.stringify({
-    ...getWorkerLocation(),
-    ...(typeof options === 'string' ? { base: options } : options),
-  });
+
+  script.workers = JSON.stringify(
+    typeof options === 'string'
+      ? { base: options, ...DEFAULT_WORKERS }
+      : options,
+  );
   await initWorkers();
   return undefined;
 }

@@ -1,14 +1,16 @@
 /* tslint:disable completed-docs */
 
 // penumbra
-import { ProgressEmit } from './types';
+import { ProgressEmit, PenumbraReady } from './types';
 
 declare global {
   /**
    * Mapping from event listeners to their underlying types
    */
   interface WindowEventMap {
-    /** Emit during penumbra download */
-    'my-custom-event': ProgressEmit;
+    /** Emit during Penumbra downloads */
+    'penumbra-progress-emit-test': ProgressEmit;
+    /** Emit once Penumbra is ready to be used */
+    'penumbra-ready': PenumbraReady;
   }
 }
