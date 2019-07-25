@@ -190,7 +190,6 @@ self.addEventListener('beforeunload', cleanup);
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
  * ```
  */
- * /
 export async function setWorkerLocation(
   options: WorkerLocationOptions | string,
 ): Promise<void> {
