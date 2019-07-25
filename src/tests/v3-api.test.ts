@@ -3,23 +3,26 @@ import test from 'tape';
 // import penumbra from '../API';
 import {
   PenumbraAPI,
+  PenumbraReady,
   PenumbraView,
   ProgressEmit,
   RemoteResource,
 } from '../types';
 
+import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 
-document.addEventListener('DOMContentLoaded', () => {
-  // eslint-disable-next-line no-restricted-globals
-  const view: PenumbraView = self as Window;
-  const penumbra = view.penumbra as PenumbraAPI;
-
-  penumbra.setWorkerLocation("/build/");
+// eslint-disable-next-line no-restricted-globals
+const view: PenumbraView = self as Window;
+const onReady = (event?: PenumbraReady) => {
+  console.log('ready!');
+  // eslint-disable-next-line no-shadow
+  const penumbra = ((event && event.detail) || view.penumbra) as PenumbraAPI;
+  penumbra.setWorkerLocation('/build/');
 
   test('v3 API: progress', async (t) => {
-    const progressEventName = 'my-custom-event';
+    const progressEventName = 'penumbra-progress-emit-test';
     const fail = () => {
       t.fail();
       t.end();
@@ -45,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (progressStarted && percent > 25) {
           // eslint-disable-next-line no-restricted-globals
-          self.removeEventListener(progressEventName, onprogress);
+          view.removeEventListener(progressEventName, onprogress);
           t.pass('get() progress event test');
           t.end();
         }
@@ -54,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // eslint-disable-next-line no-restricted-globals
-    self.addEventListener(progressEventName, onprogress);
+    view.addEventListener(progressEventName, onprogress);
     await penumbra.get({
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',
       filePrefix: 'patreon',
@@ -154,4 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     t.end();
   });
-});
+};
+
+if (!view.penumbra) {
+  // eslint-disable-next-line no-restricted-globals
+  view.addEventListener('penumbra-ready', onReady);
+} else {
+  onReady();
+}
