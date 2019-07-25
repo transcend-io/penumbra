@@ -1,7 +1,6 @@
 // Remote
 import * as Comlink from 'comlink';
-import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
-import { MessagePortSink } from 'remote-web-streams/dist/types/writable';
+import { RemoteReadableStream } from 'remote-web-streams';
 
 // Types
 
@@ -13,8 +12,10 @@ import {
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
   RemoteResource,
+  WorkerLocation,
 } from './types';
 import { blobCache, isViewableText } from './utils';
+import { getWorkers, setWorkerLocation } from './workers';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -53,9 +54,8 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (arguments.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
-  const { getWorkers } = await import('./workers');
   const workers = await getWorkers();
-  const DecryptionChannel = workers.Decrypt.comlink;
+  const DecryptionChannel = workers.decrypt.comlink;
   const remoteStreams = resources.map(() => new RemoteReadableStream());
   const readables = remoteStreams.map((stream, i) => {
     const { url } = resources[i];
@@ -169,6 +169,13 @@ async function getTextOrURI(
   return { type: 'uri', data: uri };
 }
 
-const penumbra: PenumbraAPI = { get, save, getBlob, getTextOrURI, zip };
+const penumbra: PenumbraAPI = {
+  get,
+  save,
+  getBlob,
+  getTextOrURI,
+  zip,
+  setWorkerLocation,
+};
 
 export default penumbra;

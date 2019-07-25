@@ -108,6 +108,8 @@ export type PenumbraAPI = {
     data: PenumbraFile[],
     compressionLevel?: number,
   ) => Promise<ReadableStream>;
+  /** Configure location of worker threads */
+  setWorkerLocation: (options: WorkerLocationOptions | string) => Promise<void>;
 };
 
 /** Penumbra API as exposed on the current DOM AbstractView */
@@ -183,9 +185,9 @@ export type PenumbraServiceWorker = {
 /** The penumbra workers themselves */
 export type PenumbraWorkers = {
   /** The decryption Worker */
-  Decrypt: PenumbraWorker;
+  decrypt: PenumbraWorker;
   /** The zip Worker */
-  Zip: PenumbraWorker;
+  zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
   StreamSaver?: PenumbraServiceWorker;
 };

@@ -132,8 +132,8 @@ export async function createPenumbraWorker(
 export async function initWorkers(): Promise<void> {
   if (!script.initialized) {
     const { decrypt, zip } = getWorkerLocation();
-    workers.Decrypt = await createPenumbraWorker(decrypt);
-    workers.Zip = await createPenumbraWorker(zip);
+    workers.decrypt = await createPenumbraWorker(decrypt);
+    workers.zip = await createPenumbraWorker(zip);
     script.initialized = 'yes';
   }
 }
@@ -172,15 +172,36 @@ async function cleanup(): Promise<void> {
 self.addEventListener('beforeunload', cleanup);
 
 /**
- * Sets worker location configuration
+ * Configure the location of Penumbra's worker threads
  *
  * @param options - Worker location options
+ *
+ * ```ts
+ * // Set only the base URL by passing a string
+ * penumbra.setWorkerLocation('/penumbra-workers/')
+ * // Set all worker URLs by passing a WorkerLocation object
+ * penumbra.setWorkerLocation({
+ *   base: '/penumbra-workers',
+ *   decrypt: 'decrypt.js'
+ *   zip: 'zip-debug.js' // e.g. manually use a debug worker
+ *   StreamSaver: 'StreamSaver.js'
+ * });
+ * // Set a single worker's location
+ * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
+ * ```
  */
-export function setWorkerLocation(options: WorkerLocationOptions): void {
+ * /
+export async function setWorkerLocation(
+  options: WorkerLocationOptions | string,
+): Promise<void> {
   if (script.initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
     cleanup();
   }
-  script.workers = JSON.stringify({ ...getWorkerLocation(), ...options });
-  initWorkers();
+  script.workers = JSON.stringify({
+    ...getWorkerLocation(),
+    ...(typeof options === 'string' ? { base: options } : options),
+  });
+  await initWorkers();
+  return undefined;
 }
