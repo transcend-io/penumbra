@@ -16,8 +16,7 @@ async function hash(algorithm, ab) {
 const view = self;
 
 /** Penumbra has loaded */
-const onReady = async (event) => {
-  const penumbra = (event && event.detail) || view.penumbra;
+const onReady = async ({ detail: penumbra } = { detail: view.penumbra }) => {
   const cacheBuster = Math.random()
     .toString(10)
     .slice(2);
