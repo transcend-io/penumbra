@@ -91,7 +91,6 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           // eslint-disable-next-line no-restricted-globals
           view.removeEventListener(progressEventName, onprogress);
           console.log(true, 'get() progress event test');
-          t.end();
         }
       }
       lastPercent = percent;
