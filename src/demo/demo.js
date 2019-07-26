@@ -156,6 +156,9 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
             hash('SHA-256', await new Response(rs).arrayBuffer()),
           ),
         );
+        window.x = resources;
+        console.log(`inspect window.x`);
+        console.log(hashes);
         const referenceHash1 =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
         const referenceHash2 =
@@ -233,15 +236,18 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
     const passed = await test();
     failures += !passed;
     console.log(
-      `%c${passed ? '✅ PASS' : '❌ FAIL'} `,
-      `◼️ font-size:larger;color:${getTestColor(passed)}`,
-      `${name} ${passed ? 'passed' : 'failed'}`,
-      `(returned ${JSON.stringify(passed)})`,
+      `%c${
+        passed ? '✅ PASS' : '❌ FAIL'
+      } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
+      `font-size:larger;color:${getTestColor(passed)}`,
+      '',
+      'color:gray',
+      '',
     );
   }
   console.log(
-    `%c${failures ? `❌ ${failures} tests failed.` : '✅ All tests passed!'}`,
-    `color:${getTestColor(!failures)}`,
+    `%c${failures ? `❌ ${failures} tests failed` : '✅ All tests passed!'}`,
+    `font-size:x-large;color:${getTestColor(!failures)}`,
   );
 };
 
