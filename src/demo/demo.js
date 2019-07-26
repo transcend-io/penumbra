@@ -226,16 +226,23 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
     ],
   );
 
+  const getTestColor = (passed) => (passed ? 'limegreen' : 'crimson');
+
   // eslint-disable-next-line no-restricted-syntax
   for await (const [name, test] of tests) {
     const passed = await test();
     failures += !passed;
     console.log(
+      `%c${passed ? '✅ PASS' : '❌ FAIL'} `,
+      `◼️ font-size:larger;color:${getTestColor(passed)}`,
       `${name} ${passed ? 'passed' : 'failed'}`,
       `(returned ${JSON.stringify(passed)})`,
     );
   }
-  console.log(failures ? `${failures} tests failed.` : 'All tests passed!');
+  console.log(
+    `%c${failures ? `❌ ${failures} tests failed.` : '✅ All tests passed!'}`,
+    `color:${getTestColor(!failures)}`,
+  );
 };
 
 if (!view.penumbra) {
