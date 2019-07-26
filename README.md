@@ -71,8 +71,8 @@ penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<vo
 Listen for this event to know when Penumbra is ready to be used.
 
 ```ts
-self.addEventListener('penumbra-ready', ({ detail: { penumbra } }) => {
-  // penumbra.get(...);
+self.addEventListener('penumbra-ready', async ({ detail: { penumbra } }) => {
+  // await penumbra.get(...);
 });
 ```
 
@@ -260,8 +260,8 @@ penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 ### Waiting for the `penumbra-ready` event]
 
 ```ts
-const onReady = ({ detail: { penumbra } } = { detail: self }) => {
-  // penumbra.get(...);
+const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
+  // await penumbra.get(...);
 };
 if (!self.penumbra) {
   self.addEventListener('penumbra-ready', onReady);

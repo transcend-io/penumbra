@@ -16,7 +16,7 @@ import { TimeoutManager } from './helpers/timeout';
 // eslint-disable-next-line no-restricted-globals
 const view: PenumbraView = self as Window;
 
-const onReady = (event?: PenumbraReady) => {
+const onReady = async (event?: PenumbraReady) => {
   // eslint-disable-next-line no-shadow
   const penumbra = ((event && event.detail.penumbra) || view.penumbra) as PenumbraAPI;
   penumbra.setWorkerLocation('/build/');
