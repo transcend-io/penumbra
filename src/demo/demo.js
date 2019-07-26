@@ -58,7 +58,10 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
     };
     const test1Text = await penumbra.getTextOrURI(await penumbra.get(NYT));
     console.log(test1Text.type === 'text', `test1Text.type === 'text'`);
-    const test1Hash = await hash('SHA-256', new TextEncoder().encode(text.data));
+    const test1Hash = await hash(
+      'SHA-256',
+      new TextEncoder().encode(test1Text.data),
+    );
     const ref1Hash =
       '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
     console.log(test1Hash === ref1Hash, `test1Hash === ref1Hash`);
