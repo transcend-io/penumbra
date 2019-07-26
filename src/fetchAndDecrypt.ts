@@ -17,9 +17,6 @@ export default function fetchAndDecrypt({
   decryptionOptions,
   progressEventName = url,
 }: RemoteResourceWithoutFile): Promise<ReadableStream> {
-  if (progressEventName !== url) {
-    console.log(`progressEventName: ${progressEventName}`);
-  }
   return (
     fetch(url)
       // Retrieve ReadableStream body

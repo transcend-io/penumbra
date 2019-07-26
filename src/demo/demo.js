@@ -59,16 +59,13 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           },
         };
         const test1Text = await penumbra.getTextOrURI(await penumbra.get(NYT));
-        // console.log(test1Text.type === 'text', `test1Text.type === 'text'`);
         const test1Hash = await hash(
           'SHA-256',
           new TextEncoder().encode(test1Text.data),
         );
         const ref1Hash =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
-        const result = test1Text.type === 'text' && test1Hash === ref1Hash;
-        // console.log(result, `test1Hash === ref1Hash`);
-        return result;
+        return test1Text.type === 'text' && test1Hash === ref1Hash;
       },
     ],
     [
@@ -77,7 +74,6 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         let result;
         const progressEventName = 'penumbra-progress-emit-test';
         const fail = () => {
-          // console.log(false, 'progress event failed (took too long)');
           result = false;
         };
         const initTimeout = timeout(fail, 60);
@@ -109,19 +105,18 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           lastPercent = percent;
         };
         view.addEventListener(progressEventName, onprogress);
-        await new Response(
-          await penumbra.get({
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
-            filePrefix: 'k',
-            mimetype: 'video/webm',
-            decryptionOptions: {
-              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-              iv: '6lNU+2vxJw6SFgse',
-              authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
-            },
-            progressEventName,
-          }),
-        ).arrayBuffer();
+        const [{ stream }] = await penumbra.get({
+          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
+          filePrefix: 'k',
+          mimetype: 'video/webm',
+          decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
+          },
+          progressEventName,
+        });
+        await new Response(stream).arrayBuffer();
         return result;
       },
     ],
@@ -152,28 +147,21 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           },
         );
         const hashes = await Promise.all(
-          resources.map(async (rs) =>
-            hash('SHA-256', await new Response(rs).arrayBuffer()),
+          resources.map(async ({ stream }) =>
+            hash('SHA-256', await new Response(stream).arrayBuffer()),
           ),
         );
-        window.x = resources;
-        console.log(`inspect window.x`);
-        console.log(hashes);
         const referenceHash1 =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
         const referenceHash2 =
           '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-        const test1 = hashes[0] === referenceHash1;
-        const test2 = hashes[1] === referenceHash2;
-        // console.log(test1, `hashes[0] === referenceHash1`);
-        // console.log(test2, `hashes[1] === referenceHash2`);
-        return test1 && test2;
+        return hashes[0] === referenceHash1 && hashes[1] === referenceHash2;
       },
     ],
     [
       'penumbra.get() images (as ReadableStream)',
       async () => {
-        const content = await penumbra.get({
+        const [{ stream }] = await penumbra.get({
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
           filePrefix: 'tortoise',
           mimetype: 'image/jpeg',
@@ -184,13 +172,11 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           },
         });
 
-        const imageBytes = await new Response(content).arrayBuffer();
+        const imageBytes = await new Response(stream).arrayBuffer();
         const imageHash = await hash('SHA-256', imageBytes);
         const referenceHash =
           '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-        const result = imageHash === referenceHash;
-        // console.log(result, `imageHash === referenceHash`);
-        return result;
+        return imageHash === referenceHash;
       },
     ],
     [
@@ -217,14 +203,34 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         } catch (ex) {
           isURL = false;
         }
-        // console.log(isURL, 'getTextOrURI(): valid URL', url);
         const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
         const imageHash = await hash('SHA-256', imageBytes);
         const referenceHash =
           '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-        const hashMatches = imageHash === referenceHash;
-        // console.log(hashMatches, `imageHash === referenceHash`);
-        return isURL && hashMatches;
+        return isURL && imageHash === referenceHash;
+      },
+    ],
+    [
+      'penumbra.getBlob(): images',
+      async () => {
+        const blob = await penumbra.getBlob(
+          await penumbra.get({
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            filePrefix: 'tortoise',
+            mimetype: 'image/jpeg',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+            },
+          }),
+        );
+        const imageBytes = await new Response(blob).arrayBuffer();
+        const imageHash = await hash('SHA-256', imageBytes);
+        const referenceHash =
+          '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+        return imageHash === referenceHash;
       },
     ],
   );
@@ -246,7 +252,11 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
     );
   }
   console.log(
-    `%c${failures ? `❌ ${failures} tests failed` : '✅ All tests passed!'}`,
+    `%c${
+      failures
+        ? `❌ ${failures} test${failures > 1 ? 's' : ''} failed`
+        : '✅ All tests passed!'
+    }`,
     `font-size:x-large;color:${getTestColor(!failures)}`,
   );
 };
