@@ -9,6 +9,7 @@ import {
   RemoteResource,
 } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';

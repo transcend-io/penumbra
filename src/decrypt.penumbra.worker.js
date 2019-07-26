@@ -36,16 +36,22 @@ class PenumbraDecryptionWorker {
       );
     }
     resources.forEach(async (resource, i) => {
+      if (!('url' in resource)) {
+        throw new Error('penumbra.get(): RemoteResource missing URL');
+      }
       const remoteStream = fromWritablePort(writablePorts[i]);
       const localStream = await fetchAndDecrypt(resource);
       localStream.pipeTo(remoteStream);
     });
-    // return get(...args);
   }
 
-  /** TODO: remove from worker */
-  fetchAndDecrypt(...args) {
-    return fetchAndDecrypt(...args);
+  /**
+   * Forward progress events to main thread
+   */
+  async subscribeToProgressEvents() {
+    console.log(
+      'TODO: Implement subscribing to and forwarding progress events from worker to main thread',
+    );
   }
 }
 

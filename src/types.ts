@@ -58,9 +58,9 @@ export type PenumbraFile = {
 };
 
 /**
- * The type that is emitted as progress continues
+ * Progress event details
  */
-export type ProgressEmit = CustomEvent<{
+export type ProgressDetails = {
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
@@ -69,7 +69,12 @@ export type ProgressEmit = CustomEvent<{
   contentLength: number;
   /** The URL downloading from */
   url: string;
-}>;
+};
+
+/**
+ * The type that is emitted as progress continues
+ */
+export type ProgressEmit = CustomEvent<ProgressDetails>;
 
 /**
  * The type that is emitted when penumbra is ready
@@ -105,7 +110,6 @@ export type PenumbraAPI = {
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
   getTextOrURI: (
     data: PenumbraFile[],
-    mimetype?: string,
   ) => Promise<{
     /** Type of response data */
     type: 'text' | 'uri';
@@ -141,6 +145,13 @@ export type PenumbraDecryptionWorkerAPI = {
     writablePorts: MessagePort[],
     resources: RemoteResource[],
   ) => Promise<ReadableStream[]>;
+
+  /**
+   * Subscribe to progress events
+   */
+  subscribeToProgressEvents: (
+    handler: (name: string, progress: ProgressDetails) => void,
+  ) => Promise<void>;
 };
 
 /**
@@ -178,6 +189,7 @@ export type PenumbraWorker = {
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   comlink: any;
 };
 
@@ -188,6 +200,7 @@ export type PenumbraServiceWorker = {
   /** PenumbraWorker's Worker interface */
   worker: ServiceWorker;
   /** PenumbraWorker's Comlink interface */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   comlink: any;
 };
 

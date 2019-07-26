@@ -1,14 +1,10 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 
 // comlink
-import { Remote, wrap } from 'comlink';
+import { wrap } from 'comlink';
 
 // local
-// import PenumbraDecryptionWorker from 'worker-loader!./decrypt.penumbra.worker';
-// import PenumbraZipWorker from 'worker-loader!./zip.penumbra.worker';
-import { RemoteReadableStream } from 'remote-web-streams';
 import {
-  PenumbraDecryptionWorkerAPI,
   PenumbraWorker,
   PenumbraWorkers,
   WorkerLocation,

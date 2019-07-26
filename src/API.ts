@@ -11,8 +11,9 @@ import {
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
+  ProgressDetails,
+  ProgressEmit,
   RemoteResource,
-  WorkerLocation,
 } from './types';
 import { blobCache, isViewableText } from './utils';
 import { getWorkers, setWorkerLocation } from './workers';
@@ -21,6 +22,34 @@ const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
 ) as HTMLAnchorElement;
+
+/** Re-dispatch progress events */
+function reDispatchProgressEvent(
+  name: string,
+  progress: ProgressDetails,
+): void {
+  const { percent, totalBytesRead, contentLength, url } = progress;
+  // eslint-disable-next-line no-restricted-globals
+  self.dispatchEvent(
+    new CustomEvent(name, {
+      detail: {
+        percent,
+        totalBytesRead,
+        contentLength,
+        url,
+      },
+    }),
+  );
+}
+
+/** Setup progress event forwarding */
+async function forwardProgressEvents(): Promise<void> {
+  const workers = await getWorkers();
+  const DecryptionChannel = workers.decrypt.comlink;
+  new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
+    await thread.subscribeToProgressEvents(reDispatchProgressEvent);
+  });
+}
 
 /**
  * Retrieve and decrypt files
@@ -132,7 +161,7 @@ async function getBlob(
   if (data instanceof ReadableStream) {
     file = data;
   } else {
-    file = ('stream' in data ? data : data[0]).stream;
+    file = ('length' in data ? data[0] : data).stream;
   }
 
   return new Response(file).blob();
@@ -146,14 +175,13 @@ async function getBlob(
  */
 async function getTextOrURI(
   data: PenumbraFile[],
-  mimetype: string = data[0].mimetype,
 ): Promise<{
   /** Data type */
   type: 'text' | 'uri';
   /** Data */
   data: string;
 }> {
-  if (data.length === 1 && isViewableText(mimetype)) {
+  if (data.length === 1 && isViewableText(data[0].mimetype)) {
     return {
       type: 'text',
       data: await new Response(data[0].stream).text(),
