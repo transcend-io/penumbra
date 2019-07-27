@@ -50,12 +50,12 @@ jobs:
     #  script: npm run test
 
     # Run tests on multiple browsers and publish code coverage
-    - stage: test
-      name: Cross-Browser Tests
-      script:
-        - npm run browser-test
-        - npm run coverage
-        - codecov
+    # - stage: test
+    #   name: Cross-Browser Tests
+    #   script:
+    #     - npm run browser-test
+    #     - npm run coverage
+    #     - codecov
 
     # ###### #
     # Deploy #
