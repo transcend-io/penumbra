@@ -1,10 +1,7 @@
-import { fromWritablePort, RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
-
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
 import { RemoteResource, RemoteResourceWithoutFile } from './types';
 import { getOrigins } from './utils';
-
 
 /**
  * Types of rels that a link can take on
