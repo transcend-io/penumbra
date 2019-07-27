@@ -137,6 +137,7 @@ export type PenumbraWorkerAPI = {
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setup: (eventListener: any) => Promise<void>;
 };
 
