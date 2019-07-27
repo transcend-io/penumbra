@@ -229,7 +229,8 @@ On Amazon S3, this means adding the following line to your bucket policy, inside
 
 ```ts
 // Set only the base URL by passing a string
-penumbra.setWorkerLocation('/penumbra-workers/')
+penumbra.setWorkerLocation('/penumbra-workers/');
+
 // Set all worker URLs by passing a WorkerLocation object
 penumbra.setWorkerLocation({
   base: '/penumbra-workers/',
@@ -237,6 +238,7 @@ penumbra.setWorkerLocation({
   zip: 'zip-debug.js' // e.g. manually use a debug worker
   StreamSaver: 'StreamSaver.js'
 });
+
 // Set a single worker's location
 penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 ```
@@ -247,6 +249,7 @@ penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // await penumbra.get(...);
 };
+
 if (!self.penumbra) {
   self.addEventListener('penumbra-ready', onReady);
 } else {
