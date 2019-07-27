@@ -1,3 +1,10 @@
+/* eslint-disable max-lines */
+// eslint-disable-next-line no-restricted-globals
+const view = self;
+
+const tests = [];
+let failures = 0;
+
 /**
  * Get the cryptographic hash of an ArrayBuffer
  *
@@ -20,18 +27,10 @@ async function hash(algorithm, ab) {
  * @returns Timeout cancellation helper
  */
 function timeout(callback, delay) {
-  // eslint-disable-next-line no-restricted-globals
-  const timer = self.setTimeout(callback, delay * 1000);
-  // eslint-disable-next-line no-restricted-globals
-  const clear = self.clearTimeout.bind(self, timer);
+  const timer = view.setTimeout(callback, delay * 1000);
+  const clear = view.clearTimeout.bind(view, timer);
   return { clear };
 }
-
-// eslint-disable-next-line no-restricted-globals
-const view = self;
-
-const tests = [];
-let failures = 0;
 
 /** Penumbra has loaded */
 const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
@@ -72,7 +71,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
       'progress event test',
       async () => {
         let result;
-        const progressEventName = 'penumbra-progress-emit-test';
+        const progressEventName = 'penumbra-progress';
         const fail = () => {
           result = false;
         };
@@ -81,8 +80,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         let initFinished = false;
         let progressStarted = false;
         let lastPercent;
-        const onprogress = (event) => {
-          const { percent } = event.detail;
+        const onprogress = ({ detail: { percent } }) => {
           if (!Number.isNaN(percent)) {
             if (!initFinished) {
               initTimeout.clear();
@@ -96,10 +94,8 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
               }
             }
             if (progressStarted && percent > 25) {
-              // eslint-disable-next-line no-restricted-globals
               view.removeEventListener(progressEventName, onprogress);
               result = true;
-              // console.log(result, 'get() progress event test');
             }
           }
           lastPercent = percent;
@@ -114,7 +110,6 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
             iv: '6lNU+2vxJw6SFgse',
             authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
           },
-          progressEventName,
         });
         await new Response(stream).arrayBuffer();
         return result;

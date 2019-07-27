@@ -9,6 +9,7 @@
 
 // exports
 import penumbra from './API';
+import './transferHandlers/progress';
 import { PenumbraView } from './types';
 
 export * from './types';

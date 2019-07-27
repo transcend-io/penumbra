@@ -1,11 +1,14 @@
 /* eslint-disable class-methods-use-this */
 
 // external modules
+import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
 import { fromWritablePort } from 'remote-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
+import onProgress from './utils/forwardProgress';
+import './transferHandlers/progress';
 
 // eslint-disable-next-line no-restricted-globals
 if (self.document) {
@@ -48,10 +51,8 @@ class PenumbraDecryptionWorker {
   /**
    * Forward progress events to main thread
    */
-  async subscribeToProgressEvents() {
-    console.log(
-      'TODO: Implement subscribing to and forwarding progress events from worker to main thread',
-    );
+  async setup(handler) {
+    onProgress.handler = handler;
   }
 }
 

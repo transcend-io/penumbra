@@ -6,7 +6,7 @@
 // import { TimeoutManager } from './helpers/timeout';
 
 // test('downloadEncryptedFile', async (t) => {
-//   const progressEventName = 'penumbra-progress-emit-test';
+//   const progressEventName = 'penumbra-progress';
 //   const fail = () => {
 //     t.fail();
 //     t.end();
@@ -51,6 +51,5 @@
 //       iv: '6lNU+2vxJw6SFgse',
 //       authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
 //     },
-//     progressEventName,
 //   });
 // });

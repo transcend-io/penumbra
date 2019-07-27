@@ -106,7 +106,7 @@ test('getDecryptedContent: images (as URL)', async (t) => {
 });
 
 test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
-  const progressEventName = 'penumbra-progress-emit-test';
+  const progressEventName = 'penumbra-progress';
   const fail = () => {
     t.fail();
     t.end();
@@ -152,6 +152,5 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
       iv: '6lNU+2vxJw6SFgse',
       authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
     },
-    progressEventName,
   });
 });

@@ -31,8 +31,6 @@ export type RemoteResource = {
     /** A base64 encoded authentication tag (for AES GCM) */
     authTag: string | Buffer;
   };
-  /** The name of the custom event emitted, default (TODO) is the URL fetching from */
-  progressEventName?: string;
   /** Relative file path (needed for zipping) */
   path?: string;
 };
@@ -132,9 +130,20 @@ export type PenumbraView = Window & {
 };
 
 /**
+ * Common Penumbra Worker API
+ */
+export type PenumbraWorkerAPI = {
+  /**
+   * Initializes Penumbra worker progress event forwarding
+   * to the main thread
+   */
+  setup: (eventListener: any) => Promise<void>;
+};
+
+/**
  * Penumbra Decryption Worker API
  */
-export type PenumbraDecryptionWorkerAPI = {
+export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
    *
@@ -145,13 +154,24 @@ export type PenumbraDecryptionWorkerAPI = {
     writablePorts: MessagePort[],
     resources: RemoteResource[],
   ) => Promise<ReadableStream[]>;
+};
 
+/**
+ * Penumbra Zip Worker API
+ */
+export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
   /**
-   * Subscribe to progress events
+   * Zips one or more PenumbraFiles while keeping their path
+   * data in-tact.
+   *
+   * @param writablePorts - Remote Web Stream writable ports
+   * @param files - PenumbraFiles to zip
+   * @returns A readable stream of zip file
    */
-  subscribeToProgressEvents: (
-    handler: (name: string, progress: ProgressDetails) => void,
-  ) => Promise<void>;
+  zip: (
+    writablePorts: MessagePort[],
+    files: PenumbraFile[],
+  ) => Promise<ReadableStream>;
 };
 
 /**
@@ -212,4 +232,10 @@ export type PenumbraWorkers = {
   zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
   StreamSaver?: PenumbraServiceWorker;
+};
+
+/** Worker->main thread progress forwarder */
+export type ProgressForwarder = {
+  /** Comlink-proxied main thread progress event transfer handler */
+  handler?: (event: ProgressEmit) => Promise<void>;
 };

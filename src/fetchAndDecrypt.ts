@@ -15,7 +15,6 @@ import { toBuff } from './utils';
 export default function fetchAndDecrypt({
   url,
   decryptionOptions,
-  progressEventName = url,
 }: RemoteResourceWithoutFile): Promise<ReadableStream> {
   return (
     fetch(url)
@@ -49,7 +48,6 @@ export default function fetchAndDecrypt({
           decipher,
           Number(response.headers.get('Content-Length') || '0'),
           url,
-          progressEventName,
         );
       })
   );

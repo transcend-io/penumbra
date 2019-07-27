@@ -9,7 +9,7 @@ declare global {
    */
   interface WindowEventMap {
     /** Emit during Penumbra downloads */
-    'penumbra-progress-emit-test': ProgressEmit;
+    'penumbra-progress': ProgressEmit;
     /** Emit once Penumbra is ready to be used */
     'penumbra-ready': PenumbraReady;
   }

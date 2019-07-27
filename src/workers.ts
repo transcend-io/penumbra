@@ -1,12 +1,14 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 
 // comlink
-import { wrap } from 'comlink';
+import { proxy, wrap } from 'comlink';
 
 // local
 import {
   PenumbraWorker,
+  PenumbraWorkerAPI,
   PenumbraWorkers,
+  ProgressEmit,
   WorkerLocation,
   WorkerLocationOptions,
 } from './types';
@@ -31,6 +33,8 @@ if (!scriptElement) {
 }
 
 const script = scriptElement.dataset;
+
+let initialized = false;
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -95,6 +99,12 @@ export function getWorkerLocation(): WorkerLocation {
   };
 }
 
+/** Re-dispatch progress events */
+function reDispatchProgressEvent(event: ProgressEmit): void {
+  // eslint-disable-next-line no-restricted-globals
+  self.dispatchEvent(event);
+}
+
 const workers: Partial<PenumbraWorkers> = {};
 
 /** Instantiate a Penumbra Worker */
@@ -119,18 +129,23 @@ export async function createPenumbraWorker(
   //   }
   //   default: {
   const worker = new Worker(url /* , { type: 'module' } */);
-  return { worker, comlink: wrap(worker) };
+  const penumbraWorker: PenumbraWorker = { worker, comlink: wrap(worker) };
+  const Link = penumbraWorker.comlink;
+  const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
+    await thread.setup(proxy(reDispatchProgressEvent));
+  });
+  await setup;
+  return penumbraWorker;
   //   }
   // }
 }
-
 /** Initializes web worker threads */
 export async function initWorkers(): Promise<void> {
-  if (!script.initialized) {
+  if (!initialized) {
     const { decrypt, zip } = getWorkerLocation();
     workers.decrypt = await createPenumbraWorker(decrypt);
     workers.zip = await createPenumbraWorker(zip);
-    script.initialized = 'yes';
+    initialized = true;
   }
 }
 
@@ -140,7 +155,7 @@ export async function initWorkers(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorkers(): Promise<PenumbraWorkers> {
-  if (!script.initialized) {
+  if (!initialized) {
     await initWorkers();
   }
   return workers as PenumbraWorkers;
@@ -189,7 +204,7 @@ self.addEventListener('beforeunload', cleanup);
 export async function setWorkerLocation(
   options: WorkerLocationOptions | string,
 ): Promise<void> {
-  if (script.initialized) {
+  if (initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
     cleanup();
   }

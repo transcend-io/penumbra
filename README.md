@@ -209,27 +209,11 @@ penumbra.preload(...resources);
 
 ### Download Progress Event Emitter
 
-You can listen to a download progress event. The event name defaults to the `url` parameter of the `RemoteResource` argument to `.get`.
+You can listen to download progress events by listening to the `penumbra-progress` event.
 
 ```js
-window.addEventListener(url, (e) => {
-  console.log(`${e.detail.percent}% done`);
-});
-```
-
-You may also pass in a custom progress event name with `progressEventName`.
-
-```js
-penumbra.get({
-  url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-  mimetype: 'text/plain',
-  filePrefix: 'NYT',
-  decryptionOptions: {
-    key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-    iv: '6lNU+2vxJw6SFgse',
-    authTag: 'gadZhS1QozjEmfmHLblzbg==',
-  },
-  progressEventName: 'MY_CUSTOM_NAME',
+window.addEventListener('penumbra-progress', ({ detail: { percent, url } }) => {
+  console.log(`${percent}% done for ${url}`);
 });
 ```
 

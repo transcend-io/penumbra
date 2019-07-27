@@ -1,5 +1,5 @@
 // Remote
-import * as Comlink from 'comlink';
+import { transfer } from 'comlink';
 import { RemoteReadableStream } from 'remote-web-streams';
 
 // Types
@@ -11,8 +11,6 @@ import {
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
-  ProgressDetails,
-  ProgressEmit,
   RemoteResource,
 } from './types';
 import { blobCache, isViewableText } from './utils';
@@ -22,34 +20,6 @@ const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
 ) as HTMLAnchorElement;
-
-/** Re-dispatch progress events */
-function reDispatchProgressEvent(
-  name: string,
-  progress: ProgressDetails,
-): void {
-  const { percent, totalBytesRead, contentLength, url } = progress;
-  // eslint-disable-next-line no-restricted-globals
-  self.dispatchEvent(
-    new CustomEvent(name, {
-      detail: {
-        percent,
-        totalBytesRead,
-        contentLength,
-        url,
-      },
-    }),
-  );
-}
-
-/** Setup progress event forwarding */
-async function forwardProgressEvents(): Promise<void> {
-  const workers = await getWorkers();
-  const DecryptionChannel = workers.decrypt.comlink;
-  new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
-    await thread.subscribeToProgressEvents(reDispatchProgressEvent);
-  });
-}
 
 /**
  * Retrieve and decrypt files
@@ -99,7 +69,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   });
   const writablePorts = remoteStreams.map((stream) => stream.writablePort);
   new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
-    await thread.get(Comlink.transfer(writablePorts, writablePorts), resources);
+    await thread.get(transfer(writablePorts, writablePorts), resources);
   });
   return readables;
 }

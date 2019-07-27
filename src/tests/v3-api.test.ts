@@ -24,7 +24,7 @@ const onReady = async (event?: PenumbraReady) => {
   penumbra.setWorkerLocation('/build/');
 
   test('v3 API: progress', async (t) => {
-    const progressEventName = 'penumbra-progress-emit-test';
+    const progressEventName = 'penumbra-progress';
     const fail = () => {
       t.fail();
       t.end();
@@ -69,7 +69,6 @@ const onReady = async (event?: PenumbraReady) => {
         iv: '6lNU+2vxJw6SFgse',
         authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
       },
-      progressEventName,
     });
   });
 
