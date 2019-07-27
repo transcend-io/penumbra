@@ -206,7 +206,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
       },
     ],
     [
-      'penumbra.getBlob(): images',
+      'penumbra.getBlob()',
       async () => {
         const blob = await penumbra.getBlob(
           await penumbra.get({
