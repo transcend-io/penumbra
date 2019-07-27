@@ -18,6 +18,11 @@ before_install:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
   # Ensure that npm version is 6.4.1
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
+  # Update docker-compose version
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
   - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
   # To ensure the aws command can be found
