@@ -241,7 +241,7 @@ penumbra.setWorkerLocation({
 penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 ```
 
-### Waiting for the `penumbra-ready` event]
+### Waiting for the `penumbra-ready` event
 
 ```ts
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
