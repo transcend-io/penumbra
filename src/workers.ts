@@ -177,6 +177,7 @@ async function cleanup(): Promise<void> {
       workerInstance.worker.terminate();
     }
   });
+  initialized = false;
 }
 
 // eslint-disable-next-line no-restricted-globals
@@ -214,6 +215,5 @@ export async function setWorkerLocation(
       ? { base: options, ...DEFAULT_WORKERS }
       : options,
   );
-  await initWorkers();
-  return undefined;
+  return initWorkers();
 }
