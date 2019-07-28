@@ -18,6 +18,10 @@
 
 ## Usage
 
+### Importing Penumbra
+
+TODO
+
 ### .get
 
 Fetch and decrypt remote files
@@ -257,7 +261,18 @@ if (!self.penumbra) {
 }
 ```
 
-### Big Thanks
+## Contributing
+
+```bash
+# setup
+npm install
+npm run build
+
+# start tests and open a browser to localhost:8080
+npm run test:interactive
+```
+
+## Big Thanks
 
 Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][homepage]
 
