@@ -4,9 +4,6 @@
 import { Decipher } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
 
-// Comlink
-import * as Comlink from 'comlink';
-
 // utils
 import { emitProgress } from './utils';
 
@@ -44,7 +41,7 @@ export default function decryptStream(
 
           // Emit a progress update
           totalBytesRead += bufferChunk.length;
-          emitProgress(totalBytesRead, contentLength, url);
+          emitProgress('decrypt', totalBytesRead, contentLength, url);
         },
       }),
     );
@@ -74,7 +71,7 @@ export default function decryptStream(
 
           // Emit a progress update
           totalBytesRead += chunk.length;
-          emitProgress(totalBytesRead, contentLength, url);
+          emitProgress('decrypt', totalBytesRead, contentLength, url);
 
           controller.enqueue(decValue);
           push();
