@@ -76,7 +76,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 
 /** Zip files retrieved by Penumbra */
 async function zip(
-  data: PenumbraFile[],
+  data: PenumbraFile[] | PenumbraFile,
   compressionLevel: number = compression.store,
 ): Promise<ReadableStream> {
   throw new Error('penumbra.zip() is unimplemented');
@@ -152,23 +152,26 @@ async function getBlob(
  * @returns The text itself or a URI encoding the image if applicable
  */
 async function getTextOrURI(
-  data: PenumbraFile[],
+  data: PenumbraFile[] | PenumbraFile,
 ): Promise<{
   /** Data type */
   type: 'text' | 'uri';
   /** Data */
   data: string;
 }> {
-  if (data.length === 1 && isViewableText(data[0].mimetype)) {
+  /* eslint-disable no-nested-ternary */
+  // eslint-disable-next-line prettier/prettier
+  const onlyFile = 'length' in data
+    ? (data.length === 1 ? data[0] : false)
+    : data;
+  if (onlyFile && isViewableText(onlyFile.mimetype)) {
     return {
       type: 'text',
-      data: await new Response(data[0].stream).text(),
+      data: await new Response(onlyFile.stream).text(),
     };
   }
 
-  const uri = URL.createObjectURL(
-    await getBlob(data.length > 1 ? await zip(data) : data),
-  );
+  const uri = URL.createObjectURL(await getBlob(onlyFile || (await zip(data))));
   const cache = blobCache.get();
   cache.push(new URL(uri));
   blobCache.set(cache);

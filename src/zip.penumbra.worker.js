@@ -27,6 +27,11 @@ class PenumbraZipWorker {
   //  * @returns ReadableStream for the zip output
   //  */
   // async zip(writablePort, files) {
+  //   /* eslint-disable no-nested-ternary */
+  //   // eslint-disable-next-line prettier/prettier
+  //   const onlyFile = 'length' in files
+  //     ? (files.length === 1 ? files[0] : false)
+  //     : files;
   //   const out = await new Zip();
   //   const remoteStream = fromWritablePort(writablePort);
   //   const localStream = new ArrayBuffer();

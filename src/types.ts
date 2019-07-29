@@ -109,7 +109,7 @@ export type PenumbraAPI = {
   ) => Promise<Blob>;
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
   getTextOrURI: (
-    data: PenumbraFile[],
+    data: PenumbraFile[] | PenumbraFile,
   ) => Promise<{
     /** Type of response data */
     type: 'text' | 'uri';
@@ -118,7 +118,7 @@ export type PenumbraAPI = {
   }>;
   /** Zip files retrieved by Penumbra */
   zip: (
-    data: PenumbraFile[],
+    data: PenumbraFile[] | PenumbraFile,
     compressionLevel?: number,
   ) => Promise<ReadableStream>;
   /** Configure location of worker threads */
