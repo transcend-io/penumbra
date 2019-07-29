@@ -25,8 +25,8 @@ if (!self.document) {
   );
 }
 
-const scriptElement =
-  document.currentScript || document.querySelector('script[data-penumbra]');
+const scriptElement = (document.currentScript ||
+  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
 
 if (!scriptElement) {
   throw new Error('Unable to locate Penumbra script element.');
@@ -41,6 +41,9 @@ const resolver = document.createElementNS(
   'a',
 ) as HTMLAnchorElement;
 
+// eslint-disable-next-line no-restricted-globals
+const scriptURL = new URL(scriptElement.src, location.href);
+
 const DEFAULT_WORKERS = {
   decrypt: 'decrypt.penumbra.worker.js',
   zip: 'zip.penumbra.worker.js',
@@ -54,8 +57,7 @@ const DEFAULT_WORKERS_JSON = JSON.stringify(DEFAULT_WORKERS);
  */
 function resolve(url: string): URL {
   resolver.href = url;
-  // eslint-disable-next-line no-restricted-globals
-  return new URL(resolver.href, location.href);
+  return new URL(resolver.href, scriptURL);
 }
 
 // /////// //
