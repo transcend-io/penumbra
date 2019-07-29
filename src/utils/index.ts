@@ -19,4 +19,3 @@ export { default as getTextFromRS } from './getTextFromRS';
 export { default as toBuff } from './toBuff';
 export { default as blobCache } from './blobCache';
 export { default as isViewableText } from './isViewableText';
-// export { default as spreadify } from './spreadify';
