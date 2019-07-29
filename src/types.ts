@@ -167,7 +167,7 @@ export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
    * Zips one or more PenumbraFiles while keeping their path
    * data in-tact.
    *
-   * @param writablePorts - Remote Web Stream writable ports
+   * @param writablePort - Remote Web Stream writable ports
    * @param files - PenumbraFiles to zip
    * @returns A readable stream of zip file
    */

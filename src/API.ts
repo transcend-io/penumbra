@@ -84,6 +84,8 @@ async function zip(
 }
 
 const DEFAULT_FILENAME = 'download';
+const DEFAULT_MIME_TYPE = 'application/octet-stream';
+const ZIP_MIME_TYPE = 'application/zip';
 
 /**
  * Save files retrieved by Penumbra
@@ -120,19 +122,27 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
  */
 async function getBlob(
   data: PenumbraFile[] | PenumbraFile | ReadableStream,
+  type?: string, // = data[0].mimetype
 ): Promise<Blob> {
   if ('length' in data && data.length > 1) {
-    return getBlob(await zip(data));
+    return getBlob(await zip(data), type || ZIP_MIME_TYPE);
   }
 
-  let file: ReadableStream;
+  let rs: ReadableStream;
+  let fileType: string | undefined;
   if (data instanceof ReadableStream) {
-    file = data;
+    rs = data;
   } else {
-    file = ('length' in data ? data[0] : data).stream;
+    const file = 'length' in data ? data[0] : data;
+    rs = file.stream;
+    fileType = file.mimetype;
   }
 
-  return new Response(file).blob();
+  const headers = new Headers({
+    'Content-Type': type || fileType || DEFAULT_MIME_TYPE,
+  });
+
+  return new Response(rs, { headers }).blob();
 }
 
 /**
