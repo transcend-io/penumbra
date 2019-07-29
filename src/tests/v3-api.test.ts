@@ -4,6 +4,7 @@ import test from 'tape';
 import {
   PenumbraAPI,
   PenumbraReady,
+  PenumbraTextOrURI,
   PenumbraView,
   ProgressEmit,
   RemoteResource,
@@ -95,7 +96,7 @@ const onReady = async (event?: PenumbraReady) => {
   });
 
   test('v3 API: get() decrypt & getTextOrURI()', async (t) => {
-    const decryptedText = await penumbra.getTextOrURI(
+    const decryptedText = (await penumbra.getTextOrURI(
       await penumbra.get({
         url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
         filePrefix: 'NYT',
@@ -106,7 +107,7 @@ const onReady = async (event?: PenumbraReady) => {
           authTag: 'gadZhS1QozjEmfmHLblzbg==',
         },
       }),
-    );
+    )) as PenumbraTextOrURI;
     t.equal(decryptedText.type, 'text');
     t.equal(
       await hash('SHA-256', new TextEncoder().encode(decryptedText.data)),
