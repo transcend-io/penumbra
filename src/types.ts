@@ -172,7 +172,7 @@ export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
    * @returns A readable stream of zip file
    */
   zip: (
-    writablePorts: MessagePort[],
+    writablePort: MessagePort,
     files: PenumbraFile[],
   ) => Promise<ReadableStream>;
 };
