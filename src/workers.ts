@@ -50,8 +50,6 @@ const DEFAULT_WORKERS = {
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const DEFAULT_WORKERS_JSON = JSON.stringify(DEFAULT_WORKERS);
-
 /**
  * Resolve a potentially relative URL into an absolute URL
  */
@@ -70,25 +68,11 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
-  const { base, decrypt, zip, StreamSaver } = JSON.parse(
-    script.workers || DEFAULT_WORKERS_JSON,
-  );
-
-  const missing: string[] = [];
-
-  if (!decrypt) {
-    missing.push('decrypt');
-  }
-  if (!zip) {
-    missing.push('zip');
-  }
-  if (!StreamSaver) {
-    missing.push('StreamSaver');
-  }
-
-  if (missing.length) {
-    throw new Error(`Missing workers: "${missing.join('", "')}"`);
-  }
+  const options = {
+    ...DEFAULT_WORKERS,
+    ...JSON.parse(script.workers || '{}'),
+  };
+  const { base, decrypt, zip, StreamSaver } = options;
 
   // eslint-disable-next-line no-restricted-globals
   const context = resolve(base || scriptURL);
@@ -217,8 +201,8 @@ export async function setWorkerLocation(
 
   script.workers = JSON.stringify(
     typeof options === 'string'
-      ? { base: options, ...DEFAULT_WORKERS }
-      : options,
+      ? { ...DEFAULT_WORKERS, base: options }
+      : { ...DEFAULT_WORKERS, ...options },
   );
   return initWorkers();
 }
