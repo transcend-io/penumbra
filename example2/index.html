@@ -1,17 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Penumbra Demo</title>
-  <meta charset="UTF-8" />
-  <link rel="stylesheet" type="text/css" href="style.css">
-</head>
+  <head>
+    <title>Penumbra Demo</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
 
-<body>
-  <div id="app">
-    <h1>Penumbra: Browser Decryption Demo 2</h1>
-    <!-- <button onclick="downloadManyFiles()">Download all data</button> -->
-  </div>
-  <script src="../build/penumbra.js?asdfsda"></script>
-  <script src="index.js?asdfsda"></script>
-</body>
+  <body>
+    <div id="app">
+      <h1>Penumbra: Browser Decryption Demo 2</h1>
+      <!-- <button onclick="downloadManyFiles()">Download all data</button> -->
+    </div>
+    <!--
+    <script src="../build/penumbra.js?cacheBuster=4"></script>
+    <script src="index.js?cacheBuster=4"></script>
+    -->
+    <script async defer>
+      document.currentScript.remove();
+      (() => {
+        const scripts = document.createDocumentFragment();
+        const penumbra = document.createElement('script');
+        const cacheBuster = Math.random()
+          .toString(10)
+          .slice(2);
+
+        penumbra.async = true;
+        penumbra.defer = true;
+
+        const demo = penumbra.cloneNode();
+
+        penumbra.dataset.penumbra = '';
+        // penumbra.dataset.workers = JSON.stringify({
+        //   base: '/',
+        //   decrypt: 'decrypt.penumbra.worker.js?' + cacheBuster,
+        //   zip: 'zip.penumbra.worker.js?' + cacheBuster,
+        //   StreamSaver: 'streamsaver.penumbra.serviceworker.js?' + cacheBuster,
+        // });
+        penumbra.src = '../build/penumbra.js?' + cacheBuster;
+        demo.src = 'index.js?' + cacheBuster;
+
+        scripts.appendChild(demo);
+        scripts.appendChild(penumbra);
+        document.body.appendChild(scripts);
+      })();
+    </script>
+  </body>
 </html>
