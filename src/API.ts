@@ -11,6 +11,7 @@ import {
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
+  PenumbraTextOrURI,
   RemoteResource,
 } from './types';
 import { blobCache, isViewableText } from './utils';
@@ -153,29 +154,29 @@ async function getBlob(
  */
 async function getTextOrURI(
   data: PenumbraFile[] | PenumbraFile,
-): Promise<{
-  /** Data type */
-  type: 'text' | 'uri';
-  /** Data */
-  data: string;
-}> {
+): Promise<PenumbraTextOrURI[] | PenumbraTextOrURI> {
   /* eslint-disable no-nested-ternary */
   // eslint-disable-next-line prettier/prettier
   const onlyFile = 'length' in data
     ? (data.length === 1 ? data[0] : false)
     : data;
-  if (onlyFile && isViewableText(onlyFile.mimetype)) {
-    return {
-      type: 'text',
-      data: await new Response(onlyFile.stream).text(),
-    };
+  if (onlyFile) {
+    if (isViewableText(onlyFile.mimetype)) {
+      return {
+        type: 'text',
+        data: await new Response(onlyFile.stream).text(),
+      };
+    }
+    const url = URL.createObjectURL(await getBlob(onlyFile));
+    const cache = blobCache.get();
+    cache.push(new URL(url));
+    blobCache.set(cache);
+    return { type: 'uri', data: url };
   }
 
-  const uri = URL.createObjectURL(await getBlob(onlyFile || (await zip(data))));
-  const cache = blobCache.get();
-  cache.push(new URL(uri));
-  blobCache.set(cache);
-  return { type: 'uri', data: uri };
+  return Promise.all(
+    (data as PenumbraFile[]).map(async (file) => getTextOrURI(file)),
+  ) as Promise<PenumbraTextOrURI[]>;
 }
 
 const penumbra: PenumbraAPI = {

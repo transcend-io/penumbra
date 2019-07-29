@@ -30,9 +30,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
 
   penumbra
     .get(...files)
-    .then((pfiles) =>
-      Promise.all(pfiles.map((pfile) => penumbra.getTextOrURI(pfile))),
-    )
+    .then((pfiles) => penumbra.getTextOrURI(pfiles))
     .then((pfiles) => console.log(pfiles));
 };
 

@@ -97,6 +97,14 @@ export enum compression {
   high = 3,
 }
 
+/** Data returned by penumbra.getTextOrURI() */
+export type PenumbraTextOrURI = {
+  /** Data type */
+  type: 'text' | 'uri';
+  /** Data */
+  data: string;
+};
+
 /** Penumbra API */
 export type PenumbraAPI = {
   /** Retrieve and decrypt files */
@@ -110,12 +118,7 @@ export type PenumbraAPI = {
   /** Get file text (if content is viewable) or URI (if content is not viewable) */
   getTextOrURI: (
     data: PenumbraFile[] | PenumbraFile,
-  ) => Promise<{
-    /** Type of response data */
-    type: 'text' | 'uri';
-    /** The response data */
-    data: string;
-  }>;
+  ) => Promise<PenumbraTextOrURI[] | PenumbraTextOrURI>;
   /** Zip files retrieved by Penumbra */
   zip: (
     data: PenumbraFile[] | PenumbraFile,
