@@ -103,6 +103,8 @@ export type PenumbraTextOrURI = {
   type: 'text' | 'uri';
   /** Data */
   data: string;
+  /** MIME type */
+  mimetype: string;
 };
 
 /** Penumbra API */

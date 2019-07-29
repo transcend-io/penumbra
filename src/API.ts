@@ -161,17 +161,19 @@ async function getTextOrURI(
     ? (data.length === 1 ? data[0] : false)
     : data;
   if (onlyFile) {
-    if (isViewableText(onlyFile.mimetype)) {
+    const { mimetype } = onlyFile;
+    if (isViewableText(mimetype)) {
       return {
         type: 'text',
         data: await new Response(onlyFile.stream).text(),
+        mimetype,
       };
     }
     const url = URL.createObjectURL(await getBlob(onlyFile));
     const cache = blobCache.get();
     cache.push(new URL(url));
     blobCache.set(cache);
-    return { type: 'uri', data: url };
+    return { type: 'uri', data: url, mimetype };
   }
 
   return Promise.all(
