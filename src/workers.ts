@@ -91,7 +91,7 @@ export function getWorkerLocation(): WorkerLocation {
   }
 
   // eslint-disable-next-line no-restricted-globals
-  const context = resolve(base || location.href);
+  const context = resolve(base || scriptURL);
 
   return {
     base: context,
@@ -164,21 +164,24 @@ export async function getWorkers(): Promise<PenumbraWorkers> {
 }
 
 /**
- * De-allocate temporary Worker object URLs
+ * Terminate Penumbra Worker and de-allocate their resources
  */
 async function cleanup(): Promise<void> {
-  const initializedWorkers = await getWorkers();
-  const threads = getKeys(initializedWorkers);
-  threads.forEach((thread) => {
-    const workerInstance = initializedWorkers[thread];
-    if (
-      workerInstance &&
-      workerInstance.worker &&
-      workerInstance.worker instanceof Worker
-    ) {
-      workerInstance.worker.terminate();
-    }
-  });
+  if (initialized) {
+    const initializedWorkers = await getWorkers();
+    const threads = getKeys(initializedWorkers);
+    threads.forEach((thread) => {
+      const workerInstance = initializedWorkers[thread];
+      if (
+        workerInstance &&
+        workerInstance.worker &&
+        workerInstance.worker instanceof Worker
+      ) {
+        workerInstance.worker.terminate();
+      }
+      delete initializedWorkers[thread];
+    });
+  }
   initialized = false;
 }
 
@@ -209,7 +212,7 @@ export async function setWorkerLocation(
 ): Promise<void> {
   if (initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
-    cleanup();
+    await cleanup();
   }
 
   script.workers = JSON.stringify(
