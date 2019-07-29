@@ -15,7 +15,7 @@ export type CleanupResourceHints = () => void;
 
 /** No-op function generator */
 // tslint:disable-next-line: no-empty
-const nooper = (): (() => void) => (): void => {};
+const nooper = (): CleanupResourceHints => (): void => {};
 
 /**
  * A helper function that creates a set resource hints
