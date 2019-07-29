@@ -6,7 +6,7 @@ import { RemoteReadableStream } from 'remote-web-streams';
 
 // Local
 import {
-  compression,
+  Compression,
   PenumbraAPI,
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
@@ -78,7 +78,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 /** Zip files retrieved by Penumbra */
 async function zip(
   data: PenumbraFile[] | PenumbraFile,
-  compressionLevel: number = compression.store,
+  compressionLevel: number = Compression.Store,
 ): Promise<ReadableStream> {
   throw new Error('penumbra.zip() is unimplemented');
   // return new ReadableStream();

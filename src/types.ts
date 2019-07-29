@@ -86,15 +86,15 @@ export type PenumbraReady = CustomEvent<{
 }>;
 
 /** Compression levels */
-export enum compression {
+export enum Compression {
   /** No compression */
-  store = 0,
+  Store = 0,
   /** Low compression */
-  low = 1,
+  Low = 1,
   /** Medium compression */
-  medium = 2,
+  Medium = 2,
   /** High compression */
-  high = 3,
+  High = 3,
 }
 
 /** Data returned by penumbra.getTextOrURI() */
