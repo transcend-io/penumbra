@@ -27,7 +27,6 @@ export function createResourceHintHelper(
   urls: string[],
   rel: LinkRel,
 ): CleanupResourceHints {
-  // eslint-disable-next-line no-restricted-globals
   if (self.document) {
     const links = urls.map((href) => {
       const link = document.createElement('link');

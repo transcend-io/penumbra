@@ -27,7 +27,6 @@ export default function decryptStream(
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  // eslint-disable-next-line no-restricted-globals
   if ('TransformStream' in self) {
     return rs.pipeThrough(
       // eslint-disable-next-line no-undef

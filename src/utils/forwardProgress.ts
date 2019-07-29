@@ -4,7 +4,6 @@ let initialized = false;
 const eventQueue: ProgressEmit[] = [];
 const onProgress: ProgressForwarder = {};
 
-// eslint-disable-next-line no-restricted-globals
 self.addEventListener(
   'penumbra-progress',
   async (progressEvent: ProgressEmit) => {

@@ -31,7 +31,6 @@
 //         }
 //       }
 //       if (progressStarted && percent > 25) {
-//         // eslint-disable-next-line no-restricted-globals
 //         self.removeEventListener(progressEventName, onprogress);
 //         t.pass();
 //         t.end();
@@ -40,7 +39,6 @@
 //     lastPercent = percent;
 //   };
 
-//   // eslint-disable-next-line no-restricted-globals
 //   self.addEventListener(progressEventName, onprogress);
 //   await downloadEncryptedFile({
 //     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',

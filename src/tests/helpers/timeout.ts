@@ -18,9 +18,7 @@ export default function timeout(
   callback: Function,
   delay: number,
 ): TimeoutManager {
-  // eslint-disable-next-line no-restricted-globals
   const timer = self.setTimeout(callback, delay * 1000);
-  // eslint-disable-next-line no-restricted-globals
   const clear = self.clearTimeout.bind(self, timer);
   return { clear };
 }

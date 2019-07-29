@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-// eslint-disable-next-line no-restricted-globals
 const view = self;
 
 const tests = [];
@@ -193,7 +192,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         let isURL;
         try {
           // tslint:disable-next-line: no-unused-expression
-          new URL(url, location.href); // eslint-disable-line no-new,no-restricted-globals
+          new URL(url, location.href); // eslint-disable-line no-new
           isURL = type === 'uri';
         } catch (ex) {
           isURL = false;

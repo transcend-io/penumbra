@@ -18,7 +18,6 @@ import getKeys from './utils/getKeys';
 // Init //
 // //// //
 
-// eslint-disable-next-line no-restricted-globals
 if (!self.document) {
   throw new Error(
     'Penumbra must be included in a document as an unbundled script element.',
@@ -41,7 +40,6 @@ const resolver = document.createElementNS(
   'a',
 ) as HTMLAnchorElement;
 
-// eslint-disable-next-line no-restricted-globals
 const scriptURL = new URL(scriptElement.src, location.href);
 
 const DEFAULT_WORKERS = {
@@ -74,7 +72,6 @@ export function getWorkerLocation(): WorkerLocation {
   };
   const { base, decrypt, zip, StreamSaver } = options;
 
-  // eslint-disable-next-line no-restricted-globals
   const context = resolve(base || scriptURL);
 
   return {
@@ -87,7 +84,6 @@ export function getWorkerLocation(): WorkerLocation {
 
 /** Re-dispatch progress events */
 function reDispatchProgressEvent(event: ProgressEmit): void {
-  // eslint-disable-next-line no-restricted-globals
   self.dispatchEvent(event);
 }
 
@@ -169,7 +165,6 @@ async function cleanup(): Promise<void> {
   initialized = false;
 }
 
-// eslint-disable-next-line no-restricted-globals
 self.addEventListener('beforeunload', cleanup);
 
 /**

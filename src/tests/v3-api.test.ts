@@ -15,7 +15,6 @@ import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 
-// eslint-disable-next-line no-restricted-globals
 const view: PenumbraView = self as Window;
 
 const onReady = async (event?: PenumbraReady) => {
@@ -50,7 +49,6 @@ const onReady = async (event?: PenumbraReady) => {
           }
         }
         if (progressStarted && percent > 25) {
-          // eslint-disable-next-line no-restricted-globals
           view.removeEventListener(progressEventName, onprogress);
           t.pass('get() progress event test');
           t.end();
@@ -59,7 +57,6 @@ const onReady = async (event?: PenumbraReady) => {
       lastPercent = percent;
     };
 
-    // eslint-disable-next-line no-restricted-globals
     view.addEventListener(progressEventName, onprogress);
     await penumbra.get({
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/patreon.mp4.enc',
@@ -162,7 +159,6 @@ const onReady = async (event?: PenumbraReady) => {
 };
 
 if (!view.penumbra) {
-  // eslint-disable-next-line no-restricted-globals
   view.addEventListener('penumbra-ready', onReady);
 } else {
   onReady();

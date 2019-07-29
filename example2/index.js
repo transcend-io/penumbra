@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, no-restricted-globals */
+/* eslint-disable no-undef */
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   const files = [
     {
@@ -31,7 +31,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   penumbra
     .get(...files)
     .then((pfiles) => penumbra.getTextOrURI(pfiles))
-    .then((pfiles) => console.log(pfiles));
+    .then((pfiledescriptors) => console.log(pfiledescriptors));
 };
 
 if (!self.penumbra) {

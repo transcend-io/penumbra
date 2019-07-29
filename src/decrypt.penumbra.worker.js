@@ -10,7 +10,6 @@ import fetchAndDecrypt from './fetchAndDecrypt';
 import onProgress from './utils/forwardProgress';
 import './transferHandlers/progress';
 
-// eslint-disable-next-line no-restricted-globals
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
 }

@@ -28,5 +28,5 @@ export default function emitProgress(
 
   // Dispatch the event
   const event = new CustomEvent('penumbra-progress', emitContent);
-  self.dispatchEvent(event); /* eslint-disable-line no-restricted-globals */
+  self.dispatchEvent(event);
 }
