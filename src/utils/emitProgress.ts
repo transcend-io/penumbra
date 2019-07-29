@@ -9,6 +9,7 @@ import { ProgressEmit } from '../types';
  * @returns
  */
 export default function emitProgress(
+  type: 'decrypt' | 'zip',
   totalBytesRead: number,
   contentLength: number,
   url: string,
@@ -17,6 +18,7 @@ export default function emitProgress(
   const percent = Math.round((totalBytesRead / contentLength) * 100);
   const emitContent: Pick<ProgressEmit, 'detail'> = {
     detail: {
+      type,
       percent,
       totalBytesRead,
       contentLength,

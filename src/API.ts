@@ -99,10 +99,9 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   // TODO: Use streaming zip through conflux
   if ('length' in data && data.length > 1) {
     const archive = await zip(data);
-    await archive.pipeTo(
+    return archive.pipeTo(
       createStreamSaver(fileName || `${DEFAULT_FILENAME}.zip`),
     );
-    return undefined;
   }
 
   const file: PenumbraFile = 'stream' in data ? data : data[0];
@@ -110,8 +109,7 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
   // Write a single readable stream to file
-  file.stream.pipeTo(createStreamSaver(singleFileName));
-  return undefined;
+  return file.stream.pipeTo(createStreamSaver(singleFileName));
 }
 
 /**

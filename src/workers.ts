@@ -25,8 +25,8 @@ if (!self.document) {
   );
 }
 
-const scriptElement =
-  document.currentScript || document.querySelector('script[data-penumbra]');
+const scriptElement = (document.currentScript ||
+  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
 
 if (!scriptElement) {
   throw new Error('Unable to locate Penumbra script element.');
@@ -41,21 +41,21 @@ const resolver = document.createElementNS(
   'a',
 ) as HTMLAnchorElement;
 
+// eslint-disable-next-line no-restricted-globals
+const scriptURL = new URL(scriptElement.src, location.href);
+
 const DEFAULT_WORKERS = {
   decrypt: 'decrypt.penumbra.worker.js',
   zip: 'zip.penumbra.worker.js',
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const DEFAULT_WORKERS_JSON = JSON.stringify(DEFAULT_WORKERS);
-
 /**
  * Resolve a potentially relative URL into an absolute URL
  */
 function resolve(url: string): URL {
   resolver.href = url;
-  // eslint-disable-next-line no-restricted-globals
-  return new URL(resolver.href, location.href);
+  return new URL(resolver.href, scriptURL);
 }
 
 // /////// //
@@ -68,28 +68,14 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
-  const { base, decrypt, zip, StreamSaver } = JSON.parse(
-    script.workers || DEFAULT_WORKERS_JSON,
-  );
-
-  const missing: string[] = [];
-
-  if (!decrypt) {
-    missing.push('decrypt');
-  }
-  if (!zip) {
-    missing.push('zip');
-  }
-  if (!StreamSaver) {
-    missing.push('StreamSaver');
-  }
-
-  if (missing.length) {
-    throw new Error(`Missing workers: "${missing.join('", "')}"`);
-  }
+  const options = {
+    ...DEFAULT_WORKERS,
+    ...JSON.parse(script.workers || '{}'),
+  };
+  const { base, decrypt, zip, StreamSaver } = options;
 
   // eslint-disable-next-line no-restricted-globals
-  const context = resolve(base || location.href);
+  const context = resolve(base || scriptURL);
 
   return {
     base: context,
@@ -162,21 +148,25 @@ export async function getWorkers(): Promise<PenumbraWorkers> {
 }
 
 /**
- * De-allocate temporary Worker object URLs
+ * Terminate Penumbra Worker and de-allocate their resources
  */
 async function cleanup(): Promise<void> {
-  const initializedWorkers = await getWorkers();
-  const threads = getKeys(initializedWorkers);
-  threads.forEach((thread) => {
-    const workerInstance = initializedWorkers[thread];
-    if (
-      workerInstance &&
-      workerInstance.worker &&
-      workerInstance.worker instanceof Worker
-    ) {
-      workerInstance.worker.terminate();
-    }
-  });
+  if (initialized) {
+    const initializedWorkers = await getWorkers();
+    const threads = getKeys(initializedWorkers);
+    threads.forEach((thread) => {
+      const workerInstance = initializedWorkers[thread];
+      if (
+        workerInstance &&
+        workerInstance.worker &&
+        workerInstance.worker instanceof Worker
+      ) {
+        workerInstance.worker.terminate();
+      }
+      delete initializedWorkers[thread];
+    });
+  }
+  initialized = false;
 }
 
 // eslint-disable-next-line no-restricted-globals
@@ -206,14 +196,13 @@ export async function setWorkerLocation(
 ): Promise<void> {
   if (initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
-    cleanup();
+    await cleanup();
   }
 
   script.workers = JSON.stringify(
     typeof options === 'string'
-      ? { base: options, ...DEFAULT_WORKERS }
-      : options,
+      ? { ...DEFAULT_WORKERS, base: options }
+      : { ...DEFAULT_WORKERS, ...options },
   );
-  await initWorkers();
-  return undefined;
+  return initWorkers();
 }

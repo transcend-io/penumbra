@@ -216,9 +216,13 @@ penumbra.preload(...resources);
 You can listen to download progress events by listening to the `penumbra-progress` event.
 
 ```js
-window.addEventListener('penumbra-progress', ({ detail: { percent, url } }) => {
-  console.log(`${percent}% done for ${url}`);
-});
+window.addEventListener(
+  'penumbra-progress',
+  ({ detail: { percent, url, type } }) => {
+    console.log(`${type}% ${percent}% done for ${url}`);
+    // example output: decrypt 33% done for https://example.com/encrypted-data
+  },
+);
 ```
 
 Note: this feature requires the `Content-Length` response header to be exposed. This works by adding `Access-Control-Expose-Headers: Content-Length` to the response header (read more [here](https://www.html5rocks.com/en/tutorials/cors/) and [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers))

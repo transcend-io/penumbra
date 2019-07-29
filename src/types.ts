@@ -59,14 +59,16 @@ export type PenumbraFile = {
  * Progress event details
  */
 export type ProgressDetails = {
+  /** The URL downloading from */
+  url: string;
+  /** Progress type */
+  type: 'decrypt' | 'zip';
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
   totalBytesRead: number;
   /** Total number of bytes to read */
   contentLength: number;
-  /** The URL downloading from */
-  url: string;
 };
 
 /**

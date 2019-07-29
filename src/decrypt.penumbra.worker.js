@@ -22,7 +22,8 @@ class PenumbraDecryptionWorker {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    *
-   * @param ...resources - The remote resource to download
+   * @param writablePorts - Remote Web Stream writable ports
+   * @param resources - The remote resource to download
    * @returns ReadableStream[] of the deciphered files
    */
   async get(writablePorts, resources) {
