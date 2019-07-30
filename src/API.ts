@@ -30,8 +30,8 @@ const resolver = document.createElementNS(
  * await penumbra.get(resource);
  *
  * // Buffer all responses & read them as text
- * await Promise.all((await penumbra.get(resources)).map((data: PenumbraFile) =>
- *  new Response(data.stream).text()
+ * await Promise.all((await penumbra.get(resources)).map(({ stream }) =>
+ *  new Response(stream).text()
  * ));
  *
  * // Buffer a response & read as text
@@ -68,7 +68,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       ...resources[i],
     };
   });
-  const writablePorts = remoteStreams.map((stream) => stream.writablePort);
+  const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
   new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
     await thread.get(transfer(writablePorts, writablePorts), resources);
   });

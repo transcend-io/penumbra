@@ -53,7 +53,7 @@ export function preconnect(
   ...resources: RemoteResourceWithoutFile[]
 ): () => void {
   // preconnect to the origins
-  const origins = getOrigins(...resources.map((resource) => resource.url));
+  const origins = getOrigins(...resources.map(({ url }) => url));
   return createResourceHintHelper(origins, 'preconnect');
 }
 
@@ -64,10 +64,7 @@ export function preconnect(
  * @returns A function that removes the link tags that were appended to the DOM
  */
 export function preload(...resources: RemoteResource[]): () => void {
-  return createResourceHintHelper(
-    resources.map((resource) => resource.url),
-    'preload',
-  );
+  return createResourceHintHelper(resources.map(({ url }) => url), 'preload');
 }
 
 /**
