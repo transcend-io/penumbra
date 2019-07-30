@@ -205,6 +205,44 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
       },
     ],
     [
+      'penumbra.getTextOrURI(): including image in document',
+      async () => {
+        const { type, data: url } = await penumbra.getTextOrURI(
+          await penumbra.get({
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            filePrefix: 'tortoise',
+            mimetype: 'image/jpeg',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+            },
+          }),
+        );
+        const testImage = new Image();
+        return new Promise((resolve, reject) => {
+          // 5-second timeout for the image to load
+          timeout(resolve.bind(this, false), 5);
+          const onLoad = () => {
+            testImage.removeEventListener('load', onLoad);
+            testImage.remove();
+            resolve(true);
+          };
+          const onError = () => {
+            testImage.removeEventListener('error', onError);
+            testImage.remove();
+            resolve(false);
+          };
+          testImage.addEventListener('load', onLoad);
+          testImage.addEventListener('error', onError);
+          testImage.src = url;
+          // testImage.style.visibility = 'hidden';
+          // document.body.appendChild(testImage);
+        });
+      },
+    ],
+    [
       'penumbra.getBlob()',
       async () => {
         const blob = await penumbra.getBlob(
