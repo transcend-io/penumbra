@@ -51,7 +51,7 @@ const resolver = document.createElementNS(
  * ```
  */
 async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
-  if (arguments.length === 0) {
+  if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
   const workers = await getWorkers();
