@@ -169,7 +169,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // Display download progress
   window.addEventListener(
     'penumbra-progress',
-    ({ detail: { percent, url, type, contentLength } }) => {
+    ({ detail: { percent, url, contentLength } }) => {
       const i = files.findIndex((elt) => elt.url === url);
       const cell = document.getElementById(`${i}-progress`);
       cell.innerText = `${percent}%`;
@@ -179,9 +179,6 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
         cell2.innerText = `${contentLength / 1000}KB`;
         runOnce[i] = true;
       }
-
-      console.log(`${type}% ${percent}% done for ${url}`);
-      // example output: decrypt 33% done for https://example.com/encrypted-data
     },
   );
 
