@@ -18,7 +18,7 @@ export default function timeout(
   callback: Function,
   delay: number,
 ): TimeoutManager {
-  const timer = window.setTimeout(callback, delay * 1000);
-  const clear = window.clearTimeout.bind(window, timer);
+  const timer = self.setTimeout(callback, delay * 1000);
+  const clear = self.clearTimeout.bind(self, timer);
   return { clear };
 }

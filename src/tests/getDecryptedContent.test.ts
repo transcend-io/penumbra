@@ -92,7 +92,7 @@ test('getDecryptedContent: images (as URL)', async (t) => {
 
   try {
     // tslint:disable-next-line: no-unused-expression
-    new URL(url, location.href); // eslint-disable-line no-new,no-restricted-globals
+    new URL(url, location.href); // eslint-disable-line no-new
   } catch (ex) {
     isURL = false;
   }
@@ -106,7 +106,7 @@ test('getDecryptedContent: images (as URL)', async (t) => {
 });
 
 test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
-  const progressEventName = 'my-custom-event';
+  const progressEventName = 'penumbra-progress';
   const fail = () => {
     t.fail();
     t.end();
@@ -132,7 +132,7 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
         }
       }
       if (progressStarted && evt.detail.percent > 25) {
-        window.removeEventListener(progressEventName, onprogress);
+        self.removeEventListener(progressEventName, onprogress);
         t.pass();
         t.end();
       }
@@ -140,7 +140,7 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
     lastPercent = percent;
   };
 
-  window.addEventListener(progressEventName, onprogress);
+  self.addEventListener(progressEventName, onprogress);
   await getDecryptedContent({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
     filePrefix: 'k',
@@ -150,6 +150,5 @@ test('getDecryptedContent: Download Progress Event Emitter', async (t) => {
       iv: '6lNU+2vxJw6SFgse',
       authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
     },
-    progressEventName,
   });
 });

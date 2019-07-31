@@ -1,6 +1,6 @@
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
-import { RemoteResource } from './types';
+import { RemoteResource, RemoteResourceWithoutFile } from './types';
 import { getOrigins } from './utils';
 
 /**
@@ -9,9 +9,13 @@ import { getOrigins } from './utils';
 export type LinkRel = 'preconnect' | 'preload';
 
 /**
- * A function that will clenaup all resource hints
+ * A function that will cleanup all resource hints
  */
 export type CleanupResourceHints = () => void;
+
+/** No-op function generator */
+// tslint:disable-next-line: no-empty
+const nooper = (): CleanupResourceHints => (): void => {};
 
 /**
  * A helper function that creates a set resource hints
@@ -23,14 +27,18 @@ export function createResourceHintHelper(
   urls: string[],
   rel: LinkRel,
 ): CleanupResourceHints {
-  const links = urls.map((href) => {
-    const link = document.createElement('link');
-    link.rel = rel;
-    link.href = href;
-    document.head.appendChild(link);
-    return link;
-  });
-  return () => links.map((link) => link.remove());
+  if (self.document) {
+    const links = urls.map((href) => {
+      const link = document.createElement('link');
+      link.rel = rel;
+      link.href = href;
+      document.head.appendChild(link);
+      return link;
+    });
+    return () => links.map((link) => link.remove());
+  }
+
+  return nooper();
 }
 
 /**
@@ -41,9 +49,11 @@ export function createResourceHintHelper(
  * @param origins - Origins of the files to pre-connect to
  * @returns A function removing the links that were appended to the DOM
  */
-export function preconnect(...resources: RemoteResource[]): () => void {
+export function preconnect(
+  ...resources: RemoteResourceWithoutFile[]
+): () => void {
   // preconnect to the origins
-  const origins = getOrigins(...resources.map((resource) => resource.url));
+  const origins = getOrigins(...resources.map(({ url }) => url));
   return createResourceHintHelper(origins, 'preconnect');
 }
 
@@ -54,14 +64,11 @@ export function preconnect(...resources: RemoteResource[]): () => void {
  * @returns A function that removes the link tags that were appended to the DOM
  */
 export function preload(...resources: RemoteResource[]): () => void {
-  return createResourceHintHelper(
-    resources.map((resource) => resource.url),
-    'preload',
-  );
+  return createResourceHintHelper(resources.map(({ url }) => url), 'preload');
 }
 
 /**
- * Fetch multiple resources to be zipped. Annotates a RemoteResource list with fetch responses.
+ * Fetch multiple resources to be zipped. Returns a list of ReadableStreams for each fetch request.
  *
  * ```ts
  * fetchMany(...resources).then((results) => zipAll(results, resources))
@@ -71,7 +78,7 @@ export function preload(...resources: RemoteResource[]): () => void {
  * @returns Readable streams of the decrypted files
  */
 export default async function fetchMany(
-  ...resources: RemoteResource[]
+  ...resources: RemoteResourceWithoutFile[]
 ): Promise<ReadableStream[]> {
   const cleanup = preconnect(...resources);
   const results = await Promise.all(resources.map(fetchAndDecrypt));

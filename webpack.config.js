@@ -1,23 +1,19 @@
-const path = require('path');
+const { join } = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
+const src = join(__dirname, 'src');
+
 const config = {
+  mode: 'development',
   entry: {
-    bundle: `${path.resolve(__dirname, 'src')}/index.ts`,
-    'decrypt.penumbra.worker': `${path.resolve(
-      __dirname,
-      'src',
-    )}/decrypt.penumbra.worker.js`,
-    'zip.penumbra.worker': `${path.resolve(
-      __dirname,
-      'src',
-    )}/zip.penumbra.worker.js`,
+    penumbra: `${src}/index.ts`,
+    'decrypt.penumbra.worker': `${src}/decrypt.penumbra.worker.js`,
+    'zip.penumbra.worker': `${src}/zip.penumbra.worker.js`,
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: join(__dirname, 'build'),
     filename: '[name].js',
   },
-  mode: 'development',
   resolve: {
     extensions: ['.ts', '.js'],
   },
@@ -25,22 +21,26 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /^.*\.(ts|tsx)?$/,
         use: [
+          {
+            loader: 'babel-loader',
+          },
           {
             loader: 'ts-loader',
             options: {
               allowTsInNodeModules: false,
-              configFile: 'tsconfig.json',
             },
           },
         ],
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
       },
       {
-        test: /\.js$/,
-        use: 'babel-loader',
-        exclude: /node_modules/,
+        test: /\.(js|jsx)?$/, // Transform all .js/.jsx files required somewhere with Babel
+        include: [src],
+        use: {
+          loader: 'babel-loader',
+        },
       },
       // {
       //   test: /\.worker\.js$/,
@@ -75,6 +75,7 @@ const config = {
   //   }),
   // ],
   devtool: 'eval-source-map',
+  target: 'web', // Make web variables accessible to webpack, e.g. window
   // target: 'web',
 };
 

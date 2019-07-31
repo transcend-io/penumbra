@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "incremental": true,
-    "target": "ES2018",
+    "target": "es2020",
     "module": "commonjs",
     "lib": ["esnext", "dom", "es2015", "es2016", "es2017"],
     "allowJs": false,

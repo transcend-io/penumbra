@@ -19,6 +19,7 @@ before_install:
   # Ensure that npm version is 6.4.1
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
+  - pip3 install setuptools
   - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
   # To ensure the aws command can be found
   - export PATH=$PATH:$HOME/.local/bin
@@ -50,12 +51,12 @@ jobs:
     #  script: npm run test
 
     # Run tests on multiple browsers and publish code coverage
-    - stage: test
-      name: Cross-Browser Tests
-      script:
-        - npm run browser-test
-        - npm run coverage
-        - codecov
+    # - stage: test
+    #   name: Cross-Browser Tests
+    #   script:
+    #     - npm run browser-test
+    #     - npm run coverage
+    #     - codecov
 
     # ###### #
     # Deploy #

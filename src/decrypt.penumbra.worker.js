@@ -1,34 +1,59 @@
 /* eslint-disable class-methods-use-this */
 
+// external modules
+import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
-// import { decryptStream, getDecryptedContent } from 'src/index';
+import { fromWritablePort } from 'remote-web-streams';
+
+// local
+import fetchAndDecrypt from './fetchAndDecrypt';
+import onProgress from './utils/forwardProgress';
+import './transferHandlers/progress';
+
+if (self.document) {
+  throw new Error('Worker thread should not be included in document');
+}
 
 /**
- * Penumbra Worker class
+ * Penumbra Decryption Worker class
  */
 class PenumbraDecryptionWorker {
   /**
-   * Get the contents of an encrypted file
+   * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    *
-   * @param options - FetchDecryptedContentOptions
-   * @returns The file contents
+   * @param writablePorts - Remote Web Stream writable ports
+   * @param resources - The remote resource to download
+   * @returns ReadableStream[] of the deciphered files
    */
-  // getDecryptedContent(...args) {
-  //   return getDecryptedContent(...args);
-  // }
+  async get(writablePorts, resources) {
+    const writableCount = writablePorts.length;
+    const resourceCount = resources.length;
+    if (writableCount !== resourceCount) {
+      console.warn(
+        'Writable ports <-> Resources count mismatch. Truncating to common subset.',
+      );
+      // eslint-disable-next-line no-multi-assign, no-param-reassign
+      resources.length = writablePorts.length = Math.min(
+        writableCount,
+        resourceCount,
+      );
+    }
+    resources.forEach(async (resource, i) => {
+      if (!('url' in resource)) {
+        throw new Error('penumbra.get(): RemoteResource missing URL');
+      }
+      const remoteStream = fromWritablePort(writablePorts[i]);
+      const localStream = await fetchAndDecrypt(resource);
+      localStream.pipeTo(remoteStream);
+    });
+  }
+
   /**
-   * Get the contents of an encrypted file
-   *
-   * @param rs ReadableStream to decode
-   * @param decipher Decipher instance
-   * @param contentLength Content size
-   * @param url URL being requested (for progress events, not fetched )
-   * @param progressEventName?: string,
-   * @returns Decrypted ReadableStream
+   * Forward progress events to main thread
    */
-  // decryptStream(...args) {
-  //   return decryptStream(...args);
-  // }
+  async setup(handler) {
+    onProgress.handler = handler;
+  }
 }
 
 Comlink.expose(PenumbraDecryptionWorker);
