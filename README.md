@@ -16,32 +16,30 @@
 </p>
 <br />
 
-## Contents
-
 <!-- toc -->
 
-* [Usage](#usage)
-  * [Importing Penumbra](#importing-penumbra)
-    * [With NPM](#with-npm)
-    * [Vanilla JS](#vanilla-js)
-  * [.get](#get)
-  * [.save](#save)
-  * [.getBlob](#getblob)
-  * [.getTextOrURI](#gettextoruri)
-  * [.zip](#zip)
-  * [.setWorkerLocation](#setworkerlocation)
-* [Examples](#examples)
-  * [Display encrypted text](#display-encrypted-text)
-  * [Display encrypted image](#display-encrypted-image)
-  * [Download an encrypted file](#download-an-encrypted-file)
-  * [Download many encrypted files](#download-many-encrypted-files)
-* [Advanced](#advanced)
-  * [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
-  * [Download Progress Event Emitter](#download-progress-event-emitter)
-  * [Configure worker location](#configure-worker-location)
-  * [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
-* [Contributing](#contributing)
-* [Big Thanks](#big-thanks)
+- [Usage](#usage)
+  - [Importing Penumbra](#importing-penumbra)
+    - [With NPM](#with-npm)
+    - [Vanilla JS](#vanilla-js)
+  - [.get](#get)
+  - [.save](#save)
+  - [.getBlob](#getblob)
+  - [.getTextOrURI](#gettextoruri)
+  - [.zip](#zip)
+  - [.setWorkerLocation](#setworkerlocation)
+- [Examples](#examples)
+  - [Display encrypted text](#display-encrypted-text)
+  - [Display encrypted image](#display-encrypted-image)
+  - [Download an encrypted file](#download-an-encrypted-file)
+  - [Download many encrypted files](#download-many-encrypted-files)
+- [Advanced](#advanced)
+  - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+  - [Download Progress Event Emitter](#download-progress-event-emitter)
+  - [Configure worker location](#configure-worker-location)
+  - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+- [Contributing](#contributing)
+- [Big Thanks](#big-thanks)
 
 <!-- tocstop -->
 
