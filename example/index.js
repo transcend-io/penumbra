@@ -129,16 +129,17 @@ function insertIntoCell(returnedFiles) {
     (child) => child.id,
   );
 
-  returnedFiles.forEach((returnedFile, i) => {
-    Object.entries(returnedFile).forEach(([key, value]) => {
+  returnedFiles.forEach(async (returnedFile, i) => {
+    const returnedFileObj = await returnedFile;
+    Object.entries(returnedFileObj).forEach(([key, value]) => {
       if (!headerIds.includes(key)) {
         return;
       }
       const cell = document.getElementById(`${i}-${key}`);
 
-      if (key === 'data' && returnedFile.type === 'uri') {
+      if (key === 'data' && returnedFileObj.type === 'uri') {
         // Display media
-        const elementType = returnedFile.mimetype.split('/')[0];
+        const elementType = returnedFileObj.mimetype.split('/')[0];
 
         let media;
         if (elementType === 'image') {
@@ -165,7 +166,10 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // Download and decrypt and display in table
   penumbra
     .get(...files)
-    .then((pfiles) => penumbra.getTextOrURI(pfiles))
+    .then((pfiles) => pfiles.map(penumbra.getTextOrURI))
+    // // See https://github.com/transcend-io/penumbra/issues/56
+    // .then((pfiles) => penumbra.getTextOrURI(pfiles))
+    // .then(insertIntoCell);
     .then(insertIntoCell);
 
   const runOnce = {};

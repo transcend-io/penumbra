@@ -16,6 +16,7 @@
     "ts:lint": "tslint --project .",
     "####### Start #########": "",
     "start": "http-server build -a localhost",
+    "start:example": "npm run build:example && http-server example",
     "####### Testing #######": "",
     "test:interactive": "http-server build -a localhost",
     "airtap:test:interactive": "airtap --local build/src/tests/*.test.js",
