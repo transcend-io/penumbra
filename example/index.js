@@ -187,7 +187,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
 
   // Function to download and zip
   // const downloadManyFiles = () =>
-  //   penumbra.get(...files).then((pfiles) => penumbra.zip(pfiles));
+  //   penumbra.get(...files).then((pfiles) => penumbra.save(pfiles));
 };
 
 if (!self.penumbra) {
