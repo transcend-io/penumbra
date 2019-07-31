@@ -5,7 +5,7 @@
 <p align="center">
   <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
   <br /><br />
-  <i>Coming soon. This repo is currently a work in progress.</i>
+  <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/trasncend-io/conflux">conflux</a>.</i>
   <br /><br />
   <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a>
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
@@ -16,34 +16,82 @@
 </p>
 <br />
 
+<!-- toc -->
+
+- [Usage](#usage)
+  - [Importing Penumbra](#importing-penumbra)
+    - [With NPM](#with-npm)
+    - [Vanilla JS](#vanilla-js)
+  - [.get](#get)
+  - [.save](#save)
+  - [.getBlob](#getblob)
+  - [.getTextOrURI](#gettextoruri)
+  - [.zip](#zip)
+  - [.setWorkerLocation](#setworkerlocation)
+- [Examples](#examples)
+  - [Display encrypted text](#display-encrypted-text)
+  - [Display encrypted image](#display-encrypted-image)
+  - [Download an encrypted file](#download-an-encrypted-file)
+  - [Download many encrypted files](#download-many-encrypted-files)
+- [Advanced](#advanced)
+  - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+  - [Download Progress Event Emitter](#download-progress-event-emitter)
+  - [Configure worker location](#configure-worker-location)
+  - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+- [Contributing](#contributing)
+- [Big Thanks](#big-thanks)
+
+<!-- tocstop -->
+
 ## Usage
 
 ### Importing Penumbra
 
-TODO
+#### With NPM
+
+```sh
+npm install --save @transcend-io/penumbra
+```
+
+```js
+import * as penumbra from '@transcend-io/penumbra'
+
+penumbra.get(...files).then(penumbra.save);
+```
+
+#### Vanilla JS
+
+```html
+<script src="lib/penumbra.js"></script>
+<script>
+  penumbra.get(...files).then(penumbra.getTextOrURI).then(displayInDOM);
+</script>
+```
+
+_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchornous loading._
 
 ### .get
 
-Fetch and decrypt remote files
+Fetch and decrypt remote files.
 
 ```ts
-penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFiles[]>
+penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFile[]>
 ```
 
 ### .save
 
-Save files retrieved by Penumbra
+Save files retrieved by Penumbra. Downloads a .zip if there are multiple files.
 
 ```ts
-penumbra.save(data: PenumbraFiles, fileName?: string): Promise<void>
+penumbra.save(data: PenumbraFile[], fileName?: string): Promise<void>
 ```
 
 ### .getBlob
 
-Load files retrieved by Penumbra into memory as a Blob
+Load files retrieved by Penumbra into memory as a Blob.
 
 ```ts
-penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
+penumbra.getBlob(data: PenumbraFile[] | PenumbraFile | ReadableStream, type?: string): Promise<Blob>
 ```
 
 ### .getTextOrURI
@@ -51,33 +99,23 @@ penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
 Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) (if content is not viewable).
 
 ```ts
-penumbra.getTextOrURI(data: PenumbraFiles): Promise<{ type: 'text'|'uri', data: string }>
+penumbra.getTextOrURI(data: PenumbraFile[] | PenumbraFile): Promise<{ type: 'text'|'uri', data: string, mimetype: string }>
 ```
 
 ### .zip
 
-Zip files retrieved by Penumbra
+Zip files retrieved by Penumbra.
 
 ```ts
-penumbra.zip(data: PenumbraFiles, compressionLevel?: number): Promise<ReadableStream>
+penumbra.zip(data: PenumbraFile[] | PenumbraFile, compressionLevel?: number): Promise<ReadableStream>
 ```
 
 ### .setWorkerLocation
 
-Configure the location of Penumbra's worker threads
+Configure the location of Penumbra's worker threads.
 
 ```ts
 penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
-```
-
-### `penumbra-ready` event
-
-Listen for this event to know when Penumbra is ready to be used.
-
-```ts
-self.addEventListener('penumbra-ready', async ({ detail: { penumbra } }) => {
-  // await penumbra.get(...);
-});
 ```
 
 ## Examples
@@ -253,9 +291,13 @@ penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 
 ### Waiting for the `penumbra-ready` event
 
+```html
+<script src="lib/penumbra.js" async defer></script>
+```
+
 ```ts
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
-  // await penumbra.get(...);
+  await penumbra.get(...files).then(penumbra.save);
 };
 
 if (!self.penumbra) {
