@@ -10,7 +10,17 @@
     <div id="app">
       <h1>Penumbra: Browser Decryption Demo 2</h1>
       <button onclick="downloadManyFiles()">Download all data</button>
-      <table id="table"></table>
+      <table id="table">
+        <tr id="headers">
+          <th id="url">URL</th>
+          <th id="type">Text or blob URI</th>
+          <th id="mimetype">Mimetype</th>
+          <th id="decryptionOptions">Encrypted</th>
+          <th id="progress">Progress</th>
+          <th id="size">File size</th>
+          <th id="data">Result</th>
+        </tr>
+      </table>
     </div>
 
     <script src="../build/penumbra.js" async defer></script>

@@ -22,3 +22,14 @@ h3 {
   display: block;
   margin: 50px auto;
 }
+
+table, th, td {
+  border: 1px solid #eeeeee;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

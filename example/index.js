@@ -36,6 +36,16 @@ const files = [
     },
   },
   {
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/Earth.jpg.enc',
+    filePrefix: 'Earth',
+    mimetype: 'image/jpeg',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'v86dSoD5yu4iaDZdPYWTDA==',
+    },
+  },
+  {
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/turtl.gif.enc',
     filePrefix: 'turtl',
     mimetype: 'image/gif',
@@ -87,43 +97,97 @@ const files = [
   },
 ];
 
-let headerExists = false;
-function appendRow(columnContent) {
+(function buildTable() {
   const table = document.getElementById('table');
+  const headerIds = Array.from(document.getElementById('headers').children).map(
+    (child) => child.id,
+  );
 
-  // Append a header row based on Object keys
-  if (!headerExists) {
+  files.forEach((file, i) => {
     const row = document.createElement('tr');
-    Object.keys(columnContent).forEach((key) => {
-      const header = document.createElement('th');
-      header.innerText = key;
-      row.appendChild(header);
-    });
-    table.appendChild(row);
-    headerExists = true;
-  }
 
-  // Append a row
-  const row = document.createElement('tr');
-  Object.values(columnContent).forEach((value) => {
-    const cell = document.createElement('td');
-    cell.innerText = value.length > 100 ? `${value.slice(0, 96)}...` : value;
-    row.appendChild(cell);
+    headerIds.forEach((headerId) => {
+      const cell = document.createElement('td');
+      cell.id = `${i}-${headerId}`;
+      // Key-specific handlers
+      if (headerId === 'decryptionOptions') {
+        cell.innerText = !!file[headerId];
+      } else {
+        cell.innerText = file[headerId] || '';
+      }
+      row.appendChild(cell);
+    });
+
+    table.appendChild(row);
   });
-  table.appendChild(row);
+})();
+
+function insertIntoCell(returnedFiles) {
+  const headerIds = Array.from(document.getElementById('headers').children).map(
+    (child) => child.id,
+  );
+
+  returnedFiles.forEach((returnedFile, i) => {
+    Object.entries(returnedFile).forEach(([key, value]) => {
+      if (!headerIds.includes(key)) {
+        return;
+      }
+      const cell = document.getElementById(`${i}-${key}`);
+
+      if (key === 'data' && returnedFile.type === 'uri') {
+        // Display media
+        const elementType = returnedFile.mimetype.split('/')[0];
+
+        let media;
+        if (elementType === 'image') {
+          media = document.createElement('img');
+        } else if (elementType === 'video') {
+          media = document.createElement('video');
+          media.autoplay = true;
+          media.muted = true;
+        }
+
+        media.src = value;
+
+        cell.appendChild(media);
+
+        return;
+      }
+      cell.innerText = value.slice(0, 99);
+    });
+  });
 }
 
-let downloadManyFiles;
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
+  // Download and decrypt and display in table
   penumbra
     .get(...files)
     .then((pfiles) => penumbra.getTextOrURI(pfiles))
-    .then((textOrURIs) =>
-      textOrURIs.forEach((textOrURI) => appendRow(textOrURI)),
-    );
+    .then(insertIntoCell);
 
-  downloadManyFiles = () =>
-    penumbra.get(...files).then((pfiles) => penumbra.zip(pfiles));
+  const runOnce = {};
+  // Display download progress
+  window.addEventListener(
+    'penumbra-progress',
+    ({ detail: { percent, url, type, contentLength } }) => {
+      const i = files.findIndex((elt) => elt.url === url);
+      const cell = document.getElementById(`${i}-progress`);
+      cell.innerText = `${percent}%`;
+
+      if (!runOnce[i]) {
+        const cell2 = document.getElementById(`${i}-size`);
+        cell2.innerText = `${contentLength / 1000}KB`;
+        runOnce[i] = true;
+      }
+
+      console.log(`${type}% ${percent}% done for ${url}`);
+      // example output: decrypt 33% done for https://example.com/encrypted-data
+    },
+  );
+
+  // Function to download and zip
+  // const downloadManyFiles = () =>
+  //   penumbra.get(...files).then((pfiles) => penumbra.zip(pfiles));
 };
 
 if (!self.penumbra) {

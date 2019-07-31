@@ -59,7 +59,8 @@
       "node_modules/**/*.ts",
       "dist/**/*.ts",
       "build/**/*.js",
-      "builds/**/*.js"
+      "builds/**/*.js",
+      "example"
     ]
   }
 }
