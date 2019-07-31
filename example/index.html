@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <title>Penumbra Demo</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
 
-<head>
-	<title>Penumbra Demo</title>
-	<meta charset="UTF-8" />
-	<link rel="stylesheet" type="text/css" href="style.css">
-</head>
+  <body>
+    <div id="app">
+      <h1>Penumbra: Browser Decryption Demo 2</h1>
+      <button onclick="downloadManyFiles()">Download all data</button>
+      <table id="table"></table>
+    </div>
 
-<body>
-	<div id="app">
-		<h1>Penumbra: Browser Decryption Demo</h1>
-		<button onclick="downloadManyFiles()">Download all data</button>
-  </div>
-  <script type="application/ecmascript">
-  document.body.appendChild(document.createElement("script")).src = "bundle.js?" + Math.random()
-  </script>
-</body>
-
+    <script src="../build/penumbra.js" async defer></script>
+    <script src="index.js"></script>
+  </body>
 </html>
