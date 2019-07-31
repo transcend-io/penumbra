@@ -16,8 +16,6 @@
 </p>
 <br />
 
-## Contents
-
 <!-- toc -->
 
 - [Usage](#usage)
