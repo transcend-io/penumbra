@@ -97,6 +97,7 @@ const files = [
   },
 ];
 
+// Prepopulate the table with the file metadata, before they've downloaded
 (function buildTable() {
   const table = document.getElementById('table');
   const headerIds = Array.from(document.getElementById('headers').children).map(
@@ -122,6 +123,7 @@ const files = [
   });
 })();
 
+// Insert file info into the table
 function insertIntoCell(returnedFiles) {
   const headerIds = Array.from(document.getElementById('headers').children).map(
     (child) => child.id,
@@ -158,6 +160,7 @@ function insertIntoCell(returnedFiles) {
   });
 }
 
+// This is all of the Penumbra-relevant code:
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // Download and decrypt and display in table
   penumbra

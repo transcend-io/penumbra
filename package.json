@@ -29,7 +29,7 @@
     "build": "npm run clean && mkdir -p build && webpack && cp src/demo/* build/",
     "build:watch": "tsc --watch",
     "webpack:watch": "npm run clean && webpack --watch",
-    "build:example": "cp build example ."
+    "build:example": "cp -a build example"
   },
   "repository": {
     "type": "git",
