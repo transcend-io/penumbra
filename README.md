@@ -299,7 +299,7 @@ penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 
 ```ts
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
-  // await penumbra.get(...);
+  await penumbra.get(...files).then(penumbra.save);
 };
 
 if (!self.penumbra) {
