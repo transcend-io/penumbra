@@ -20,7 +20,28 @@
 
 ### Importing Penumbra
 
-TODO
+#### With NPM
+
+```sh
+npm install --save @transcend-io/penumbra
+```
+
+```js
+import * as penumbra from '@transcend-io/penumbra'
+
+penumbra.get(files); // ...
+```
+
+#### Vanilla JS
+
+```html
+<script src="lib/penumbra.js"></script>
+<script>
+  penumbra.get(files); // ...
+</script>
+```
+
+_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchornous loading._
 
 ### .get
 
@@ -68,16 +89,6 @@ Configure the location of Penumbra's worker threads
 
 ```ts
 penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
-```
-
-### `penumbra-ready` event
-
-Listen for this event to know when Penumbra is ready to be used.
-
-```ts
-self.addEventListener('penumbra-ready', async ({ detail: { penumbra } }) => {
-  // await penumbra.get(...);
-});
 ```
 
 ## Examples
@@ -252,6 +263,10 @@ penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
 ```
 
 ### Waiting for the `penumbra-ready` event
+
+```html
+<script src="lib/penumbra.js" async defer></script>
+```
 
 ```ts
 const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
