@@ -27,7 +27,8 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "clean": "rimraf build",
-    "build": "npm run clean && mkdir -p build && webpack && cp src/demo/* build/",
+    "build": "npm run clean && mkdir -p build && webpack && cp src/demo/* build/ && npm run build:markdown",
+    "build:markdown": "markdown-toc -i --bullets '*' README.md",
     "build:watch": "tsc --watch",
     "webpack:watch": "npm run clean && webpack --watch",
     "build:example": "cp -a build example"
@@ -85,6 +86,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "fetch-mock": "^7.3.6",
     "http-server": "^0.11.1",
+    "markdown-toc": "^1.2.0",
     "npm-check": "^5.9.0",
     "nyc": "^14.1.1",
     "prettier": "^1.17.1",

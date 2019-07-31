@@ -5,7 +5,7 @@
 <p align="center">
   <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
   <br /><br />
-  <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with [conflux](https://github.com/trasncend-io/conflux).</i>
+  <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/trasncend-io/conflux">conflux</a>.</i>
   <br /><br />
   <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a>
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
@@ -15,6 +15,35 @@
   <a href="https://saucelabs.com/u/penumbra"><img src="https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e" alt="Sauce Test Status"></a>
 </p>
 <br />
+
+## Contents
+
+<!-- toc -->
+
+* [Usage](#usage)
+  * [Importing Penumbra](#importing-penumbra)
+    * [With NPM](#with-npm)
+    * [Vanilla JS](#vanilla-js)
+  * [.get](#get)
+  * [.save](#save)
+  * [.getBlob](#getblob)
+  * [.getTextOrURI](#gettextoruri)
+  * [.zip](#zip)
+  * [.setWorkerLocation](#setworkerlocation)
+* [Examples](#examples)
+  * [Display encrypted text](#display-encrypted-text)
+  * [Display encrypted image](#display-encrypted-image)
+  * [Download an encrypted file](#download-an-encrypted-file)
+  * [Download many encrypted files](#download-many-encrypted-files)
+* [Advanced](#advanced)
+  * [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+  * [Download Progress Event Emitter](#download-progress-event-emitter)
+  * [Configure worker location](#configure-worker-location)
+  * [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+* [Contributing](#contributing)
+* [Big Thanks](#big-thanks)
+
+<!-- tocstop -->
 
 ## Usage
 
