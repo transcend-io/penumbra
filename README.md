@@ -5,7 +5,7 @@
 <p align="center">
   <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
   <br /><br />
-  <i>Coming soon. This repo is currently a work in progress.</i>
+  <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with [conflux](https://github.com/trasncend-io/conflux).</i>
   <br /><br />
   <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a>
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
@@ -29,7 +29,7 @@ npm install --save @transcend-io/penumbra
 ```js
 import * as penumbra from '@transcend-io/penumbra'
 
-penumbra.get(files); // ...
+penumbra.get(...files).then(penumbra.save);
 ```
 
 #### Vanilla JS
@@ -37,7 +37,7 @@ penumbra.get(files); // ...
 ```html
 <script src="lib/penumbra.js"></script>
 <script>
-  penumbra.get(files); // ...
+  penumbra.get(...files).then(penumbra.getTextOrURI).then(displayInDOM);
 </script>
 ```
 
@@ -45,26 +45,26 @@ _Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchornous 
 
 ### .get
 
-Fetch and decrypt remote files
+Fetch and decrypt remote files.
 
 ```ts
-penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFiles[]>
+penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFile[]>
 ```
 
 ### .save
 
-Save files retrieved by Penumbra
+Save files retrieved by Penumbra. Downloads a .zip if there are multiple files.
 
 ```ts
-penumbra.save(data: PenumbraFiles, fileName?: string): Promise<void>
+penumbra.save(data: PenumbraFile[], fileName?: string): Promise<void>
 ```
 
 ### .getBlob
 
-Load files retrieved by Penumbra into memory as a Blob
+Load files retrieved by Penumbra into memory as a Blob.
 
 ```ts
-penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
+penumbra.getBlob(data: PenumbraFile[] | PenumbraFile | ReadableStream, type?: string): Promise<Blob>
 ```
 
 ### .getTextOrURI
@@ -72,20 +72,20 @@ penumbra.getBlob(data: PenumbraFiles): Promise<Blob>
 Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) (if content is not viewable).
 
 ```ts
-penumbra.getTextOrURI(data: PenumbraFiles): Promise<{ type: 'text'|'uri', data: string }>
+penumbra.getTextOrURI(data: PenumbraFile[] | PenumbraFile): Promise<{ type: 'text'|'uri', data: string, mimetype: string }>
 ```
 
 ### .zip
 
-Zip files retrieved by Penumbra
+Zip files retrieved by Penumbra.
 
 ```ts
-penumbra.zip(data: PenumbraFiles, compressionLevel?: number): Promise<ReadableStream>
+penumbra.zip(data: PenumbraFile[] | PenumbraFile, compressionLevel?: number): Promise<ReadableStream>
 ```
 
 ### .setWorkerLocation
 
-Configure the location of Penumbra's worker threads
+Configure the location of Penumbra's worker threads.
 
 ```ts
 penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
