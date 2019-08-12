@@ -46,7 +46,7 @@ export type RemoteResourceWithoutFile = Optionalize<
 /** Penumbra file composition */
 export type PenumbraFile = {
   /** Backing stream */
-  stream: ReadableStream;
+  stream?: ReadableStream | Blob;
   /** File mimetype */
   mimetype: string;
   /** Filename (excluding extension) */
@@ -153,15 +153,23 @@ export type PenumbraWorkerAPI = {
  */
 export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
-   * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
+   * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
-   * @param resource - The remote resource to download
+   * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
+   * @param resources - The remote resources to download
    * @returns A readable stream of the deciphered file
    */
   get: (
     writablePorts: MessagePort[],
     resources: RemoteResource[],
   ) => Promise<ReadableStream[]>;
+  /**
+   * Fetches remote files, deciphers them (if encrypted), and returns Blob[]
+   *
+   * @param resources - The remote resources to download
+   * @returns A readable stream of the deciphered file
+   */
+  getBlob: (resources: RemoteResource[]) => Promise<Blob[]>;
 };
 
 /**
@@ -240,6 +248,8 @@ export type PenumbraWorkers = {
   zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
   StreamSaver?: PenumbraServiceWorker;
+  /** Ability to use remote streams */
+  canStream: boolean;
 };
 
 /** Worker->main thread progress forwarder */

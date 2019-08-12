@@ -56,23 +56,53 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   }
   const workers = await getWorkers();
   const DecryptionChannel = workers.decrypt.comlink;
-  const remoteStreams = resources.map(() => new RemoteReadableStream());
-  const readables = remoteStreams.map((stream, i) => {
-    const { url } = resources[i];
+  let remoteStreams: RemoteReadableStream[] = [];
+  let writablePorts: MessagePort[];
+  if (workers.canStream) {
+    remoteStreams = resources.map(() => new RemoteReadableStream());
+    writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+  }
+  const readables = resources.map((resource, i) => {
+    const { url } = resource;
     resolver.href = url;
     const path = resolver.pathname; // derive path from URL
+    const stream = workers.canStream ? remoteStreams[i] : undefined;
     return {
-      stream: stream.readable,
+      stream,
       path,
       // derived path is overridden if PenumbraFile contains path
       ...resources[i],
     };
   });
-  const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-  new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
-    await thread.get(transfer(writablePorts, writablePorts), resources);
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new DecryptionChannel().then(
+    async (thread: PenumbraDecryptionWorkerAPI): Promise<any> => {
+      if (workers.canStream) {
+        return thread.get(transfer(writablePorts, writablePorts), resources);
+      }
+      readables.map(async (readable, i) => {
+        let { stream } = readable;
+        if (!stream) {
+          [stream] = await thread.getBlob([resources[i]]);
+        }
+      });
+      return thread.getBlob(resources);
+    },
+  );
   return readables;
+
+  // return new DecryptionChannel().then(
+  //   async (thread: PenumbraDecryptionWorkerAPI) => {
+  //     const path = resolver.pathname;
+  //     resources.map((resource) => {
+  //       const { url } = resource;
+  //       resolver.href = url;
+  //       const path = resolver.pathname;
+  //       return { path, ...resource };
+  //     });
+  //     return thread.getBlob(resources);
+  //   },
+  // );
 }
 
 /** Zip files retrieved by Penumbra */
