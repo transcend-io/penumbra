@@ -78,7 +78,6 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     );
     return readables;
   }
-  // let files: PenumbraFile[] = [];
   let files: PenumbraFile[] = await new DecryptionChannel().then(
     async (thread: PenumbraDecryptionWorkerAPI) => {
       const buffers = await thread.getBuffers(resources);
