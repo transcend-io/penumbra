@@ -56,53 +56,48 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   }
   const workers = await getWorkers();
   const DecryptionChannel = workers.decrypt.comlink;
-  let remoteStreams: RemoteReadableStream[] = [];
-  let writablePorts: MessagePort[];
-  if (workers.canStream) {
-    remoteStreams = resources.map(() => new RemoteReadableStream());
-    writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+  if ('WritableStream' in self) {
+    // WritableStream constructor supported
+    const remoteStreams = resources.map(() => new RemoteReadableStream());
+    const readables = remoteStreams.map((stream, i) => {
+      const { url } = resources[i];
+      resolver.href = url;
+      const path = resolver.pathname; // derive path from URL
+      return {
+        stream: stream.readable,
+        path,
+        // derived path is overridden if PenumbraFile contains path
+        ...resources[i],
+      };
+    });
+    const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+    new DecryptionChannel().then(
+      async (thread: PenumbraDecryptionWorkerAPI) => {
+        await thread.get(transfer(writablePorts, writablePorts), resources);
+      },
+    );
+    return readables;
   }
-  const readables = resources.map((resource, i) => {
-    const { url } = resource;
-    resolver.href = url;
-    const path = resolver.pathname; // derive path from URL
-    const stream = workers.canStream ? remoteStreams[i] : undefined;
-    return {
-      stream,
-      path,
-      // derived path is overridden if PenumbraFile contains path
-      ...resources[i],
-    };
-  });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  new DecryptionChannel().then(
-    async (thread: PenumbraDecryptionWorkerAPI): Promise<any> => {
-      if (workers.canStream) {
-        return thread.get(transfer(writablePorts, writablePorts), resources);
-      }
-      readables.map(async (readable, i) => {
-        let { stream } = readable;
-        if (!stream) {
-          [stream] = await thread.getBlob([resources[i]]);
-        }
+  // let files: PenumbraFile[] = [];
+  let files: PenumbraFile[] = await new DecryptionChannel().then(
+    async (thread: PenumbraDecryptionWorkerAPI) => {
+      const buffers = await thread.getBuffer(resources);
+      console.log(buffers);
+      files = (transfer(buffers, buffers) as ArrayBuffer[]).map((stream, i) => {
+        const { url } = resources[i];
+        resolver.href = url;
+        const path = resolver.pathname;
+        return {
+          stream,
+          path,
+          ...resources[i],
+        };
       });
-      return thread.getBlob(resources);
+      return files;
     },
   );
-  return readables;
-
-  // return new DecryptionChannel().then(
-  //   async (thread: PenumbraDecryptionWorkerAPI) => {
-  //     const path = resolver.pathname;
-  //     resources.map((resource) => {
-  //       const { url } = resource;
-  //       resolver.href = url;
-  //       const path = resolver.pathname;
-  //       return { path, ...resource };
-  //     });
-  //     return thread.getBlob(resources);
-  //   },
-  // );
+  console.log('penumbra.get() w/o writablestreams files: ', files);
+  return files;
 }
 
 /** Zip files retrieved by Penumbra */
@@ -127,6 +122,7 @@ const ZIP_MIME_TYPE = 'application/zip';
  */
 async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const createStreamSaver = (await import('streamsaver')).createWriteStream;
+  const { saveAs } = await import('file-saver');
 
   // Zip a list of files
   // TODO: Use streaming zip through conflux
@@ -142,7 +138,16 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
   // Write a single readable stream to file
-  return file.stream.pipeTo(createStreamSaver(singleFileName));
+  if (file.stream instanceof ReadableStream) {
+    return file.stream.pipeTo(createStreamSaver(singleFileName));
+  }
+  if (file.stream instanceof ArrayBuffer) {
+    return saveAs(
+      new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
+      singleFileName,
+    );
+  }
+  return undefined;
 }
 
 /**
@@ -165,6 +170,9 @@ async function getBlob(
     rs = data;
   } else {
     const file = 'length' in data ? data[0] : data;
+    if (file.stream instanceof ArrayBuffer) {
+      return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
+    }
     rs = file.stream;
     fileType = file.mimetype;
   }
