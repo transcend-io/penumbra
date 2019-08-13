@@ -81,6 +81,17 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         let lastPercent;
         const onprogress = ({ detail: { percent } }) => {
           if (!Number.isNaN(percent)) {
+            if (percent === 100) {
+              // Resource is already loaded
+              if (initFinished) {
+                stallTimeout.clear();
+              } else {
+                initTimeout.clear();
+              }
+              view.removeEventListener(progressEventName, onprogress);
+              result = true;
+              return;
+            }
             if (!initFinished) {
               initTimeout.clear();
               stallTimeout = timeout(fail, 10);
