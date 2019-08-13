@@ -57,17 +57,20 @@ class PenumbraDecryptionWorker {
    * @param resources - The remote resource to download
    * @returns Blob[] of the deciphered files
    */
-  async getBuffer(resources) {
-    return resources.map(async (resource, i) => {
-      if (!('url' in resource)) {
-        throw new Error(
-          'PenumbraDecryptionWorker.getBlob(): RemoteResource missing URL',
-        );
-      }
-      return Comlink.transfer(
-        new Response(await fetchAndDecrypt(resource)).arrayBuffer(),
-      );
-    });
+  async getBuffers(resources) {
+    return Promise.all(
+      resources.map(async (resource, i) => {
+        if (!('url' in resource)) {
+          throw new Error(
+            'PenumbraDecryptionWorker.getBlob(): RemoteResource missing URL',
+          );
+        }
+        const buffer = await new Response(
+          await fetchAndDecrypt(resource),
+        ).arrayBuffer();
+        return Comlink.transfer(buffer, buffer);
+      }),
+    );
   }
 
   /**

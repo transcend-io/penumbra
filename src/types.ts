@@ -169,7 +169,7 @@ export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
    * @param resources - The remote resources to download
    * @returns A readable stream of the deciphered file
    */
-  getBuffer: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
+  getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
 };
 
 /**

@@ -81,9 +81,8 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   // let files: PenumbraFile[] = [];
   let files: PenumbraFile[] = await new DecryptionChannel().then(
     async (thread: PenumbraDecryptionWorkerAPI) => {
-      const buffers = await thread.getBuffer(resources);
-      console.log(buffers);
-      files = (transfer(buffers, buffers) as ArrayBuffer[]).map((stream, i) => {
+      const buffers = await thread.getBuffers(resources);
+      files = buffers.map((stream, i) => {
         const { url } = resources[i];
         resolver.href = url;
         const path = resolver.pathname;
@@ -96,7 +95,6 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       return files;
     },
   );
-  console.log('penumbra.get() w/o writablestreams files: ', files);
   return files;
 }
 
