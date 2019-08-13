@@ -100,6 +100,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 /** Zip files retrieved by Penumbra */
 async function zip(
   data: PenumbraFile[] | PenumbraFile,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   compressionLevel: number = Compression.Store,
 ): Promise<ReadableStream> {
   throw new Error('penumbra.zip() is unimplemented');

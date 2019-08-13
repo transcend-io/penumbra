@@ -59,7 +59,7 @@ class PenumbraDecryptionWorker {
    */
   async getBuffers(resources) {
     return Promise.all(
-      resources.map(async (resource, i) => {
+      resources.map(async (resource) => {
         if (!('url' in resource)) {
           throw new Error(
             'PenumbraDecryptionWorker.getBlob(): RemoteResource missing URL',
