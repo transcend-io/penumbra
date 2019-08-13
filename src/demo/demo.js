@@ -81,6 +81,17 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         let lastPercent;
         const onprogress = ({ detail: { percent } }) => {
           if (!Number.isNaN(percent)) {
+            if (percent === 100) {
+              // Resource is already loaded
+              if (initFinished) {
+                stallTimeout.clear();
+              } else {
+                initTimeout.clear();
+              }
+              view.removeEventListener(progressEventName, onprogress);
+              result = true;
+              return;
+            }
             if (!initFinished) {
               initTimeout.clear();
               stallTimeout = timeout(fail, 10);
@@ -207,7 +218,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
     [
       'penumbra.getTextOrURI(): including image in document',
       async () => {
-        const { type, data: url } = await penumbra.getTextOrURI(
+        const { data: url } = await penumbra.getTextOrURI(
           await penumbra.get({
             url:
               'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
@@ -221,7 +232,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
           }),
         );
         const testImage = new Image();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           // 5-second timeout for the image to load
           timeout(resolve.bind(this, false), 5);
           const onLoad = () => {

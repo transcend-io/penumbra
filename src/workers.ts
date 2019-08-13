@@ -17,8 +17,9 @@ import getKeys from './utils/getKeys';
 // //// //
 // Init //
 // //// //
+const view = self;
 
-if (!self.document) {
+if (!view.document) {
   throw new Error(
     'Penumbra must be included in a document as an unbundled script element.',
   );
@@ -84,7 +85,7 @@ export function getWorkerLocation(): WorkerLocation {
 
 /** Re-dispatch progress events */
 function reDispatchProgressEvent(event: ProgressEmit): void {
-  self.dispatchEvent(event);
+  view.dispatchEvent(event);
 }
 
 const workers: Partial<PenumbraWorkers> = {};
@@ -165,7 +166,7 @@ async function cleanup(): Promise<void> {
   initialized = false;
 }
 
-self.addEventListener('beforeunload', cleanup);
+view.addEventListener('beforeunload', cleanup);
 
 /**
  * Configure the location of Penumbra's worker threads

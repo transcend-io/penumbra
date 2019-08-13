@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  *
  * ## Penumbra Type Definitions
@@ -46,7 +47,7 @@ export type RemoteResourceWithoutFile = Optionalize<
 /** Penumbra file composition */
 export type PenumbraFile = {
   /** Backing stream */
-  stream: ReadableStream;
+  stream: ReadableStream | ArrayBuffer;
   /** File mimetype */
   mimetype: string;
   /** Filename (excluding extension) */
@@ -153,15 +154,23 @@ export type PenumbraWorkerAPI = {
  */
 export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
-   * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
+   * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
-   * @param resource - The remote resource to download
+   * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
+   * @param resources - The remote resources to download
    * @returns A readable stream of the deciphered file
    */
   get: (
     writablePorts: MessagePort[],
     resources: RemoteResource[],
   ) => Promise<ReadableStream[]>;
+  /**
+   * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
+   *
+   * @param resources - The remote resources to download
+   * @returns A readable stream of the deciphered file
+   */
+  getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
 };
 
 /**

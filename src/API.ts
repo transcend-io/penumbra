@@ -56,28 +56,51 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   }
   const workers = await getWorkers();
   const DecryptionChannel = workers.decrypt.comlink;
-  const remoteStreams = resources.map(() => new RemoteReadableStream());
-  const readables = remoteStreams.map((stream, i) => {
-    const { url } = resources[i];
-    resolver.href = url;
-    const path = resolver.pathname; // derive path from URL
-    return {
-      stream: stream.readable,
-      path,
-      // derived path is overridden if PenumbraFile contains path
-      ...resources[i],
-    };
-  });
-  const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-  new DecryptionChannel().then(async (thread: PenumbraDecryptionWorkerAPI) => {
-    await thread.get(transfer(writablePorts, writablePorts), resources);
-  });
-  return readables;
+  if ('WritableStream' in self) {
+    // WritableStream constructor supported
+    const remoteStreams = resources.map(() => new RemoteReadableStream());
+    const readables = remoteStreams.map((stream, i) => {
+      const { url } = resources[i];
+      resolver.href = url;
+      const path = resolver.pathname; // derive path from URL
+      return {
+        stream: stream.readable,
+        path,
+        // derived path is overridden if PenumbraFile contains path
+        ...resources[i],
+      };
+    });
+    const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+    new DecryptionChannel().then(
+      async (thread: PenumbraDecryptionWorkerAPI) => {
+        await thread.get(transfer(writablePorts, writablePorts), resources);
+      },
+    );
+    return readables;
+  }
+  let files: PenumbraFile[] = await new DecryptionChannel().then(
+    async (thread: PenumbraDecryptionWorkerAPI) => {
+      const buffers = await thread.getBuffers(resources);
+      files = buffers.map((stream, i) => {
+        const { url } = resources[i];
+        resolver.href = url;
+        const path = resolver.pathname;
+        return {
+          stream,
+          path,
+          ...resources[i],
+        };
+      });
+      return files;
+    },
+  );
+  return files;
 }
 
 /** Zip files retrieved by Penumbra */
 async function zip(
   data: PenumbraFile[] | PenumbraFile,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   compressionLevel: number = Compression.Store,
 ): Promise<ReadableStream> {
   throw new Error('penumbra.zip() is unimplemented');
@@ -97,6 +120,7 @@ const ZIP_MIME_TYPE = 'application/zip';
  */
 async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const createStreamSaver = (await import('streamsaver')).createWriteStream;
+  const { saveAs } = await import('file-saver');
 
   // Zip a list of files
   // TODO: Use streaming zip through conflux
@@ -112,7 +136,16 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
   // Write a single readable stream to file
-  return file.stream.pipeTo(createStreamSaver(singleFileName));
+  if (file.stream instanceof ReadableStream) {
+    return file.stream.pipeTo(createStreamSaver(singleFileName));
+  }
+  if (file.stream instanceof ArrayBuffer) {
+    return saveAs(
+      new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
+      singleFileName,
+    );
+  }
+  return undefined;
 }
 
 /**
@@ -135,6 +168,9 @@ async function getBlob(
     rs = data;
   } else {
     const file = 'length' in data ? data[0] : data;
+    if (file.stream instanceof ArrayBuffer) {
+      return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
+    }
     rs = file.stream;
     fileType = file.mimetype;
   }

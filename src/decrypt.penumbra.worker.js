@@ -40,12 +40,37 @@ class PenumbraDecryptionWorker {
     }
     resources.forEach(async (resource, i) => {
       if (!('url' in resource)) {
-        throw new Error('penumbra.get(): RemoteResource missing URL');
+        throw new Error(
+          'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
+        );
       }
       const remoteStream = fromWritablePort(writablePorts[i]);
       const localStream = await fetchAndDecrypt(resource);
       localStream.pipeTo(remoteStream);
     });
+  }
+
+  /**
+   * Fetches remote files from URLs, deciphers them (if encrypted),
+   * fully buffers the response, and returns Blob[]
+   *
+   * @param resources - The remote resource to download
+   * @returns Blob[] of the deciphered files
+   */
+  async getBuffers(resources) {
+    return Promise.all(
+      resources.map(async (resource) => {
+        if (!('url' in resource)) {
+          throw new Error(
+            'PenumbraDecryptionWorker.getBlob(): RemoteResource missing URL',
+          );
+        }
+        const buffer = await new Response(
+          await fetchAndDecrypt(resource),
+        ).arrayBuffer();
+        return Comlink.transfer(buffer, buffer);
+      }),
+    );
   }
 
   /**
