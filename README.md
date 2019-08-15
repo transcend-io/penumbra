@@ -72,7 +72,7 @@ penumbra.get(...files).then(penumbra.save);
 </script>
 ```
 
-_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchornous loading._
+_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchronous loading._
 
 ### .get
 
