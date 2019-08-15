@@ -12,9 +12,9 @@ import './transferHandlers/progress';
 import { PenumbraView } from './types';
 
 export * from './types';
-export default penumbra;
+export { penumbra };
 
-const view: PenumbraView = (self || exports) as Window;
+const view: PenumbraView = self as Window;
 view.penumbra = penumbra;
 
-self.dispatchEvent(new CustomEvent('penumbra-ready', { detail: { penumbra } }));
+view.dispatchEvent(new CustomEvent('penumbra-ready', { detail: { penumbra } }));
