@@ -55,7 +55,7 @@ npm install --save @transcend-io/penumbra
 ```
 
 ```js
-import * as penumbra from '@transcend-io/penumbra'
+import { penumbra } from '@transcend-io/penumbra';
 
 penumbra.get(...files).then(penumbra.save);
 ```
@@ -65,11 +65,14 @@ penumbra.get(...files).then(penumbra.save);
 ```html
 <script src="lib/penumbra.js"></script>
 <script>
-  penumbra.get(...files).then(penumbra.getTextOrURI).then(displayInDOM);
+  penumbra
+    .get(...files)
+    .then(penumbra.getTextOrURI)
+    .then(displayInDOM);
 </script>
 ```
 
-_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchornous loading._
+_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchronous loading._
 
 ### .get
 

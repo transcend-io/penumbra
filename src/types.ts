@@ -131,12 +131,6 @@ export type PenumbraAPI = {
   setWorkerLocation: (options: WorkerLocationOptions | string) => Promise<void>;
 };
 
-/** Penumbra API as exposed on the current DOM AbstractView */
-export type PenumbraView = Window & {
-  /** Root API property */
-  penumbra?: PenumbraAPI;
-};
-
 /**
  * Common Penumbra Worker API
  */
