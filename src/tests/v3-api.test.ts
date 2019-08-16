@@ -5,7 +5,6 @@ import {
   PenumbraAPI,
   PenumbraReady,
   PenumbraTextOrURI,
-  PenumbraView,
   ProgressEmit,
   RemoteResource,
 } from '../types';
@@ -15,7 +14,7 @@ import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 
-const view: PenumbraView = self as Window;
+const view = self;
 
 const onReady = async (event?: PenumbraReady) => {
   // eslint-disable-next-line no-shadow
