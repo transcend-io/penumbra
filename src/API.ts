@@ -7,7 +7,6 @@ import { RemoteReadableStream } from 'remote-web-streams';
 // Local
 import {
   Compression,
-  PenumbraAPI,
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
@@ -188,36 +187,29 @@ async function getBlob(
  * @param data - The data to get the text of
  * @returns The text itself or a URI encoding the image if applicable
  */
-async function getTextOrURI(
-  data: PenumbraFile[] | PenumbraFile,
-): Promise<PenumbraTextOrURI[] | PenumbraTextOrURI> {
-  /* eslint-disable no-nested-ternary */
-  // eslint-disable-next-line prettier/prettier
-  const onlyFile = 'length' in data
-    ? (data.length === 1 ? data[0] : false)
-    : data;
-  if (onlyFile) {
-    const { mimetype } = onlyFile;
-    if (isViewableText(mimetype)) {
-      return {
-        type: 'text',
-        data: await new Response(onlyFile.stream).text(),
-        mimetype,
-      };
-    }
-    const url = URL.createObjectURL(await getBlob(onlyFile));
-    const cache = blobCache.get();
-    cache.push(new URL(url));
-    blobCache.set(cache);
-    return { type: 'uri', data: url, mimetype };
+async function getTextOrURI<TData extends PenumbraFile[] | PenumbraFile>(
+  data: TData,
+): Promise<TData extends any[] ? PenumbraTextOrURI[] : PenumbraTextOrURI> {
+  if (Array.isArray(data)) {
+    return Promise.all(data.map((file) => getTextOrURI(file)));
   }
 
-  return Promise.all(
-    (data as PenumbraFile[]).map(async (file) => getTextOrURI(file)),
-  ) as Promise<PenumbraTextOrURI[]>;
+  const { mimetype } = data;
+  if (isViewableText(mimetype)) {
+    return {
+      type: 'text',
+      data: await new Response(data.stream).text(),
+      mimetype,
+    };
+  }
+  const url = URL.createObjectURL(await getBlob(data));
+  const cache = blobCache.get();
+  cache.push(new URL(url));
+  blobCache.set(cache);
+  return { type: 'uri', data: url, mimetype };
 }
 
-const penumbra: PenumbraAPI = {
+const penumbra = {
   get,
   save,
   getBlob,
@@ -225,5 +217,7 @@ const penumbra: PenumbraAPI = {
   zip,
   setWorkerLocation,
 };
+
+const test = getTextOrURI({});
 
 export default penumbra;

@@ -8,6 +8,9 @@
  * @see module:penumbra
  */
 
+// local
+import { penumbra } from './index';
+
 /**
  * Make selected object keys defined by K optional in type T
  */
@@ -109,27 +112,7 @@ export type PenumbraTextOrURI = {
 };
 
 /** Penumbra API */
-export type PenumbraAPI = {
-  /** Retrieve and decrypt files */
-  get: (...resources: RemoteResource[]) => Promise<PenumbraFile[]>;
-  /** Save files retrieved by Penumbra */
-  save: (data: PenumbraFile[], fileName?: string) => Promise<void>;
-  /** Load files retrieved by Penumbra into memory as a Blob */
-  getBlob: (
-    data: PenumbraFile[] | PenumbraFile | ReadableStream,
-  ) => Promise<Blob>;
-  /** Get file text (if content is viewable) or URI (if content is not viewable) */
-  getTextOrURI: (
-    data: PenumbraFile[] | PenumbraFile,
-  ) => Promise<PenumbraTextOrURI[] | PenumbraTextOrURI>;
-  /** Zip files retrieved by Penumbra */
-  zip: (
-    data: PenumbraFile[] | PenumbraFile,
-    compressionLevel?: number,
-  ) => Promise<ReadableStream>;
-  /** Configure location of worker threads */
-  setWorkerLocation: (options: WorkerLocationOptions | string) => Promise<void>;
-};
+export type PenumbraAPI = typeof penumbra;
 
 /**
  * Common Penumbra Worker API
