@@ -166,9 +166,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // Download and decrypt and display in table
   penumbra
     .get(...files)
-    .then((pfiles) => pfiles.map(penumbra.getTextOrURI))
-    // // See https://github.com/transcend-io/penumbra/issues/56
-    // .then((pfiles) => penumbra.getTextOrURI(pfiles))
+    .then((pfiles) => penumbra.getTextOrURI(pfiles))
     // .then(insertIntoCell);
     .then(insertIntoCell);
 

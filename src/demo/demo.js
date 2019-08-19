@@ -56,14 +56,17 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
             authTag: 'gadZhS1QozjEmfmHLblzbg==',
           },
         };
-        const test1Text = await penumbra.getTextOrURI(await penumbra.get(NYT));
+        const {
+          type: test1Type,
+          data: test1Text,
+        } = await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
         const test1Hash = await hash(
           'SHA-256',
-          new TextEncoder().encode(test1Text.data),
+          new TextEncoder().encode(test1Text),
         );
         const ref1Hash =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
-        return test1Text.type === 'text' && test1Hash === ref1Hash;
+        return test1Type === 'text' && test1Hash === ref1Hash;
       },
     ],
     [
@@ -199,7 +202,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
           }),
-        );
+        )[0];
         let isURL;
         try {
           // tslint:disable-next-line: no-unused-expression
@@ -230,7 +233,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
           }),
-        );
+        )[0];
         const testImage = new Image();
         return new Promise((resolve) => {
           // 5-second timeout for the image to load

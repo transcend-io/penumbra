@@ -7,7 +7,6 @@ import { RemoteReadableStream } from 'remote-web-streams';
 // Local
 import {
   Compression,
-  PenumbraAPI,
   // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
   PenumbraFile,
@@ -132,7 +131,7 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   }
 
   const file: PenumbraFile = 'stream' in data ? data : data[0];
-  console.warn('TODO: get filename extension');
+  // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
   // Write a single readable stream to file
@@ -185,39 +184,30 @@ async function getBlob(
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)
  *
- * @param data - The data to get the text of
- * @returns The text itself or a URI encoding the image if applicable
+ * @param files - A list of files to get the text of
+ * @returns A list with the text itself or a URI encoding the file if applicable
  */
-async function getTextOrURI(
-  data: PenumbraFile[] | PenumbraFile,
-): Promise<PenumbraTextOrURI[] | PenumbraTextOrURI> {
-  /* eslint-disable no-nested-ternary */
-  // eslint-disable-next-line prettier/prettier
-  const onlyFile = 'length' in data
-    ? (data.length === 1 ? data[0] : false)
-    : data;
-  if (onlyFile) {
-    const { mimetype } = onlyFile;
-    if (isViewableText(mimetype)) {
-      return {
-        type: 'text',
-        data: await new Response(onlyFile.stream).text(),
-        mimetype,
-      };
-    }
-    const url = URL.createObjectURL(await getBlob(onlyFile));
-    const cache = blobCache.get();
-    cache.push(new URL(url));
-    blobCache.set(cache);
-    return { type: 'uri', data: url, mimetype };
-  }
-
-  return Promise.all(
-    (data as PenumbraFile[]).map(async (file) => getTextOrURI(file)),
-  ) as Promise<PenumbraTextOrURI[]>;
+function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
+  return files.map(
+    async (file): Promise<PenumbraTextOrURI> => {
+      const { mimetype } = file;
+      if (isViewableText(mimetype)) {
+        return {
+          type: 'text',
+          data: await new Response(file.stream).text(),
+          mimetype,
+        };
+      }
+      const url = URL.createObjectURL(await getBlob(file));
+      const cache = blobCache.get();
+      cache.push(new URL(url));
+      blobCache.set(cache);
+      return { type: 'uri', data: url, mimetype };
+    },
+  );
 }
 
-const penumbra: PenumbraAPI = {
+const penumbra = {
   get,
   save,
   getBlob,

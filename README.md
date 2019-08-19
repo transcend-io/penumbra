@@ -103,7 +103,7 @@ penumbra.getBlob(data: PenumbraFile[] | PenumbraFile | ReadableStream, type?: st
 Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) (if content is not viewable).
 
 ```ts
-penumbra.getTextOrURI(data: PenumbraFile[] | PenumbraFile): Promise<{ type: 'text'|'uri', data: string, mimetype: string }>
+penumbra.getTextOrURI(data: PenumbraFile[]): Promise<{ type: 'text'|'uri', data: string, mimetype: string }[]>
 ```
 
 ### .zip
@@ -138,9 +138,10 @@ const decryptedText = await penumbra
       authTag: 'gadZhS1QozjEmfmHLblzbg==',
     },
   })
-  .then((file) => penumbra.getTextOrURI(file));
-
-document.getElementById('my-paragraph').innerText = decryptedText;
+  .then((file) => penumbra.getTextOrURI(file)[0])
+  .then(({ data }) => {
+    document.getElementById('my-paragraph').innerText = data;
+  });
 ```
 
 ### Display encrypted image
@@ -157,9 +158,10 @@ const imageSrc = await penumbra
       authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
     },
   })
-  .then((file) => penumbra.getTextOrURI(file));
-
-document.getElementById('my-img').src = imageSrc;
+  .then((file) => penumbra.getTextOrURI(file)[0])
+  .then(({ data }) => {
+    document.getElementById('my-img').src = data;
+  });
 ```
 
 ### Download an encrypted file
