@@ -131,7 +131,7 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
   }
 
   const file: PenumbraFile = 'stream' in data ? data : data[0];
-  console.warn('TODO: get filename extension');
+  // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
   // Write a single readable stream to file
@@ -184,29 +184,27 @@ async function getBlob(
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)
  *
- * @param data - The data to get the text of
- * @returns The text itself or a URI encoding the image if applicable
+ * @param files - A list of files to get the text of
+ * @returns A list with the text itself or a URI encoding the file if applicable
  */
-async function getTextOrURI<TData extends PenumbraFile[] | PenumbraFile>(
-  data: TData,
-): Promise<TData extends any[] ? PenumbraTextOrURI[] : PenumbraTextOrURI> {
-  if (Array.isArray(data)) {
-    return Promise.all(data.map((file) => getTextOrURI(file)));
-  }
-
-  const { mimetype } = data;
-  if (isViewableText(mimetype)) {
-    return {
-      type: 'text',
-      data: await new Response(data.stream).text(),
-      mimetype,
-    };
-  }
-  const url = URL.createObjectURL(await getBlob(data));
-  const cache = blobCache.get();
-  cache.push(new URL(url));
-  blobCache.set(cache);
-  return { type: 'uri', data: url, mimetype };
+function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
+  return files.map(
+    async (file): Promise<PenumbraTextOrURI> => {
+      const { mimetype } = file;
+      if (isViewableText(mimetype)) {
+        return {
+          type: 'text',
+          data: await new Response(file.stream).text(),
+          mimetype,
+        };
+      }
+      const url = URL.createObjectURL(await getBlob(file));
+      const cache = blobCache.get();
+      cache.push(new URL(url));
+      blobCache.set(cache);
+      return { type: 'uri', data: url, mimetype };
+    },
+  );
 }
 
 const penumbra = {
@@ -217,7 +215,5 @@ const penumbra = {
   zip,
   setWorkerLocation,
 };
-
-const test = getTextOrURI({});
 
 export default penumbra;

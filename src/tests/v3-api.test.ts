@@ -92,7 +92,7 @@ const onReady = async (event?: PenumbraReady) => {
   });
 
   test('v3 API: get() decrypt & getTextOrURI()', async (t) => {
-    const decryptedText = (await penumbra.getTextOrURI(
+    const { type, data } = await penumbra.getTextOrURI(
       await penumbra.get({
         url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
         filePrefix: 'NYT',
@@ -103,10 +103,10 @@ const onReady = async (event?: PenumbraReady) => {
           authTag: 'gadZhS1QozjEmfmHLblzbg==',
         },
       }),
-    )) as PenumbraTextOrURI;
-    t.equal(decryptedText.type, 'text');
+    )[0];
+    t.equal(type, 'text');
     t.equal(
-      await hash('SHA-256', new TextEncoder().encode(decryptedText.data)),
+      await hash('SHA-256', new TextEncoder().encode(data)),
       '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5',
       'get() decryption test',
     );
