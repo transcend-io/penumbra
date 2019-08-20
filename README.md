@@ -138,7 +138,7 @@ const decryptedText = await penumbra
       authTag: 'gadZhS1QozjEmfmHLblzbg==',
     },
   })
-  .then((file) => penumbra.getTextOrURI(file)[0])
+  .then((files) => penumbra.getTextOrURI(files)[0])
   .then(({ data }) => {
     document.getElementById('my-paragraph').innerText = data;
   });
@@ -158,7 +158,7 @@ const imageSrc = await penumbra
       authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
     },
   })
-  .then((file) => penumbra.getTextOrURI(file)[0])
+  .then((files) => penumbra.getTextOrURI(files)[0])
   .then(({ data }) => {
     document.getElementById('my-img').src = data;
   });
@@ -178,7 +178,7 @@ penumbra
       authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
     },
   })
-  .then((file) => penumbra.save(file));
+  .then((files) => penumbra.save(files));
 
 // saves africa.jpg file to disk
 ```
