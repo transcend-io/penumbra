@@ -18,6 +18,7 @@ before_install:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
   # Ensure that npm version is 6.4.1
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
+  - npm install -g yarn@1.17.3
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
   - pip3 install setuptools
   - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
@@ -26,8 +27,8 @@ before_install:
 
 # Install top level dependencies
 install:
-  - npm ci && cd example && npm ci && cd ..
-  - npm install -g codecov
+  - yarn && cd example && yarn && cd ..
+  - yarn add global codecov
 
 # the following line is needed to enable the TravisCI build conditions
 conditions: v1

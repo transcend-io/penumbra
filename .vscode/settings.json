@@ -4,6 +4,7 @@
         "buffer",
         "build",
         "camelcase",
+        "codecov",
         "comlink",
         "emfm",
         "eslintcache",
@@ -32,6 +33,7 @@
         "reporter",
         "repos",
         "s",
+        "setuptools",
         "shellcheck",
         "src",
         "streamsaver",
@@ -45,5 +47,6 @@
         "unencrypted",
         "webm",
         "zh"
-    ]
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
