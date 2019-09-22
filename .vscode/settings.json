@@ -45,5 +45,6 @@
         "unencrypted",
         "webm",
         "zh"
-    ]
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

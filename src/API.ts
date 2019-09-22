@@ -75,7 +75,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
         await thread.get(transfer(writablePorts, writablePorts), resources);
       },
     );
-    return readables;
+    return readables as PenumbraFile[];
   }
   let files: PenumbraFile[] = await new DecryptionChannel().then(
     async (thread: PenumbraDecryptionWorkerAPI) => {
