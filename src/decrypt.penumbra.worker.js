@@ -52,10 +52,10 @@ class PenumbraDecryptionWorker {
 
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted),
-   * fully buffers the response, and returns Blob[]
+   * fully buffers the response, and returns ArrayBuffer[]
    *
    * @param resources - The remote resource to download
-   * @returns Blob[] of the deciphered files
+   * @returns ArrayBuffer[] of the deciphered files
    */
   async getBuffers(resources) {
     return Promise.all(
