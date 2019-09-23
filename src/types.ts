@@ -66,7 +66,7 @@ export type ProgressDetails = {
   /** The URL downloading from */
   url: string;
   /** Progress type */
-  type: 'decrypt' | 'zip';
+  type: 'decrypt' | 'encrypt' | 'zip';
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
@@ -148,6 +148,30 @@ export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
    * @returns A readable stream of the deciphered file
    */
   getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
+};
+
+/**
+ * Penumbra Encryption Worker API
+ */
+export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
+  /**
+   * Streaming encryption of ReadableStreams
+   *
+   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
+   * @returns ReadableStream[] of the encrypted files
+   */
+  encrypt: (
+    writablePorts: MessagePort[],
+    readablePorts: MessagePort[],
+  ) => Promise<ReadableStream[]>;
+  /**
+   * Buffered (non-streaming) encryption of ArrayBuffers
+   *
+   * @param buffers - The file buffers to encrypt
+   * @returns ArrayBuffer[] of the encrypted files
+   */
+  encryptBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
 };
 
 /**

@@ -62,7 +62,7 @@ class PenumbraDecryptionWorker {
       resources.map(async (resource) => {
         if (!('url' in resource)) {
           throw new Error(
-            'PenumbraDecryptionWorker.getBlob(): RemoteResource missing URL',
+            'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
           );
         }
         const buffer = await new Response(
