@@ -171,7 +171,7 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
    * @param buffers - The file buffers to encrypt
    * @returns ArrayBuffer[] of the encrypted files
    */
-  encryptBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
+  encryptBuffers: (files: PenumbraFile[]) => Promise<ArrayBuffer[]>;
 };
 
 /**

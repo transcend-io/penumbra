@@ -29,13 +29,15 @@ class PenumbraEncryptionWorker {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
-      console.warn(
-        'Readable ports <-> Writable ports mismatch. Truncating to common subset.',
-      );
       // eslint-disable-next-line no-multi-assign, no-param-reassign
       readablePorts.length = writablePorts.length = Math.min(
         writableCount,
         readableCount,
+      );
+      console.warn(
+        `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
+          '' //
+        }Truncating to common subset (${writablePorts.length}).`,
       );
     }
     readablePorts.forEach(async (resource, i) => {

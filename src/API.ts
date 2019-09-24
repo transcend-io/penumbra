@@ -182,6 +182,18 @@ async function getBlob(
 }
 
 /**
+ * Retrieve and decrypt files
+ *
+ * ```ts
+ * // Load a resource and get a ReadableStream
+ * await penumbra.get(resource);
+ * ```
+ */
+// async function encrypt(...files: PenumbraFile[]): Promise<PenumbraFile[]> {
+//
+// }
+
+/**
  * Get file text (if content is viewable) or URI (if content is not viewable)
  *
  * @param files - A list of files to get the text of
