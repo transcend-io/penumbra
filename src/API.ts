@@ -12,6 +12,7 @@ import {
   PenumbraFile,
   PenumbraTextOrURI,
   RemoteResource,
+  PenumbraEncryptionOptions,
 } from './types';
 import { blobCache, isViewableText } from './utils';
 import { getWorkers, setWorkerLocation } from './workers';
@@ -181,17 +182,18 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
+const defaultEncryptionOptions: PenumbraEncryptionOptions = {};
 /**
- * Retrieve and decrypt files
+ * Encrypt files
  *
  * ```ts
- * // Load a resource and get a ReadableStream
- * await penumbra.get(resource);
+ * await penumbra.encrypt(files[, options]);
  * ```
  */
-// async function encrypt(...files: PenumbraFile[]): Promise<PenumbraFile[]> {
-//
-// }
+async function encrypt(
+  ...files: PenumbraFile[],
+  options?: PenumbraEncryptionOptions = defaultEncryptionOptions,
+): Promise<PenumbraFile[]> {}
 
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)

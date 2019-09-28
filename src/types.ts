@@ -16,6 +16,11 @@ import { penumbra } from './index';
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
+/** penumbra.encrypt() encryption options config */
+export type PenumbraEncryptionOptions = {
+  key: string | Buffer;
+};
+
 /**
  * A file to download from a remote resource, that is optionally encrypted
  */
