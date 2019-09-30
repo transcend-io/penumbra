@@ -1,5 +1,5 @@
 // penumbra
-import { ProgressEmit } from '../types';
+import { ProgressEmit, ProgressType } from '../types';
 
 /**
  * An event emitter for the decryption progress
@@ -9,7 +9,7 @@ import { ProgressEmit } from '../types';
  * @returns
  */
 export default function emitProgress(
-  type: 'decrypt' | 'zip',
+  type: ProgressType,
   totalBytesRead: number,
   contentLength: number,
   url: string,

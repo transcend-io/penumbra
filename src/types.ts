@@ -18,7 +18,8 @@ type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 /** penumbra.encrypt() encryption options config */
 export type PenumbraEncryptionOptions = {
-  key: string | Buffer;
+  /** Encryption key (buffer or base64-encoded string) */
+  key?: string | Buffer;
 };
 
 /**
@@ -64,6 +65,9 @@ export type PenumbraFile = {
   path: string;
 };
 
+/** Progress event types */
+export type ProgressType = 'decrypt' | 'encrypt' | 'zip';
+
 /**
  * Progress event details
  */
@@ -71,7 +75,7 @@ export type ProgressDetails = {
   /** The URL downloading from */
   url: string;
   /** Progress type */
-  type: 'decrypt' | 'encrypt' | 'zip';
+  type: ProgressType;
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
@@ -167,8 +171,9 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
    * @returns ReadableStream[] of the encrypted files
    */
   encrypt: (
-    writablePorts: MessagePort[],
+    options: PenumbraEncryptionOptions,
     readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
   ) => Promise<ReadableStream[]>;
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers

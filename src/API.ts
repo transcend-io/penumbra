@@ -1,18 +1,18 @@
 // Remote
 import { transfer } from 'comlink';
-import { RemoteReadableStream } from 'remote-web-streams';
+import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 
 // Types
 
 // Local
 import {
   Compression,
-  // PenumbraDecryptionWorkerAPI,
   PenumbraDecryptionWorkerAPI,
+  PenumbraEncryptionOptions,
+  PenumbraEncryptionWorkerAPI,
   PenumbraFile,
   PenumbraTextOrURI,
   RemoteResource,
-  PenumbraEncryptionOptions,
 } from './types';
 import { blobCache, isViewableText } from './utils';
 import { getWorkers, setWorkerLocation } from './workers';
@@ -191,9 +191,59 @@ const defaultEncryptionOptions: PenumbraEncryptionOptions = {};
  * ```
  */
 async function encrypt(
-  ...files: PenumbraFile[],
-  options?: PenumbraEncryptionOptions = defaultEncryptionOptions,
-): Promise<PenumbraFile[]> {}
+  options: PenumbraEncryptionOptions = defaultEncryptionOptions,
+  ...files: PenumbraFile[]
+): Promise<PenumbraFile[]> {
+  if (files.length === 0) {
+    throw new Error('penumbra.encrypt() called without arguments');
+  }
+  const workers = await getWorkers();
+  const DecryptionChannel = workers.decrypt.comlink;
+  if ('WritableStream' in self) {
+    // WritableStream constructor supported
+    const remoteReadableStreams = files.map(() => new RemoteReadableStream());
+    const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+    const readables = remoteReadableStreams.map((stream, i) => {
+      const { url } = files[i];
+      resolver.href = url;
+      const path = resolver.pathname; // derive path from URL
+      return {
+        stream: stream.readable,
+        path,
+        // derived path is overridden if PenumbraFile contains path
+        ...files[i],
+      };
+    });
+    const readablePorts = remoteWritableStreams.map(
+      ({ readablePort }) => readablePort,
+    );
+    const writablePorts = remoteReadableStreams.map(
+      ({ writablePort }) => writablePort,
+    );
+    new DecryptionChannel().then(
+      async (thread: PenumbraEncryptionWorkerAPI) => {
+        await thread.encrypt(
+          transfer(readablePorts, readablePorts),
+          transfer(writablePorts, writablePorts),
+          options,
+        );
+      },
+    );
+    return readables as PenumbraFile[];
+  }
+  let encryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
+    async (thread: PenumbraEncryptionWorkerAPI) => {
+      const buffers = await thread.encryptBuffers(files);
+      encryptedFiles = buffers.map((stream, i) => ({
+        stream,
+        path,
+        ...files[i],
+      }));
+      return encryptedFiles;
+    },
+  );
+  return encryptedFiles;
+}
 
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)
