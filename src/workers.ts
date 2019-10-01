@@ -9,6 +9,7 @@ import {
   PenumbraWorkerAPI,
   PenumbraWorkers,
   ProgressEmit,
+  WorkerKind,
   WorkerLocation,
   WorkerLocationOptions,
 } from './types';
@@ -45,6 +46,7 @@ const scriptURL = new URL(scriptElement.src, location.href);
 
 const DEFAULT_WORKERS = {
   decrypt: 'decrypt.penumbra.worker.js',
+  encrypt: 'encrypt.penumbra.worker.js',
   zip: 'zip.penumbra.worker.js',
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
@@ -71,13 +73,14 @@ export function getWorkerLocation(): WorkerLocation {
     ...DEFAULT_WORKERS,
     ...JSON.parse(script.workers || '{}'),
   };
-  const { base, decrypt, zip, StreamSaver } = options;
+  const { base, decrypt, encrypt, zip, StreamSaver } = options;
 
   const context = resolve(base || scriptURL);
 
   return {
     base: context,
     decrypt: new URL(decrypt, context),
+    encrypt: new URL(encrypt, context),
     zip: new URL(zip, context),
     StreamSaver: new URL(StreamSaver, context),
   };
@@ -112,21 +115,33 @@ export async function createPenumbraWorker(
   //   }
   //   default: {
   const worker = new Worker(url /* , { type: 'module' } */);
-  const penumbraWorker: PenumbraWorker = { worker, comlink: wrap(worker) };
+  const penumbraWorker: PenumbraWorker = {
+    worker,
+    comlink: wrap(worker),
+    initialized: false,
+  };
   const Link = penumbraWorker.comlink;
   const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
     await thread.setup(proxy(reDispatchProgressEvent));
   });
   await setup;
+  penumbraWorker.initialized = true;
   return penumbraWorker;
   //   }
   // }
 }
 /** Initializes web worker threads */
-export async function initWorkers(): Promise<void> {
+export async function initWorkers(...workerTypes: WorkerKind[]): Promise<void> {
+  const locations = getWorkerLocation();
+  await Promise.all(
+    workerTypes.map(async (worker) => {
+      workers[worker] = await createPenumbraWorker(locations[worker]);
+    }),
+  );
   if (!initialized) {
-    const { decrypt, zip } = getWorkerLocation();
+    const { decrypt, encrypt, zip } = getWorkerLocation();
     workers.decrypt = await createPenumbraWorker(decrypt);
+    workers.encrypt = await createPenumbraWorker(encrypt);
     workers.zip = await createPenumbraWorker(zip);
     initialized = true;
   }
@@ -137,9 +152,17 @@ export async function initWorkers(): Promise<void> {
  *
  * @returns The list of active worker threads
  */
-export async function getWorkers(): Promise<PenumbraWorkers> {
-  if (!initialized) {
-    await initWorkers();
+export async function getWorkers(
+  ...workerTypes: WorkerKind[]
+): Promise<PenumbraWorkers> {
+  if (
+    // any uninitialized workers?
+    workerTypes.some((workerType) => {
+      const worker = workers[workerType];
+      return !worker || (worker && !worker.initialized);
+    })
+  ) {
+    await initWorkers(...workerTypes);
   }
   return workers as PenumbraWorkers;
 }

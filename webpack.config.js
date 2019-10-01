@@ -1,4 +1,6 @@
-const { join } = require('path');
+const {
+  join
+} = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
 const src = join(__dirname, 'src');
@@ -8,6 +10,7 @@ const config = {
   entry: {
     penumbra: `${src}/index.ts`,
     'decrypt.penumbra.worker': `${src}/decrypt.penumbra.worker.js`,
+    'encrypt.penumbra.worker': `${src}/encrypt.penumbra.worker.js`,
     'zip.penumbra.worker': `${src}/zip.penumbra.worker.js`,
   },
   output: {
@@ -19,11 +22,9 @@ const config = {
   },
   watch: false,
   module: {
-    rules: [
-      {
+    rules: [{
         test: /^.*\.(ts|tsx)?$/,
-        use: [
-          {
+        use: [{
             loader: 'babel-loader',
           },
           {

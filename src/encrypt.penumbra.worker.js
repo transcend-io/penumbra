@@ -9,6 +9,7 @@ import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 // import encrypt from './encrypt';
 import onProgress from './utils/forwardProgress';
 import './transferHandlers/progress';
+import encryptStream from './encrypt';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -25,7 +26,7 @@ class PenumbraEncryptionWorker {
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
-  async encrypt(writablePorts, readablePorts) {
+  async encrypt(readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -40,7 +41,10 @@ class PenumbraEncryptionWorker {
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    readablePorts.forEach(async (resource, i) => {
+    readablePorts.forEach(async (readablePort, i) => {
+      const readable = fromReadablePort(readablePorts[i]);
+      const writable = fromWritablePort(writablePorts[i]);
+      readable.pipeThrough(encryptStream()).pipeTo(writable);
       // if (!('url' in resource)) {
       //   throw new Error(
       //     'PenumbraEncryptionWorker.get(): RemoteResource missing URL',
