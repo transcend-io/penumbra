@@ -10,13 +10,11 @@ import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 // import encrypt from './encrypt';
 import onProgress from './utils/forwardProgress';
 import './transferHandlers/progress';
-import encryptStream from './encrypt';
+import encrypt, { encryptStream } from './encrypt';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
 }
-
-const GENERATED_KEY_RANDOMNESS = 256;
 
 /**
  * Penumbra Encryption Worker class
@@ -30,16 +28,6 @@ class PenumbraEncryptionWorker {
    * @returns ReadableStream[] of the encrypted files
    */
   async encrypt(options, readablePorts, writablePorts) {
-    if (!options || !options.key) {
-      console.log(
-        `penumbra: no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
-      );
-      // eslint-disable-next-line no-param-reassign
-      options = {
-        ...options,
-        key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS)),
-      };
-    }
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -56,9 +44,12 @@ class PenumbraEncryptionWorker {
       );
     }
     readablePorts.forEach(async (readablePort, i) => {
-      const readable = fromReadablePort(readablePorts[i]);
+      const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
-      readable.pipeThrough(encryptStream).pipeTo(writable);
+      const encrypted = await encrypt(options, {
+        stream,
+      });
+      encrypted.pipeTo(writable);
     });
   }
 

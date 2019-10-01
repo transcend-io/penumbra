@@ -196,9 +196,10 @@ view.addEventListener('beforeunload', cleanup);
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
  *   base: '/penumbra-workers/',
- *   decrypt: 'decrypt.js'
- *   zip: 'zip-debug.js' // e.g. manually use a debug worker
- *   StreamSaver: 'StreamSaver.js'
+ *   decrypt: 'decrypt.js',
+ *   encrypt: 'encrypt.js',
+ *   zip: 'zip-debug.js', // e.g. manually use a debug worker
+ *   StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});

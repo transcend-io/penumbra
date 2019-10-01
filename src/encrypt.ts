@@ -107,7 +107,7 @@ export function encryptBuffer(
   return new ArrayBuffer(10);
 }
 
-const GENERATED_KEY_RANDOMNESS = 256;
+const GENERATED_KEY_RANDOMNESS = 32;
 // Minimum IV randomness set by NIST.
 // Should this be 16 to align with 256-bit byte boundaries?
 const IV_RANDOMNESS = 12;
@@ -121,11 +121,10 @@ const IV_RANDOMNESS = 12;
 export default function encrypt(
   options: PenumbraEncryptionOptions,
   file: PenumbraFile,
-  size: number | undefined = file.size,
+  // eslint-disable-next-line no-undef
+  size: number,
 ): PenumbraEncryptedFile {
-  if (!size) {
-    throw new Error('penumbra.encrypt(): Unable to determine file size');
-  }
+  console.log('encrypt options', options);
 
   if (!options || !options.key) {
     console.log(

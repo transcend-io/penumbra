@@ -20,6 +20,8 @@ type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 export type PenumbraEncryptionOptions = {
   /** Encryption key */
   key: string | Buffer;
+  /** File sizes */
+  sizes?: number[];
 };
 
 /** Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt() */

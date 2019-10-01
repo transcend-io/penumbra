@@ -203,6 +203,16 @@ export async function encrypt(
     // WritableStream constructor supported
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+    // eslint-disable-next-line no-param-reassign, no-multi-assign
+    const { sizes } = (options = {
+      sizes:
+        (options && options.sizes) ||
+        (files.map((file) => file.size) as number[]),
+      ...options,
+    });
+    if (sizes.some((size) => typeof size === 'undefined')) {
+      throw new Error('penumbra.encrypt(): Unable to determine file size');
+    }
     const readables = remoteReadableStreams.map((stream, i) => ({
       stream: stream.readable,
       ...files[i],
@@ -226,7 +236,7 @@ export async function encrypt(
         );
       },
     );
-    return readables as PenumbraEncryptedFile[];
+    return writables as PenumbraEncryptedFile[];
   }
   throw new Error(
     "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
