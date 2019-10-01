@@ -44,15 +44,7 @@ class PenumbraEncryptionWorker {
     readablePorts.forEach(async (readablePort, i) => {
       const readable = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
-      readable.pipeThrough(encryptStream()).pipeTo(writable);
-      // if (!('url' in resource)) {
-      //   throw new Error(
-      //     'PenumbraEncryptionWorker.get(): RemoteResource missing URL',
-      //   );
-      // }
-      // const remoteStream = fromWritablePort(writablePorts[i]);
-      // const localStream = await fetchAndDecrypt(resource);
-      // localStream.pipeTo(remoteStream);
+      readable.pipeThrough(encryptStream).pipeTo(writable);
     });
   }
 

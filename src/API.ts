@@ -275,6 +275,7 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 
 const penumbra = {
   get,
+  encrypt,
   save,
   getBlob,
   getTextOrURI,
