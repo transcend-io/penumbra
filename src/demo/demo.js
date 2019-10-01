@@ -34,13 +34,11 @@ function timeout(callback, delay) {
 }
 
 /** Penumbra has loaded */
-const onReady = async ({
-  detail: {
-    penumbra
-  }
-} = {
-  detail: view,
-}, ) => {
+const onReady = async (
+  { detail: { penumbra } } = {
+    detail: view,
+  },
+) => {
   tests.push(
     [
       'penumbra.get() and penumbra.getTextOrURI() test',
@@ -90,11 +88,7 @@ const onReady = async ({
         let initFinished = false;
         let progressStarted = false;
         let lastPercent;
-        const onprogress = ({
-          detail: {
-            percent
-          }
-        }) => {
+        const onprogress = ({ detail: { percent } }) => {
           if (!Number.isNaN(percent)) {
             if (percent === 100) {
               // Resource is already loaded
@@ -126,9 +120,7 @@ const onReady = async ({
           lastPercent = percent;
         };
         view.addEventListener(progressEventName, onprogress);
-        const [{
-          stream
-        }] = await penumbra.get({
+        const [{ stream }] = await penumbra.get({
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
           filePrefix: 'k',
           mimetype: 'video/webm',
@@ -145,30 +137,33 @@ const onReady = async ({
     [
       'penumbra.get() with multiple resources',
       async () => {
-        const resources = await penumbra.get({
-          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-          filePrefix: 'NYT',
-          mimetype: 'text/plain',
-          decryptionOptions: {
-            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-            iv: '6lNU+2vxJw6SFgse',
-            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+        const resources = await penumbra.get(
+          {
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+            filePrefix: 'NYT',
+            mimetype: 'text/plain',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'gadZhS1QozjEmfmHLblzbg==',
+            },
           },
-        }, {
-          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-          filePrefix: 'tortoise',
-          mimetype: 'image/jpeg',
-          decryptionOptions: {
-            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-            iv: '6lNU+2vxJw6SFgse',
-            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+          {
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            filePrefix: 'tortoise',
+            mimetype: 'image/jpeg',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+            },
           },
-        }, );
+        );
         const hashes = await Promise.all(
-          resources.map(async ({
-              stream
-            }) =>
-            hash('SHA-256', await new Response(stream).arrayBuffer()), ),
+          resources.map(async ({ stream }) =>
+            hash('SHA-256', await new Response(stream).arrayBuffer()),
+          ),
         );
         const referenceHash1 =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
@@ -180,9 +175,7 @@ const onReady = async ({
     [
       'penumbra.get() images (as ReadableStream)',
       async () => {
-        const [{
-          stream
-        }] = await penumbra.get({
+        const [{ stream }] = await penumbra.get({
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
           filePrefix: 'tortoise',
           mimetype: 'image/jpeg',
@@ -203,12 +196,10 @@ const onReady = async ({
     [
       'penumbra.getTextOrURI(): images (as URL)',
       async () => {
-        const {
-          type,
-          data: url
-        } = await penumbra.getTextOrURI(
+        const { type, data: url } = await penumbra.getTextOrURI(
           await penumbra.get({
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -236,11 +227,10 @@ const onReady = async ({
     [
       'penumbra.getTextOrURI(): including image in document',
       async () => {
-        const {
-          data: url
-        } = await penumbra.getTextOrURI(
+        const { data: url } = await penumbra.getTextOrURI(
           await penumbra.get({
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -277,7 +267,8 @@ const onReady = async ({
       async () => {
         const blob = await penumbra.getBlob(
           await penumbra.get({
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
