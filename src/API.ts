@@ -55,7 +55,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     throw new Error('penumbra.get() called without arguments');
   }
   const workers = await getWorkers('decrypt');
-  const EncryptionChannel = workers.encrypt.comlink;
+  const EncryptionChannel = workers.decrypt.comlink;
   if ('WritableStream' in self) {
     // WritableStream constructor supported
     const remoteStreams = resources.map(() => new RemoteReadableStream());
@@ -197,7 +197,7 @@ export async function encrypt(
     throw new Error('penumbra.encrypt() called without arguments');
   }
   const workers = await getWorkers('encrypt');
-  const DecryptionChannel = workers.decrypt.comlink;
+  const DecryptionChannel = workers.encrypt.comlink;
   if ('WritableStream' in self) {
     // WritableStream constructor supported
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());

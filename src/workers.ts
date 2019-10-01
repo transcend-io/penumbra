@@ -35,7 +35,7 @@ if (!scriptElement) {
 
 const script = scriptElement.dataset;
 
-let initialized = false;
+const initialized = false;
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -138,13 +138,6 @@ export async function initWorkers(...workerTypes: WorkerKind[]): Promise<void> {
       workers[worker] = await createPenumbraWorker(locations[worker]);
     }),
   );
-  if (!initialized) {
-    const { decrypt, encrypt, zip } = getWorkerLocation();
-    workers.decrypt = await createPenumbraWorker(decrypt);
-    workers.encrypt = await createPenumbraWorker(encrypt);
-    workers.zip = await createPenumbraWorker(zip);
-    initialized = true;
-  }
 }
 
 /**
@@ -167,26 +160,27 @@ export async function getWorkers(
   return workers as PenumbraWorkers;
 }
 
+/** Returns all active Penumbra Workers */
+async function getActiveWorkers(): Promise<PenumbraWorker[]> {
+  const initializedWorkers = await getWorkers();
+  return getKeys(initializedWorkers)
+    .filter(
+      (worker) =>
+        initializedWorkers[worker] &&
+        (initializedWorkers[worker] as PenumbraWorker).initialized,
+    )
+    .map((worker) => initializedWorkers[worker] as PenumbraWorker);
+}
+
 /**
  * Terminate Penumbra Worker and de-allocate their resources
  */
 async function cleanup(): Promise<void> {
-  if (initialized) {
-    const initializedWorkers = await getWorkers();
-    const threads = getKeys(initializedWorkers);
-    threads.forEach((thread) => {
-      const workerInstance = initializedWorkers[thread];
-      if (
-        workerInstance &&
-        workerInstance.worker &&
-        workerInstance.worker instanceof Worker
-      ) {
-        workerInstance.worker.terminate();
-      }
-      delete initializedWorkers[thread];
-    });
-  }
-  initialized = false;
+  (await getActiveWorkers()).forEach((thread) => {
+    thread.worker.terminate();
+    // eslint-disable-next-line no-param-reassign
+    thread.initialized = false;
+  });
 }
 
 view.addEventListener('beforeunload', cleanup);

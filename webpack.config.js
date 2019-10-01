@@ -1,6 +1,4 @@
-const {
-  join
-} = require('path');
+const { join } = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
 const src = join(__dirname, 'src');
@@ -22,9 +20,11 @@ const config = {
   },
   watch: false,
   module: {
-    rules: [{
+    rules: [
+      {
         test: /^.*\.(ts|tsx)?$/,
-        use: [{
+        use: [
+          {
             loader: 'babel-loader',
           },
           {
