@@ -187,7 +187,7 @@ async function getBlob(
  * Encrypt files
  *
  * ```ts
- * await penumbra.encrypt(files[, options]);
+ * await penumbra.encrypt(options, ...files);
  * ```
  */
 export async function encrypt(
