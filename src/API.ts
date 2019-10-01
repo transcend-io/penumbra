@@ -8,6 +8,7 @@ import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import {
   Compression,
   PenumbraDecryptionWorkerAPI,
+  PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraEncryptionWorkerAPI,
   PenumbraFile,
@@ -55,7 +56,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     throw new Error('penumbra.get() called without arguments');
   }
   const workers = await getWorkers('decrypt');
-  const EncryptionChannel = workers.decrypt.comlink;
+  const DecryptionChannel = workers.decrypt.comlink;
   if ('WritableStream' in self) {
     // WritableStream constructor supported
     const remoteStreams = resources.map(() => new RemoteReadableStream());
@@ -71,14 +72,14 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new EncryptionChannel().then(
+    new DecryptionChannel().then(
       async (thread: PenumbraDecryptionWorkerAPI) => {
         await thread.get(transfer(writablePorts, writablePorts), resources);
       },
     );
     return readables as PenumbraFile[];
   }
-  let files: PenumbraFile[] = await new EncryptionChannel().then(
+  let files: PenumbraFile[] = await new DecryptionChannel().then(
     async (thread: PenumbraDecryptionWorkerAPI) => {
       const buffers = await thread.getBuffers(resources);
       files = buffers.map((stream, i) => {
@@ -192,12 +193,12 @@ async function getBlob(
 export async function encrypt(
   options: PenumbraEncryptionOptions,
   ...files: PenumbraFile[]
-): Promise<PenumbraFile[]> {
+): Promise<PenumbraEncryptedFile[]> {
   if (files.length === 0) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
   const workers = await getWorkers('encrypt');
-  const DecryptionChannel = workers.encrypt.comlink;
+  const EncryptionChannel = workers.encrypt.comlink;
   if ('WritableStream' in self) {
     // WritableStream constructor supported
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
@@ -216,7 +217,7 @@ export async function encrypt(
     const writablePorts = remoteReadableStreams.map(
       ({ writablePort }) => writablePort,
     );
-    new DecryptionChannel().then(
+    new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
         await thread.encrypt(
           options,
@@ -225,19 +226,25 @@ export async function encrypt(
         );
       },
     );
-    return readables as PenumbraFile[];
+    return readables as PenumbraEncryptedFile[];
   }
-  let encryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
+  throw new Error(
+    "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
+  );
+  /*
+  let encryptedFiles: PenumbraEncryptedFile[] = await new EncryptionChannel().then(
     async (thread: PenumbraEncryptionWorkerAPI) => {
-      const buffers = await thread.encryptBuffers(files);
+      const buffers = await thread.encryptBuffers(options, files);
       encryptedFiles = buffers.map((stream, i) => ({
         stream,
+        ...options,
         ...files[i],
       }));
       return encryptedFiles;
     },
   );
   return encryptedFiles;
+  */
 }
 
 /**
