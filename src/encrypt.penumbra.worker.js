@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
 
 // external modules
@@ -15,6 +16,8 @@ if (self.document) {
   throw new Error('Worker thread should not be included in document');
 }
 
+const GENERATED_KEY_RANDOMNESS = 256;
+
 /**
  * Penumbra Encryption Worker class
  */
@@ -26,7 +29,17 @@ class PenumbraEncryptionWorker {
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
-  async encrypt(readablePorts, writablePorts) {
+  async encrypt(options, readablePorts, writablePorts) {
+    if (!options || !options.key) {
+      console.log(
+        `penumbra: no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+      );
+      // eslint-disable-next-line no-param-reassign
+      options = {
+        ...options,
+        key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS)),
+      };
+    }
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -34,6 +47,7 @@ class PenumbraEncryptionWorker {
       readablePorts.length = writablePorts.length = Math.min(
         writableCount,
         readableCount,
+        ``,
       );
       console.warn(
         `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${

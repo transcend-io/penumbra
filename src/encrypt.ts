@@ -5,7 +5,6 @@ import { createCipheriv } from 'crypto-browserify';
 import { Cipher } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
 import {
-  PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFile,
@@ -108,6 +107,7 @@ export function encryptBuffer(
   return new ArrayBuffer(10);
 }
 
+const GENERATED_KEY_RANDOMNESS = 256;
 // Minimum IV randomness set by NIST.
 // Should this be 16 to align with 256-bit byte boundaries?
 const IV_RANDOMNESS = 12;
@@ -119,26 +119,35 @@ const IV_RANDOMNESS = 12;
  * @returns A readable stream of the deciphered file
  */
 export default function encrypt(
+  options: PenumbraEncryptionOptions,
   file: PenumbraFile,
-  encryptionOptions: PenumbraEncryptionOptions,
   size: number | undefined = file.size,
 ): PenumbraEncryptedFile {
   if (!size) {
-    throw new Error('Unable to determine file size for encryption');
+    throw new Error('penumbra.encrypt(): Unable to determine file size');
+  }
+
+  if (!options || !options.key) {
+    console.log(
+      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+    );
+    // eslint-disable-next-line no-param-reassign
+    options = {
+      ...options,
+      key: Buffer.from(
+        crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS)),
+      ),
+    };
   }
 
   // Convert to Buffers
-  const key = toBuff(encryptionOptions.key);
+  const key = toBuff(options.key);
   const iv = Buffer.from(crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)));
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
   const authTag = cipher.getAuthTag();
-  const decryptionInfo = {
-    key,
-    iv,
-    authTag,
-  };
+  const decryptionInfo = { key, iv, authTag };
 
   // Encrypt the stream
   return {
