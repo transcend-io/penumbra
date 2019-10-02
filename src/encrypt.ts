@@ -1,5 +1,6 @@
 // external modules
 import { createCipheriv } from 'crypto-browserify';
+import intoStream from 'into-stream';
 
 // local
 import { Cipher } from 'crypto';
@@ -107,7 +108,7 @@ export function encryptBuffer(
   return new ArrayBuffer(10);
 }
 
-const GENERATED_KEY_RANDOMNESS = 32;
+const GENERATED_KEY_RANDOMNESS = 256;
 // Minimum IV randomness set by NIST.
 // Should this be 16 to align with 256-bit byte boundaries?
 const IV_RANDOMNESS = 12;
@@ -118,12 +119,12 @@ const IV_RANDOMNESS = 12;
  * @param file - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export default function encrypt(
+export default async function encrypt(
   options: PenumbraEncryptionOptions,
   file: PenumbraFile,
   // eslint-disable-next-line no-undef
   size: number,
-): PenumbraEncryptedFile {
+): Promise<PenumbraEncryptedFile> {
   console.log('encrypt options', options);
 
   if (!options || !options.key) {
@@ -134,7 +135,7 @@ export default function encrypt(
     options = {
       ...options,
       key: Buffer.from(
-        crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS)),
+        crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
       ),
     };
   }
@@ -145,16 +146,29 @@ export default function encrypt(
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
-  const authTag = cipher.getAuthTag();
-  const decryptionInfo = { key, iv, authTag };
+  const decryptionInfo = {
+    key,
+    iv,
+    /** authTag getter */
+    get authTag() {
+      return cipher.getAuthTag();
+    },
+  };
 
   // Encrypt the stream
   return {
-    stream:
-      file.stream instanceof ReadableStream
-        ? encryptStream(file.stream, cipher, size)
-        : encryptBuffer(file.stream, cipher),
-    decryptionInfo,
     ...file,
+    // stream:
+    //   file.stream instanceof ReadableStream
+    //     ? encryptStream(file.stream, cipher, size)
+    //     : encryptBuffer(file.stream, cipher),
+    stream: encryptStream(
+      file.stream instanceof ReadableStream
+        ? file.stream
+        : ((intoStream(file.stream) as unknown) as ReadableStream),
+      cipher,
+      size,
+    ),
+    decryptionInfo,
   };
 }

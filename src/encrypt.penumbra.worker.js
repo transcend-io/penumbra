@@ -4,13 +4,16 @@
 // external modules
 import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
-import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
+import {
+  fromWritablePort,
+  fromReadablePort
+} from 'remote-web-streams';
 
 // local
 // import encrypt from './encrypt';
 import onProgress from './utils/forwardProgress';
 import './transferHandlers/progress';
-import encrypt, { encryptStream } from './encrypt';
+import encrypt from './encrypt';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -46,10 +49,10 @@ class PenumbraEncryptionWorker {
     readablePorts.forEach(async (readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
-      const encrypted = await encrypt(options, {
+      const encrypted = encrypt(options, {
         stream,
       });
-      encrypted.pipeTo(writable);
+      encrypted.stream.pipeTo(writable);
     });
   }
 
