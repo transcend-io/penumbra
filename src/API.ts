@@ -7,6 +7,7 @@ import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 // Local
 import {
   Compression,
+  PenumbraDecryptionInfo,
   PenumbraDecryptionWorkerAPI,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
@@ -188,7 +189,11 @@ async function getBlob(
  *
  * ```ts
  * await penumbra.encrypt(options, ...files);
- * ```
+ * // usage example:
+ * size = 32;
+ * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
+ * file = await penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
+ * encryptedData = new Uint8Array(await new Response(file[0].stream).arrayBuffer());
  */
 export async function encrypt(
   options: PenumbraEncryptionOptions,
@@ -213,30 +218,35 @@ export async function encrypt(
     if (sizes.some((size) => typeof size === 'undefined')) {
       throw new Error('penumbra.encrypt(): Unable to determine file size');
     }
-    const readables = remoteReadableStreams.map((stream, i) => ({
-      stream: stream.readable,
-      ...files[i],
-    }));
-    const writables = remoteWritableStreams.map((stream, i) => ({
-      stream: stream.writable,
-      ...files[i],
-    }));
+    // const readables = remoteReadableStreams.map((stream, i) => ({
+    //   stream: stream.readable,
+    //   ...files[i],
+    // }));
     const readablePorts = remoteWritableStreams.map(
       ({ readablePort }) => readablePort,
     );
     const writablePorts = remoteReadableStreams.map(
       ({ writablePort }) => writablePort,
     );
+    let decryptionInfo: PenumbraDecryptionInfo[];
     new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
-        await thread.encrypt(
+        decryptionInfo = await thread.encrypt(
           options,
           transfer(readablePorts, readablePorts),
           transfer(writablePorts, writablePorts),
         );
       },
     );
-    return writables as PenumbraEncryptedFile[];
+    const writables: PenumbraEncryptedFile[] = remoteWritableStreams.map(
+      (stream, i) => ({
+        ...files[i],
+        stream: stream.writable,
+        size: sizes[i],
+        decryptionInfo: decryptionInfo[i],
+      }),
+    );
+    return writables;
   }
   throw new Error(
     "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",

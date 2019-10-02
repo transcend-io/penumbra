@@ -47,9 +47,9 @@ export type PenumbraFile = {
 };
 
 /** penumbra.encrypt() output file */
-export type PenumbraEncryptedFile = PenumbraFile & {
+export type PenumbraEncryptedFile = Omit<PenumbraFile, 'stream'> & {
   /** Encrypted output stream (or ArrayBuffer) */
-  stream: ReadableStream | ArrayBuffer;
+  stream: ReadableStream | WritableStream | ArrayBuffer;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
 };
@@ -197,7 +197,7 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
     options: PenumbraEncryptionOptions,
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) => Promise<ReadableStream[]>;
+  ) => Promise<PenumbraDecryptionInfo[]>;
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers
    *
