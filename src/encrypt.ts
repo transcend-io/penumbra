@@ -1,6 +1,5 @@
 // external modules
 import { createCipheriv } from 'crypto-browserify';
-import intoStream from 'into-stream';
 
 // local
 import { Cipher } from 'crypto';
@@ -119,12 +118,12 @@ const IV_RANDOMNESS = 12;
  * @param file - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export default async function encrypt(
+export default function encrypt(
   options: PenumbraEncryptionOptions,
   file: PenumbraFile,
   // eslint-disable-next-line no-undef
   size: number,
-): Promise<PenumbraEncryptedFile> {
+): PenumbraEncryptedFile {
   console.log('encrypt options', options);
 
   if (!options || !options.key) {
@@ -162,13 +161,7 @@ export default async function encrypt(
     //   file.stream instanceof ReadableStream
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(
-      file.stream instanceof ReadableStream
-        ? file.stream
-        : ((intoStream(file.stream) as unknown) as ReadableStream),
-      cipher,
-      size,
-    ),
+    stream: encryptStream(file.stream as ReadableStream, cipher, size),
     decryptionInfo,
   };
 }

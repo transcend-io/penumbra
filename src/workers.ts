@@ -97,23 +97,6 @@ const workers: Partial<PenumbraWorkers> = {};
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
-  // Use string literals to provide default worker URL hints to webpack
-  // switch (String(url)) {
-  //   case DEFAULT_WORKERS.decrypt: {
-  //     const worker = new Worker('decrypt.penumbra.worker.js', {
-  //       type: 'module',
-  //     });
-  //     return { worker, comlink: Comlink.wrap(worker) };
-  //   }
-  //   case DEFAULT_WORKERS.zip: {
-  //     const worker = new Worker('zip.penumbra.worker.js', { type: 'module' });
-  //     return { worker, comlink: Comlink.wrap(worker) };
-  //   }
-  //   case DEFAULT_WORKERS.StreamSaver: {
-  //     const worker = new Worker('./streamsaver.penumbra.serviceworker.js', { type: 'module' });
-  //     return { worker, comlink: Comlink.wrap(worker) };
-  //   }
-  //   default: {
   const worker = new Worker(url /* , { type: 'module' } */);
   const penumbraWorker: PenumbraWorker = {
     worker,
@@ -127,8 +110,6 @@ export async function createPenumbraWorker(
   await setup;
   penumbraWorker.initialized = true;
   return penumbraWorker;
-  //   }
-  // }
 }
 /** Initializes web worker threads */
 export async function initWorkers(...workerTypes: WorkerKind[]): Promise<void> {

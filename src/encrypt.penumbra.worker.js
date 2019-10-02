@@ -4,13 +4,11 @@
 // external modules
 import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
-import {
-  fromWritablePort,
-  fromReadablePort
-} from 'remote-web-streams';
+import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
 // local
 // import encrypt from './encrypt';
+import { toWebReadableStream } from 'web-streams-node';
 import onProgress from './utils/forwardProgress';
 import './transferHandlers/progress';
 import encrypt from './encrypt';
@@ -52,7 +50,10 @@ class PenumbraEncryptionWorker {
       const encrypted = encrypt(options, {
         stream,
       });
-      encrypted.stream.pipeTo(writable);
+      const isRS = encrypted.stream instanceof ReadableStream;
+      (isRS ? encrypted.stream : toWebReadableStream(encrypted.stream)).pipeTo(
+        writable,
+      );
     });
   }
 
