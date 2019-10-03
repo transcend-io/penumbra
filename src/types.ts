@@ -58,8 +58,6 @@ export type PenumbraFileWithID = PenumbraFile & {
 export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | WritableStream | ArrayBuffer;
-  /** Decryption config ID */
-  id: number;
 };
 
 /**

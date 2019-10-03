@@ -263,10 +263,6 @@ export async function encrypt(
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = encryptionJobID++));
     });
-    // const readables = remoteReadableStreams.map((stream, i) => ({
-    //   stream: stream.readable,
-    //   ...files[i],
-    // }));
     const readablePorts = remoteWritableStreams.map(
       ({ readablePort }) => readablePort,
     );
@@ -283,23 +279,22 @@ export async function encrypt(
         );
       },
     );
-    const writables: Promise<PenumbraEncryptedFile[]> = Promise.all(
-      remoteWritableStreams.map(async (stream, i) => {
-        // eslint-disable-next-line no-plusplus
-        (files[i].stream instanceof ReadableStream
-          ? files[i].stream
-          : toWebReadableStream(files[i].stream)
-        ).pipeTo(stream.writable);
-        const file = files[i];
-        return {
-          ...file,
-          stream: stream.writable,
-          size: sizes[i],
-          id: file.id as number,
-        };
+    remoteWritableStreams.forEach((remoteWritableStream, i) => {
+      // eslint-disable-next-line no-plusplus
+      (files[i].stream instanceof ReadableStream
+        ? files[i].stream
+        : toWebReadableStream(files[i].stream)
+      ).pipeTo(remoteWritableStream.writable);
+    });
+    const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+      (stream, i): PenumbraEncryptedFile => ({
+        ...files[i],
+        stream: stream.readable as ReadableStream,
+        size: sizes[i],
+        id: ids[i],
       }),
     );
-    return writables;
+    return readables;
   }
   throw new Error(
     "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
