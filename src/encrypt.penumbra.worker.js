@@ -4,18 +4,13 @@
 // external modules
 import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
-import {
-  fromWritablePort,
-  fromReadablePort
-} from 'remote-web-streams';
+import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
 // local
 // import encrypt from './encrypt';
-import {
-  toWebReadableStream
-} from 'web-streams-node';
-import onProgress from './utils/forwardProgress';
-import './transferHandlers/progress';
+import { toWebReadableStream } from 'web-streams-node';
+import onPenumbraEvent from './utils/forwardEvents';
+import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 
 if (self.document) {
@@ -56,10 +51,10 @@ class PenumbraEncryptionWorker {
       const encrypted = encrypt(options, {
         stream,
       });
-      const isRS = encrypted.stream instanceof ReadableStream;
-      (isRS ? encrypted.stream : toWebReadableStream(encrypted.stream)).pipeTo(
-        writable,
-      );
+      (encrypted.stream instanceof ReadableStream
+        ? encrypted.stream
+        : toWebReadableStream(encrypted.stream)
+      ).pipeTo(writable);
       decryptionInfo.push(encrypted.decryptionInfo);
     });
     return decryptionInfo;
@@ -79,7 +74,7 @@ class PenumbraEncryptionWorker {
    * Forward progress events to main thread
    */
   async setup(handler) {
-    onProgress.handler = handler;
+    onPenumbraEvent.handler = handler;
   }
 }
 

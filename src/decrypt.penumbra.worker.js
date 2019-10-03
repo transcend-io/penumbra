@@ -8,7 +8,7 @@ import { fromWritablePort } from 'remote-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
-import onProgress from './utils/forwardProgress';
+import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/progress';
 
 if (self.document) {
@@ -80,7 +80,7 @@ class PenumbraDecryptionWorker {
    * Forward progress events to main thread
    */
   async setup(handler) {
-    onProgress.handler = handler;
+    onPenumbraEvent.handler = handler;
   }
 }
 

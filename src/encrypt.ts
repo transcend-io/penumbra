@@ -5,6 +5,8 @@ import { createCipheriv } from 'crypto-browserify';
 import { Cipher } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
 import {
+  EncryptionCompletionEmit,
+  PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFile,
@@ -12,6 +14,7 @@ import {
 
 // utils
 import { emitProgress, toBuff } from './utils';
+import emitEncryptionCompletion from './utils/emitEncryptionCompletion';
 
 /* tslint:disable completed-docs */
 
@@ -27,6 +30,7 @@ import { emitProgress, toBuff } from './utils';
  * @returns A readable stream of decrypted data
  */
 export function encryptStream(
+  jobID: number,
   rs: ReadableStream,
   cipher: Cipher,
   contentLength: number,
@@ -53,6 +57,10 @@ export function encryptStream(
             contentLength,
             '[encrypted file]',
           );
+
+          if (totalBytesRead >= contentLength) {
+            emitEncryptionCompletion(jobID);
+          }
         },
       }),
     );
@@ -112,6 +120,8 @@ const GENERATED_KEY_RANDOMNESS = 256;
 // Should this be 16 to align with 256-bit byte boundaries?
 const IV_RANDOMNESS = 12;
 
+let encryptionJobID = 0;
+
 /**
  * Encrypts a file and returns a ReadableStream
  *
@@ -145,14 +155,28 @@ export default function encrypt(
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
-  const decryptionInfo = {
-    key,
-    iv,
-    /** authTag getter */
-    get authTag() {
-      return cipher.getAuthTag();
+  // eslint-disable-next-line no-plusplus
+  const jobID = encryptionJobID++;
+  const encryptionCompleteEvent = 'penumbra-encryption-complete';
+  const decryptionInfo: Promise<PenumbraDecryptionInfo> = new Promise(
+    (resolve) => {
+      const onEncryptionComplete = ({
+        /** event details */
+        detail: {
+          /** event encryption job ID */
+          id,
+        },
+      }: EncryptionCompletionEmit): void => {
+        if (id === jobID) {
+          const authTag = cipher.getAuthTag();
+          resolve({ key, iv, authTag });
+          removeEventListener(encryptionCompleteEvent, onEncryptionComplete);
+        }
+      };
+      addEventListener(encryptionCompleteEvent, onEncryptionComplete);
     },
-  };
+  );
+  // { key, iv, authTag };
 
   // Encrypt the stream
   return {
@@ -161,7 +185,7 @@ export default function encrypt(
     //   file.stream instanceof ReadableStream
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(file.stream as ReadableStream, cipher, size),
+    stream: encryptStream(jobID, file.stream as ReadableStream, cipher, size),
     decryptionInfo,
   };
 }

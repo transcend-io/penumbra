@@ -202,6 +202,9 @@ export async function encrypt(
   if (files.length === 0) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
+  if (files.some((file, i) => file.stream instanceof ArrayBuffer)) {
+    throw new Error('penumbra.encrypt() only supports ReadableStreams');
+  }
   const workers = await getWorkers('encrypt');
   const EncryptionChannel = workers.encrypt.comlink;
   if ('WritableStream' in self) {
@@ -229,7 +232,7 @@ export async function encrypt(
       ({ writablePort }) => writablePort,
     );
     let decryptionInfo: PenumbraDecryptionInfo[];
-    new EncryptionChannel().then(
+    await new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
         decryptionInfo = await thread.encrypt(
           options,
@@ -238,12 +241,16 @@ export async function encrypt(
         );
       },
     );
-    const writables: PenumbraEncryptedFile[] = remoteWritableStreams.map(
-      (stream, i) => ({
-        ...files[i],
-        stream: stream.writable,
-        size: sizes[i],
-        decryptionInfo: decryptionInfo[i],
+    const writables: PenumbraEncryptedFile[] = await Promise.all(
+      remoteWritableStreams.map(async (stream, i) => {
+        // test
+        await (files[i].stream as ReadableStream).pipeTo(stream.writable);
+        return {
+          ...files[i],
+          stream: stream.writable,
+          size: sizes[i],
+          decryptionInfo: decryptionInfo[i],
+        };
       }),
     );
     return writables;

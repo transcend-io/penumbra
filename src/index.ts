@@ -8,7 +8,7 @@
 
 // exports
 import penumbra from './API';
-import './transferHandlers/progress';
+import './transferHandlers/penumbra-events';
 import { PenumbraAPI } from './types';
 
 export * from './types';

@@ -48,10 +48,10 @@ export type PenumbraFile = {
 
 /** penumbra.encrypt() output file */
 export type PenumbraEncryptedFile = Omit<PenumbraFile, 'stream'> & {
-  /** Encrypted output stream (or ArrayBuffer) */
+  /** Encrypted output stream */
   stream: ReadableStream | WritableStream | ArrayBuffer;
   /** Decryption config info */
-  decryptionInfo: PenumbraDecryptionInfo;
+  decryptionInfo: Promise<PenumbraDecryptionInfo>;
 };
 
 /**
@@ -111,6 +111,19 @@ export type ProgressDetails = {
  * The type that is emitted as progress continues
  */
 export type ProgressEmit = CustomEvent<ProgressDetails>;
+
+/**
+ * Encryption completetion event details
+ */
+export type EncryptionCompletion = {
+  /** Encryption job ID */
+  id: number;
+};
+
+/**
+ * The type that is emitted as progress continues
+ */
+export type EncryptionCompletionEmit = CustomEvent<EncryptionCompletion>;
 
 /**
  * The type that is emitted when penumbra is ready
@@ -286,7 +299,7 @@ export type PenumbraWorkers = {
 };
 
 /** Worker->main thread progress forwarder */
-export type ProgressForwarder = {
+export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
-  handler?: (event: ProgressEmit) => Promise<void>;
+  handler?: (event: Event) => Promise<void>;
 };
