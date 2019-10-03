@@ -38,6 +38,8 @@ export function encryptStream(
   key: Buffer,
   iv: Buffer,
 ): ReadableStream {
+  console.log('job id', jobID);
+  console.log('content length', contentLength);
   const stream: ReadableStream =
     rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
   let totalBytesRead = 0;
@@ -153,6 +155,8 @@ export default function encrypt(
   }
 
   const { id } = file;
+  // eslint-disable-next-line no-param-reassign
+  size = file.size || size;
 
   // Convert to Buffers
   const key = toBuff(options.key);

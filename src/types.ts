@@ -20,8 +20,6 @@ type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 export type PenumbraEncryptionOptions = {
   /** Encryption key */
   key: string | Buffer;
-  /** File sizes */
-  sizes?: number[];
 };
 
 /** Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt() */
@@ -211,6 +209,7 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
    * Streaming encryption of ReadableStreams
    *
    * @param ids - Unique identifier for tracking encryption completion
+   * @param sizes - Size of each file to encrypt (in bytes)
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
@@ -218,6 +217,7 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
   encrypt: (
     options: PenumbraEncryptionOptions,
     ids: number[],
+    sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
   ) => Promise<PenumbraDecryptionInfo[]>;

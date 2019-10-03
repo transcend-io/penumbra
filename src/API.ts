@@ -243,25 +243,17 @@ export async function encrypt(
     // WritableStream constructor supported
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
-    // eslint-disable-next-line no-param-reassign, no-multi-assign
-    const { sizes } = (options = {
-      sizes:
-        (options && options.sizes) ||
-        (files.map((file) => {
-          if ('size' in file) {
-            return file.size;
-          }
-          if ('byteLength' in file.stream) {
-            return (file.stream as ArrayBuffer).byteLength;
-          }
-          throw new Error('penumbra.encrypt(): Unable to determine file size');
-        }) as number[]),
-      ...options,
-    });
     const ids: number[] = [];
+    const sizes: number[] = [];
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = encryptionJobID++));
+      const { size } = file;
+      if (size) {
+        sizes.push(size);
+      } else {
+        throw new Error('penumbra.encrypt(): Unable to determine file size');
+      }
     });
     const readablePorts = remoteWritableStreams.map(
       ({ readablePort }) => readablePort,
@@ -274,6 +266,7 @@ export async function encrypt(
         /* await */ thread.encrypt(
           options,
           ids,
+          sizes,
           transfer(readablePorts, readablePorts),
           transfer(writablePorts, writablePorts),
         );

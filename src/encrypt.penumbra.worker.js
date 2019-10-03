@@ -28,7 +28,7 @@ class PenumbraEncryptionWorker {
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
-  async encrypt(options, ids, readablePorts, writablePorts) {
+  async encrypt(options, ids, sizes, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -49,8 +49,10 @@ class PenumbraEncryptionWorker {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
       const id = ids[i];
+      const size = sizes[i];
       const encrypted = encrypt(options, {
         stream,
+        size,
         id,
       });
       encrypted.stream.pipeTo(writable);
