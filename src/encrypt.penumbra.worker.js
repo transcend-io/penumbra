@@ -48,14 +48,14 @@ class PenumbraEncryptionWorker {
     readablePorts.forEach(async (readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
-      const encrypted = encrypt(options, {
+      const encrypted = await encrypt(options, {
         stream,
       });
       (encrypted.stream instanceof ReadableStream
         ? encrypted.stream
         : toWebReadableStream(encrypted.stream)
       ).pipeTo(writable);
-      decryptionInfo.push(encrypted.decryptionInfo);
+      // decryptionInfo.push(encrypted.decryptionInfo);
     });
     return decryptionInfo;
   }

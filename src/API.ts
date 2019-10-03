@@ -1,12 +1,12 @@
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
+import { toWebReadableStream } from 'web-streams-node';
 
 // Types
 
 // Local
 import {
-  CompletePenumbraEncryptedFile,
   Compression,
   PenumbraDecryptionInfo,
   PenumbraDecryptionWorkerAPI,
@@ -199,7 +199,7 @@ async function getBlob(
 export async function encrypt(
   options: PenumbraEncryptionOptions,
   ...files: PenumbraFile[]
-): Promise<CompletePenumbraEncryptedFile[]> {
+): Promise<PenumbraEncryptedFile[]> {
   if (files.length === 0) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
@@ -242,10 +242,12 @@ export async function encrypt(
         );
       },
     );
-    const writables: CompletePenumbraEncryptedFile[] = await Promise.all(
+    const writables: PenumbraEncryptedFile[] = await Promise.all(
       remoteWritableStreams.map(async (stream, i) => {
-        // test
-        await (files[i].stream as ReadableStream).pipeTo(stream.writable);
+        await (files[i].stream instanceof ReadableStream
+          ? files[i].stream
+          : toWebReadableStream(files[i].stream)
+        ).pipeTo(stream.writable);
         return {
           ...files[i],
           stream: stream.writable,

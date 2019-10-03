@@ -128,12 +128,12 @@ let encryptionJobID = 0;
  * @param file - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export default function encrypt(
+export default async function encrypt(
   options: PenumbraEncryptionOptions,
   file: PenumbraFile,
   // eslint-disable-next-line no-undef
   size: number,
-): PenumbraEncryptedFile {
+): Promise<PenumbraEncryptedFile> {
   console.log('encrypt options', options);
 
   if (!options || !options.key) {
@@ -158,7 +158,7 @@ export default function encrypt(
   // eslint-disable-next-line no-plusplus
   const jobID = encryptionJobID++;
   const encryptionCompleteEvent = 'penumbra-encryption-complete';
-  const decryptionInfo: Promise<PenumbraDecryptionInfo> = new Promise(
+  const decryptionInfo: PenumbraDecryptionInfo = await new Promise(
     (resolve) => {
       const onEncryptionComplete = ({
         /** event details */
@@ -169,8 +169,8 @@ export default function encrypt(
       }: EncryptionCompletionEmit): void => {
         if (id === jobID) {
           const authTag = cipher.getAuthTag();
-          resolve({ key, iv, authTag });
           removeEventListener(encryptionCompleteEvent, onEncryptionComplete);
+          resolve({ key, iv, authTag });
         }
       };
       addEventListener(encryptionCompleteEvent, onEncryptionComplete);
