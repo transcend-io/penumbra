@@ -194,7 +194,7 @@ const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
  * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
  * ```
  */
-export function getDecryptionInfo(
+function getDecryptionInfo(
   file: PenumbraEncryptedFile,
 ): PenumbraDecryptionInfo {
   if (!decryptionConfigs.has(file.id)) {
@@ -344,6 +344,7 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 const penumbra = {
   get,
   encrypt,
+  getDecryptionInfo,
   save,
   getBlob,
   getTextOrURI,

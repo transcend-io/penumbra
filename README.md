@@ -84,6 +84,32 @@ Fetch and decrypt remote files.
 penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFile[]>
 ```
 
+### .encrypt
+
+Encrypt files.
+
+```ts
+size = 4096 * 128;
+addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
+addEventListener('penumbra-encryption-complete', (e) =>
+  console.log(e.type, e.detail),
+);
+file = penumbra.encrypt(null, { stream: new Uint8Array(size), size });
+data = [];
+file.then(async ([encrypted]) => {
+  console.log('encryption complete');
+  data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+});
+```
+
+### .getDecryptionInfo
+
+Get decryption info for a file, including the iv, authTag, and key. This may only be called on files that have finished being encrypted.
+
+```ts
+penumbra.getDecryptionInfo(file: PenumbraFile): PenumbraDecryptionInfo
+```
+
 ### .save
 
 Save files retrieved by Penumbra. Downloads a .zip if there are multiple files.
@@ -257,9 +283,25 @@ penumbra.preconnect(...resources);
 penumbra.preload(...resources);
 ```
 
-### Download Progress Event Emitter
+### Encryption Completion Event Emitter
 
-You can listen to download progress events by listening to the `penumbra-progress` event.
+You can listen to download progress events by listening to the `penumbra-encryption-complete` event.
+
+```js
+window.addEventListener(
+  'penumbra-encryption-complete',
+  ({ detail: { id, decryptionInfo } }) => {
+    console.log(
+      `finished encryption job #${id}%. decryption options:`,
+      decryptionInfo,
+    );
+  },
+);
+```
+
+### Progress Event Emitter
+
+You can listen to download and encryption progress events by listening to the `penumbra-progress` event.
 
 ```js
 window.addEventListener(
