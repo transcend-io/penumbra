@@ -244,7 +244,7 @@ export async function encrypt(
     );
     const writables: PenumbraEncryptedFile[] = await Promise.all(
       remoteWritableStreams.map(async (stream, i) => {
-        await (files[i].stream instanceof ReadableStream
+        (files[i].stream instanceof ReadableStream
           ? files[i].stream
           : toWebReadableStream(files[i].stream)
         ).pipeTo(stream.writable);
