@@ -220,7 +220,7 @@ addEventListener(
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
  * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
- * file = penumbra.encrypt(null, {stream:new Uint8Array(size), size});
+ * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
  *   console.log('encryption complete');
