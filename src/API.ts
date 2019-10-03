@@ -223,7 +223,7 @@ addEventListener(
  * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
- *   console.log('encryption complete');
+ *   console.log('encryption started');
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  */
