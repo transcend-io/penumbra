@@ -46,12 +46,20 @@ export type PenumbraFile = {
   path: string;
 };
 
-/** penumbra.encrypt() output file */
+/** penumbra.encrypt() output file (internal) */
 export type PenumbraEncryptedFile = Omit<PenumbraFile, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | WritableStream | ArrayBuffer;
   /** Decryption config info */
   decryptionInfo: Promise<PenumbraDecryptionInfo>;
+};
+
+/** penumbra.encrypt() output file */
+export type CompletePenumbraEncryptedFile = Omit<PenumbraFile, 'stream'> & {
+  /** Encrypted output stream */
+  stream: ReadableStream | WritableStream | ArrayBuffer;
+  /** Decryption config info */
+  decryptionInfo: PenumbraDecryptionInfo;
 };
 
 /**

@@ -9,7 +9,7 @@ import { fromWritablePort } from 'remote-web-streams';
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
-import './transferHandlers/progress';
+import './transferHandlers/penumbra-events';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
