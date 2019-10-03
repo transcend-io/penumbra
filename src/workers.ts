@@ -86,8 +86,8 @@ export function getWorkerLocation(): WorkerLocation {
   };
 }
 
-/** Re-dispatch progress events */
-function reDispatchProgressEvent(event: ProgressEmit): void {
+/** Re-dispatch events */
+function reDispatchEvent(event: CustomEvent): void {
   view.dispatchEvent(event);
 }
 
@@ -105,7 +105,7 @@ export async function createPenumbraWorker(
   };
   const Link = penumbraWorker.comlink;
   const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
-    await thread.setup(proxy(reDispatchProgressEvent));
+    await thread.setup(proxy(reDispatchEvent));
   });
   await setup;
   penumbraWorker.initialized = true;

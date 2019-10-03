@@ -1,5 +1,5 @@
 // penumbra
-import { EncryptionCompletionEmit } from '../types';
+import { EncryptionCompletionEmit, PenumbraDecryptionInfo } from '../types';
 
 /**
  * An event emitter for the decryption progress
@@ -8,9 +8,12 @@ import { EncryptionCompletionEmit } from '../types';
  * @param url the URL being read from
  * @returns
  */
-export default function emitEncryptionCompletion(id: number): void {
+export default function emitEncryptionCompletion(
+  id: number,
+  decryptionInfo: PenumbraDecryptionInfo,
+): void {
   const emitContent: Pick<EncryptionCompletionEmit, 'detail'> = {
-    detail: { id },
+    detail: { id, decryptionInfo },
   };
 
   // Dispatch the event

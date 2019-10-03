@@ -39,7 +39,10 @@ Comlink.transferHandlers.set('penumbra-encryption-complete', {
    * @returns true if the object is a penumbra-progress CustomEvent
    */
   canHandle(object: any) {
-    return object instanceof CustomEvent && object.type === 'penumbra-progress';
+    return (
+      object instanceof CustomEvent &&
+      object.type === 'penumbra-encryption-complete'
+    );
   },
   /**
    * Serialize penumbra-encryption-complete event down to just EncryptionCompletion

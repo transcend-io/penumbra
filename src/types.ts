@@ -44,14 +44,22 @@ export type PenumbraFile = {
   filePrefix: string;
   /** Relative file path (needed for zipping) */
   path: string;
+  /** Optional ID for tracking encryption completion */
+  id?: number;
+};
+
+/** Penumbra file that is currently being encrypted */
+export type PenumbraFileWithID = PenumbraFile & {
+  /** ID for tracking encryption completion */
+  id: number;
 };
 
 /** penumbra.encrypt() output file (internal) */
-export type PenumbraEncryptedFile = Omit<PenumbraFile, 'stream'> & {
+export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | WritableStream | ArrayBuffer;
-  /** Decryption config info */
-  decryptionInfo: PenumbraDecryptionInfo;
+  /** Decryption config ID */
+  id: number;
 };
 
 /**
@@ -118,6 +126,8 @@ export type ProgressEmit = CustomEvent<ProgressDetails>;
 export type EncryptionCompletion = {
   /** Encryption job ID */
   id: number;
+  /** Decryption config info */
+  decryptionInfo: PenumbraDecryptionInfo;
 };
 
 /**
@@ -202,12 +212,14 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Streaming encryption of ReadableStreams
    *
+   * @param ids - Unique identifier for tracking encryption completion
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
   encrypt: (
     options: PenumbraEncryptionOptions,
+    ids: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
   ) => Promise<PenumbraDecryptionInfo[]>;

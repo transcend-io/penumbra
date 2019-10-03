@@ -8,7 +8,6 @@ import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
 // local
 // import encrypt from './encrypt';
-import { toWebReadableStream } from 'web-streams-node';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
@@ -24,11 +23,12 @@ class PenumbraEncryptionWorker {
   /**
    * Streaming encryption of ReadableStreams
    *
+   * @param ids - IDs for tracking encryption completion
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
-  async encrypt(options, readablePorts, writablePorts) {
+  async encrypt(options, ids, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -48,13 +48,12 @@ class PenumbraEncryptionWorker {
     readablePorts.forEach(async (readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
-      const encrypted = await encrypt(options, {
+      const id = ids[i];
+      const encrypted = encrypt(options, {
         stream,
+        id,
       });
-      (encrypted.stream instanceof ReadableStream
-        ? encrypted.stream
-        : toWebReadableStream(encrypted.stream)
-      ).pipeTo(writable);
+      encrypted.stream.pipeTo(writable);
       // decryptionInfo.push(encrypted.decryptionInfo);
     });
     return decryptionInfo;

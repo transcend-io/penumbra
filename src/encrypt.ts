@@ -2,14 +2,15 @@
 import { createCipheriv } from 'crypto-browserify';
 
 // local
-import { Cipher } from 'crypto';
+import { Cipher, CipherGCM } from 'crypto';
+import intoStream from 'into-stream';
+import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
+import { toWebReadableStream } from 'web-streams-node';
 import {
-  EncryptionCompletionEmit,
-  PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
-  PenumbraFile,
+  PenumbraFileWithID,
 } from './types';
 
 // utils
@@ -31,15 +32,19 @@ import emitEncryptionCompletion from './utils/emitEncryptionCompletion';
  */
 export function encryptStream(
   jobID: number,
-  rs: ReadableStream,
-  cipher: Cipher,
+  rs: ReadableStream | Readable,
+  cipher: CipherGCM,
   contentLength: number,
+  key: Buffer,
+  iv: Buffer,
 ): ReadableStream {
+  const stream: ReadableStream =
+    rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
   let totalBytesRead = 0;
 
   // TransformStreams are supported
   if ('TransformStream' in self) {
-    return rs.pipeThrough(
+    return stream.pipeThrough(
       // eslint-disable-next-line no-undef
       new TransformStream({
         transform: async (chunk, controller) => {
@@ -59,7 +64,8 @@ export function encryptStream(
           );
 
           if (totalBytesRead >= contentLength) {
-            emitEncryptionCompletion(jobID);
+            const authTag = cipher.getAuthTag();
+            emitEncryptionCompletion(jobID, { key, iv, authTag });
           }
         },
       }),
@@ -67,7 +73,7 @@ export function encryptStream(
   }
 
   // TransformStream not supported, revert to ReadableStream
-  const reader = rs.getReader();
+  const reader = stream.getReader();
   return new ReadableStream({
     /**
      * Controller
@@ -116,11 +122,8 @@ export function encryptBuffer(
 }
 
 const GENERATED_KEY_RANDOMNESS = 256;
-// Minimum IV randomness set by NIST.
-// Should this be 16 to align with 256-bit byte boundaries?
+// Minimum IV randomness set by NIST
 const IV_RANDOMNESS = 12;
-
-let encryptionJobID = 0;
 
 /**
  * Encrypts a file and returns a ReadableStream
@@ -128,12 +131,12 @@ let encryptionJobID = 0;
  * @param file - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export default async function encrypt(
+export default function encrypt(
   options: PenumbraEncryptionOptions,
-  file: PenumbraFile,
+  file: PenumbraFileWithID,
   // eslint-disable-next-line no-undef
   size: number,
-): Promise<PenumbraEncryptedFile> {
+): PenumbraEncryptedFile {
   console.log('encrypt options', options);
 
   if (!options || !options.key) {
@@ -149,35 +152,14 @@ export default async function encrypt(
     };
   }
 
+  const { id } = file;
+
   // Convert to Buffers
   const key = toBuff(options.key);
   const iv = Buffer.from(crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)));
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
-  // eslint-disable-next-line no-plusplus
-  const jobID = encryptionJobID++;
-  const encryptionCompleteEvent = 'penumbra-encryption-complete';
-  const decryptionInfo: PenumbraDecryptionInfo = await new Promise(
-    (resolve) => {
-      const onEncryptionComplete = ({
-        /** event details */
-        detail: {
-          /** event encryption job ID */
-          id,
-        },
-      }: EncryptionCompletionEmit): void => {
-        if (id === jobID) {
-          const authTag = cipher.getAuthTag();
-          removeEventListener(encryptionCompleteEvent, onEncryptionComplete);
-          resolve({ key, iv, authTag });
-        }
-      };
-      addEventListener(encryptionCompleteEvent, onEncryptionComplete);
-    },
-  );
-  // { key, iv, authTag };
-
   // Encrypt the stream
   return {
     ...file,
@@ -185,7 +167,16 @@ export default async function encrypt(
     //   file.stream instanceof ReadableStream
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(jobID, file.stream as ReadableStream, cipher, size),
-    decryptionInfo,
+    stream: encryptStream(
+      id,
+      file.stream instanceof ReadableStream
+        ? file.stream
+        : intoStream(file.stream),
+      cipher,
+      size,
+      key,
+      iv,
+    ),
+    id,
   };
 }

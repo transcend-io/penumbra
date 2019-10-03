@@ -185,16 +185,47 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
+let encryptionJobID = 0;
+const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
+/**
+ * Get the decryption config for an encrypted file
+ *
+ * ```ts
+ * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
+ * ```
+ */
+export function getDecryptionInfo(
+  file: PenumbraEncryptedFile,
+): PenumbraDecryptionInfo {
+  if (!decryptionConfigs.has(file.id)) {
+    throw new Error('Unable to find decryption info for file');
+  }
+  return decryptionConfigs.get(file.id) as PenumbraDecryptionInfo;
+}
+
+addEventListener(
+  'penumbra-encryption-complete',
+  ({ detail: { id, decryptionInfo } }) => {
+    console.log(`encryption job #${id} complete`);
+    decryptionConfigs.set(id, decryptionInfo);
+  },
+);
+
 /**
  * Encrypt files
  *
  * ```ts
  * await penumbra.encrypt(options, ...files);
  * // usage example:
- * size = 32;
+ * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * file = await penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
- * encryptedData = new Uint8Array(await new Response(file[0].stream).arrayBuffer());
+ * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * file = penumbra.encrypt(null, {stream:new Uint8Array(size), size});
+ * let data = [];
+ * file.then(async ([encrypted]) => {
+ *   console.log('encryption complete');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * });
  */
 export async function encrypt(
   options: PenumbraEncryptionOptions,
@@ -203,7 +234,7 @@ export async function encrypt(
   if (files.length === 0) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
-  if (files.some((file, i) => file.stream instanceof ArrayBuffer)) {
+  if (files.some((file) => file.stream instanceof ArrayBuffer)) {
     throw new Error('penumbra.encrypt() only supports ReadableStreams');
   }
   const workers = await getWorkers('encrypt');
@@ -216,12 +247,22 @@ export async function encrypt(
     const { sizes } = (options = {
       sizes:
         (options && options.sizes) ||
-        (files.map((file) => file.size) as number[]),
+        (files.map((file) => {
+          if ('size' in file) {
+            return file.size;
+          }
+          if ('byteLength' in file.stream) {
+            return (file.stream as ArrayBuffer).byteLength;
+          }
+          throw new Error('penumbra.encrypt(): Unable to determine file size');
+        }) as number[]),
       ...options,
     });
-    if (sizes.some((size) => typeof size === 'undefined')) {
-      throw new Error('penumbra.encrypt(): Unable to determine file size');
-    }
+    const ids: number[] = [];
+    files.forEach((file) => {
+      // eslint-disable-next-line no-plusplus, no-param-reassign
+      ids.push((file.id = encryptionJobID++));
+    });
     // const readables = remoteReadableStreams.map((stream, i) => ({
     //   stream: stream.readable,
     //   ...files[i],
@@ -232,27 +273,29 @@ export async function encrypt(
     const writablePorts = remoteReadableStreams.map(
       ({ writablePort }) => writablePort,
     );
-    let decryptionInfo: PenumbraDecryptionInfo[];
     await new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
-        decryptionInfo = await thread.encrypt(
+        /* await */ thread.encrypt(
           options,
+          ids,
           transfer(readablePorts, readablePorts),
           transfer(writablePorts, writablePorts),
         );
       },
     );
-    const writables: PenumbraEncryptedFile[] = await Promise.all(
+    const writables: Promise<PenumbraEncryptedFile[]> = Promise.all(
       remoteWritableStreams.map(async (stream, i) => {
+        // eslint-disable-next-line no-plusplus
         (files[i].stream instanceof ReadableStream
           ? files[i].stream
           : toWebReadableStream(files[i].stream)
         ).pipeTo(stream.writable);
+        const file = files[i];
         return {
-          ...files[i],
+          ...file,
           stream: stream.writable,
           size: sizes[i],
-          decryptionInfo: decryptionInfo[i],
+          id: file.id as number,
         };
       }),
     );
