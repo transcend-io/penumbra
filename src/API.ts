@@ -245,6 +245,7 @@ export async function encrypt(
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
     const ids: number[] = [];
     const sizes: number[] = [];
+    // collect file sizes and assign encryption job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = encryptionJobID++));
@@ -255,14 +256,21 @@ export async function encrypt(
         throw new Error('penumbra.encrypt(): Unable to determine file size');
       }
     });
+    // extract ports from remote readable/writable streams for Comlink.transfer
     const readablePorts = remoteWritableStreams.map(
       ({ readablePort }) => readablePort,
     );
     const writablePorts = remoteReadableStreams.map(
       ({ writablePort }) => writablePort,
     );
+    // enter worker thread
     await new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
+        /**
+         * PenumbraEncryptionWorkerAPI.encrypt calls require('./encrypt').encrypt()
+         * from the worker thread and starts reading the input stream from
+         * [remoteWritableStream.writable]
+         */
         thread.encrypt(
           options,
           ids,
@@ -272,12 +280,15 @@ export async function encrypt(
         );
       },
     );
+    // encryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
+      // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
         : toWebReadableStream(files[i].stream)
       ).pipeTo(remoteWritableStream.writable);
     });
+    // construct output files with corresponding remote readable streams
     const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
