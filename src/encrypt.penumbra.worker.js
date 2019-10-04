@@ -44,7 +44,6 @@ class PenumbraEncryptionWorker {
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    const decryptionInfo = [];
     readablePorts.forEach(async (readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
@@ -56,9 +55,7 @@ class PenumbraEncryptionWorker {
         id,
       });
       encrypted.stream.pipeTo(writable);
-      // decryptionInfo.push(encrypted.decryptionInfo);
     });
-    return decryptionInfo;
   }
 
   /**
