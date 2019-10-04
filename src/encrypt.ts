@@ -66,11 +66,12 @@ export function encryptStream(
           );
 
           if (totalBytesRead >= contentLength) {
-            // const authTag = cipher.getAuthTag();
+            cipher.final();
+            const authTag = cipher.getAuthTag();
             emitEncryptionCompletion(jobID, {
               key,
               iv,
-              authTag: '', // TODO: get authTag
+              authTag,
             });
             controller.terminate();
           }
