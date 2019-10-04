@@ -273,7 +273,6 @@ export async function encrypt(
       },
     );
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      // eslint-disable-next-line no-plusplus
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
         : toWebReadableStream(files[i].stream)
