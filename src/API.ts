@@ -263,7 +263,7 @@ export async function encrypt(
     );
     await new EncryptionChannel().then(
       async (thread: PenumbraEncryptionWorkerAPI) => {
-        /* await */ thread.encrypt(
+        thread.encrypt(
           options,
           ids,
           sizes,
