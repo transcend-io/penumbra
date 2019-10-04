@@ -102,6 +102,9 @@ export function encryptStream(
           // Encrypt chunk
           const encryptedChunk = cipher.update(chunk);
 
+          controller.enqueue(encryptedChunk);
+          push();
+
           // Emit a progress update
           totalBytesRead += chunk.length;
           emitProgress(
@@ -111,8 +114,16 @@ export function encryptStream(
             '[encrypted file]',
           );
 
-          controller.enqueue(encryptedChunk);
-          push();
+          if (totalBytesRead >= contentLength) {
+            cipher.final();
+            const authTag = cipher.getAuthTag();
+            emitEncryptionCompletion(jobID, {
+              key,
+              iv,
+              authTag,
+            });
+            controller.close();
+          }
         });
       }
       push();
