@@ -63,7 +63,7 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
-  const config = JSON.parse(script.worker || '{}');
+  const config = JSON.parse(script.workers || '{}');
   const options = {
     ...DEFAULT_WORKERS,
     /* Support either worker="penumbra-worker" (non-JSON)
