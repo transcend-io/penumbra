@@ -89,11 +89,8 @@ export type RemoteResourceWithoutFile = Optionalize<
   'filePrefix'
 >;
 
-/** Type of penumbra worker */
-export type WorkerKind = 'decrypt' | 'encrypt' | 'zip';
-
-/** Progress event types */
-export type ProgressType = WorkerKind;
+/** Penumbra event types */
+export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
 
 /**
  * Progress event details
@@ -101,8 +98,8 @@ export type ProgressType = WorkerKind;
 export type ProgressDetails = {
   /** The URL downloading from */
   url: string;
-  /** Progress type */
-  type: ProgressType;
+  /** Event type */
+  type: PenumbraEventType;
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
@@ -166,7 +163,7 @@ export type PenumbraTextOrURI = {
 export type PenumbraAPI = typeof penumbra;
 
 /**
- * Common Penumbra Worker API
+ * Penumbra Worker API
  */
 export type PenumbraWorkerAPI = {
   /**
@@ -175,12 +172,6 @@ export type PenumbraWorkerAPI = {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setup: (eventListener: any) => Promise<void>;
-};
-
-/**
- * Penumbra Decryption Worker API
- */
-export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -199,12 +190,6 @@ export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
    * @returns A readable stream of the deciphered file
    */
   getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
-};
-
-/**
- * Penumbra Encryption Worker API
- */
-export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Streaming encryption of ReadableStreams
    *
@@ -231,12 +216,6 @@ export type PenumbraEncryptionWorkerAPI = PenumbraWorkerAPI & {
     options: PenumbraEncryptionOptions,
     files: PenumbraFile[],
   ) => Promise<ArrayBuffer[]>;
-};
-
-/**
- * Penumbra Zip Worker API
- */
-export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Zips one or more PenumbraFiles while keeping their path
    * data in-tact.
@@ -257,12 +236,8 @@ export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
 export type WorkerLocation = {
   /** The directory where the workers scripts are available */
   base: URL;
-  /** The location of the decryption Worker script */
-  decrypt: URL;
-  /** The location of the encryption Worker script */
-  encrypt: URL;
-  /** The location of the zip Worker script */
-  zip: URL;
+  /** The location of the Penumbra Worker script */
+  penumbra: URL;
   /** The location of the StreamSaver ServiceWorker script */
   StreamSaver: URL;
 };

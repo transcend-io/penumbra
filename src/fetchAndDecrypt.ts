@@ -1,10 +1,12 @@
 // external modules
-import { createDecipheriv } from 'crypto-browserify';
+// import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import decryptStream from './decryptStream';
 import { RemoteResourceWithoutFile } from './types';
 import { toBuff } from './utils';
+
+const createDecipheriv = require('@transcend-io/lazydecipheriv');
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream

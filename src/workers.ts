@@ -7,13 +7,9 @@ import { proxy, wrap } from 'comlink';
 import {
   PenumbraWorker,
   PenumbraWorkerAPI,
-  PenumbraWorkers,
-  ProgressEmit,
-  WorkerKind,
   WorkerLocation,
   WorkerLocationOptions,
 } from './types';
-import getKeys from './utils/getKeys';
 
 // //// //
 // Init //
@@ -45,9 +41,7 @@ const resolver = document.createElementNS(
 const scriptURL = new URL(scriptElement.src, location.href);
 
 const DEFAULT_WORKERS = {
-  decrypt: 'decrypt.penumbra.worker.js',
-  encrypt: 'encrypt.penumbra.worker.js',
-  zip: 'zip.penumbra.worker.js',
+  penumbra: 'penumbra.worker.js',
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
@@ -69,19 +63,21 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
+  const config = JSON.parse(script.worker || '{}');
   const options = {
     ...DEFAULT_WORKERS,
-    ...JSON.parse(script.workers || '{}'),
+    /* Support either worker="penumbra-worker" (non-JSON)
+     *             or workers='"{"penumbra": "...", "StreamSaver": "..."}"' */
+    penumbra: script.worker || DEFAULT_WORKERS.penumbra,
+    ...(typeof config === 'object' ? config : {}),
   };
-  const { base, decrypt, encrypt, zip, StreamSaver } = options;
+  const { base, penumbra, StreamSaver } = options;
 
   const context = resolve(base || scriptURL);
 
   return {
     base: context,
-    decrypt: new URL(decrypt, context),
-    encrypt: new URL(encrypt, context),
-    zip: new URL(zip, context),
+    penumbra: new URL(penumbra, context),
     StreamSaver: new URL(StreamSaver, context),
   };
 }
@@ -91,7 +87,7 @@ function reDispatchEvent(event: CustomEvent): void {
   view.dispatchEvent(event);
 }
 
-const workers: Partial<PenumbraWorkers> = {};
+let workerThread: PenumbraWorker;
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
@@ -112,45 +108,27 @@ export async function createPenumbraWorker(
   return penumbraWorker;
 }
 /** Initializes web worker threads */
-export async function initWorkers(...workerTypes: WorkerKind[]): Promise<void> {
-  const locations = getWorkerLocation();
-  await Promise.all(
-    workerTypes.map(async (worker) => {
-      workers[worker] = await createPenumbraWorker(locations[worker]);
-    }),
-  );
+export async function initWorker(): Promise<void> {
+  const { penumbra } = getWorkerLocation();
+  workerThread = await createPenumbraWorker(penumbra);
 }
 
 /**
- * Get the initialize the workers (only does this once).s
+ * Get and initialize the Penumbra Worker thread
  *
  * @returns The list of active worker threads
  */
-export async function getWorkers(
-  ...workerTypes: WorkerKind[]
-): Promise<PenumbraWorkers> {
-  if (
-    // any uninitialized workers?
-    workerTypes.some((workerType) => {
-      const worker = workers[workerType];
-      return !worker || (worker && !worker.initialized);
-    })
-  ) {
-    await initWorkers(...workerTypes);
+export async function getWorker(): Promise<PenumbraWorker> {
+  if (!workerThread || (workerThread && !workerThread.initialized)) {
+    await initWorker();
   }
-  return workers as PenumbraWorkers;
+  return workerThread as PenumbraWorker;
 }
 
 /** Returns all active Penumbra Workers */
 async function getActiveWorkers(): Promise<PenumbraWorker[]> {
-  const initializedWorkers = await getWorkers();
-  return getKeys(initializedWorkers)
-    .filter(
-      (worker) =>
-        initializedWorkers[worker] &&
-        (initializedWorkers[worker] as PenumbraWorker).initialized,
-    )
-    .map((worker) => initializedWorkers[worker] as PenumbraWorker);
+  const worker = await getWorker();
+  return worker && worker.initialized ? [worker] : [];
 }
 
 /**
@@ -172,14 +150,12 @@ view.addEventListener('beforeunload', cleanup);
  * @param options - Worker location options
  *
  * ```ts
- * // Set only the base URL by passing a string
- * penumbra.setWorkerLocation('/penumbra-workers/')
+ * // Set only the Penumbra Worker URL by passing a string. Base URL is derrived from this
+ * penumbra.setWorkerLocation('/penumbra-workers/penumbra.worker.js')
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
  *   base: '/penumbra-workers/',
- *   decrypt: 'decrypt.js',
- *   encrypt: 'encrypt.js',
- *   zip: 'zip-debug.js', // e.g. manually use a debug worker
+ *   penumbra: 'penumbra.worker.js',
  *   StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
@@ -196,8 +172,8 @@ export async function setWorkerLocation(
 
   script.workers = JSON.stringify(
     typeof options === 'string'
-      ? { ...DEFAULT_WORKERS, base: options }
+      ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
       : { ...DEFAULT_WORKERS, ...options },
   );
-  return initWorkers();
+  return initWorker();
 }

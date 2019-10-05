@@ -7,9 +7,7 @@ const config = {
   mode: 'development',
   entry: {
     penumbra: `${src}/index.ts`,
-    'decrypt.penumbra.worker': `${src}/decrypt.penumbra.worker.js`,
-    'encrypt.penumbra.worker': `${src}/encrypt.penumbra.worker.js`,
-    'zip.penumbra.worker': `${src}/zip.penumbra.worker.js`,
+    'penumbra.worker': `${src}/penumbra.worker.js`,
   },
   output: {
     path: join(__dirname, 'build'),

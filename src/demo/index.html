@@ -18,7 +18,7 @@
     <script src="demo.js" async defer></script>
     <script src="penumbra.js" data-penumbra async defer></script>
     -->
-  <script async defer>
+  <script>
     document.currentScript.remove();
     (() => {
       const scripts = document.createDocumentFragment();
@@ -33,15 +33,9 @@
       const demo = penumbra.cloneNode();
 
       penumbra.dataset.penumbra = '';
-      penumbra.dataset.workers = JSON.stringify({
-        base: '/',
-        decrypt: 'decrypt.penumbra.worker.js?' + cacheBuster,
-        encrypt: 'encrypt.penumbra.worker.js?' + cacheBuster,
-        zip: 'zip.penumbra.worker.js?' + cacheBuster,
-        StreamSaver: 'streamsaver.penumbra.serviceworker.js?' + cacheBuster,
-      });
-      penumbra.src = 'penumbra.js?' + cacheBuster;
-      demo.src = 'demo.js?' + cacheBuster;
+      penumbra.dataset.worker = `penumbra.worker.js?${cacheBuster}`;
+      penumbra.src = `penumbra.js?${cacheBuster}`;
+      demo.src = `demo.js?${cacheBuster}`;
 
       scripts.appendChild(demo);
       scripts.appendChild(penumbra);

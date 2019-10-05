@@ -10,7 +10,7 @@ import { emitProgress } from './utils';
 /**
  * Decrypts a readable stream
  *
- * TODO check authTag with decipher.final
+ * TODO check authTag with decipher.final()
  *
  * @param rs - A readable stream of encrypted data
  * @param decipher - The crypto module's decipher

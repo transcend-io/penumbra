@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable max-lines */
 const view = self;
 
@@ -46,12 +47,7 @@ const onReady = async (
         const cacheBuster = Math.random()
           .toString(10)
           .slice(2);
-        await penumbra.setWorkerLocation({
-          base: '/',
-          decrypt: `decrypt.penumbra.worker.js?${cacheBuster}`,
-          zip: `zip.penumbra.worker.js?${cacheBuster}`,
-          StreamSaver: `streamsaver.penumbra.serviceworker.js?${cacheBuster}`,
-        });
+        await penumbra.setWorkerLocation(`penumbra.worker.js?${cacheBuster}`);
         const NYT = {
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
           filePrefix: 'NYT',
