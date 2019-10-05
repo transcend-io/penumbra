@@ -2,7 +2,7 @@
 const getGlobalConfig = require('./karma.global');
 
 module.exports = (config) => {
-  // can add more
+  // TODO add more browsers. this util is useful:
   // https://www.browserstack.com/automate/capabilities
   const customLaunchers = {
     bs_chrome_mac: {
