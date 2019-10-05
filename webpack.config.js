@@ -9,6 +9,7 @@ const config = {
     penumbra: `${src}/index.ts`,
     'decrypt.penumbra.worker': `${src}/decrypt.penumbra.worker.js`,
     'zip.penumbra.worker': `${src}/zip.penumbra.worker.js`,
+    tests: `${src}/tests/index.test.ts`,
   },
   output: {
     path: join(__dirname, 'build'),
@@ -77,6 +78,9 @@ const config = {
   devtool: 'eval-source-map',
   target: 'web', // Make web variables accessible to webpack, e.g. window
   // target: 'web',
+  node: {
+    fs: 'empty',
+  },
 };
 
 module.exports = config;

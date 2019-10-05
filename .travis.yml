@@ -47,9 +47,9 @@ jobs:
         - pre-commit run --all-files
 
     # Run tests locally
-    # - stage: test
-    #  name: Tests
-    #  script: npm run test
+    - stage: test
+      name: Tests
+      script: yarn test2:sauce
 
     # Run tests on multiple browsers and publish code coverage
     # - stage: test
@@ -101,5 +101,3 @@ addons:
       - "python3"
       - "python3-pip" # pip isn't installed by default with the python3 installation
   sauce_connect: true
-  hosts:
-    - airtap.local
