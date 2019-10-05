@@ -49,7 +49,7 @@ jobs:
     # Run tests locally
     - stage: test
       name: Tests
-      script: yarn test2:sauce
+      script: yarn test2:browserstack
 
     # Run tests on multiple browsers and publish code coverage
     # - stage: test

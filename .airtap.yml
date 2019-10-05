@@ -1,8 +1,0 @@
-browsers:
-- name: safari
-  version: latest
-
-scripts:
-  - "build/penumbra.js"
-  - "build/decrypt.penumbra.worker.js"
-  - "build/zip.penumbra.worker.js"
