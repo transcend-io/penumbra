@@ -40,7 +40,6 @@
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
 - [Contributing](#contributing)
-- [Big Thanks](#big-thanks)
 - [License](#license)
 
 <!-- tocstop -->
