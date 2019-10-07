@@ -14,7 +14,7 @@
   <a href="https://codeclimate.com/github/transcend-io/penumbra/maintainability"><img src="https://api.codeclimate.com/v1/badges/b87db99b427788ea3ce9/maintainability" /></a>
   <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
   <br /><br />
-  <a href="https://saucelabs.com/u/penumbra"><img src="https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e" alt="Sauce Test Status"></a>
+  <!-- <a href="https://saucelabs.com/u/penumbra"><img src="https://saucelabs.com/browser-matrix/penumbra.svg?auth=c2b96594999df3d684c9af8d63a0c61e" alt="Sauce Test Status"></a> -->
 </p>
 <br />
 
@@ -328,9 +328,9 @@ npm run test:interactive
 
 ## Big Thanks
 
-Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][homepage]
+Cross-browser testing platform provided by [BrowserStack][homepage].
 
-[homepage]: https://saucelabs.com
+[homepage]: https://www.browserstack.com/
 
 ## License
 
