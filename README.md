@@ -14,7 +14,6 @@
   <a href="https://codecov.io/gh/transcend-io/penumbra"><img src="https://codecov.io/gh/transcend-io/penumbra/branch/master/graph/badge.svg" alt="Code Coverage"></a>
   <a href="https://codeclimate.com/github/transcend-io/penumbra/maintainability"><img src="https://api.codeclimate.com/v1/badges/b87db99b427788ea3ce9/maintainability" /></a>
   <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
-  <br /><br />
 </p>
 <br />
 
