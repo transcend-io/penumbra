@@ -55,7 +55,6 @@
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
-    "@transcend-io/lazydecipheriv": "^1.0.3",
     "comlink": "^4.0.2",
     "core-js": "^3.1.4",
     "crypto-browserify": "^3.12.0",

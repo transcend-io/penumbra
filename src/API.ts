@@ -6,7 +6,6 @@ import { toWebReadableStream } from 'web-streams-node';
 // Types
 
 // Local
-import { resolve } from 'dns';
 import {
   Compression,
   EncryptionCompletionEmit,
