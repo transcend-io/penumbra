@@ -218,7 +218,7 @@ export async function getDecryptionInfo(
 ): Promise<PenumbraDecryptionInfo> {
   const { id } = file;
   if (!decryptionConfigs.has(id)) {
-    console.warn('decryption config not yet received. waiting...');
+    // decryption config not yet received. waiting for event with promise
     return trackEncryptionCompletion(id);
   }
   return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
