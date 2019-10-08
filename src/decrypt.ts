@@ -1,7 +1,7 @@
 /* tslint:disable completed-docs */
 
 // external modules
-import { Decipher } from 'crypto';
+import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
@@ -28,7 +28,7 @@ import { emitProgress, toBuff } from './utils';
  */
 export default function decryptStream(
   rs: ReadableStream,
-  decipher: Decipher,
+  decipher: DecipherGCM,
   contentLength: number,
   id: string | number,
 ): ReadableStream {
@@ -51,6 +51,10 @@ export default function decryptStream(
           // Emit a progress update
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
+
+          if (totalBytesRead >= contentLength) {
+            decipher.final();
+          }
         },
       }),
     );
@@ -103,7 +107,7 @@ export function decrypt(
   // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraFile {
-  if (!options || !options.key || !options.iv || !options.iv) {
+  if (!options || !options.key || !options.iv || !options.authTag) {
     throw new Error('penumbra.decrypt(): missing decryption options');
   }
 
@@ -112,12 +116,18 @@ export function decrypt(
   size = file.size || size;
 
   // Convert to Buffers
-  const key = toBuff(options.key);
+  const key = options.key instanceof Buffer ? options.key : toBuff(options.key);
   const iv =
     options.iv instanceof Buffer ? options.iv : Buffer.from(options.iv);
+  const authTag =
+    options.authTag instanceof Buffer
+      ? options.authTag
+      : toBuff(options.authTag);
 
   // Construct the decipher
   const decipher = createDecipheriv('aes-256-gcm', key, iv);
+  decipher.setAuthTag(authTag);
+
   // Encrypt the stream
   return {
     ...file,

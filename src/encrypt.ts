@@ -71,7 +71,6 @@ export function encryptStream(
               iv,
               authTag,
             });
-            controller.terminate();
           }
         },
       }),
