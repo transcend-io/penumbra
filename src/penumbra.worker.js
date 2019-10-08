@@ -11,6 +11,7 @@ import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
+import decrypt from './_decrypt';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -78,6 +79,43 @@ class PenumbraWorker {
   }
 
   /**
+   * Streaming decryption of ReadableStreams
+   *
+   * @param ids - IDs for tracking encryption completion
+   * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
+   * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
+   * @returns ReadableStream[] of the decrypted files
+   */
+  async decrypt(options, ids, sizes, readablePorts, writablePorts) {
+    const writableCount = writablePorts.length;
+    const readableCount = readablePorts.length;
+    if (writableCount !== readableCount) {
+      // eslint-disable-next-line no-multi-assign, no-param-reassign
+      readablePorts.length = writablePorts.length = Math.min(
+        writableCount,
+        readableCount,
+      );
+      console.warn(
+        `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
+          '' //
+        }Truncating to common subset (${writablePorts.length}).`,
+      );
+    }
+    readablePorts.forEach(async (readablePort, i) => {
+      const stream = fromReadablePort(readablePorts[i]);
+      const writable = fromWritablePort(writablePorts[i]);
+      const id = ids[i];
+      const size = sizes[i];
+      const encrypted = decrypt(options, {
+        stream,
+        size,
+        id,
+      });
+      encrypted.stream.pipeTo(writable);
+    });
+  }
+
+  /**
    * Streaming encryption of ReadableStreams
    *
    * @param ids - IDs for tracking encryption completion
@@ -93,7 +131,6 @@ class PenumbraWorker {
       readablePorts.length = writablePorts.length = Math.min(
         writableCount,
         readableCount,
-        ``,
       );
       console.warn(
         `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${

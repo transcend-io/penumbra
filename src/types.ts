@@ -55,7 +55,7 @@ export type PenumbraFileWithID = PenumbraFile & {
 /** penumbra.encrypt() output file (internal) */
 export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
-  stream: ReadableStream | WritableStream | ArrayBuffer;
+  stream: ReadableStream | ArrayBuffer;
 };
 
 /**
@@ -96,8 +96,8 @@ export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
  * Progress event details
  */
 export type ProgressDetails = {
-  /** The URL downloading from */
-  url: string;
+  /** The job ID # or URL being downloaded from for decryption */
+  id: string | number;
   /** Event type */
   type: PenumbraEventType;
   /** Percentage completed */
@@ -214,6 +214,32 @@ export type PenumbraWorkerAPI = {
    */
   encryptBuffers: (
     options: PenumbraEncryptionOptions,
+    files: PenumbraFile[],
+  ) => Promise<ArrayBuffer[]>;
+  /**
+   * Streaming decryption of ReadableStreams
+   *
+   * @param ids - Unique identifier for tracking decryption completion
+   * @param sizes - Size of each file to decrypt (in bytes)
+   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
+   * @returns ReadableStream[] of the decrypted files
+   */
+  decrypt: (
+    options: PenumbraDecryptionInfo,
+    ids: number[],
+    sizes: number[],
+    readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
+  ) => Promise<void>;
+  /**
+   * Buffered (non-streaming) encryption of ArrayBuffers
+   *
+   * @param buffers - The file buffers to encrypt
+   * @returns ArrayBuffer[] of the encrypted files
+   */
+  decryptBuffers: (
+    options: PenumbraDecryptionInfo,
     files: PenumbraFile[],
   ) => Promise<ArrayBuffer[]>;
   /**

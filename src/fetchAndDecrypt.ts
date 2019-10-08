@@ -2,7 +2,7 @@
 import { createDecipheriv } from 'crypto-browserify';
 
 // local
-import decryptStream from './decryptStream';
+import decryptStream from './decrypt';
 import { RemoteResourceWithoutFile } from './types';
 import { toBuff } from './utils';
 
