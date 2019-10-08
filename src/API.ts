@@ -6,8 +6,10 @@ import { toWebReadableStream } from 'web-streams-node';
 // Types
 
 // Local
+import { resolve } from 'dns';
 import {
   Compression,
+  EncryptionCompletionEmit,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
@@ -184,6 +186,26 @@ async function getBlob(
 
 let encryptionJobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
+
+const trackEncryptionCompletion = (
+  searchForID?: string | number,
+): Promise<PenumbraDecryptionInfo> =>
+  new Promise((complete) => {
+    const listener = ({
+      type,
+      detail: { id, decryptionInfo },
+    }: EncryptionCompletionEmit): void => {
+      decryptionConfigs.set(id, decryptionInfo);
+      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
+        (self.removeEventListener as any)(type, listener);
+        complete(decryptionInfo);
+      }
+    };
+    self.addEventListener('penumbra-encryption-complete', listener);
+  });
+
+trackEncryptionCompletion();
+
 /**
  * Get the decryption config for an encrypted file
  *
@@ -191,22 +213,16 @@ const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
  * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
  * ```
  */
-function getDecryptionInfo(
+export async function getDecryptionInfo(
   file: PenumbraEncryptedFile,
-): PenumbraDecryptionInfo {
-  if (!decryptionConfigs.has(file.id)) {
-    throw new Error('Unable to find decryption info for file');
+): Promise<PenumbraDecryptionInfo> {
+  const { id } = file;
+  if (!decryptionConfigs.has(id)) {
+    console.warn('decryption config not yet received. waiting...');
+    return trackEncryptionCompletion(id);
   }
-  return decryptionConfigs.get(file.id) as PenumbraDecryptionInfo;
+  return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
 }
-
-addEventListener(
-  'penumbra-encryption-complete',
-  ({ detail: { id, decryptionInfo } }) => {
-    console.log(`encryption job #${id} complete`);
-    decryptionConfigs.set(id, decryptionInfo);
-  },
-);
 
 /**
  * Encrypt files
@@ -330,7 +346,7 @@ export async function encrypt(
  * });
  */
 export async function decrypt(
-  options: PenumbraEncryptionOptions,
+  options: PenumbraDecryptionInfo,
   ...files: PenumbraEncryptedFile[]
 ): Promise<PenumbraFile[]> {
   if (files.length === 0) {
@@ -398,10 +414,10 @@ export async function decrypt(
   }
   let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
     async (thread: PenumbraWorkerAPI) => {
-      const buffers = await thread.decryptBuffers(files);
+      const buffers = await thread.decryptBuffers(options, files);
       decryptedFiles = buffers.map((stream, i) => ({
         stream,
-        ...resources[i],
+        ...files[i],
       }));
       return decryptedFiles;
     },
@@ -438,6 +454,7 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 const penumbra = {
   get,
   encrypt,
+  decrypt,
   getDecryptionInfo,
   save,
   getBlob,

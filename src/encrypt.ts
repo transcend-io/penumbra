@@ -38,8 +38,6 @@ export function encryptStream(
   key: Buffer,
   iv: Buffer,
 ): ReadableStream {
-  console.log('job id', jobID);
-  console.log('content length', contentLength);
   const stream: ReadableStream =
     rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
   let totalBytesRead = 0;
@@ -156,8 +154,6 @@ export default function encrypt(
   // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraEncryptedFile {
-  console.log('encrypt options', options);
-
   if (!options || !options.key) {
     console.log(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,

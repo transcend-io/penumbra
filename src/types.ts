@@ -69,20 +69,13 @@ export type RemoteResource = {
   /** The name of the underlying file without the extension */
   filePrefix: string;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: {
-    /** A base64 encoded decryption key */
-    key: string | Buffer;
-    /** A base64 encoded initialization vector */
-    iv: string | Buffer;
-    /** A base64 encoded authentication tag (for AES GCM) */
-    authTag: string | Buffer;
-  };
+  decryptionOptions?: PenumbraDecryptionInfo;
   /** Relative file path (needed for zipping) */
   path?: string;
 };
 
 /**
- * File is optional
+ * Remote resource where file prefix is optional
  */
 export type RemoteResourceWithoutFile = Optionalize<
   RemoteResource,

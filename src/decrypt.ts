@@ -103,8 +103,6 @@ export function decrypt(
   // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraFile {
-  console.log('encrypt options', options);
-
   if (!options || !options.key || !options.iv || !options.iv) {
     throw new Error('penumbra.decrypt(): missing decryption options');
   }

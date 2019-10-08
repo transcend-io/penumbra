@@ -4,6 +4,7 @@
 // external modules
 import 'regenerator-runtime/runtime';
 import * as Comlink from 'comlink';
+import { createDecipheriv } from 'crypto-browserify';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
 // local
@@ -11,11 +12,13 @@ import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
-import decrypt from './_decrypt';
+import { decrypt } from './decrypt';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
 }
+
+const workerEncryptionJobID = 0;
 
 /**
  * Penumbra Worker class
@@ -106,12 +109,23 @@ class PenumbraWorker {
       const writable = fromWritablePort(writablePorts[i]);
       const id = ids[i];
       const size = sizes[i];
-      const encrypted = decrypt(options, {
-        stream,
+      const { key, iv, authTag } = options;
+      const decipher = createDecipheriv(
+        'aes-256-gcm',
+        Buffer.from(key),
+        Buffer.from(iv),
+      );
+      // const decrypted = decryptStream(stream, decipher, size, id);
+      const decrypted = decrypt(
+        options,
+        {
+          stream,
+          size,
+          id,
+        },
         size,
-        id,
-      });
-      encrypted.stream.pipeTo(writable);
+      );
+      decrypted.stream.pipeTo(writable);
     });
   }
 

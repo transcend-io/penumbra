@@ -283,9 +283,23 @@ const onReady = async (
     ],
     [
       'penumbra.encrypt()',
-      async () =>
-        // TODO: write encrypt() tests
-        false,
+      async () => {
+        const { intoStream } = self;
+        const te = new TextEncoder();
+        const td = new TextDecoder();
+        const data = te.encode('test');
+        const { byteLength: size } = data;
+        const [encrypted] = await penumbra.encrypt(null, {
+          stream: intoStream(data),
+          size,
+        });
+        const options = await penumbra.getDecryptionInfo(encrypted);
+        const [decrypted] = await penumbra.decrypt(options, encrypted);
+        const decryptedData = await new Response(
+          decrypted.stream,
+        ).arrayBuffer();
+        return td.decode(decryptedData) === 'test';
+      },
     ],
   );
 
