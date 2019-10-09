@@ -262,9 +262,23 @@ test('penumbra.getBlob()', async (t) => {
   t.end();
 });
 
-// [
-//   'penumbra.encrypt()',
-//   async () =>
-//     // TODO: write encrypt() tests
-//     false,
-// ],
+test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
+  const { intoStream } = self;
+  const te = new TextEncoder();
+  const td = new TextDecoder();
+  const data = 'test';
+  const buffer = te.encode(data);
+  const { byteLength: size } = buffer;
+  const [encrypted] = await penumbra.encrypt(null, {
+    stream: intoStream(buffer),
+    size,
+    mimetype: 'application/octet-stream',
+    path: '/',
+    filePrefix: 'data',
+  });
+  const options = await penumbra.getDecryptionInfo(encrypted);
+  const [decrypted] = await penumbra.decrypt(options, encrypted);
+  const decryptedBuffer = await new Response(decrypted.stream).arrayBuffer();
+  t.equal(td.decode(decryptedBuffer), data);
+  t.end();
+});

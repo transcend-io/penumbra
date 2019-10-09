@@ -242,7 +242,7 @@ export async function getDecryptionInfo(
  * });
  */
 export async function encrypt(
-  options: PenumbraEncryptionOptions,
+  options: PenumbraEncryptionOptions | null,
   ...files: PenumbraFile[]
 ): Promise<PenumbraEncryptedFile[]> {
   if (files.length === 0) {
