@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable require-jsdoc */
 const files = [
   {
@@ -162,7 +163,11 @@ function insertIntoCell(returnedFiles) {
 }
 
 // This is all of the Penumbra-relevant code:
-const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
+const onReady = async (
+  { detail: { penumbra } } = {
+    detail: self,
+  },
+) => {
   // Download and decrypt and display in table
   penumbra
     .get(...files)

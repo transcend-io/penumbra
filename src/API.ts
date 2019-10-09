@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
