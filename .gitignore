@@ -279,6 +279,3 @@ checks.json
 # Do not commit latest schema dump since it is always changing/only needed by test
 src/migrations/schemas/latest.dump
 *.hidden.dump
-
-# airtap saucelabs integration
-.airtaprc
