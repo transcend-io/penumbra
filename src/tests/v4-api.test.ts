@@ -15,7 +15,6 @@ test('setup', async (t) => {
     // eslint-disable-next-line no-shadow
     penumbra = ((event && event.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
-    self.penumbra = penumbra;
     t.pass('setup finished');
     t.end();
   };
