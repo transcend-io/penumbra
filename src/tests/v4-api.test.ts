@@ -7,8 +7,6 @@ import { PenumbraAPI, PenumbraReady, ProgressEmit } from '../types';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 
-import '../index';
-
 const view = self;
 
 let penumbra: PenumbraAPI;
@@ -17,6 +15,8 @@ test('setup', async (t) => {
     // eslint-disable-next-line no-shadow
     penumbra = ((event && event.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
+    self.penumbra = penumbra;
+    t.pass('setup finished');
     t.end();
   };
 
