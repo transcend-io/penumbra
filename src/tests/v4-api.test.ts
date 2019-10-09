@@ -7,6 +7,8 @@ import { PenumbraAPI, PenumbraReady, ProgressEmit } from '../types';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 
+import '../index';
+
 const view = self;
 
 let penumbra: PenumbraAPI;
@@ -15,7 +17,6 @@ test('setup', async (t) => {
     // eslint-disable-next-line no-shadow
     penumbra = ((event && event.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
-    penumbra.setWorkerLocation('/build/');
     t.end();
   };
 
@@ -27,10 +28,6 @@ test('setup', async (t) => {
 });
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
-  const cacheBuster = Math.random()
-    .toString(10)
-    .slice(2);
-  await penumbra.setWorkerLocation(`penumbra.worker.js?${cacheBuster}`);
   const NYT = {
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
