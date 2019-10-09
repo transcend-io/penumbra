@@ -1,18 +1,18 @@
 // penumbra
-import { ProgressEmit } from '../types';
+import { PenumbraEventType, ProgressEmit } from '../types';
 
 /**
  * An event emitter for the decryption progress
  * @param totalBytesRead the number of bytes read so far
  * @param contentLength the total number of bytes to read
- * @param url the URL being read from
+ * @param id the unique job ID # or URL being read from
  * @returns
  */
 export default function emitProgress(
-  type: 'decrypt' | 'zip',
+  type: PenumbraEventType,
   totalBytesRead: number,
   contentLength: number,
-  url: string,
+  id: string | number,
 ): void {
   // Calculate the progress remaining
   const percent = Math.round((totalBytesRead / contentLength) * 100);
@@ -22,7 +22,7 @@ export default function emitProgress(
       percent,
       totalBytesRead,
       contentLength,
-      url,
+      id,
     },
   };
 

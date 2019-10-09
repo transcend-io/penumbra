@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable max-lines */
 const view = self;
 
@@ -28,11 +29,17 @@ async function hash(algorithm, ab) {
 function timeout(callback, delay) {
   const timer = view.setTimeout(callback, delay * 1000);
   const clear = view.clearTimeout.bind(view, timer);
-  return { clear };
+  return {
+    clear,
+  };
 }
 
 /** Penumbra has loaded */
-const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
+const onReady = async (
+  { detail: { penumbra } } = {
+    detail: view,
+  },
+) => {
   tests.push(
     [
       'penumbra.get() and penumbra.getTextOrURI() test',
@@ -40,12 +47,7 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         const cacheBuster = Math.random()
           .toString(10)
           .slice(2);
-        await penumbra.setWorkerLocation({
-          base: '/',
-          decrypt: `decrypt.penumbra.worker.js?${cacheBuster}`,
-          zip: `zip.penumbra.worker.js?${cacheBuster}`,
-          StreamSaver: `streamsaver.penumbra.serviceworker.js?${cacheBuster}`,
-        });
+        await penumbra.setWorkerLocation(`penumbra.worker.js?${cacheBuster}`);
         const NYT = {
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
           filePrefix: 'NYT',
@@ -277,6 +279,26 @@ const onReady = async ({ detail: { penumbra } } = { detail: view }) => {
         const referenceHash =
           '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
         return imageHash === referenceHash;
+      },
+    ],
+    [
+      'penumbra.encrypt()',
+      async () => {
+        const { intoStream } = self;
+        const te = new TextEncoder();
+        const td = new TextDecoder();
+        const data = te.encode('test');
+        const { byteLength: size } = data;
+        const [encrypted] = await penumbra.encrypt(null, {
+          stream: intoStream(data),
+          size,
+        });
+        const options = await penumbra.getDecryptionInfo(encrypted);
+        const [decrypted] = await penumbra.decrypt(options, encrypted);
+        const decryptedData = await new Response(
+          decrypted.stream,
+        ).arrayBuffer();
+        return td.decode(decryptedData) === 'test';
       },
     ],
   );

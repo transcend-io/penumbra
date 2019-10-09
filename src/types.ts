@@ -16,6 +16,48 @@ import { penumbra } from './index';
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
+/** penumbra.encrypt() encryption options config (buffers or base64-encoded strings) */
+export type PenumbraEncryptionOptions = {
+  /** Encryption key */
+  key: string | Buffer;
+};
+
+/** Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt() */
+export type PenumbraDecryptionInfo = PenumbraEncryptionOptions & {
+  /** Initialization vector */
+  iv: string | Buffer;
+  /** Authentication tag (for AES GCM) */
+  authTag: string | Buffer;
+};
+
+/** Penumbra file composition */
+export type PenumbraFile = {
+  /** Backing stream */
+  stream: ReadableStream | ArrayBuffer;
+  /** File size (if backed by a ReadableStream) */
+  size?: number;
+  /** File mimetype */
+  mimetype: string;
+  /** Filename (excluding extension) */
+  filePrefix: string;
+  /** Relative file path (needed for zipping) */
+  path: string;
+  /** Optional ID for tracking encryption completion */
+  id?: number;
+};
+
+/** Penumbra file that is currently being encrypted */
+export type PenumbraFileWithID = PenumbraFile & {
+  /** ID for tracking encryption completion */
+  id: number;
+};
+
+/** penumbra.encrypt() output file (internal) */
+export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
+  /** Encrypted output stream */
+  stream: ReadableStream | ArrayBuffer;
+};
+
 /**
  * A file to download from a remote resource, that is optionally encrypted
  */
@@ -27,46 +69,30 @@ export type RemoteResource = {
   /** The name of the underlying file without the extension */
   filePrefix: string;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: {
-    /** A base64 encoded decryption key */
-    key: string | Buffer;
-    /** A base64 encoded initialization vector */
-    iv: string | Buffer;
-    /** A base64 encoded authentication tag (for AES GCM) */
-    authTag: string | Buffer;
-  };
+  decryptionOptions?: PenumbraDecryptionInfo;
   /** Relative file path (needed for zipping) */
   path?: string;
 };
 
 /**
- * File is optional
+ * Remote resource where file prefix is optional
  */
 export type RemoteResourceWithoutFile = Optionalize<
   RemoteResource,
   'filePrefix'
 >;
 
-/** Penumbra file composition */
-export type PenumbraFile = {
-  /** Backing stream */
-  stream: ReadableStream | ArrayBuffer;
-  /** File mimetype */
-  mimetype: string;
-  /** Filename (excluding extension) */
-  filePrefix: string;
-  /** Relative file path (needed for zipping) */
-  path: string;
-};
+/** Penumbra event types */
+export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
 
 /**
  * Progress event details
  */
 export type ProgressDetails = {
-  /** The URL downloading from */
-  url: string;
-  /** Progress type */
-  type: 'decrypt' | 'zip';
+  /** The job ID # or URL being downloaded from for decryption */
+  id: string | number;
+  /** Event type */
+  type: PenumbraEventType;
   /** Percentage completed */
   percent: number;
   /** Total bytes read */
@@ -79,6 +105,21 @@ export type ProgressDetails = {
  * The type that is emitted as progress continues
  */
 export type ProgressEmit = CustomEvent<ProgressDetails>;
+
+/**
+ * Encryption completetion event details
+ */
+export type EncryptionCompletion = {
+  /** Encryption job ID */
+  id: number;
+  /** Decryption config info */
+  decryptionInfo: PenumbraDecryptionInfo;
+};
+
+/**
+ * The type that is emitted as progress continues
+ */
+export type EncryptionCompletionEmit = CustomEvent<EncryptionCompletion>;
 
 /**
  * The type that is emitted when penumbra is ready
@@ -115,7 +156,7 @@ export type PenumbraTextOrURI = {
 export type PenumbraAPI = typeof penumbra;
 
 /**
- * Common Penumbra Worker API
+ * Penumbra Worker API
  */
 export type PenumbraWorkerAPI = {
   /**
@@ -124,12 +165,6 @@ export type PenumbraWorkerAPI = {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setup: (eventListener: any) => Promise<void>;
-};
-
-/**
- * Penumbra Decryption Worker API
- */
-export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -148,12 +183,58 @@ export type PenumbraDecryptionWorkerAPI = PenumbraWorkerAPI & {
    * @returns A readable stream of the deciphered file
    */
   getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
-};
-
-/**
- * Penumbra Zip Worker API
- */
-export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
+  /**
+   * Streaming encryption of ReadableStreams
+   *
+   * @param ids - Unique identifier for tracking encryption completion
+   * @param sizes - Size of each file to encrypt (in bytes)
+   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
+   * @returns ReadableStream[] of the encrypted files
+   */
+  encrypt: (
+    options: PenumbraEncryptionOptions,
+    ids: number[],
+    sizes: number[],
+    readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
+  ) => Promise<PenumbraDecryptionInfo[]>;
+  /**
+   * Buffered (non-streaming) encryption of ArrayBuffers
+   *
+   * @param buffers - The file buffers to encrypt
+   * @returns ArrayBuffer[] of the encrypted files
+   */
+  encryptBuffers: (
+    options: PenumbraEncryptionOptions,
+    files: PenumbraFile[],
+  ) => Promise<ArrayBuffer[]>;
+  /**
+   * Streaming decryption of ReadableStreams
+   *
+   * @param ids - Unique identifier for tracking decryption completion
+   * @param sizes - Size of each file to decrypt (in bytes)
+   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
+   * @returns ReadableStream[] of the decrypted files
+   */
+  decrypt: (
+    options: PenumbraDecryptionInfo,
+    ids: number[],
+    sizes: number[],
+    readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
+  ) => Promise<void>;
+  /**
+   * Buffered (non-streaming) encryption of ArrayBuffers
+   *
+   * @param buffers - The file buffers to encrypt
+   * @returns ArrayBuffer[] of the encrypted files
+   */
+  decryptBuffers: (
+    options: PenumbraDecryptionInfo,
+    files: PenumbraFile[],
+  ) => Promise<ArrayBuffer[]>;
   /**
    * Zips one or more PenumbraFiles while keeping their path
    * data in-tact.
@@ -169,32 +250,21 @@ export type PenumbraZipWorkerAPI = PenumbraWorkerAPI & {
 };
 
 /**
- * Worker location options. All options support relative URLs.
- */
-export type WorkerLocationOptions = {
-  /** The directory where the workers scripts are available */
-  base?: string;
-  /** The location of the decryption Worker script */
-  decrypt?: string;
-  /** The location of the zip Worker script */
-  zip?: string;
-  /** The location of the StreamSaver ServiceWorker script */
-  StreamSaver?: string;
-};
-
-/**
  * Worker location URLs. All fields are absolute URLs.
  */
 export type WorkerLocation = {
   /** The directory where the workers scripts are available */
   base: URL;
-  /** The location of the decryption Worker script */
-  decrypt: URL;
-  /** The location of the zip Worker script */
-  zip: URL;
+  /** The location of the Penumbra Worker script */
+  penumbra: URL;
   /** The location of the StreamSaver ServiceWorker script */
   StreamSaver: URL;
 };
+
+/**
+ * Worker location options. All options support relative URLs.
+ */
+export type WorkerLocationOptions = Partial<WorkerLocation>;
 
 /**
  * An individual Penumbra Worker's interfaces
@@ -205,6 +275,8 @@ export type PenumbraWorker = {
   /** PenumbraWorker's Comlink interface */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   comlink: any;
+  /** Worker initialization state */
+  initialized: boolean;
 };
 
 /**
@@ -222,6 +294,8 @@ export type PenumbraServiceWorker = {
 export type PenumbraWorkers = {
   /** The decryption Worker */
   decrypt: PenumbraWorker;
+  /** The encryption Worker */
+  encrypt: PenumbraWorker;
   /** The zip Worker */
   zip: PenumbraWorker;
   /** The StreamSaver ServiceWorker */
@@ -229,7 +303,7 @@ export type PenumbraWorkers = {
 };
 
 /** Worker->main thread progress forwarder */
-export type ProgressForwarder = {
+export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
-  handler?: (event: ProgressEmit) => Promise<void>;
+  handler?: (event: Event) => Promise<void>;
 };

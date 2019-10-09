@@ -1,47 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Penumbra Tests</title>
-    <meta charset="UTF-8" />
-    <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
-  </head>
-  <body>
-    <div id="app">
-      <h1>Penumbra Tests</h1>
-    </div>
-    <div><p>Open your console (Option+Command+I) to view test results.</p></div>
-    <!--
+
+<head>
+  <title>Penumbra Tests</title>
+  <meta charset="UTF-8" />
+  <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
+</head>
+
+<body>
+  <div id="app">
+    <h1>Penumbra Tests</h1>
+  </div>
+  <div>
+    <p>Open your console (Option+Command+I) to view test results.</p>
+  </div>
+  <!--
     <script src="demo.js" async defer></script>
     <script src="penumbra.js" data-penumbra async defer></script>
     -->
-    <script async defer>
-      document.currentScript.remove();
-      (() => {
-        const scripts = document.createDocumentFragment();
-        const penumbra = document.createElement('script');
-        const cacheBuster = Math.random()
-          .toString(10)
-          .slice(2);
+  <script>
+    document.currentScript.remove();
+    (() => {
+      const scripts = document.createDocumentFragment();
+      const penumbra = document.createElement('script');
+      const cacheBuster = Math.random()
+        .toString(10)
+        .slice(2);
 
-        penumbra.async = true;
-        penumbra.defer = true;
+      penumbra.async = true;
+      penumbra.defer = true;
 
-        const demo = penumbra.cloneNode();
+      const demo = penumbra.cloneNode();
 
-        penumbra.dataset.penumbra = '';
-        // penumbra.dataset.workers = JSON.stringify({
-        //   base: '/',
-        //   decrypt: 'decrypt.penumbra.worker.js?' + cacheBuster,
-        //   zip: 'zip.penumbra.worker.js?' + cacheBuster,
-        //   StreamSaver: 'streamsaver.penumbra.serviceworker.js?' + cacheBuster,
-        // });
-        penumbra.src = 'penumbra.js?' + cacheBuster;
-        demo.src = 'demo.js?' + cacheBuster;
+      penumbra.dataset.penumbra = '';
+      penumbra.dataset.worker = `penumbra.worker.js?${cacheBuster}`;
+      penumbra.src = `penumbra.js?${cacheBuster}`;
+      demo.src = `demo.js?${cacheBuster}`;
 
-        scripts.appendChild(demo);
-        scripts.appendChild(penumbra);
-        document.body.appendChild(scripts);
-      })();
-    </script>
-  </body>
+      scripts.appendChild(demo);
+      scripts.appendChild(penumbra);
+      document.body.appendChild(scripts);
+    })();
+
+  </script>
+</body>
+
 </html>

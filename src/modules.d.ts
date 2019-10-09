@@ -15,7 +15,22 @@ declare module 'worker-loader!*' {
  * copies crypto definitions
  */
 declare module 'crypto-browserify' {
-  import { CipherGCMOptions, CipherGCMTypes, DecipherGCM } from 'crypto';
+  import {
+    CipherGCMOptions,
+    CipherGCMTypes,
+    DecipherGCM,
+    CipherGCM,
+  } from 'crypto';
+
+  /**
+   * Create cipher iv
+   */
+  export function createCipheriv(
+    algorithm: CipherGCMTypes,
+    key: string | Buffer | NodeJS.TypedArray | DataView,
+    iv: string | Buffer | NodeJS.TypedArray | DataView,
+    options?: CipherGCMOptions,
+  ): CipherGCM;
 
   /**
    * Create decipher iv

@@ -1,20 +1,24 @@
 // Remote
 import { transfer } from 'comlink';
-import { RemoteReadableStream } from 'remote-web-streams';
+import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
+import { toWebReadableStream } from 'web-streams-node';
 
 // Types
 
 // Local
 import {
   Compression,
-  // PenumbraDecryptionWorkerAPI,
-  PenumbraDecryptionWorkerAPI,
+  EncryptionCompletionEmit,
+  PenumbraDecryptionInfo,
+  PenumbraEncryptedFile,
+  PenumbraEncryptionOptions,
   PenumbraFile,
   PenumbraTextOrURI,
+  PenumbraWorkerAPI,
   RemoteResource,
 } from './types';
 import { blobCache, isViewableText } from './utils';
-import { getWorkers, setWorkerLocation } from './workers';
+import { getWorker, setWorkerLocation } from './workers';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -53,8 +57,8 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
-  const workers = await getWorkers();
-  const DecryptionChannel = workers.decrypt.comlink;
+  const worker = await getWorker();
+  const DecryptionChannel = worker.comlink;
   if ('WritableStream' in self) {
     // WritableStream constructor supported
     const remoteStreams = resources.map(() => new RemoteReadableStream());
@@ -70,17 +74,15 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new DecryptionChannel().then(
-      async (thread: PenumbraDecryptionWorkerAPI) => {
-        await thread.get(transfer(writablePorts, writablePorts), resources);
-      },
-    );
+    new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+      await thread.get(transfer(writablePorts, writablePorts), resources);
+    });
     return readables as PenumbraFile[];
   }
-  let files: PenumbraFile[] = await new DecryptionChannel().then(
-    async (thread: PenumbraDecryptionWorkerAPI) => {
+  let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
+    async (thread: PenumbraWorkerAPI) => {
       const buffers = await thread.getBuffers(resources);
-      files = buffers.map((stream, i) => {
+      decryptedFiles = buffers.map((stream, i) => {
         const { url } = resources[i];
         resolver.href = url;
         const path = resolver.pathname;
@@ -90,10 +92,10 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
           ...resources[i],
         };
       });
-      return files;
+      return decryptedFiles;
     },
   );
-  return files;
+  return decryptedFiles;
 }
 
 /** Zip files retrieved by Penumbra */
@@ -181,6 +183,248 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
+let encryptionJobID = 0;
+const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
+
+const trackEncryptionCompletion = (
+  searchForID?: string | number,
+): Promise<PenumbraDecryptionInfo> =>
+  new Promise((complete) => {
+    const listener = ({
+      type,
+      detail: { id, decryptionInfo },
+    }: EncryptionCompletionEmit): void => {
+      decryptionConfigs.set(id, decryptionInfo);
+      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (self.removeEventListener as any)(type, listener);
+        complete(decryptionInfo);
+      }
+    };
+    self.addEventListener('penumbra-encryption-complete', listener);
+  });
+
+trackEncryptionCompletion();
+
+/**
+ * Get the decryption config for an encrypted file
+ *
+ * ```ts
+ * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
+ * ```
+ */
+export async function getDecryptionInfo(
+  file: PenumbraEncryptedFile,
+): Promise<PenumbraDecryptionInfo> {
+  const { id } = file;
+  if (!decryptionConfigs.has(id)) {
+    // decryption config not yet received. waiting for event with promise
+    return trackEncryptionCompletion(id);
+  }
+  return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
+}
+
+/**
+ * Encrypt files
+ *
+ * ```ts
+ * await penumbra.encrypt(options, ...files);
+ * // usage example:
+ * size = 4096 * 64 * 64;
+ * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
+ * let data = [];
+ * file.then(async ([encrypted]) => {
+ *   console.log('encryption started');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * });
+ */
+export async function encrypt(
+  options: PenumbraEncryptionOptions,
+  ...files: PenumbraFile[]
+): Promise<PenumbraEncryptedFile[]> {
+  if (files.length === 0) {
+    throw new Error('penumbra.encrypt() called without arguments');
+  }
+  if (files.some((file) => file.stream instanceof ArrayBuffer)) {
+    throw new Error('penumbra.encrypt() only supports ReadableStreams');
+  }
+  const worker = await getWorker();
+  const EncryptionChannel = worker.comlink;
+  if ('WritableStream' in self) {
+    // WritableStream constructor supported
+    const remoteReadableStreams = files.map(() => new RemoteReadableStream());
+    const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+    const ids: number[] = [];
+    const sizes: number[] = [];
+    // collect file sizes and assign encryption job IDs for completion tracking
+    files.forEach((file) => {
+      // eslint-disable-next-line no-plusplus, no-param-reassign
+      ids.push((file.id = encryptionJobID++));
+      const { size } = file;
+      if (size) {
+        sizes.push(size);
+      } else {
+        throw new Error('penumbra.encrypt(): Unable to determine file size');
+      }
+    });
+    // extract ports from remote readable/writable streams for Comlink.transfer
+    const readablePorts = remoteWritableStreams.map(
+      ({ readablePort }) => readablePort,
+    );
+    const writablePorts = remoteReadableStreams.map(
+      ({ writablePort }) => writablePort,
+    );
+    // enter worker thread
+    await new EncryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+      /**
+       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
+       * from the worker thread and starts reading the input stream from
+       * [remoteWritableStream.writable]
+       */
+      thread.encrypt(
+        options,
+        ids,
+        sizes,
+        transfer(readablePorts, readablePorts),
+        transfer(writablePorts, writablePorts),
+      );
+    });
+    // encryption jobs submitted and still processing
+    remoteWritableStreams.forEach((remoteWritableStream, i) => {
+      // pipe input files into remote writable streams for worker
+      (files[i].stream instanceof ReadableStream
+        ? files[i].stream
+        : toWebReadableStream(files[i].stream)
+      ).pipeTo(remoteWritableStream.writable);
+    });
+    // construct output files with corresponding remote readable streams
+    const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+      (stream, i): PenumbraEncryptedFile => ({
+        ...files[i],
+        stream: stream.readable as ReadableStream,
+        size: sizes[i],
+        id: ids[i],
+      }),
+    );
+    return readables;
+  }
+  throw new Error(
+    "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
+  );
+  /*
+  let encryptedFiles: PenumbraEncryptedFile[] = await new EncryptionChannel().then(
+    async (thread: PenumbraWorkerAPI) => {
+      const buffers = await thread.encryptBuffers(options, files);
+      encryptedFiles = buffers.map((stream, i) => ({
+        stream,
+        ...options,
+        ...files[i],
+      }));
+      return encryptedFiles;
+    },
+  );
+  return encryptedFiles;
+  */
+}
+
+/**
+ * Decrypt files encrypted by penumbra.encrypt()
+ *
+ * ```ts
+ * await penumbra.decrypt(options, ...files);
+ * // usage example:
+ * size = 4096 * 64 * 64;
+ * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
+ * let data = [];
+ * file.then(async ([encrypted]) => {
+ *   console.log('encryption started');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * });
+ */
+export async function decrypt(
+  options: PenumbraDecryptionInfo,
+  ...files: PenumbraEncryptedFile[]
+): Promise<PenumbraFile[]> {
+  if (files.length === 0) {
+    throw new Error('penumbra.decrypt() called without arguments');
+  }
+  const worker = await getWorker();
+  const DecryptionChannel = worker.comlink;
+  if ('WritableStream' in self) {
+    // WritableStream constructor supported
+    const remoteReadableStreams = files.map(() => new RemoteReadableStream());
+    const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+    const ids: number[] = [];
+    const sizes: number[] = [];
+    // collect file sizes and assign encryption job IDs for completion tracking
+    files.forEach((file) => {
+      // eslint-disable-next-line no-plusplus, no-param-reassign
+      ids.push((file.id = file.id || encryptionJobID++));
+      const { size } = file;
+      if (size) {
+        sizes.push(size);
+      } else {
+        throw new Error('penumbra.encrypt(): Unable to determine file size');
+      }
+    });
+    // extract ports from remote readable/writable streams for Comlink.transfer
+    const readablePorts = remoteWritableStreams.map(
+      ({ readablePort }) => readablePort,
+    );
+    const writablePorts = remoteReadableStreams.map(
+      ({ writablePort }) => writablePort,
+    );
+    // enter worker thread
+    await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+      /**
+       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
+       * from the worker thread and starts reading the input stream from
+       * [remoteWritableStream.writable]
+       */
+      thread.decrypt(
+        options,
+        ids,
+        sizes,
+        transfer(readablePorts, readablePorts),
+        transfer(writablePorts, writablePorts),
+      );
+    });
+    // encryption jobs submitted and still processing
+    remoteWritableStreams.forEach((remoteWritableStream, i) => {
+      // pipe input files into remote writable streams for worker
+      (files[i].stream instanceof ReadableStream
+        ? files[i].stream
+        : toWebReadableStream(files[i].stream)
+      ).pipeTo(remoteWritableStream.writable);
+    });
+    // construct output files with corresponding remote readable streams
+    const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+      (stream, i): PenumbraEncryptedFile => ({
+        ...files[i],
+        stream: stream.readable as ReadableStream,
+        size: sizes[i],
+        id: ids[i],
+      }),
+    );
+    return readables;
+  }
+  let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
+    async (thread: PenumbraWorkerAPI) => {
+      const buffers = await thread.decryptBuffers(options, files);
+      decryptedFiles = buffers.map((stream, i) => ({
+        stream,
+        ...files[i],
+      }));
+      return decryptedFiles;
+    },
+  );
+  return decryptedFiles;
+}
+
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)
  *
@@ -209,6 +453,9 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 
 const penumbra = {
   get,
+  encrypt,
+  decrypt,
+  getDecryptionInfo,
   save,
   getBlob,
   getTextOrURI,
