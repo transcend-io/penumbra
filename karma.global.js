@@ -6,8 +6,29 @@ module.exports = (config) => ({
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
   frameworks: ['tap'],
 
+  customContextFile: 'penumbra-karma-context.html',
+
   // list of files / patterns to load in the browser
-  files: ['build/tests.js'],
+  files: [
+    {
+      pattern: 'build/penumbra.worker.js',
+      included: false,
+      served: true,
+      nocache: true,
+    },
+    {
+      pattern: 'build/penumbra.js',
+      included: false,
+      served: true,
+      nocache: true,
+    },
+    {
+      pattern: 'build/tests.js',
+      included: true,
+      served: true,
+      nocache: true,
+    },
+  ],
 
   // list of files / patterns to exclude
   exclude: [],
