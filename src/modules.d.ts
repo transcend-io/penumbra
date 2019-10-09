@@ -16,10 +16,10 @@ declare module 'worker-loader!*' {
  */
 declare module 'crypto-browserify' {
   import {
+    CipherGCM,
     CipherGCMOptions,
     CipherGCMTypes,
     DecipherGCM,
-    CipherGCM,
   } from 'crypto';
 
   /**
