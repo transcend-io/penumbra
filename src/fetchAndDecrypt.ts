@@ -10,14 +10,15 @@ import { toBuff } from './utils';
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
  *
  * @param resource - The remote resource to download
+ * @param fetchOptions - Options to include in the download URL fetch
  * @returns A readable stream of the deciphered file
  */
-export default function fetchAndDecrypt({
-  url,
-  decryptionOptions,
-}: RemoteResourceWithoutFile): Promise<ReadableStream> {
+export default function fetchAndDecrypt(
+  { url, decryptionOptions }: RemoteResourceWithoutFile,
+  fetchOptions: RequestInit = { credentials: 'include' },
+): Promise<ReadableStream> {
   return (
-    fetch(url)
+    fetch(url, fetchOptions)
       // Retrieve ReadableStream body
       .then((response) => {
         // Throw an error if we have no body to parse
