@@ -181,13 +181,15 @@ const onReady = async (
     'penumbra-progress',
     ({ detail: { percent, url, contentLength } }) => {
       const i = files.findIndex((elt) => elt.url === url);
-      const cell = document.getElementById(`${i}-progress`);
-      cell.innerText = `${percent}%`;
+      if (i !== -1) {
+        const cell = document.getElementById(`${i}-progress`);
+        cell.innerText = `${percent}%`;
 
-      if (!runOnce[i]) {
-        const cell2 = document.getElementById(`${i}-size`);
-        cell2.innerText = `${contentLength / 1000}KB`;
-        runOnce[i] = true;
+        if (!runOnce[i]) {
+          const cell2 = document.getElementById(`${i}-size`);
+          cell2.innerText = `${contentLength / 1000}KB`;
+          runOnce[i] = true;
+        }
       }
     },
   );
