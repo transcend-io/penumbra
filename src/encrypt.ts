@@ -2,7 +2,7 @@
 import { createCipheriv } from 'crypto-browserify';
 
 // local
-import { Cipher, CipherGCM } from 'crypto';
+import { CipherGCM } from 'crypto';
 import intoStream from 'into-stream';
 import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
@@ -129,10 +129,7 @@ export function encryptStream(
 }
 
 /** Encrypt a buffer */
-export function encryptBuffer(
-  buffer: ArrayBuffer,
-  cipher: Cipher,
-): ArrayBuffer {
+export function encryptBuffer(): ArrayBuffer {
   console.error('penumbra encryptBuffer() is not yet implemented');
   return new ArrayBuffer(10);
 }
