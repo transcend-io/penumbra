@@ -91,6 +91,10 @@ penumbra.get(...resources: RemoteResource[]): Promise<PenumbraFile[]>
 Encrypt files.
 
 ```ts
+penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): Promise<PenumbraEncryptedFile[]>
+```
+
+```ts
 size = 4096 * 128;
 addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
 addEventListener('penumbra-encryption-complete', (e) =>
@@ -109,7 +113,31 @@ file.then(async ([encrypted]) => {
 Get decryption info for a file, including the iv, authTag, and key. This may only be called on files that have finished being encrypted.
 
 ```ts
-penumbra.getDecryptionInfo(file: PenumbraFile): PenumbraDecryptionInfo
+penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionInfo>
+```
+
+### .decrypt
+
+Decrypt files.
+
+```ts
+penumbra.decrypt(options: PenumbraDecryptionInfo, ...files: PenumbraEncryptedFile[]): Promise<PenumbraFile[]>
+```
+
+```ts
+const { intoStream } = self;
+const te = new TextEncoder();
+const td = new TextDecoder();
+const data = te.encode('test');
+const { byteLength: size } = data;
+const [encrypted] = await penumbra.encrypt(null, {
+  stream: intoStream(data),
+  size,
+});
+const options = await penumbra.getDecryptionInfo(encrypted);
+const [decrypted] = await penumbra.decrypt(options, encrypted);
+const decryptedData = await new Response(decrypted.stream).arrayBuffer();
+return td.decode(decryptedData) === 'test';
 ```
 
 ### .save
