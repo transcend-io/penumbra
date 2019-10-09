@@ -26,6 +26,7 @@
   - [.get](#get)
   - [.encrypt](#encrypt)
   - [.getDecryptionInfo](#getdecryptioninfo)
+  - [.decrypt](#decrypt)
   - [.save](#save)
   - [.getBlob](#getblob)
   - [.getTextOrURI](#gettextoruri)
