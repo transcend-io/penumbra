@@ -179,9 +179,9 @@ const onReady = async (
   // Display download progress
   window.addEventListener(
     'penumbra-progress',
-    ({ detail: { percent, url, contentLength } }) => {
+    ({ detail: { percent, id, contentLength } }) => {
       const i = files.findIndex(
-        (elt) => 'url' in elt && typeof url !== 'undefined' && elt.url === url,
+        (elt) => 'url' in elt && typeof id !== 'undefined' && elt.url === id,
       );
       if (i !== -1) {
         const cell = document.getElementById(`${i}-progress`);

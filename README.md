@@ -337,8 +337,8 @@ You can listen to download and encryption progress events by listening to the `p
 ```js
 window.addEventListener(
   'penumbra-progress',
-  ({ detail: { percent, url, type } }) => {
-    console.log(`${type}% ${percent}% done for ${url}`);
+  ({ detail: { percent, id, type } }) => {
+    console.log(`${type}% ${percent}% done for ${id}`);
     // example output: decrypt 33% done for https://example.com/encrypted-data
   },
 );
