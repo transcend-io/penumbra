@@ -180,7 +180,9 @@ const onReady = async (
   window.addEventListener(
     'penumbra-progress',
     ({ detail: { percent, url, contentLength } }) => {
-      const i = files.findIndex((elt) => elt.url === url);
+      const i = files.findIndex(
+        (elt) => 'url' in elt && typeof url !== 'undefined' && elt.url === url,
+      );
       if (i !== -1) {
         const cell = document.getElementById(`${i}-progress`);
         cell.innerText = `${percent}%`;
