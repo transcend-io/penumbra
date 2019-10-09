@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable require-jsdoc */
 const files = [
   {
@@ -162,7 +163,11 @@ function insertIntoCell(returnedFiles) {
 }
 
 // This is all of the Penumbra-relevant code:
-const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
+const onReady = async (
+  { detail: { penumbra } } = {
+    detail: self,
+  },
+) => {
   // Download and decrypt and display in table
   penumbra
     .get(...files)
@@ -174,15 +179,19 @@ const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
   // Display download progress
   window.addEventListener(
     'penumbra-progress',
-    ({ detail: { percent, url, contentLength } }) => {
-      const i = files.findIndex((elt) => elt.url === url);
-      const cell = document.getElementById(`${i}-progress`);
-      cell.innerText = `${percent}%`;
+    ({ detail: { percent, id, contentLength } }) => {
+      const i = files.findIndex(
+        (elt) => 'url' in elt && typeof id !== 'undefined' && elt.url === id,
+      );
+      if (i !== -1) {
+        const cell = document.getElementById(`${i}-progress`);
+        cell.innerText = `${percent}%`;
 
-      if (!runOnce[i]) {
-        const cell2 = document.getElementById(`${i}-size`);
-        cell2.innerText = `${contentLength / 1000}KB`;
-        runOnce[i] = true;
+        if (!runOnce[i]) {
+          const cell2 = document.getElementById(`${i}-size`);
+          cell2.innerText = `${contentLength / 1000}KB`;
+          runOnce[i] = true;
+        }
       }
     },
   );

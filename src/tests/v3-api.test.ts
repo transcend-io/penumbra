@@ -4,7 +4,6 @@ import test from 'tape';
 import {
   PenumbraAPI,
   PenumbraReady,
-  PenumbraTextOrURI,
   ProgressEmit,
   RemoteResource,
 } from '../types';

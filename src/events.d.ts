@@ -1,7 +1,7 @@
 /* tslint:disable completed-docs */
 
 // penumbra
-import { PenumbraReady, ProgressEmit, EncryptionCompletionEmit } from './types';
+import { EncryptionCompletionEmit, PenumbraReady, ProgressEmit } from './types';
 
 declare global {
   /**

@@ -193,7 +193,7 @@ export type PenumbraWorkerAPI = {
    * @returns ReadableStream[] of the encrypted files
    */
   encrypt: (
-    options: PenumbraEncryptionOptions,
+    options: PenumbraEncryptionOptions | null,
     ids: number[],
     sizes: number[],
     readablePorts: MessagePort[],

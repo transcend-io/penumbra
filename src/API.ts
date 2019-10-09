@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
@@ -241,7 +242,7 @@ export async function getDecryptionInfo(
  * });
  */
 export async function encrypt(
-  options: PenumbraEncryptionOptions,
+  options: PenumbraEncryptionOptions | null,
   ...files: PenumbraFile[]
 ): Promise<PenumbraEncryptedFile[]> {
   if (files.length === 0) {

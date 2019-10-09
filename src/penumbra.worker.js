@@ -163,7 +163,7 @@ class PenumbraWorker {
    * @param buffers - The file buffers to encrypt
    * @returns ArrayBuffer[] of the encrypted files
    */
-  async encryptBuffers(buffers) {
+  async encryptBuffers() {
     //
   }
 

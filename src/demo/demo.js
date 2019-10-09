@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable max-lines */
 const view = self;

@@ -10,6 +10,7 @@
   <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a>
   <a href="https://automate.browserstack.com/public-build/UTM2bUZraHZxdzVwdEZjMjE1dUZKbkE2K0FlQlkyWmFlNW42bVBISmlTTT0tLW5JNDVzRUpnZVBNT09HQy9za2tUeFE9PQ==--a1fb760eef52522b746c59cbfbed9ba7394f36ec"><img src='https://automate.browserstack.com/badge.svg?badge_key=UTM2bUZraHZxdzVwdEZjMjE1dUZKbkE2K0FlQlkyWmFlNW42bVBISmlTTT0tLW5JNDVzRUpnZVBNT09HQy9za2tUeFE9PQ==--a1fb760eef52522b746c59cbfbed9ba7394f36ec'/></a>
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
+  <a href="https://automate.browserstack.com/public-build/UTM2bUZraHZxdzVwdEZjMjE1dUZKbkE2K0FlQlkyWmFlNW42bVBISmlTTT0tLW5JNDVzRUpnZVBNT09HQy9za2tUeFE9PQ==--a1fb760eef52522b746c59cbfbed9ba7394f36ec"><img src='https://automate.browserstack.com/badge.svg?badge_key=UTM2bUZraHZxdzVwdEZjMjE1dUZKbkE2K0FlQlkyWmFlNW42bVBISmlTTT0tLW5JNDVzRUpnZVBNT09HQy9za2tUeFE9PQ==--a1fb760eef52522b746c59cbfbed9ba7394f36ec'/></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra.svg?type=shield"/></a>
   <a href="https://codecov.io/gh/transcend-io/penumbra"><img src="https://codecov.io/gh/transcend-io/penumbra/branch/master/graph/badge.svg" alt="Code Coverage"></a>
   <a href="https://codeclimate.com/github/transcend-io/penumbra/maintainability"><img src="https://api.codeclimate.com/v1/badges/b87db99b427788ea3ce9/maintainability" /></a>
@@ -44,7 +45,6 @@
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
 - [Contributing](#contributing)
-- [Big Thanks](#big-thanks)
 - [License](#license)
 
 <!-- tocstop -->
@@ -337,8 +337,8 @@ You can listen to download and encryption progress events by listening to the `p
 ```js
 window.addEventListener(
   'penumbra-progress',
-  ({ detail: { percent, url, type } }) => {
-    console.log(`${type}% ${percent}% done for ${url}`);
+  ({ detail: { percent, id, type } }) => {
+    console.log(`${type}% ${percent}% done for ${id}`);
     // example output: decrypt 33% done for https://example.com/encrypted-data
   },
 );
@@ -398,12 +398,6 @@ npm run build
 # start tests and open a browser to localhost:8080
 npm run test:interactive
 ```
-
-## Big Thanks
-
-Cross-browser testing platform provided by [BrowserStack][homepage].
-
-[homepage]: https://www.browserstack.com/
 
 ## License
 
