@@ -18,8 +18,6 @@ import { emitProgress, toBuff } from './utils';
 /**
  * Decrypts a readable stream
  *
- * TODO check authTag with decipher.final()
- *
  * @param rs - A readable stream of encrypted data
  * @param decipher - The crypto module's decipher
  * @param contentLength - The content length of the file, in bytes
@@ -52,9 +50,9 @@ export default function decryptStream(
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
 
-          if (totalBytesRead >= contentLength) {
-            decipher.final();
-          }
+          // if (totalBytesRead >= contentLength) {
+          //   decipher.final();
+          // }
         },
       }),
     );
