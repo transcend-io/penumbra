@@ -21,6 +21,13 @@ export default function fetchAndDecrypt(
     fetch(url, fetchOptions)
       // Retrieve ReadableStream body
       .then((response) => {
+        console.log(response);
+        if (response.status >= 400) {
+          throw new Error(
+            `Received invalid status code: ${400} -- ${response.body}`,
+          );
+        }
+
         // Throw an error if we have no body to parse
         if (!response.body) {
           throw new Error('Response body is empty!');
