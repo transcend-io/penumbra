@@ -50,6 +50,7 @@ export default function decryptStream(
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
 
+          // TODO lazy auth tag from response trailer
           // if (totalBytesRead >= contentLength) {
           //   decipher.final();
           // }
