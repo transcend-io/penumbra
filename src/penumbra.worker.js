@@ -168,7 +168,7 @@ class PenumbraWorker {
   }
 
   /**
-   * Forward progress events to main thread
+   * Forward events to main thread
    */
   async setup(handler) {
     onPenumbraEvent.handler = handler;

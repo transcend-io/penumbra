@@ -9,6 +9,7 @@
  */
 
 // local
+import { PenumbraError } from './error';
 import { penumbra } from './index';
 
 /**
@@ -105,6 +106,14 @@ export type ProgressDetails = {
  * The type that is emitted as progress continues
  */
 export type ProgressEmit = CustomEvent<ProgressDetails>;
+
+/**
+ * Penumbra error event details
+ */
+export type PenumbraErrorDetails = PenumbraError;
+
+/** Penumbra error event */
+export type PenumbraErrorEmit = CustomEvent<PenumbraErrorDetails>;
 
 /**
  * Encryption completetion event details

@@ -1,7 +1,12 @@
 /* tslint:disable completed-docs */
 
 // penumbra
-import { EncryptionCompletionEmit, PenumbraReady, ProgressEmit } from './types';
+import {
+  EncryptionCompletionEmit,
+  PenumbraReady,
+  ProgressEmit,
+  PenumbraErrorEmit,
+} from './types';
 
 declare global {
   /**
@@ -12,6 +17,8 @@ declare global {
     'penumbra-progress': ProgressEmit;
     /** Emit upon the completion of an Penumbra encryption job */
     'penumbra-encryption-complete': EncryptionCompletionEmit;
+    /** Emit whenever the Penumbra worker encounters any errors */
+    'penumbra-error': PenumbraErrorEmit;
     /** Emit once Penumbra is ready to be used */
     'penumbra-ready': PenumbraReady;
   }
