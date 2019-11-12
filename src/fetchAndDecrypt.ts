@@ -10,16 +10,23 @@ import { toBuff } from './utils';
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
  *
  * @param resource - The remote resource to download
+ * @param fetchOptions - Options to include in the download URL fetch
  * @returns A readable stream of the deciphered file
  */
-export default function fetchAndDecrypt({
-  url,
-  decryptionOptions,
-}: RemoteResourceWithoutFile): Promise<ReadableStream> {
+export default function fetchAndDecrypt(
+  { url, decryptionOptions }: RemoteResourceWithoutFile,
+  fetchOptions: RequestInit = { credentials: 'include' },
+): Promise<ReadableStream> {
   return (
-    fetch(url)
+    fetch(url, fetchOptions)
       // Retrieve ReadableStream body
       .then((response) => {
+        if (response.status >= 400) {
+          throw new Error(
+            `Received invalid status code: ${400} -- ${response.body}`,
+          );
+        }
+
         // Throw an error if we have no body to parse
         if (!response.body) {
           throw new Error('Response body is empty!');
@@ -35,7 +42,8 @@ export default function fetchAndDecrypt({
 
         // Convert to buffers
         const bufferKey = toBuff(key);
-        const bufferIv = toBuff(iv);
+        // Grab from header if possible
+        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
         const bufferAuthTag = toBuff(authTag);
 
         // Construct the decipher
