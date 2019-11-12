@@ -122,7 +122,7 @@ Comlink.transferHandlers.set('error', {
    * @returns A re-created penumbra-progress CustomEvent
    */
   deserialize(detail: any) {
-    const event = new ErrorEvent('error');
+    const event = new ErrorEvent('error', detail);
     if (detail) {
       Object.keys(detail).forEach((key) => {
         (event as any)[key] = detail[key];
