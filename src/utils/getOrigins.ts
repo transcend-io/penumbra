@@ -1,4 +1,4 @@
-import { PenumbraError } from 'src/error';
+import { PenumbraError } from '../error';
 import emitError from './emitError';
 
 const ORIGIN_MATCHER = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
