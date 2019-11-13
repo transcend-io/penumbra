@@ -64,7 +64,10 @@ export function preconnect(
  * @returns A function that removes the link tags that were appended to the DOM
  */
 export function preload(...resources: RemoteResource[]): () => void {
-  return createResourceHintHelper(resources.map(({ url }) => url), 'preload');
+  return createResourceHintHelper(
+    resources.map(({ url }) => url),
+    'preload',
+  );
 }
 
 /**
@@ -81,7 +84,9 @@ export default async function fetchMany(
   ...resources: RemoteResourceWithoutFile[]
 ): Promise<ReadableStream[]> {
   const cleanup = preconnect(...resources);
-  const results = await Promise.all(resources.map(fetchAndDecrypt));
+  const results = await Promise.all(
+    resources.map((resource) => fetchAndDecrypt(resource)),
+  );
   cleanup();
   return results;
 }

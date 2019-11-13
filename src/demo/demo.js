@@ -43,7 +43,7 @@ const onReady = async (
 ) => {
   tests.push(
     [
-      'penumbra.get() and penumbra.getTextOrURI() test',
+      'penumbra.get() and penumbra.getTextOrURI() test (no credentials)',
       async () => {
         const cacheBuster = Math.random()
           .toString(10)

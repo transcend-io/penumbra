@@ -3,23 +3,33 @@ import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import decryptStream from './decrypt';
+import { PenumbraError } from './error';
 import { RemoteResourceWithoutFile } from './types';
 import { toBuff } from './utils';
+import emitError from './utils/emitError';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
  *
  * @param resource - The remote resource to download
+ * @param fetchOptions - Options to include in the download URL fetch. Set to `{ credentials: 'include' }` to include credentials for a CORS request.
  * @returns A readable stream of the deciphered file
  */
-export default function fetchAndDecrypt({
-  url,
-  decryptionOptions,
-}: RemoteResourceWithoutFile): Promise<ReadableStream> {
+export default function fetchAndDecrypt(
+  { url, decryptionOptions }: RemoteResourceWithoutFile,
+  fetchOptions?: RequestInit,
+): Promise<ReadableStream> {
+  emitError(new PenumbraError('test error for error bubbling'));
   return (
-    fetch(url)
+    fetch(url, fetchOptions)
       // Retrieve ReadableStream body
       .then((response) => {
+        if (response.status >= 400) {
+          throw new Error(
+            `Received invalid status code: ${400} -- ${response.body}`,
+          );
+        }
+
         // Throw an error if we have no body to parse
         if (!response.body) {
           throw new Error('Response body is empty!');
@@ -35,7 +45,8 @@ export default function fetchAndDecrypt({
 
         // Convert to buffers
         const bufferKey = toBuff(key);
-        const bufferIv = toBuff(iv);
+        // Grab from header if possible
+        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
         const bufferAuthTag = toBuff(authTag);
 
         // Construct the decipher
