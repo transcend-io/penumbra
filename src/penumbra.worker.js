@@ -49,8 +49,13 @@ class PenumbraWorker {
           'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
         );
       }
+      const {
+        requestInit = {
+          credentials: 'include',
+        },
+      } = resource;
       const remoteStream = fromWritablePort(writablePorts[i]);
-      const localStream = await fetchAndDecrypt(resource);
+      const localStream = await fetchAndDecrypt(resource, requestInit);
       localStream.pipeTo(remoteStream);
     });
   }

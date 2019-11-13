@@ -3,8 +3,10 @@ import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import decryptStream from './decrypt';
+import { PenumbraError } from './error';
 import { RemoteResourceWithoutFile } from './types';
 import { toBuff } from './utils';
+import emitError from './utils/emitError';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
@@ -17,6 +19,7 @@ export default function fetchAndDecrypt(
   { url, decryptionOptions }: RemoteResourceWithoutFile,
   fetchOptions: RequestInit = { credentials: 'include' },
 ): Promise<ReadableStream> {
+  emitError(new PenumbraError('test error for error bubbling'));
   return (
     fetch(url, fetchOptions)
       // Retrieve ReadableStream body

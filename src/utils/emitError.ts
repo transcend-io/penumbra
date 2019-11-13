@@ -8,7 +8,7 @@ import { PenumbraErrorEmit } from '../types';
  * @param error Error object to emit
  * @returns
  */
-export default function emitError(id: number, error: PenumbraError): void {
+export default function emitError(error: PenumbraError): void {
   const detail =
     error instanceof PenumbraError ? error : new PenumbraError(error);
   const emitContent: Pick<PenumbraErrorEmit, 'detail'> = { detail };

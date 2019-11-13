@@ -43,7 +43,7 @@ const onReady = async (
 ) => {
   tests.push(
     [
-      'penumbra.get() and penumbra.getTextOrURI() test',
+      'penumbra.get() and penumbra.getTextOrURI() test (no credentials)',
       async () => {
         const cacheBuster = Math.random()
           .toString(10)
@@ -58,6 +58,7 @@ const onReady = async (
             iv: '6lNU+2vxJw6SFgse',
             authTag: 'gadZhS1QozjEmfmHLblzbg==',
           },
+          requestInit: {},
         };
         const {
           type: test1Type,
@@ -126,6 +127,7 @@ const onReady = async (
             iv: '6lNU+2vxJw6SFgse',
             authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
           },
+          requestInit: {},
         });
         await new Response(stream).arrayBuffer();
         return result;
@@ -144,6 +146,7 @@ const onReady = async (
               iv: '6lNU+2vxJw6SFgse',
               authTag: 'gadZhS1QozjEmfmHLblzbg==',
             },
+            requestInit: {},
           },
           {
             url:
@@ -155,6 +158,7 @@ const onReady = async (
               iv: '6lNU+2vxJw6SFgse',
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
+            requestInit: {},
           },
         );
         const hashes = await Promise.all(
@@ -181,6 +185,7 @@ const onReady = async (
             iv: '6lNU+2vxJw6SFgse',
             authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
           },
+          requestInit: {},
         });
 
         const imageBytes = await new Response(stream).arrayBuffer();
@@ -204,6 +209,7 @@ const onReady = async (
               iv: '6lNU+2vxJw6SFgse',
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
+            requestInit: {},
           }),
         )[0];
         let isURL;
@@ -235,6 +241,7 @@ const onReady = async (
               iv: '6lNU+2vxJw6SFgse',
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
+            requestInit: {},
           }),
         )[0];
         const testImage = new Image();
@@ -273,6 +280,7 @@ const onReady = async (
               iv: '6lNU+2vxJw6SFgse',
               authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
             },
+            requestInit: {},
           }),
         );
         const imageBytes = await new Response(blob).arrayBuffer();

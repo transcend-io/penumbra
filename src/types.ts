@@ -73,6 +73,8 @@ export type RemoteResource = {
   decryptionOptions?: PenumbraDecryptionInfo;
   /** Relative file path (needed for zipping) */
   path?: string;
+  /** Fetch options */
+  requestInit?: RequestInit;
 };
 
 /**

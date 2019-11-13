@@ -128,5 +128,6 @@ Comlink.transferHandlers.set('error', {
         (event as any)[key] = detail[key];
       });
     }
+    return event;
   },
 });
