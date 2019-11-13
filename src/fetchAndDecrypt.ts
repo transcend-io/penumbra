@@ -19,7 +19,6 @@ export default function fetchAndDecrypt(
   { url, decryptionOptions }: RemoteResourceWithoutFile,
   fetchOptions?: RequestInit,
 ): Promise<ReadableStream> {
-  emitError(new PenumbraError('test error for error bubbling'));
   return (
     fetch(url, fetchOptions)
       // Retrieve ReadableStream body
