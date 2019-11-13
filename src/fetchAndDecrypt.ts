@@ -24,18 +24,14 @@ export default function fetchAndDecrypt(
       // Retrieve ReadableStream body
       .then((response) => {
         if (response.status >= 400) {
-          const err = new PenumbraError(
+          throw new PenumbraError(
             `Received invalid status code: ${response.status} -- ${response.body}`,
           );
-          emitError(err);
-          throw err;
         }
 
         // Throw an error if we have no body to parse
         if (!response.body) {
-          const err = new PenumbraError('Response body is empty!');
-          emitError(err);
-          throw err;
+          throw new PenumbraError('Response body is empty!');
         }
 
         // If the file is unencrypted, simply return the readable stream
@@ -63,6 +59,10 @@ export default function fetchAndDecrypt(
           Number(response.headers.get('Content-Length') || '0'),
           url,
         );
+      })
+      .catch((err) => {
+        emitError(err);
+        throw err;
       })
   );
 }
