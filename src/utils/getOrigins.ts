@@ -1,3 +1,6 @@
+import { PenumbraError } from 'src/error';
+import emitError from './emitError';
+
 const ORIGIN_MATCHER = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
 
 /**
@@ -11,7 +14,9 @@ const ORIGIN_MATCHER = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
 export function extractOrigin(url: string): string {
   const origin = url.match(ORIGIN_MATCHER);
   if (!origin) {
-    throw new Error('No origin found. Possibly invalid URL');
+    const error = new PenumbraError('No origin found. Possibly invalid URL');
+    emitError(error);
+    throw error;
   }
   return origin[0];
 }

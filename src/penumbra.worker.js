@@ -12,6 +12,8 @@ import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 import { decrypt } from './decrypt';
+import { PenumbraError } from './error';
+import emitError from './utils/emitError';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -45,9 +47,11 @@ class PenumbraWorker {
     }
     resources.forEach(async (resource, i) => {
       if (!('url' in resource)) {
-        throw new Error(
+        const error = new PenumbraError(
           'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
         );
+        emitError(error);
+        throw error;
       }
       const { requestInit } = resource;
       const remoteStream = fromWritablePort(writablePorts[i]);
@@ -67,9 +71,11 @@ class PenumbraWorker {
     return Promise.all(
       resources.map(async (resource) => {
         if (!('url' in resource)) {
-          throw new Error(
+          const error = new PenumbraError(
             'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
           );
+          emitError(error);
+          throw error;
         }
         const buffer = await new Response(
           await fetchAndDecrypt(resource),

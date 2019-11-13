@@ -25,14 +25,18 @@ export default function fetchAndDecrypt(
       // Retrieve ReadableStream body
       .then((response) => {
         if (response.status >= 400) {
-          throw new Error(
+          const error = new PenumbraError(
             `Received invalid status code: ${400} -- ${response.body}`,
           );
+          emitError(error);
+          throw error;
         }
 
         // Throw an error if we have no body to parse
         if (!response.body) {
-          throw new Error('Response body is empty!');
+          const error = new PenumbraError('Response body is empty!');
+          emitError(error);
+          throw error;
         }
 
         // If the file is unencrypted, simply return the readable stream

@@ -8,12 +8,14 @@ import toBuffer from 'typedarray-to-buffer';
 // utils
 import intoStream from 'into-stream';
 import { toWebReadableStream } from 'web-streams-node';
+import { PenumbraError } from './error';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
 import { emitProgress, toBuff } from './utils';
+import emitError from './utils/emitError';
 
 /**
  * Decrypts a readable stream
@@ -107,7 +109,11 @@ export function decrypt(
   size: number,
 ): PenumbraFile {
   if (!options || !options.key || !options.iv || !options.authTag) {
-    throw new Error('penumbra.decrypt(): missing decryption options');
+    const error = new PenumbraError(
+      'penumbra.decrypt(): missing decryption options',
+    );
+    emitError(error);
+    throw error;
   }
 
   const { id } = file;
