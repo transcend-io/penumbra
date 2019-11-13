@@ -3,9 +3,9 @@
 // penumbra
 import {
   EncryptionCompletionEmit,
+  PenumbraErrorEmit,
   PenumbraReady,
   ProgressEmit,
-  PenumbraErrorEmit,
 } from './types';
 
 declare global {
