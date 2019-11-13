@@ -19,20 +19,23 @@ export default function fetchAndDecrypt(
   { url, decryptionOptions }: RemoteResourceWithoutFile,
   fetchOptions?: RequestInit,
 ): Promise<ReadableStream> {
-  emitError(new PenumbraError('test error for error bubbling'));
   return (
     fetch(url, fetchOptions)
       // Retrieve ReadableStream body
       .then((response) => {
         if (response.status >= 400) {
-          throw new Error(
-            `Received invalid status code: ${400} -- ${response.body}`,
+          const err = new PenumbraError(
+            `Received invalid status code: ${response.status} -- ${response.body}`,
           );
+          emitError(err);
+          throw err;
         }
 
         // Throw an error if we have no body to parse
         if (!response.body) {
-          throw new Error('Response body is empty!');
+          const err = new PenumbraError('Response body is empty!');
+          emitError(err);
+          throw err;
         }
 
         // If the file is unencrypted, simply return the readable stream
