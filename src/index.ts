@@ -34,20 +34,3 @@ self.intoStream = intoStream;
 self.penumbra = penumbra;
 
 self.dispatchEvent(new CustomEvent('penumbra-ready', { detail: { penumbra } }));
-
-/**
- * Get the penumbra from window and ensure it is defined
- *
- * @param mock - Mock penumbra when environment variable `PENUMBRA_MOCK` is true
- * @returns The penumbra API object
- */
-export function getPenumbra(
-  mock = process.env.PENUMBRA_MOCK === 'true',
-): PenumbraAPI {
-  // Mock the API
-  if (mock) {
-    return MOCK_API;
-  }
-
-  return penumbra;
-}
