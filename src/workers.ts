@@ -11,46 +11,77 @@ import {
   WorkerLocationOptions,
 } from './types';
 
+// ////// //
+// Config //
+// ////// //
+
+/**
+ * The default worker file locations
+ */
+const DEFAULT_WORKERS = {
+  penumbra: 'penumbra.worker.js',
+  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
+};
+
 // //// //
 // Init //
 // //// //
+
+// Save self to view
 const view = self;
 
+// Ensure rendering in DOM
 if (!view.document) {
   throw new Error(
     'Penumbra must be included in a document as an unbundled script element.',
   );
 }
 
-const scriptElement = (document.currentScript ||
-  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
-
-if (!scriptElement) {
-  throw new Error('Unable to locate Penumbra script element.');
-}
-
-const script = scriptElement.dataset;
-
+/** Whether or not sombra has been initialized */
 const initialized = false;
 
+// /////// //
+// Helpers //
+// /////// //
+
+/**
+ * Get the script element and throw an error if it cannot be found on the DOM
+ */
+function getScriptElement(): HTMLScriptElement {
+  const scriptElement =
+    document.currentScript || document.querySelector('script[data-penumbra]');
+  if (!scriptElement) {
+    throw new Error('Unable to locate Penumbra script element.');
+  }
+  return scriptElement as any;
+}
+
+/**
+ * Get the script throwing error if cannot be found
+ */
+function getScript(): DOMStringMap {
+  return getScriptElement().dataset;
+}
+
+/**
+ * Get the script throwing error if cannot be found
+ */
+function getScriptUrl(): URL {
+  return new URL(getScriptElement().src, location.href);
+}
+
+/** For resolving URLs */
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
 ) as HTMLAnchorElement;
-
-const scriptURL = new URL(scriptElement.src, location.href);
-
-const DEFAULT_WORKERS = {
-  penumbra: 'penumbra.worker.js',
-  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
-};
 
 /**
  * Resolve a potentially relative URL into an absolute URL
  */
 function resolve(url: string): URL {
   resolver.href = url;
-  return new URL(resolver.href, scriptURL);
+  return new URL(resolver.href, getScriptUrl());
 }
 
 // /////// //
@@ -63,6 +94,7 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
+  const script = getScript();
   const config = JSON.parse(script.workers || '{}');
   const options = {
     ...DEFAULT_WORKERS,
@@ -73,7 +105,7 @@ export function getWorkerLocation(): WorkerLocation {
   };
   const { base, penumbra, StreamSaver } = options;
 
-  const context = resolve(base || scriptURL);
+  const context = resolve(base || getScriptUrl());
 
   return {
     base: context,
@@ -150,7 +182,7 @@ view.addEventListener('beforeunload', cleanup);
  * @param options - Worker location options
  *
  * ```ts
- * // Set only the Penumbra Worker URL by passing a string. Base URL is derrived from this
+ * // Set only the Penumbra Worker URL by passing a string. Base URL is derived from this
  * penumbra.setWorkerLocation('/penumbra-workers/penumbra.worker.js')
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
@@ -169,6 +201,7 @@ export async function setWorkerLocation(
     console.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();
   }
+  const script = getScript();
 
   script.workers = JSON.stringify(
     typeof options === 'string'
