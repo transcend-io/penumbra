@@ -49,14 +49,5 @@ export function getPenumbra(
     return MOCK_API;
   }
 
-  // Pull off of the window
-  const { penumbra: currentPenumbra } = self; // eslint-disable-line no-restricted-globals
-
-  if (!currentPenumbra) {
-    throw new Error(
-      'Penumbra does not exist on self! Ensure it is loaded in the index.html file',
-    );
-  }
-
-  return currentPenumbra;
+  return penumbra;
 }

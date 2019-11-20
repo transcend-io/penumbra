@@ -22,6 +22,7 @@
         "markdownlint",
         "measure",
         "mimetype",
+        "nobuild",
         "nooper",
         "playsinline",
         "preconnect",
