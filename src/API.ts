@@ -4,11 +4,8 @@ import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import { toWebReadableStream } from 'web-streams-node';
 
-// Types
-
 // Local
 import {
-  Compression,
   EncryptionCompletionEmit,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
@@ -97,6 +94,18 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     },
   );
   return decryptedFiles;
+}
+
+/** Compression levels */
+export enum Compression {
+  /** No compression */
+  Store = 0,
+  /** Low compression */
+  Low = 1,
+  /** Medium compression */
+  Medium = 2,
+  /** High compression */
+  High = 3,
 }
 
 /** Zip files retrieved by Penumbra */
