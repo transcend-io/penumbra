@@ -8,11 +8,13 @@
 
 // exports
 import penumbra from './API';
+import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
 import { PenumbraAPI } from './types';
 
 export * from './types';
-export { penumbra };
+
+export { penumbra, MOCK_API };
 
 import intoStream = require('into-stream');
 
