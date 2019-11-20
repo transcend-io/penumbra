@@ -9,8 +9,8 @@
  */
 
 // local
+import penumbra from './API';
 import { PenumbraError } from './error';
-import { penumbra } from './index';
 
 /**
  * Make selected object keys defined by K optional in type T
