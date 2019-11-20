@@ -41,6 +41,7 @@
         "serviceworker",
         "setuptools",
         "shellcheck",
+        "sombra",
         "src",
         "streamsaver",
         "symlinks",

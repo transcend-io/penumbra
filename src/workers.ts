@@ -44,23 +44,25 @@ const initialized = false;
 // Helpers //
 // /////// //
 
+const scriptElement: HTMLScriptElement | undefined | null =
+  document.currentScript ||
+  (document.querySelector('script[data-penumbra]') as any);
+
 /**
  * Get the script element and throw an error if it cannot be found on the DOM
  */
 function getScriptElement(): HTMLScriptElement {
-  const scriptElement =
-    document.currentScript || document.querySelector('script[data-penumbra]');
   if (!scriptElement) {
     throw new Error('Unable to locate Penumbra script element.');
   }
-  return scriptElement as any;
+  return scriptElement;
 }
 
 /**
  * Get the script throwing error if cannot be found
  */
 function getScript(): DOMStringMap {
-  return getScriptElement().dataset;
+  return getScriptElement()?.dataset || {};
 }
 
 /**
