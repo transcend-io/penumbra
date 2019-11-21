@@ -55,7 +55,7 @@ const scriptElement: HTMLScriptElement | undefined | null =
   (document.querySelector('script[data-penumbra]') as any);
 
 if (!scriptElement && SHOULD_LOG_EVENTS) {
-  console.warn('Unable to locate Penumbra script element.');
+  console.info('Unable to locate Penumbra script element.');
 }
 
 /**
@@ -63,16 +63,16 @@ if (!scriptElement && SHOULD_LOG_EVENTS) {
  */
 function getScriptElement(): HTMLScriptElement {
   if (!scriptElement) {
-    throw new Error('Unable to locate Penumbra script element.');
+    console.info('Unable to locate Penumbra script element.');
   }
-  return scriptElement;
+  return scriptElement || ({ dataset: {} } as any);
 }
 
 /**
  * Get the script throwing error if cannot be found
  */
 function getScript(): DOMStringMap {
-  return getScriptElement().dataset || {};
+  return getScriptElement().dataset;
 }
 
 /**
