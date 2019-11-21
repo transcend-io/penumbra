@@ -62,7 +62,7 @@ function getScriptElement(): HTMLScriptElement {
  * Get the script throwing error if cannot be found
  */
 function getScript(): DOMStringMap {
-  return getScriptElement()?.dataset || {};
+  return getScriptElement().dataset || {};
 }
 
 /**
