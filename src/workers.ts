@@ -23,6 +23,8 @@ const DEFAULT_WORKERS = {
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
+const SHOULD_LOG_EVENTS = process.env.NODE_ENV !== 'test';
+
 // //// //
 // Init //
 // //// //
@@ -44,11 +46,15 @@ const initialized = false;
 // Helpers //
 // /////// //
 
+if (SHOULD_LOG_EVENTS) {
+  console.info('Loading penumbra script element...');
+}
+
 const scriptElement: HTMLScriptElement | undefined | null =
   document.currentScript ||
   (document.querySelector('script[data-penumbra]') as any);
 
-if (!scriptElement && process.env.NODE_ENV !== 'test') {
+if (!scriptElement && SHOULD_LOG_EVENTS) {
   console.warn('Unable to locate Penumbra script element.');
 }
 
