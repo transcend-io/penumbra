@@ -48,6 +48,10 @@ const scriptElement: HTMLScriptElement | undefined | null =
   document.currentScript ||
   (document.querySelector('script[data-penumbra]') as any);
 
+if (!scriptElement && process.env.NODE_ENV !== 'test') {
+  console.warn('Unable to locate Penumbra script element.');
+}
+
 /**
  * Get the script element and throw an error if it cannot be found on the DOM
  */
