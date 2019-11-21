@@ -49,9 +49,10 @@ const initialized = false;
 if (SHOULD_LOG_EVENTS) {
   console.info('Loading penumbra script element...');
 }
-const scriptElement: HTMLScriptElement = (document.currentScript ||
-  document.querySelector('script[data-penumbra]') || { dataset: {} }) as any;
+let scriptElement: HTMLScriptElement = (document.currentScript ||
+  document.querySelector('script[data-penumbra]')) as any;
 if (!scriptElement && SHOULD_LOG_EVENTS) {
+  scriptElement = { dataset: {} } as any;
   console.info('Unable to locate Penumbra script element.');
 }
 
