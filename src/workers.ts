@@ -42,45 +42,28 @@ if (!view.document) {
 /** Whether or not sombra has been initialized */
 const initialized = false;
 
-// /////// //
-// Helpers //
-// /////// //
+// //////////// //
+// Load Workers //
+// //////////// //
 
 if (SHOULD_LOG_EVENTS) {
   console.info('Loading penumbra script element...');
 }
-
-const scriptElement: HTMLScriptElement | undefined | null =
-  document.currentScript ||
-  (document.querySelector('script[data-penumbra]') as any);
-
+const scriptElement: HTMLScriptElement = (document.currentScript ||
+  document.querySelector('script[data-penumbra]') || { dataset: {} }) as any;
 if (!scriptElement && SHOULD_LOG_EVENTS) {
   console.info('Unable to locate Penumbra script element.');
 }
 
 /**
- * Get the script element and throw an error if it cannot be found on the DOM
+ * Get the script throwing error if cannot be found
  */
-function getScriptElement(): HTMLScriptElement {
-  if (!scriptElement) {
-    console.info('Unable to locate Penumbra script element.');
-  }
-  return scriptElement || ({ dataset: {} } as any);
-}
+const script = scriptElement.dataset;
 
 /**
  * Get the script throwing error if cannot be found
  */
-function getScript(): DOMStringMap {
-  return getScriptElement().dataset;
-}
-
-/**
- * Get the script throwing error if cannot be found
- */
-function getScriptUrl(): URL {
-  return new URL(getScriptElement().src, location.href);
-}
+const scriptUrl = new URL(scriptElement.src, location.href);
 
 /** For resolving URLs */
 const resolver = document.createElementNS(
@@ -93,7 +76,7 @@ const resolver = document.createElementNS(
  */
 function resolve(url: string): URL {
   resolver.href = url;
-  return new URL(resolver.href, getScriptUrl());
+  return new URL(resolver.href, scriptUrl);
 }
 
 // /////// //
@@ -106,7 +89,6 @@ function resolve(url: string): URL {
  * @param options - A stream of bytes to be saved to disk
  */
 export function getWorkerLocation(): WorkerLocation {
-  const script = getScript();
   const config = JSON.parse(script.workers || '{}');
   const options = {
     ...DEFAULT_WORKERS,
@@ -117,7 +99,7 @@ export function getWorkerLocation(): WorkerLocation {
   };
   const { base, penumbra, StreamSaver } = options;
 
-  const context = resolve(base || getScriptUrl());
+  const context = resolve(base || scriptUrl);
 
   return {
     base: context,
@@ -213,8 +195,6 @@ export async function setWorkerLocation(
     console.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();
   }
-  const script = getScript();
-
   script.workers = JSON.stringify(
     typeof options === 'string'
       ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
