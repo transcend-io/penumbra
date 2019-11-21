@@ -51,9 +51,11 @@ if (SHOULD_LOG_EVENTS) {
 }
 let scriptElement: HTMLScriptElement = (document.currentScript ||
   document.querySelector('script[data-penumbra]')) as any;
-if (!scriptElement && SHOULD_LOG_EVENTS) {
+if (!scriptElement) {
   scriptElement = { dataset: {} } as any;
-  console.info('Unable to locate Penumbra script element.');
+  if (SHOULD_LOG_EVENTS) {
+    console.info('Unable to locate Penumbra script element.');
+  }
 }
 
 /**
