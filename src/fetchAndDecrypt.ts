@@ -26,15 +26,16 @@ export default function fetchAndDecrypt(
         if (response.status >= 400) {
           const err = new PenumbraError(
             `Received invalid status code: ${response.status} -- ${response.body}`,
+            url,
           );
-          emitError(err, url);
+          emitError(err);
           throw err;
         }
 
         // Throw an error if we have no body to parse
         if (!response.body) {
-          const err = new PenumbraError('Response body is empty!');
-          emitError(err, url);
+          const err = new PenumbraError('Response body is empty!', url);
+          emitError(err);
           throw err;
         }
 

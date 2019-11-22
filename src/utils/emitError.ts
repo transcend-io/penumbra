@@ -10,14 +10,9 @@ import { PenumbraErrorEmit } from '../types';
  * @param downloadUrl The URL throwing error
  * @returns
  */
-export default function emitError(
-  error: PenumbraError,
-  downloadUrl: string,
-): void {
+export default function emitError(error: PenumbraError): void {
   const detail =
-    error instanceof PenumbraError
-      ? error
-      : new PenumbraError(error, downloadUrl);
+    error instanceof PenumbraError ? error : new PenumbraError(error, 'NA');
   const emitContent: Pick<PenumbraErrorEmit, 'detail'> = { detail };
   // Dispatch the event
   const event = new CustomEvent('penumbra-error', emitContent);
