@@ -1,7 +1,10 @@
 /** Penumbra error class */
 export class PenumbraError extends Error {
+  /** The download URL throwing error */
+  public downloadUrl: string;
+
   /** Extend new Error */
-  constructor(error: string | Error) {
+  constructor(error: string | Error, downloadUrl: string) {
     if (typeof error === 'string') {
       super(error);
     } else {
@@ -14,6 +17,7 @@ export class PenumbraError extends Error {
         }
       });
     }
+    this.downloadUrl = downloadUrl;
     this.name = 'PenumbraError';
   }
 
