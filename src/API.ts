@@ -82,12 +82,13 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     async (thread: PenumbraWorkerAPI) => {
       const buffers = await thread.getBuffers(resources);
       decryptedFiles = buffers.map((stream, i) => {
-        const { url } = resources[i];
+        const { url, jobID = createJobID() } = resources[i];
         resolver.href = url;
         const path = resolver.pathname;
         return {
           stream,
           path,
+          jobID,
           ...resources[i],
         };
       });
@@ -226,7 +227,7 @@ trackEncryptionCompletion();
 export async function getDecryptionInfo(
   file: PenumbraEncryptedFile,
 ): Promise<PenumbraDecryptionInfo> {
-  const { id } = file;
+  const { jobID: id } = file;
   if (!decryptionConfigs.has(id)) {
     // decryption config not yet received. waiting for event with promise
     return trackEncryptionCompletion(id);

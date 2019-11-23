@@ -20,10 +20,10 @@ export default function fetchAndDecrypt(
   resource: RemoteResourceWithoutFile,
   fetchOptions?: RequestInit,
 ): Promise<ReadableStream> {
-  const { url, decryptionOptions, jobID } = resource;
-  if (!jobID) {
+  const { url, decryptionOptions, jobID = createJobID() } = resource;
+  if (typeof resource.jobID === 'undefined') {
     // eslint-disable-next-line no-param-reassign
-    resource.jobID = createJobID();
+    resource.jobID = jobID;
   }
   return (
     fetch(url, fetchOptions)
