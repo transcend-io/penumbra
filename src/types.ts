@@ -18,7 +18,13 @@ import { PenumbraError } from './error';
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 /** penumbra.encrypt() encryption options config (buffers or base64-encoded strings) */
-export type PenumbraEncryptionOptions = {
+export type PenumbraBatchOptions = {
+  /** Batch ID */
+  batchID?: number;
+};
+
+/** penumbra.encrypt() encryption options config (buffers or base64-encoded strings) */
+export type PenumbraEncryptionOptions = PenumbraBatchOptions & {
   /** Encryption key */
   key: string | Buffer;
 };
@@ -29,6 +35,8 @@ export type PenumbraDecryptionInfo = PenumbraEncryptionOptions & {
   iv: string | Buffer;
   /** Authentication tag (for AES GCM) */
   authTag: string | Buffer;
+  /** Optional ID for tracking batch operations */
+  batchID?: number;
 };
 
 /** Penumbra file composition */
@@ -43,17 +51,22 @@ export type PenumbraFile = {
   filePrefix: string;
   /** Relative file path (needed for zipping) */
   path: string;
-  /** Optional ID for tracking encryption completion */
-  id?: number;
+  /** ID for tracking operations */
+  jobID: number;
+  /** Optional ID for tracking batch operations */
+  batchID?: number;
 };
 
-/** Penumbra file that is currently being encrypted */
-export type PenumbraFileWithID = PenumbraFile & {
-  /** ID for tracking encryption completion */
-  id: number;
-};
+/** Alias for PenumbraFile (TODO: remove) */
+export type PenumbraFileWithID = PenumbraFile;
 
-/** penumbra.encrypt() output file (internal) */
+// /** Penumbra file that is currently being encrypted or decrypted */
+// export type PenumbraFileWithID = PenumbraFile & {
+//   /** ID for tracking operations */
+//   jobID: number;
+// };
+
+/** penumbra.get() / penumbra.encrypt() output file (internal) */
 export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | ArrayBuffer;
@@ -75,6 +88,8 @@ export type RemoteResource = {
   path?: string;
   /** Fetch options */
   requestInit?: RequestInit;
+  /** Request ID */
+  jobID?: number;
 };
 
 /**

@@ -2,6 +2,7 @@
 import { createDecipheriv } from 'crypto-browserify';
 
 // local
+import { createJobID } from './batch-association';
 import decryptStream from './decrypt';
 import { PenumbraError } from './error';
 import { RemoteResourceWithoutFile } from './types';
@@ -16,9 +17,14 @@ import emitError from './utils/emitError';
  * @returns A readable stream of the deciphered file
  */
 export default function fetchAndDecrypt(
-  { url, decryptionOptions }: RemoteResourceWithoutFile,
+  resource: RemoteResourceWithoutFile,
   fetchOptions?: RequestInit,
 ): Promise<ReadableStream> {
+  const { url, decryptionOptions, jobID } = resource;
+  if (!jobID) {
+    // eslint-disable-next-line no-param-reassign
+    resource.jobID = createJobID();
+  }
   return (
     fetch(url, fetchOptions)
       // Retrieve ReadableStream body

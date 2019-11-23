@@ -5,6 +5,7 @@ import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import { toWebReadableStream } from 'web-streams-node';
 
 // Local
+import { createBatchID, createJobID } from './batch-association';
 import {
   EncryptionCompletionEmit,
   PenumbraDecryptionInfo,
@@ -193,7 +194,6 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
-let encryptionJobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
 
 const trackEncryptionCompletion = (
@@ -271,7 +271,7 @@ export async function encrypt(
     // collect file sizes and assign encryption job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
-      ids.push((file.id = encryptionJobID++));
+      ids.push((file.jobID = createJobID()));
       const { size } = file;
       if (size) {
         sizes.push(size);
@@ -359,6 +359,10 @@ export async function decrypt(
   options: PenumbraDecryptionInfo,
   ...files: PenumbraEncryptedFile[]
 ): Promise<PenumbraFile[]> {
+  if (!('batchID' in options)) {
+    // eslint-disable-next-line no-param-reassign
+    options.batchID = createBatchID();
+  }
   if (files.length === 0) {
     throw new Error('penumbra.decrypt() called without arguments');
   }
@@ -373,7 +377,7 @@ export async function decrypt(
     // collect file sizes and assign encryption job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
-      ids.push((file.id = file.id || encryptionJobID++));
+      ids.push((file.jobID = file.jobID || createJobID()));
       const { size } = file;
       if (size) {
         sizes.push(size);

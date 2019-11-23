@@ -12,6 +12,7 @@ import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
+  PenumbraFileWithID,
 } from './types';
 import { emitProgress, toBuff } from './utils';
 
@@ -105,7 +106,7 @@ export function decrypt(
   file: PenumbraEncryptedFile,
   // eslint-disable-next-line no-undef
   size: number,
-): PenumbraFile {
+): PenumbraFileWithID {
   if (!options || !options.key || !options.iv || !options.authTag) {
     throw new Error('penumbra.decrypt(): missing decryption options');
   }
