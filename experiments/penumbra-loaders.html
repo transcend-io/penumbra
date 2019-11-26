@@ -14,7 +14,7 @@
     if (position) {
       position.insertAdjacentElement('afterend', penumbra);
     } else {
-      document.body.appendChild(penumbra);
+      (document.head || document.body).appendChild(penumbra);
     }
   }())
 
@@ -31,7 +31,7 @@
     if (position) {
       position.insertAdjacentElement('afterend', penumbra);
     } else {
-      document.body.appendChild(penumbra);
+      (document.head || document.body).appendChild(penumbra);
     }
   }())
 
