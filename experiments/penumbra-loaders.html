@@ -3,8 +3,7 @@
   (function () {
     var now = Date.now();
     var then = +(localStorage.penumbraAge || now);
-    var stale = now - then >= 3.6e6;
-    if (stale) {
+    if (now - then >= 3.6e6) {
       localStorage.penumbraAge = then = now;
     }
     var penumbra = document.createElement('script');
