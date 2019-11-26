@@ -12,7 +12,7 @@
     penumbra.src = '/penumbra.js?' + then;
     var position = document.currentScript || document.scripts[document.scripts.length - 1];
     if (position) {
-      position.insertAdjacentElement('after', penumbra);
+      position.insertAdjacentElement('afterend', penumbra);
     } else {
       document.body.appendChild(penumbra);
     }
@@ -29,7 +29,7 @@
     penumbra.src = '/penumbra.js?' + Math.random().toString().slice(2, 10);
     var position = document.currentScript || document.scripts[document.scripts.length - 1];
     if (position) {
-      position.insertAdjacentElement('after', penumbra);
+      position.insertAdjacentElement('afterend', penumbra);
     } else {
       document.body.appendChild(penumbra);
     }
