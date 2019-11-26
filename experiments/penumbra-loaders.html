@@ -1,0 +1,16 @@
+<!-- this loader is equivalent to cache-control: no-store -->
+<script>
+  (function () {
+    var penumbra = document.createElement('script');
+    penumbra.async = true;
+    penumbra.defer = true;
+    penumbra.src = '/penumbra.js' + Math.random().toString().slice(2, 10);
+    var position = document.currentScript || document.scripts[document.scripts.length - 1];
+    if (position) {
+      position.insertAdjacentElement('after', penumbra);
+    } else {
+      document.body.appendChild(penumbra);
+    }
+  }())
+
+</script>
