@@ -1,10 +1,33 @@
+<!-- this loader is equivalent to cache-control: private, max-age:3600 (1 hour) -->
+<script>
+  (function () {
+    var now = Date.now();
+    var then = +(localStorage.penumbraAge || now);
+    var stale = now - then >= 3.6e6;
+    if (stale) {
+      localStorage.penumbraAge = then = now;
+    }
+    var penumbra = document.createElement('script');
+    penumbra.async = true;
+    penumbra.defer = true;
+    penumbra.src = '/penumbra.js?' + then;
+    var position = document.currentScript || document.scripts[document.scripts.length - 1];
+    if (position) {
+      position.insertAdjacentElement('after', penumbra);
+    } else {
+      document.body.appendChild(penumbra);
+    }
+  }())
+
+</script>
+
 <!-- this loader is equivalent to cache-control: no-store -->
 <script>
   (function () {
     var penumbra = document.createElement('script');
     penumbra.async = true;
     penumbra.defer = true;
-    penumbra.src = '/penumbra.js' + Math.random().toString().slice(2, 10);
+    penumbra.src = '/penumbra.js?' + Math.random().toString().slice(2, 10);
     var position = document.currentScript || document.scripts[document.scripts.length - 1];
     if (position) {
       position.insertAdjacentElement('after', penumbra);
