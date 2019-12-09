@@ -10,8 +10,9 @@
       localStorage.penumbraAge = then = now;
     }
     var penumbra = document.createElement('script');
-    penumbra.async = true;
-    penumbra.defer = true;
+    penumbra.async = false;
+    penumbra.defer = false;
+    penumbra.dataset.penumbra = '';
     penumbra.src = '/penumbra.js?' + then;
     var position = document.currentScript || document.scripts[document.scripts.length - 1];
     if (position) {
@@ -27,8 +28,8 @@
 <script>
   (function () {
     var penumbra = document.createElement('script');
-    penumbra.async = true;
-    penumbra.defer = true;
+    penumbra.async = false;
+    penumbra.defer = false;
     penumbra.src = '/penumbra.js?' + Math.random().toString().slice(2, 10);
     var position = document.currentScript || document.scripts[document.scripts.length - 1];
     if (position) {
