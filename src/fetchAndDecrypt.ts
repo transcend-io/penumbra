@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 // external modules
 import { createDecipheriv } from 'crypto-browserify';
 
