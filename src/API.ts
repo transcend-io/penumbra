@@ -144,7 +144,7 @@ const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
 const ZIP_MIME_TYPE = 'application/zip';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
-const MAX_ALLOWED_SIZE_MAIN_THREAD = 50 * 1024 * 1024; // 50 MiB
+const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
 
 /**
  * Save files retrieved by Penumbra
