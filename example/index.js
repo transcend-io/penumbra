@@ -126,7 +126,6 @@ const files = [
 
 // Insert file info into the table
 function insertIntoCell(returnedFiles) {
-  console.log('returnedFiles', returnedFiles);
   const headerIds = Array.from(document.getElementById('headers').children).map(
     (child) => child.id,
   );
@@ -169,6 +168,13 @@ const onReady = async (
     detail: self,
   },
 ) => {
+  // Download and decrypt and display in table
+  penumbra
+    .get(...files)
+    .then((pfiles) => penumbra.getTextOrURI(pfiles))
+    // .then(insertIntoCell);
+    .then(insertIntoCell);
+
   const runOnce = {};
   // Display download progress
   window.addEventListener(
@@ -193,28 +199,6 @@ const onReady = async (
   // Function to download and zip
   // const downloadManyFiles = () =>
   //   penumbra.get(...files).then((pfiles) => penumbra.save(pfiles));
-
-  // Download and decrypt and display in table
-  // penumbra
-  //   .get(...files)
-  //   .then((pfiles) => penumbra.getTextOrURI(pfiles))
-  //   // .then(insertIntoCell);
-  //   .then(insertIntoCell);
-
-  /**
-   * Use this method until we improve streaming on browsers without
-   * native writable streams
-   */
-  console.error("what's going on");
-  files.forEach((file) =>
-    penumbra
-      .get(file)
-      .then((pfile) => penumbra.getTextOrURI(pfile))
-      .then((tou) => {
-        console.error('tou', tou);
-        insertIntoCell(tou);
-      }),
-  );
 };
 
 if (!self.penumbra) {
