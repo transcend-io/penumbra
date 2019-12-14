@@ -14,8 +14,15 @@ export type LinkRel = 'preconnect' | 'preload';
 export type CleanupResourceHints = () => void;
 
 /** No-op function generator */
-// tslint:disable-next-line: no-empty
-const nooper = (): CleanupResourceHints => (): void => {};
+// tslint:disable-next-line: no-empty, no-empty-function
+const nooper = (): CleanupResourceHints => (): void => {
+  /**
+   * Appeasing tslint with an unnecessary comment
+   *
+   * @example const noop = nooper(); noop();
+   * Expected results: None
+   */
+};
 
 /**
  * A helper function that creates a set resource hints
