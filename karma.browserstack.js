@@ -8,7 +8,7 @@ module.exports = (config) => {
     bs_chrome_mac: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '79.0',
+      browser_version: '78.0',
       os: 'OS X',
       os_version: 'Mojave',
     },
