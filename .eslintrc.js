@@ -44,6 +44,8 @@ module.exports = {
     'comma-dangle': 0, // [2, "always-multiline"] handled by prettier
     'function-paren-newline': 0,
     'no-useless-constructor': 0,
+    'import/extensions': 0,
+    'no-nested-ternary': 0,
     'import/imports-first': ['error'],
     'import/newline-after-import': ['error'],
     'import/no-dynamic-require': ['error'],
@@ -98,6 +100,5 @@ module.exports = {
     'import/resolver': {
       typescript: {},
     },
-    'import/extensions': ['never'],
   },
 };

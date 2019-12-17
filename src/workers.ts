@@ -50,8 +50,10 @@ if (SHOULD_LOG_EVENTS) {
   console.info('Loading penumbra script element...');
 }
 let scriptElement: HTMLScriptElement = (document.currentScript ||
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   document.querySelector('script[data-penumbra]')) as any;
 if (!scriptElement) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   scriptElement = { dataset: {} } as any;
   if (SHOULD_LOG_EVENTS) {
     console.info('Unable to locate Penumbra script element.');

@@ -3,7 +3,6 @@ import { createCipheriv } from 'crypto-browserify';
 
 // local
 import { CipherGCM } from 'crypto';
-import intoStream from 'into-stream';
 import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
 import { toWebReadableStream } from 'web-streams-node';
@@ -14,7 +13,7 @@ import {
 } from './types';
 
 // utils
-import { emitProgress, toBuff } from './utils';
+import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
 import emitEncryptionCompletion from './utils/emitEncryptionCompletion';
 
 /* tslint:disable completed-docs */
@@ -145,11 +144,12 @@ const IV_RANDOMNESS = 12;
  * @returns A readable stream of the deciphered file
  */
 export default function encrypt(
-  options: PenumbraEncryptionOptions,
+  options: PenumbraEncryptionOptions | null,
   file: PenumbraFileWithID,
   // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraEncryptedFile {
+  console.warn('encrypt() called');
   if (!options || !options.key) {
     console.debug(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
@@ -182,9 +182,7 @@ export default function encrypt(
     //     : encryptBuffer(file.stream, cipher),
     stream: encryptStream(
       id,
-      file.stream instanceof ReadableStream
-        ? file.stream
-        : intoStream(file.stream),
+      intoStreamOnlyOnce(file.stream),
       cipher,
       size,
       key,

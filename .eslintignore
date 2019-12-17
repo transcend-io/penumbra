@@ -15,4 +15,3 @@
 *.testjs
 *.testts
 *__snapshots__/*
-*.ts

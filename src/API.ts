@@ -16,7 +16,7 @@ import {
   PenumbraWorkerAPI,
   RemoteResource,
 } from './types';
-import { blobCache, isViewableText } from './utils';
+import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 
 const resolver = document.createElementNS(
@@ -224,10 +224,15 @@ const trackEncryptionCompletion = (
   searchForID?: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((complete) => {
+    console.warn('tracking encryption completion', { id: searchForID });
     const listener = ({
       type,
       detail: { id, decryptionInfo },
     }: EncryptionCompletionEmit): void => {
+      console.warn('trackEncryptionCompletion listener triggered', {
+        id,
+        searchForID,
+      });
       decryptionConfigs.set(id, decryptionInfo);
       if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -238,7 +243,7 @@ const trackEncryptionCompletion = (
     self.addEventListener('penumbra-encryption-complete', listener);
   });
 
-trackEncryptionCompletion();
+// trackEncryptionCompletion();
 
 /**
  * Get the decryption config for an encrypted file
@@ -330,7 +335,7 @@ export async function encrypt(
       // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
-        : toWebReadableStream(files[i].stream)
+        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
       ).pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams
@@ -362,12 +367,9 @@ export async function encrypt(
   const { default: encryptFile } = await import('./encrypt');
   const encryptedFiles: PenumbraEncryptedFile[] = await Promise.all(
     (files as PenumbraFileWithID[]).map(async (file) => ({
-      stream:
-        options === null
-          ? file.stream
-          : encryptFile(options, file, file.size as number),
-      ...options,
+      stream: encryptFile(options, file, file.size as number),
       ...file,
+      ...options,
     })),
   );
   return encryptedFiles;
@@ -442,7 +444,7 @@ export async function decrypt(
       // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
-        : toWebReadableStream(files[i].stream)
+        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
       ).pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams

@@ -285,20 +285,24 @@ const onReady = async (
     [
       'penumbra.encrypt()',
       async () => {
-        const { intoStream } = self;
+        console.warn('starting penumbra.encrypt() test');
         const te = new TextEncoder();
         const td = new TextDecoder();
-        const data = te.encode('test');
-        const { byteLength: size } = data;
+        const stream = te.encode('test');
+        const { byteLength: size } = stream;
+        console.warn('encrypting string: "test"');
         const [encrypted] = await penumbra.encrypt(null, {
-          stream: intoStream(data),
+          stream,
           size,
         });
+        console.warn('getting decryption info for encryption job');
         const options = await penumbra.getDecryptionInfo(encrypted);
+        console.warn('decrypting string to compare');
         const [decrypted] = await penumbra.decrypt(options, encrypted);
         const decryptedData = await new Response(
           decrypted.stream,
         ).arrayBuffer();
+        console.warn('decrypted data:', td.decode(decryptedData));
         return td.decode(decryptedData) === 'test';
       },
     ],
