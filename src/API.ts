@@ -228,17 +228,14 @@ const trackEncryptionCompletion = (
       type,
       detail: { id, decryptionInfo },
     }: EncryptionCompletionEmit): void => {
-        id,
-        searchForID,
-      });
-decryptionConfigs.set(id, decryptionInfo);
-if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
+      decryptionConfigs.set(id, decryptionInfo);
+      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (self.removeEventListener as any)(type, listener);
         complete(decryptionInfo);
       }
     };
-self.addEventListener('penumbra-encryption-complete', listener);
+    self.addEventListener('penumbra-encryption-complete', listener);
   });
 
 // trackEncryptionCompletion();
