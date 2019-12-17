@@ -169,6 +169,7 @@ const onReady = async (
   },
 ) => {
   // Download and decrypt and display in table
+  // TODO: fix demo table cell association
   penumbra
     .get(...files)
     .then((pfiles) => penumbra.getTextOrURI(pfiles))

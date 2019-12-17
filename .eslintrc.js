@@ -29,7 +29,9 @@ module.exports = {
     '@typescript-eslint/indent': 0,
     '@typescript-eslint/explicit-function-return-type': [
       'warn',
-      { allowExpressions: true },
+      {
+        allowExpressions: true
+      },
     ],
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-useless-constructor': 2,
@@ -42,6 +44,8 @@ module.exports = {
     'comma-dangle': 0, // [2, "always-multiline"] handled by prettier
     'function-paren-newline': 0,
     'no-useless-constructor': 0,
+    'import/extensions': 0,
+    'no-nested-ternary': 0,
     'import/imports-first': ['error'],
     'import/newline-after-import': ['error'],
     'import/no-dynamic-require': ['error'],
@@ -53,10 +57,14 @@ module.exports = {
     'import/prefer-default-export': 0,
     indent: 0,
     // "jsdoc/check-types":  ["error"],
-    'max-len': ['error', 125, { comments: 200 }],
+    'max-len': ['error', 125, {
+      comments: 200
+    }],
     'max-lines': ['error', 250],
     // "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
-    'no-bitwise': ['error', { allow: ['~'] }],
+    'no-bitwise': ['error', {
+      allow: ['~']
+    }],
     'no-confusing-arrow': 0,
     'no-console': 0,
     'no-multi-spaces': ['error'],
@@ -78,16 +86,16 @@ module.exports = {
       },
     ],
     'require-yield': ['error'],
-    'sort-vars': ['error', { ignoreCase: true }],
+    'sort-vars': ['error', {
+      ignoreCase: true
+    }],
   },
-  overrides: [
-    {
-      files: ['**/*.test.ts'],
-      rules: {
-        '@typescript-eslint/explicit-function-return-type': 0,
-      },
+  overrides: [{
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 0,
     },
-  ],
+  }, ],
   settings: {
     'import/resolver': {
       typescript: {},

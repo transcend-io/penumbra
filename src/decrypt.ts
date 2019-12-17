@@ -6,14 +6,13 @@ import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
 // utils
-import intoStream from 'into-stream';
 import { toWebReadableStream } from 'web-streams-node';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
-import { emitProgress, toBuff } from './utils';
+import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
 
 /**
  * Decrypts a readable stream
@@ -59,6 +58,7 @@ export default function decryptStream(
     );
   }
 
+  let finished = false;
   // TransformStream not supported, revert to ReadableStream
   const reader = stream.getReader();
   return new ReadableStream({
@@ -72,7 +72,10 @@ export default function decryptStream(
       function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
-            controller.close();
+            if (!finished) {
+              controller.close();
+              finished = true;
+            }
             return;
           }
 
@@ -135,9 +138,7 @@ export function decrypt(
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
     stream: decryptStream(
-      file.stream instanceof ReadableStream
-        ? file.stream
-        : ((intoStream(file.stream) as unknown) as ReadableStream),
+      intoStreamOnlyOnce(file.stream),
       /** TODO: address this TypeScript confusion  */
       decipher,
       size,

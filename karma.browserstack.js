@@ -8,17 +8,17 @@ module.exports = (config) => {
     bs_chrome_mac: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '60.0',
+      browser_version: '78.0',
       os: 'OS X',
       os_version: 'Mojave',
     },
-    // bs_firefox_pc: {
-    //   base: 'BrowserStack',
-    //   browser: 'Firefox',
-    //   browser_version: '68.0',
-    //   os: 'Windows',
-    //   os_version: '10',
-    // },
+    bs_firefox_pc: {
+      base: 'BrowserStack',
+      browser: 'Firefox',
+      browser_version: '71.0',
+      os: 'Windows',
+      os_version: '10',
+    },
   };
 
   const globalConfig = getGlobalConfig(config);

@@ -19,6 +19,7 @@ export default function timeout(
   delay: number,
 ): TimeoutManager {
   const timer = self.setTimeout(callback, delay * 1000);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const clear = self.clearTimeout.bind(self, timer as any);
   return { clear };
 }

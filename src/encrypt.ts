@@ -3,18 +3,18 @@ import { createCipheriv } from 'crypto-browserify';
 
 // local
 import { CipherGCM } from 'crypto';
-import intoStream from 'into-stream';
 import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
 import { toWebReadableStream } from 'web-streams-node';
 import {
+  PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFileWithID,
 } from './types';
 
 // utils
-import { emitProgress, toBuff } from './utils';
+import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
 import emitEncryptionCompletion from './utils/emitEncryptionCompletion';
 
 /* tslint:disable completed-docs */
@@ -119,7 +119,6 @@ export function encryptStream(
               iv,
               authTag,
             });
-            controller.close();
           }
         });
       }
@@ -145,7 +144,7 @@ const IV_RANDOMNESS = 12;
  * @returns A readable stream of the deciphered file
  */
 export default function encrypt(
-  options: PenumbraEncryptionOptions,
+  options: PenumbraEncryptionOptions | null,
   file: PenumbraFileWithID,
   // eslint-disable-next-line no-undef
   size: number,
@@ -169,7 +168,11 @@ export default function encrypt(
 
   // Convert to Buffers
   const key = toBuff(options.key);
-  const iv = Buffer.from(crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)));
+  const iv = Buffer.from(
+    (options as PenumbraDecryptionInfo).iv
+      ? toBuff((options as PenumbraDecryptionInfo).iv)
+      : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)),
+  );
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
@@ -182,9 +185,7 @@ export default function encrypt(
     //     : encryptBuffer(file.stream, cipher),
     stream: encryptStream(
       id,
-      file.stream instanceof ReadableStream
-        ? file.stream
-        : intoStream(file.stream),
+      intoStreamOnlyOnce(file.stream),
       cipher,
       size,
       key,

@@ -205,7 +205,7 @@ export type PenumbraWorkerAPI = {
    * @returns ArrayBuffer[] of the encrypted files
    */
   encryptBuffers: (
-    options: PenumbraEncryptionOptions,
+    options: PenumbraEncryptionOptions | null,
     files: PenumbraFile[],
   ) => Promise<ArrayBuffer[]>;
   /**
