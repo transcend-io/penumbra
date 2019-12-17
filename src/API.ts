@@ -224,23 +224,21 @@ const trackEncryptionCompletion = (
   searchForID?: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((complete) => {
-    console.warn('tracking encryption completion', { id: searchForID });
     const listener = ({
       type,
       detail: { id, decryptionInfo },
     }: EncryptionCompletionEmit): void => {
-      console.warn('trackEncryptionCompletion listener triggered', {
         id,
         searchForID,
       });
-      decryptionConfigs.set(id, decryptionInfo);
-      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
+decryptionConfigs.set(id, decryptionInfo);
+if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (self.removeEventListener as any)(type, listener);
         complete(decryptionInfo);
       }
     };
-    self.addEventListener('penumbra-encryption-complete', listener);
+self.addEventListener('penumbra-encryption-complete', listener);
   });
 
 // trackEncryptionCompletion();
