@@ -58,6 +58,7 @@ export default function decryptStream(
     );
   }
 
+  let finished = false;
   // TransformStream not supported, revert to ReadableStream
   const reader = stream.getReader();
   return new ReadableStream({
@@ -71,7 +72,10 @@ export default function decryptStream(
       function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
-            controller.close();
+            if (!finished) {
+              controller.close();
+              finished = true;
+            }
             return;
           }
 

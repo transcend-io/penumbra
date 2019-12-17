@@ -7,6 +7,7 @@ import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
 import { toWebReadableStream } from 'web-streams-node';
 import {
+  PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFileWithID,
@@ -118,7 +119,6 @@ export function encryptStream(
               iv,
               authTag,
             });
-            controller.close();
           }
         });
       }
@@ -169,7 +169,11 @@ export default function encrypt(
 
   // Convert to Buffers
   const key = toBuff(options.key);
-  const iv = Buffer.from(crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)));
+  const iv = Buffer.from(
+    (options as PenumbraDecryptionInfo).iv
+      ? toBuff((options as PenumbraDecryptionInfo).iv)
+      : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)),
+  );
 
   // Construct the decipher
   const cipher = createCipheriv('aes-256-gcm', key, iv);
