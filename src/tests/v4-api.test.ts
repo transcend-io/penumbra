@@ -263,7 +263,7 @@ test('penumbra.getBlob()', async (t) => {
   t.end();
 });
 
-test('penumbra.encrypt() & penumbra.decrypt()', async () => {
+test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   if (navigator.userAgent.toLowerCase().includes('firefox')) {
     console.error(
       'penumbra.encrypt() test bypassed for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
@@ -281,5 +281,6 @@ test('penumbra.encrypt() & penumbra.decrypt()', async () => {
   const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
   const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
   const decryptedData = await new Response(decrypted.stream).arrayBuffer();
-  return td.decode(decryptedData) === input;
+  t.equal(td.decode(decryptedData), input);
+  t.end();
 });
