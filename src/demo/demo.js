@@ -297,10 +297,11 @@ const onReady = async (
         const stream = te.encode(input);
         const { byteLength: size } = stream;
         const options = null;
-        const [encrypted] = await penumbra.encrypt(options, {
+        const file = {
           stream,
           size,
-        });
+        };
+        const [encrypted] = await penumbra.encrypt(options, file);
         const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
         const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
         const decryptedData = await new Response(
