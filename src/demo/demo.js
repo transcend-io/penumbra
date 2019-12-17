@@ -291,8 +291,8 @@ const onReady = async (
           );
           return true;
         }
-        const te = new TextEncoder('utf-8');
-        const td = new TextDecoder('utf-8');
+        const te = new TextEncoder();
+        const td = new TextDecoder();
         const input = 'test';
         const stream = te.encode(input);
         const { byteLength: size } = stream;
