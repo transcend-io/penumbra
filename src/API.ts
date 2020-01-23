@@ -377,12 +377,11 @@ export async function encrypt(
   const encryptedFiles = await Promise.all(
     filesWithIds.map(
       (file): PenumbraEncryptedFile => {
-        const { iv, stream } = encryptFile(options, file, file.size as number);
+        const { stream } = encryptFile(options, file, file.size as number);
         return {
           stream,
           ...file,
           ...options,
-          iv,
         };
       },
     ),
