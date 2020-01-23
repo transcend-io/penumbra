@@ -196,6 +196,5 @@ export default function encrypt(
       iv,
     ),
     id,
-    iv,
   };
 }
