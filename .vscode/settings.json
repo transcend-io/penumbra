@@ -22,6 +22,7 @@
         "markdownlint",
         "measure",
         "mimetype",
+        "nist",
         "no",
         "nobuild",
         "nooper",
