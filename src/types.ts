@@ -17,18 +17,33 @@ import { PenumbraError } from './error';
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
-/** penumbra.encrypt() encryption options config (buffers or base64-encoded strings) */
+/**
+ * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
+ */
 export type PenumbraEncryptionOptions = {
   /** Encryption key */
   key: string | Buffer;
 };
 
-/** Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt() */
+/**
+ * Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt()
+ */
 export type PenumbraDecryptionInfo = PenumbraEncryptionOptions & {
   /** Initialization vector */
   iv: string | Buffer;
   /** Authentication tag (for AES GCM) */
   authTag: string | Buffer;
+};
+
+/**
+ * Buffers only plz
+ */
+export type PenumbraDecryptionInfoAsBuffer = Omit<
+  PenumbraDecryptionInfo,
+  'iv'
+> & {
+  /** Iv is a buffer */
+  iv: Buffer;
 };
 
 /** Penumbra file composition */
@@ -58,7 +73,7 @@ export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | ArrayBuffer;
   /** The iv that was used to encrypt the file */
-  iv?: Buffer;
+  iv: Buffer;
 };
 
 /**
@@ -120,7 +135,7 @@ export type PenumbraErrorDetails = PenumbraError;
 export type PenumbraErrorEmit = CustomEvent<PenumbraErrorDetails>;
 
 /**
- * Encryption completetion event details
+ * Encryption completion event details
  */
 export type EncryptionCompletion = {
   /** Encryption job ID */
@@ -199,7 +214,7 @@ export type PenumbraWorkerAPI = {
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) => Promise<PenumbraDecryptionInfo[]>;
+  ) => Promise<PenumbraDecryptionInfoAsBuffer[]>;
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers
    *
