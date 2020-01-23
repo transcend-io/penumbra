@@ -303,7 +303,7 @@ export async function encrypt(
   });
 
   // We stream the encryption if supported by the browser
-  if (writableStreamsSupported) {
+  if (writableStreamsSupported && false) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const EncryptionChannel = worker.comlink;

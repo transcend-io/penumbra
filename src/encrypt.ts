@@ -149,6 +149,7 @@ export default function encrypt(
   // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraEncryptedFile {
+  // Generate a key if one is not provided
   if (!options || !options.key) {
     console.debug(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
