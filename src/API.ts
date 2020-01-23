@@ -303,7 +303,7 @@ export async function encrypt(
   });
 
   // We stream the encryption if supported by the browser
-  if (writableStreamsSupported && false) {
+  if (writableStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const EncryptionChannel = worker.comlink;
@@ -319,9 +319,7 @@ export async function encrypt(
     );
 
     // enter worker thread and grab the metadata
-    const metadata = await (new EncryptionChannel() as Promise<
-      PenumbraWorkerAPI
-    >).then(
+    await (new EncryptionChannel() as Promise<PenumbraWorkerAPI>).then(
       /**
        * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
        * from the worker thread and starts reading the input stream from
@@ -350,7 +348,7 @@ export async function encrypt(
     const readables = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
-        iv: metadata[i].iv,
+        // iv: metadata[i].iv,
         stream: stream.readable as ReadableStream,
         size: sizes[i],
         id: ids[i],
