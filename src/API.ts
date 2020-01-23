@@ -325,14 +325,15 @@ export async function encrypt(
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */
-      (thread) =>
+      (thread) => {
         thread.encrypt(
           options,
           ids,
           sizes,
           transfer(readablePorts, readablePorts),
           transfer(writablePorts, writablePorts),
-        ),
+        );
+      },
     );
 
     // encryption jobs submitted and still processing

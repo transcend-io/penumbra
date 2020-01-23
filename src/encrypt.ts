@@ -68,11 +68,8 @@ export function encryptStream(
             const authTag = cipher.getAuthTag();
             emitEncryptionCompletion(jobID, {
               key,
-              iv: typeof iv === 'string' ? iv : iv.toString('base64'),
-              authTag:
-                typeof authTag === 'string'
-                  ? authTag
-                  : authTag.toString('base64'),
+              iv,
+              authTag,
             });
           }
         },
