@@ -1,5 +1,6 @@
 # https://docs.travis-ci.com/user/languages/javascript-with-nodejs/
 language: node_js
+version: 1.0
 
 # Make sure that branch and PR triggers are enabled in Travis CI settings on the web UI, and then
 # it will run whenever a PR is opened and whenever a new commit is merged into one of these branches
@@ -65,11 +66,12 @@ jobs:
 
     # Deploy to npm
     - stage: deploy
-      script: skip
+      script: echo "Nada"
+      edge: true
       deploy:
         - provider: npm
-          email: "$NPM_EMAIL"
-          api_key: "$NPM_TOKEN"
+          email: $NPM_EMAIL
+          api_key: $NPM_TOKEN
           skip_cleanup: true
           on:
             branch: master
