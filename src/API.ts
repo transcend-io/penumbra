@@ -278,15 +278,19 @@ export async function encrypt(
   options: PenumbraEncryptionOptions | null,
   ...files: PenumbraFile[]
 ): Promise<PenumbraEncryptedFile[]> {
+  // Ensure a file is passed
   if (files.length === 0) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
+
+  // Ensure readable streams
   if (files.some((file) => file.stream instanceof ArrayBuffer)) {
     throw new Error('penumbra.encrypt() only supports ReadableStreams');
   }
+
+  // collect file sizes and assign encryption job IDs for completion tracking
   const ids: number[] = [];
   const sizes: number[] = [];
-  // collect file sizes and assign encryption job IDs for completion tracking
   files.forEach((file) => {
     // eslint-disable-next-line no-plusplus, no-param-reassign
     ids.push((file.id = jobID++));
@@ -297,12 +301,15 @@ export async function encrypt(
       throw new Error('penumbra.encrypt(): Unable to determine file size');
     }
   });
+
+  // We stream the encryption if supported by the browser
   if (writableStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const EncryptionChannel = worker.comlink;
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+
     // extract ports from remote readable/writable streams for Comlink.transfer
     const readablePorts = remoteWritableStreams.map(
       ({ readablePort }) => readablePort,
@@ -310,21 +317,25 @@ export async function encrypt(
     const writablePorts = remoteReadableStreams.map(
       ({ writablePort }) => writablePort,
     );
-    // enter worker thread
-    await new EncryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+
+    // enter worker thread and grab the metadata
+    await (new EncryptionChannel() as Promise<PenumbraWorkerAPI>).then(
       /**
        * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */
-      thread.encrypt(
-        options,
-        ids,
-        sizes,
-        transfer(readablePorts, readablePorts),
-        transfer(writablePorts, writablePorts),
-      );
-    });
+      (thread) => {
+        thread.encrypt(
+          options,
+          ids,
+          sizes,
+          transfer(readablePorts, readablePorts),
+          transfer(writablePorts, writablePorts),
+        );
+      },
+    );
+
     // encryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
       // pipe input files into remote writable streams for worker
@@ -333,10 +344,12 @@ export async function encrypt(
         : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
       ).pipeTo(remoteWritableStream.writable);
     });
+
     // construct output files with corresponding remote readable streams
-    const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+    const readables = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
+        // iv: metadata[i].iv,
         stream: stream.readable as ReadableStream,
         size: sizes[i],
         id: ids[i],
@@ -349,8 +362,10 @@ export async function encrypt(
   //   "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
   // );
 
+  const filesWithIds = files as PenumbraFileWithID[];
+
   let totalSize = 0;
-  files.forEach(({ size = 0 }) => {
+  filesWithIds.forEach(({ size = 0 }) => {
     totalSize += size;
     if (totalSize > MAX_ALLOWED_SIZE_MAIN_THREAD) {
       console.error(`Your browser doesn't support streaming encryption.`);
@@ -360,12 +375,17 @@ export async function encrypt(
     }
   });
   const { default: encryptFile } = await import('./encrypt');
-  const encryptedFiles: PenumbraEncryptedFile[] = await Promise.all(
-    (files as PenumbraFileWithID[]).map(async (file) => ({
-      stream: encryptFile(options, file, file.size as number),
-      ...file,
-      ...options,
-    })),
+  const encryptedFiles = await Promise.all(
+    filesWithIds.map(
+      (file): PenumbraEncryptedFile => {
+        const { stream } = encryptFile(options, file, file.size as number);
+        return {
+          stream,
+          ...file,
+          ...options,
+        };
+      },
+    ),
   );
   return encryptedFiles;
 }
