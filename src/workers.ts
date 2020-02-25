@@ -23,7 +23,9 @@ const DEFAULT_WORKERS = {
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const SHOULD_LOG_EVENTS = process.env.JEST_WORKER_ID === undefined;
+const SHOULD_LOG_EVENTS =
+  process.env.PENUMBRA_NO_LOG === 'true' ||
+  typeof process.env.JEST_WORKER_ID !== 'string';
 
 // //// //
 // Init //
