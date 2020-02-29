@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const src = join(__dirname, 'src');
 
-const shouldMinify = ['staging', 'production'].includes(process.env.NODE_ENV);
+const shouldMinify = ['staging', 'production'].includes(process.env.DEPLOY_ENV);
 
 const config = {
   node: {

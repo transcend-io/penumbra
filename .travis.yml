@@ -14,6 +14,9 @@ git:
 # Node version
 node_js: "10.15.0"
 
+env:
+  - DEPLOY_ENV=production
+
 before_install:
   # Dynamically create an `.npmrc` file
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
@@ -30,6 +33,7 @@ before_install:
 install:
   - yarn && cd example && yarn && cd ..
   - yarn add global codecov
+  - yarn add global pre-commit
 
 # the following line is needed to enable the TravisCI build conditions
 conditions: v1
