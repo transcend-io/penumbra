@@ -1,3 +1,11 @@
+/**
+ * Penumbra Worker
+ * Fetch and decrypt files in the browser using whatwg streams and web workers.
+ *
+ * @author Transcend Inc. <https://transcend.io>
+ * @license MIT
+ */
+
 /* eslint-disable import/extensions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
