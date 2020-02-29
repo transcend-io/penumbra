@@ -28,7 +28,7 @@ module.exports = (config) => {
 
     // global config of your BrowserStack account
     browserStack: {
-      username: 'benjaminbrook2',
+      username: 'benjaminbrook3',
       project: 'Penumbra',
       video: false,
       build: process.env.TRAVIS_BUILD_NUMBER, // process.env.CIRCLE_BUILD_NUM
