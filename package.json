@@ -97,6 +97,7 @@
     "markdown-toc": "^1.2.0",
     "npm-check": "^5.9.0",
     "nyc": "^14.1.1",
+    "pre-commit": "^1.2.2",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.0",
     "tape": "^4.12.1",
