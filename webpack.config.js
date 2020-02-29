@@ -1,10 +1,17 @@
 const { join } = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
+const TerserPlugin = require('terser-webpack-plugin');
+
 const src = join(__dirname, 'src');
 
+const shouldMinify = ['staging', 'production'].includes(process.env.NODE_ENV);
+
 const config = {
-  mode: 'development',
+  node: {
+    fs: 'empty',
+  },
+  mode: shouldMinify ? 'production' : 'development',
   entry: {
     penumbra: `${src}/index.ts`,
     'penumbra.worker': `${src}/penumbra.worker.js`,
@@ -74,11 +81,12 @@ const config = {
   //     globalObject: false,
   //   }),
   // ],
-  devtool: 'eval-source-map',
   target: 'web', // Make web variables accessible to webpack, e.g. window
-  // target: 'web',
-  node: {
-    fs: 'empty',
+  devtool: shouldMinify ? false : 'eval-source-map',
+  optimization: {
+    usedExports: true, // This is accompanied by `sideEffects: false` in package.json
+    minimize: shouldMinify,
+    minimizer: shouldMinify ? [new TerserPlugin()] : [],
   },
 };
 
