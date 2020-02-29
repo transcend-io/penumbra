@@ -84,7 +84,6 @@ const config = {
   target: 'web', // Make web variables accessible to webpack, e.g. window
   devtool: shouldMinify ? false : 'eval-source-map',
   optimization: {
-    usedExports: true, // This is accompanied by `sideEffects: false` in package.json
     minimize: shouldMinify,
     minimizer: shouldMinify ? [new TerserPlugin()] : [],
   },

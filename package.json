@@ -1,6 +1,5 @@
 {
   "name": "@transcend-io/penumbra",
-  "sideEffects": false,
   "version": "4.5.0",
   "description": "Crypto streams for the browser.",
   "main": "build/penumbra.js",
