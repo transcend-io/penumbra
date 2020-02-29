@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as Comlink from 'comlink';
+import { transferHandlers } from 'comlink';
 
 /** TODO: abstract this into a re-usable event registration & serialization helper */
 
-Comlink.transferHandlers.set('penumbra-progress', {
+transferHandlers.set('penumbra-progress', {
   /**
    * Checks if object is a penumbra-progress event
    *
@@ -33,7 +33,7 @@ Comlink.transferHandlers.set('penumbra-progress', {
   },
 });
 
-Comlink.transferHandlers.set('penumbra-encryption-complete', {
+transferHandlers.set('penumbra-encryption-complete', {
   /**
    * Checks if object is a penumbra-encryption-complete event
    *
@@ -66,7 +66,7 @@ Comlink.transferHandlers.set('penumbra-encryption-complete', {
   },
 });
 
-Comlink.transferHandlers.set('penumbra-error', {
+transferHandlers.set('penumbra-error', {
   /**
    * Checks if object is a penumbra-progress event
    *
@@ -96,7 +96,7 @@ Comlink.transferHandlers.set('penumbra-error', {
   },
 });
 
-Comlink.transferHandlers.set('error', {
+transferHandlers.set('error', {
   /**
    * Checks if object is a penumbra-progress event
    *

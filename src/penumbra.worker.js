@@ -1,10 +1,18 @@
+/**
+ * Penumbra Worker
+ * Fetch and decrypt files in the browser using whatwg streams and web workers.
+ *
+ * @author Transcend Inc. <https://transcend.io>
+ * @license MIT
+ */
+
 /* eslint-disable import/extensions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
 
 // external modules
 import 'regenerator-runtime/runtime';
-import * as Comlink from 'comlink';
+import { transfer, expose } from 'comlink';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
 // local
@@ -75,7 +83,7 @@ class PenumbraWorker {
         const buffer = await new Response(
           await fetchAndDecrypt(resource),
         ).arrayBuffer();
-        return Comlink.transfer(buffer, buffer);
+        return transfer(buffer, buffer);
       }),
     );
   }
@@ -177,4 +185,4 @@ class PenumbraWorker {
   }
 }
 
-Comlink.expose(PenumbraWorker);
+expose(PenumbraWorker);

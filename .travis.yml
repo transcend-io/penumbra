@@ -14,6 +14,9 @@ git:
 # Node version
 node_js: "10.15.0"
 
+env:
+  - DEPLOY_ENV=production
+
 before_install:
   # Dynamically create an `.npmrc` file
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
@@ -21,7 +24,7 @@ before_install:
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
   - npm install -g yarn@1.17.3
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
-  - pip3 install setuptools
+  - pip3 install --upgrade setuptools pip
   - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
   # To ensure the aws command can be found
   - export PATH=$PATH:$HOME/.local/bin

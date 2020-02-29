@@ -1,9 +1,10 @@
 /**
- *
- * ## Penumbra
- * A file decryption library for the browser
+ * Penumbra
+ * Fetch and decrypt files in the browser using whatwg streams and web workers.
  *
  * @module penumbra
+ * @author Transcend Inc. <https://transcend.io>
+ * @license MIT
  */
 
 // exports
