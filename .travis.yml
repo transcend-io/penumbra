@@ -22,8 +22,8 @@ before_install:
   # Ensure that npm version is 6.4.1
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
   - npm install -g yarn@1.17.3
-  # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
-  - yarn add global pre-commit
+  # Install pre-commit
+  - curl https://pre-commit.com/install-local.py | python -
   # To ensure the aws command can be found
   - export PATH=$PATH:$HOME/.local/bin
 
