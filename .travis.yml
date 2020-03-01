@@ -89,10 +89,3 @@ before_cache:
 
 after_success:
   - yarn report-coverage
-
-addons:
-  apt:
-    sources:
-      - deadsnakes # source required so it finds the package definition below
-    packages:
-      - python3-pip
