@@ -1,6 +1,5 @@
 # https://docs.travis-ci.com/user/languages/javascript-with-nodejs/
 language: node_js
-version: 1.0
 
 # Make sure that branch and PR triggers are enabled in Travis CI settings on the web UI, and then
 # it will run whenever a PR is opened and whenever a new commit is merged into one of these branches
@@ -24,8 +23,7 @@ before_install:
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
   - npm install -g yarn@1.17.3
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
-  - pip3 install --upgrade setuptools pip
-  - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
+  - yarn add global pre-commit
   # To ensure the aws command can be found
   - export PATH=$PATH:$HOME/.local/bin
 
