@@ -49,6 +49,16 @@ const config = {
           loader: 'babel-loader',
         },
       },
+      {
+        // Instrument sourcemaps for code coverage
+        test: /\.(js|ts)?$/,
+        include: [src],
+        use: {
+          loader: 'istanbul-instrumenter-loader',
+          options: { esModules: true },
+        },
+        enforce: 'post',
+      },
       // {
       //   test: /\.worker\.js$/,
       //   use: [

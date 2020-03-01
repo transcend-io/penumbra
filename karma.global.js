@@ -4,7 +4,7 @@ module.exports = (config) => ({
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['tap', 'karma-typescript'],
+  frameworks: ['tap'],
 
   customContextFile: 'penumbra-karma-context.html',
 
@@ -36,40 +36,28 @@ module.exports = (config) => ({
   // preprocess matching files before serving them to the browser
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {
-    'src/**/*.ts': ['karma-typescript', 'webpack'],
-    'src/**/*.js': ['webpack'],
+    'src/**': ['webpack', 'sourcemap'],
   },
 
-  // karma watches the test entry points
-  // (you don't need to specify the entry option)
-  // webpack watches dependencies
   // webpack configuration
   webpack: {
     // eslint-disable-next-line global-require
     ...require('./webpack.config.js'),
-    devtool: 'eval-source-map',
+    devtool: 'cheap-inline-source-map',
   },
 
-  karmaTypescriptConfig: {
-    compilerOptions: {
-      // eslint-disable-next-line global-require
-      ...require('./tsconfig.json').compilerOptions,
-      incremental: undefined,
-    },
-    include: ['src/**/*.ts', 'src/**/*.js'],
-    exclude: ['node_modules', 'build'],
-    bundlerOptions: {
-      acornOptions: {
-        ecmaVersion: 8,
-      },
-      // eslint-disable-next-line global-require
-      transforms: [require('karma-typescript-es6-transform')()],
-      entrypoints: /index\.tests\.ts/,
-      sourceMap: true,
-    },
-  },
+  plugins: [
+    'karma-tap',
+    'karma-coverage',
+    'karma-webpack',
+    'karma-sourcemap-loader',
+  ],
 
-  plugins: ['karma-tap', 'karma-coverage', 'karma-typescript', 'karma-webpack'],
+  reporters: ['progress', 'coverage'],
+
+  coverageReporter: {
+    reporters: [{ type: 'lcov' }],
+  },
 
   // web server port
   port: 9876,

@@ -18,19 +18,6 @@ module.exports = (config) => {
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: true,
 
-    preprocessors: {
-      ...globalConfig.preprocessors,
-      // 'src/!(test|demo)/**': ['coverage'],
-      'build/penumbra.worker.js': ['coverage'],
-      'build/penumbra.js': ['coverage'],
-    },
-
-    reporters: ['progress', 'coverage', 'karma-typescript'],
-
-    coverageReporter: {
-      reporters: [{ type: 'lcov' }],
-    },
-
     plugins: [...globalConfig.plugins, 'karma-chrome-launcher'],
   });
 };
