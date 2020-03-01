@@ -24,8 +24,8 @@ before_install:
   - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
   - npm install -g yarn@1.17.3
   # Install pre-commit (locking pyyaml to a specific version b/c of compilation issues)
-  - pip install --upgrade setuptools pip
-  - pip install --user 'pyyaml>=3.12' pre-commit pathlib2
+  - pip3 install --upgrade setuptools pip
+  - pip3 install --user 'pyyaml>=3.12' pre-commit pathlib2
   # To ensure the aws command can be found
   - export PATH=$PATH:$HOME/.local/bin
 
@@ -91,3 +91,10 @@ before_cache:
 
 after_success:
   - yarn report-coverage
+
+addons:
+  apt:
+    sources:
+      - deadsnakes # source required so it finds the package definition below
+    packages:
+      - python3-pip
