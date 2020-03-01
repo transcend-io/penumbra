@@ -31,10 +31,6 @@ module.exports = (config) => {
       reporters: [{ type: 'lcov' }],
     },
 
-    plugins: [
-      ...globalConfig.plugins,
-      'karma-coverage',
-      'karma-chrome-launcher',
-    ],
+    plugins: [...globalConfig.plugins, 'karma-chrome-launcher'],
   });
 };
