@@ -13,7 +13,6 @@ git:
 
 # Node version
 node_js: "10.15.0"
-python: "3.6"
 
 env:
   - DEPLOY_ENV=production
@@ -92,9 +91,3 @@ before_cache:
 
 after_success:
   - yarn report-coverage
-
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip" # pip isn't installed by default with the python3 installation
