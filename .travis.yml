@@ -32,7 +32,6 @@ before_install:
 # Install top level dependencies
 install:
   - yarn && cd example && yarn && cd ..
-  - yarn add global codecov
 
 # the following line is needed to enable the TravisCI build conditions
 conditions: v1
@@ -50,18 +49,12 @@ jobs:
       script:
         - pre-commit run --all-files
 
-    # Run tests locally
-    - stage: test
-      name: Tests
-      script: yarn test2:browserstack
-
     # Run tests on multiple browsers and publish code coverage
-    # - stage: test
-    #   name: Cross-Browser Tests
-    #   script:
-    #     - npm run browser-test
-    #     - npm run coverage
-    #     - codecov
+    - stage: test
+      name: Cross-Browser Tests
+      script:
+        - yarn test:browserstack
+
 
     # ###### #
     # Deploy #
@@ -97,8 +90,7 @@ before_cache:
   - rm -f $HOME/.npm/anonymous-cli-metrics.json
 
 after_success:
-  - npm run coverage
-  - codecov
+  - yarn report-coverage
 
 addons:
   apt:
