@@ -41,11 +41,11 @@ module.exports = (config) => {
     preprocessors: {
       ...globalConfig.preprocessors,
       // 'src/!(test|demo)/**': ['coverage'],
-      'build/penumbra.worker.js': ['coverage'],
-      'build/penumbra.js': ['coverage'],
+      // 'build/penumbra.worker.js': ['coverage'],
+      // 'build/penumbra.js': ['coverage'],
     },
 
-    reporters: ['progress', 'coverage', 'BrowserStack'],
+    reporters: ['progress', 'coverage', 'BrowserStack', 'karma-typescript'],
 
     coverageReporter: {
       reporters: [{ type: 'lcov' }],

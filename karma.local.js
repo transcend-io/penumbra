@@ -25,7 +25,7 @@ module.exports = (config) => {
       'build/penumbra.js': ['coverage'],
     },
 
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress', 'coverage', 'karma-typescript'],
 
     coverageReporter: {
       reporters: [{ type: 'lcov' }],

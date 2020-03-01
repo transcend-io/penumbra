@@ -4,29 +4,29 @@ module.exports = (config) => ({
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['tap'],
+  frameworks: ['tap', 'karma-typescript'],
 
   customContextFile: 'penumbra-karma-context.html',
 
   // list of files / patterns to load in the browser
   files: [
     {
-      pattern: 'build/penumbra.worker.js',
+      pattern: 'src/penumbra.worker.js',
       included: false,
       served: true,
       nocache: false,
     },
     {
-      pattern: 'build/penumbra.js',
+      pattern: 'src/index.ts',
       included: false,
       served: true,
       nocache: false,
     },
     {
-      pattern: 'build/tests.js',
+      pattern: 'src/tests/index.test.ts',
       included: true,
       served: true,
-      nocache: true,
+      nocache: false,
     },
   ],
 
@@ -35,9 +35,32 @@ module.exports = (config) => ({
 
   // preprocess matching files before serving them to the browser
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-  preprocessors: {},
+  preprocessors: {
+    'src/**/*.ts': ['karma-typescript'],
+  },
 
-  plugins: ['karma-tap', 'karma-coverage'],
+  karmaTypescriptConfig: {
+    compilerOptions: {
+      // eslint-disable-next-line global-require
+      ...require('./tsconfig.json').compilerOptions,
+      incremental: undefined,
+    },
+    include: ['src/**/*.ts', 'src/**/*.js'],
+    exclude: ['node_modules', 'build'],
+    bundlerOptions: {
+      acornOptions: {
+        ecmaVersion: 8,
+      },
+      // eslint-disable-next-line global-require
+      transforms: [require('karma-typescript-es6-transform')()],
+      entrypoints: /index\.tests\.ts/,
+      sourceMap: true,
+    },
+  },
+
+  browserNoActivityTimeout: 999999,
+
+  plugins: ['karma-tap', 'karma-coverage', 'karma-typescript'],
 
   // web server port
   port: 9876,
