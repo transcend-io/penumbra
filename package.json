@@ -8,15 +8,15 @@
     "example": "example"
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "####### Linting #######": "",
     "lint": "eslint . --cache --ext .js,.ts,.tsx,.jsx",
-    "lint:fresh": "rm .eslintcache; npm run lint",
+    "lint:fresh": "rm .eslintcache; yarn lint",
     "lint:fix": "eslint . --ext .js,.ts,.tsx,.jsx --fix",
     "ts:lint": "tslint --project .",
     "####### Start #########": "",
     "start": "http-server build -a localhost",
-    "start:example": "npm run build:example && http-server example",
+    "start:example": "yarn build:example && http-server example",
     "####### Testing #######": "",
     "test:interactive": "http-server build -a localhost",
     "test:local": "karma start karma.local.js",
@@ -28,11 +28,11 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
-    "build": "npm run clean && mkdir -p build && webpack && cp src/demo/* build/ && npm run build:markdown",
+    "build": "yarn clean && mkdir -p build && webpack && cp src/demo/* build/ && yarn build:markdown",
     "build:markdown": "markdown-toc -i --bullets '—' README.md && sed -i -e 's/—/-/g' README.md && rm -f README.md-e",
     "build:watch": "tsc --watch",
-    "webpack:watch": "npm run clean && webpack --watch",
-    "build:example": "cp -a build example"
+    "build:example": "cp -a build example",
+    "webpack:watch": "yarn clean && webpack --watch"
   },
   "repository": {
     "type": "git",

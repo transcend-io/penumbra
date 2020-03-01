@@ -52,7 +52,7 @@ jobs:
       name: Cross-Browser Tests
       script:
         - yarn test:browserstack
-
+        - yarn report-coverage
 
     # ###### #
     # Deploy #
@@ -60,7 +60,7 @@ jobs:
 
     # Deploy to npm
     - stage: deploy
-      script: echo "Nada"
+      script: skip
       edge: true
       deploy:
         - provider: npm
@@ -86,6 +86,3 @@ before_cache:
   - rm -f $HOME/.cache/pip3/log/debug.log
   - rm -f $HOME/.cache/pre-commit/pre-commit.log
   - rm -f $HOME/.npm/anonymous-cli-metrics.json
-
-after_success:
-  - yarn report-coverage
