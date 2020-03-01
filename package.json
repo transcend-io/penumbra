@@ -96,6 +96,7 @@
     "karma-tap": "^4.1.4",
     "karma-typescript": "^4.1.1",
     "karma-typescript-es6-transform": "^4.1.1",
+    "karma-webpack": "^4.0.2",
     "markdown-toc": "^1.2.0",
     "npm-check": "^5.9.0",
     "nyc": "^14.1.1",

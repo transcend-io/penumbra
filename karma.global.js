@@ -36,7 +36,18 @@ module.exports = (config) => ({
   // preprocess matching files before serving them to the browser
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {
-    'src/**/*.ts': ['karma-typescript'],
+    'src/**/*.ts': ['karma-typescript', 'webpack'],
+    'src/**/*.js': ['webpack'],
+  },
+
+  // karma watches the test entry points
+  // (you don't need to specify the entry option)
+  // webpack watches dependencies
+  // webpack configuration
+  webpack: {
+    // eslint-disable-next-line global-require
+    ...require('./webpack.config.js'),
+    devtool: 'eval-source-map',
   },
 
   karmaTypescriptConfig: {
@@ -58,9 +69,7 @@ module.exports = (config) => ({
     },
   },
 
-  browserNoActivityTimeout: 999999,
-
-  plugins: ['karma-tap', 'karma-coverage', 'karma-typescript'],
+  plugins: ['karma-tap', 'karma-coverage', 'karma-typescript', 'karma-webpack'],
 
   // web server port
   port: 9876,
@@ -72,7 +81,7 @@ module.exports = (config) => ({
   // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
   logLevel: config.LOG_INFO,
 
-  // enable / disable watching file and executing tests whenever any file changes
+  // enable / disable watching file agnd executing tests whenever any file changes
   autoWatch: false,
 
   // Continuous Integration mode
