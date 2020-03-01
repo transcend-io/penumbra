@@ -38,6 +38,18 @@ module.exports = (config) => {
     customLaunchers,
     browsers: Object.keys(customLaunchers),
 
-    reporters: ['dots', 'BrowserStack'],
+    preprocessors: {
+      ...globalConfig.preprocessors,
+      // 'src/!(test|demo)/**': ['coverage'],
+      'build/penumbra.worker.js': ['coverage'],
+      'build/penumbra.js': ['coverage'],
+    },
+
+    reporters: ['progress', 'coverage', 'BrowserStack'],
+
+    coverageReporter: {
+      reporters: [{ type: 'lcov' }],
+    },
+    plugins: [...globalConfig.plugins, 'karma-browserstack-launcher'],
   });
 };

@@ -14,13 +14,13 @@ module.exports = (config) => ({
       pattern: 'build/penumbra.worker.js',
       included: false,
       served: true,
-      nocache: true,
+      nocache: false,
     },
     {
       pattern: 'build/penumbra.js',
       included: false,
       served: true,
-      nocache: true,
+      nocache: false,
     },
     {
       pattern: 'build/tests.js',
@@ -37,6 +37,8 @@ module.exports = (config) => ({
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {},
 
+  plugins: ['karma-tap'],
+
   // web server port
   port: 9876,
 
@@ -45,7 +47,7 @@ module.exports = (config) => ({
 
   // level of logging
   // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-  logLevel: config.LOG_INFO,
+  logLevel: config.LOG_DEBUG,
 
   // enable / disable watching file and executing tests whenever any file changes
   autoWatch: false,

@@ -17,5 +17,24 @@ module.exports = (config) => {
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: true,
+
+    preprocessors: {
+      ...globalConfig.preprocessors,
+      // 'src/!(test|demo)/**': ['coverage'],
+      'build/penumbra.worker.js': ['coverage'],
+      'build/penumbra.js': ['coverage'],
+    },
+
+    reporters: ['progress', 'coverage'],
+
+    coverageReporter: {
+      reporters: [{ type: 'lcov' }],
+    },
+
+    plugins: [
+      ...globalConfig.plugins,
+      'karma-coverage',
+      'karma-chrome-launcher',
+    ],
   });
 };
