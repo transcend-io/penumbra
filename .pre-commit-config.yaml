@@ -22,13 +22,6 @@ repos:
         # https://github.com/koalaman/shellcheck
         entry: koalaman/shellcheck:v0.5.0
         types: [shell]
-      - id: markdown-lint
-        name: Markdown Lint
-        language: node
-        # https://github.com/igorshubovych/markdownlint-cli
-        additional_dependencies: [markdownlint-cli]
-        entry: markdownlint
-        types: [markdown]
       - id: eslint
         name: ESLint
         language: system
