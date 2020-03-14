@@ -1,1 +1,9 @@
 *.yml
+.eslintignore
+.npmignore
+LICENSE
+.prettierignore
+.airtaprc
+yarn.lock
+.gitignore
+.editorconfig
