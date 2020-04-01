@@ -52,7 +52,7 @@
 ## Compatability
 
 |         | .decrypt | .encrypt |
-|---------|---------:|---------:|
+| ------- | -------: | -------: |
 | Chrome  |      yes |      yes |
 | Safari  |      yes |       no |
 | Edge    |      yes |      yes |
