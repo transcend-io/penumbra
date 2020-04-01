@@ -48,6 +48,15 @@
 
 <!-- tocstop -->
 
+## Compatability
+
+|         | .decrypt | .encrypt |
+|---------|---------:|---------:|
+| Chrome  |      yes |      yes |
+| Safari  |      yes |       no |
+| Edge    |      yes |      yes |
+| Firefox |      yes |      yes |
+
 ## Usage
 
 ### Importing Penumbra

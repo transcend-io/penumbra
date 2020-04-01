@@ -11,6 +11,7 @@
 /* eslint-disable class-methods-use-this */
 
 // external modules
+import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { transfer, expose } from 'comlink';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';

@@ -1,4 +1,5 @@
 // Karma configuration
+const { short } = require('git-rev-sync');
 const getGlobalConfig = require('./karma.global');
 
 module.exports = (config) => {
@@ -22,17 +23,17 @@ module.exports = (config) => {
     // bs_safari_mac: {
     //   base: 'BrowserStack',
     //   browser: 'Safari',
-    //   browser_version: '12.1',
+    //   browser_version: '13',
     //   os: 'OS X',
-    //   os_version: 'Mojave',
+    //   os_version: 'Catalina',
     // },
-    // bs_edge_pc: {
-    //   base: 'BrowserStack',
-    //   browser: 'Edge',
-    //   browser_version: '18',
-    //   os: 'Windows',
-    //   os_version: '10',
-    // },
+    bs_edge_pc: {
+      base: 'BrowserStack',
+      browser: 'Edge',
+      browser_version: '80',
+      os: 'Windows',
+      os_version: '10',
+    },
   };
 
   const globalConfig = getGlobalConfig(config);
@@ -45,7 +46,7 @@ module.exports = (config) => {
       username: 'benjaminbrook3',
       project: 'Penumbra',
       video: false,
-      build: process.env.TRAVIS_BUILD_NUMBER, // process.env.CIRCLE_BUILD_NUM
+      build: process.env.TRAVIS_BUILD_NUMBER || short(), // process.env.CIRCLE_BUILD_NUM
     },
 
     // define browsers
