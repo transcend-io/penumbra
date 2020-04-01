@@ -49,7 +49,7 @@
 
 <!-- tocstop -->
 
-## Compatability
+## Compatibility
 
 |         | .decrypt | .encrypt |
 | ------- | -------: | -------: |
