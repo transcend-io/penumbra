@@ -72,9 +72,6 @@ jobs:
 
 cache:
   directories:
-    # Cache pip activities to speed up pre-commit installation
-    - $HOME/.cache/pip
-    - $HOME/.cache/pip3
     # Cache pre-commit repos so that the pre-commit setup is faster
     - $HOME/.cache/pre-commit
     # Cache npm as specified by https://docs.npmjs.com/cli/ci#example
@@ -82,7 +79,5 @@ cache:
     #   be used to speed the install up
     - $HOME/.npm
 before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
-  - rm -f $HOME/.cache/pip3/log/debug.log
   - rm -f $HOME/.cache/pre-commit/pre-commit.log
   - rm -f $HOME/.npm/anonymous-cli-metrics.json

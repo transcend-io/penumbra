@@ -36,6 +36,8 @@ const config = {
         use: [
           {
             loader: 'babel-loader',
+            // eslint-disable-next-line global-require
+            options: require('./babel.config'),
           },
           {
             loader: 'ts-loader',

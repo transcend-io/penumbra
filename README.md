@@ -21,7 +21,7 @@
 
 - [Usage](#usage)
   - [Importing Penumbra](#importing-penumbra)
-    - [With NPM](#with-npm)
+    - [With Yarn/NPM](#with-yarnnpm)
     - [Vanilla JS](#vanilla-js)
   - [.get](#get)
   - [.encrypt](#encrypt)

@@ -19,6 +19,20 @@ module.exports = (config) => {
       os: 'Windows',
       os_version: '10',
     },
+    // bs_safari_mac: {
+    //   base: 'BrowserStack',
+    //   browser: 'Safari',
+    //   browser_version: '12.1',
+    //   os: 'OS X',
+    //   os_version: 'Mojave',
+    // },
+    // bs_edge_pc: {
+    //   base: 'BrowserStack',
+    //   browser: 'Edge',
+    //   browser_version: '18',
+    //   os: 'Windows',
+    //   os_version: '10',
+    // },
   };
 
   const globalConfig = getGlobalConfig(config);
