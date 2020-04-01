@@ -30,7 +30,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': [
       'warn',
       {
-        allowExpressions: true
+        allowExpressions: true,
       },
     ],
     '@typescript-eslint/camelcase': 0,
@@ -57,14 +57,21 @@ module.exports = {
     'import/prefer-default-export': 0,
     indent: 0,
     // "jsdoc/check-types":  ["error"],
-    'max-len': ['error', 125, {
-      comments: 200
-    }],
+    'max-len': [
+      'error',
+      125,
+      {
+        comments: 200,
+      },
+    ],
     'max-lines': ['error', 250],
     // "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
-    'no-bitwise': ['error', {
-      allow: ['~']
-    }],
+    'no-bitwise': [
+      'error',
+      {
+        allow: ['~'],
+      },
+    ],
     'no-confusing-arrow': 0,
     'no-console': 0,
     'no-multi-spaces': ['error'],
@@ -86,16 +93,21 @@ module.exports = {
       },
     ],
     'require-yield': ['error'],
-    'sort-vars': ['error', {
-      ignoreCase: true
-    }],
+    'sort-vars': [
+      'error',
+      {
+        ignoreCase: true,
+      },
+    ],
   },
-  overrides: [{
-    files: ['**/*.test.ts'],
-    rules: {
-      '@typescript-eslint/explicit-function-return-type': 0,
+  overrides: [
+    {
+      files: ['**/*.test.ts'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': 0,
+      },
     },
-  }, ],
+  ],
   settings: {
     'import/resolver': {
       typescript: {},
