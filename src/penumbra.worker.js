@@ -3,7 +3,7 @@
  * Fetch and decrypt files in the browser using whatwg streams and web workers.
  *
  * @author Transcend Inc. <https://transcend.io>
- * @license MIT
+ * @license Apache 2.0
  */
 
 /* eslint-disable import/extensions */
@@ -11,6 +11,7 @@
 /* eslint-disable class-methods-use-this */
 
 // external modules
+import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { transfer, expose } from 'comlink';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';

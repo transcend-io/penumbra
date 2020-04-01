@@ -1,3 +1,7 @@
+/**
+ * All test logic lives in the Karma files - (any difference in test bundles happens there)
+ * The only env differences is prod vs dev - the tests work in both environments.
+ */
 const { join } = require('path');
 // const WorkerPlugin = require('worker-plugin');
 
@@ -32,6 +36,8 @@ const config = {
         use: [
           {
             loader: 'babel-loader',
+            // eslint-disable-next-line global-require
+            options: require('./babel.config'),
           },
           {
             loader: 'ts-loader',

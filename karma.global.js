@@ -1,3 +1,8 @@
+const { join } = require('path');
+const webpackConfig = require('./webpack.config.js');
+
+const src = join(__dirname, 'src');
+
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
   basePath: '',
@@ -11,22 +16,22 @@ module.exports = (config) => ({
   // list of files / patterns to load in the browser
   files: [
     {
-      pattern: 'build/penumbra.worker.js',
+      pattern: 'src/penumbra.worker.js',
       included: false,
       served: true,
-      nocache: true,
+      nocache: false,
     },
     {
-      pattern: 'build/penumbra.js',
+      pattern: 'src/index.ts',
       included: false,
       served: true,
-      nocache: true,
+      nocache: false,
     },
     {
-      pattern: 'build/tests.js',
+      pattern: 'src/tests/index.test.ts',
       included: true,
       served: true,
-      nocache: true,
+      nocache: false,
     },
   ],
 
@@ -35,7 +40,44 @@ module.exports = (config) => ({
 
   // preprocess matching files before serving them to the browser
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-  preprocessors: {},
+  preprocessors: {
+    'src/**': ['webpack', 'sourcemap'],
+  },
+
+  // webpack configuration
+  webpack: {
+    // eslint-disable-next-line global-require
+    ...webpackConfig,
+    module: {
+      ...webpackConfig.module,
+      rules: [
+        ...webpackConfig.module.rules,
+        {
+          // Instrument sourcemaps for code coverage
+          test: /\.(js|ts)?$/,
+          include: [src],
+          use: {
+            loader: 'istanbul-instrumenter-loader',
+            options: { esModules: true },
+          },
+          enforce: 'post',
+        },
+      ],
+    },
+  },
+
+  plugins: [
+    'karma-tap',
+    'karma-coverage',
+    'karma-webpack',
+    'karma-sourcemap-loader',
+  ],
+
+  reporters: ['progress', 'coverage'],
+
+  coverageReporter: {
+    reporters: [{ type: 'lcov' }],
+  },
 
   // web server port
   port: 9876,
