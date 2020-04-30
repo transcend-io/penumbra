@@ -65,7 +65,7 @@
     "into-stream": "^5.1.1",
     "mime-types": "^2.1.26",
     "remote-web-streams": "0.1.0",
-    "streamsaver": "^2.0.3",
+    "streamsaver": "^2.0.4",
     "typedarray-to-buffer": "^3.1.5",
     "web-streams-node": "^0.4.0"
   },
