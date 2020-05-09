@@ -1,13 +1,12 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "4.6.1",
+  "version": "4.7.1",
   "description": "Crypto streams for the browser.",
   "main": "build/penumbra.js",
   "types": "build/src/index.d.ts",
   "directories": {
     "example": "example"
   },
-  "browserslist": "> 0.25%, not dead",
   "scripts": {
     "prepare": "yarn build",
     "####### Linting #######": "",
@@ -61,7 +60,6 @@
     "core-js": "^3.6.4",
     "crypto-browserify": "^3.12.0",
     "file-saver": "^2.0.2",
-    "git-rev-sync": "^2.0.0",
     "into-stream": "^5.1.1",
     "mime-types": "^2.1.26",
     "remote-web-streams": "0.1.0",
@@ -71,8 +69,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
-    "@babel/plugin-transform-typescript": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.9.6",
     "@babel/preset-env": "^7.8.7",
+    "@babel/preset-typescript": "^7.9.0",
     "@types/file-saver": "^2.0.1",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^13.9.1",
@@ -97,8 +97,8 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.1",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^4.0.2",
     "karma-tap": "^4.2.0",
+    "karma-webpack": "^4.0.2",
     "markdown-toc": "^1.2.0",
     "npm-check": "^5.9.2",
     "nyc": "^15.0.0",
@@ -106,7 +106,6 @@
     "rimraf": "^3.0.2",
     "tape": "^4.13.2",
     "terser-webpack-plugin": "^2.3.5",
-    "ts-loader": "^6.2.1",
     "tslint": "^6.1.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "^3.8.3",

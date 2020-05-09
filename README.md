@@ -19,7 +19,7 @@
 
 <!-- toc -->
 
-- [Compatability](#compatability)
+- [Compatibility](#compatibility)
 - [Usage](#usage)
   - [Importing Penumbra](#importing-penumbra)
     - [With Yarn/NPM](#with-yarnnpm)
