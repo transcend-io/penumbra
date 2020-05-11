@@ -17,6 +17,7 @@
     "####### Start #########": "",
     "start": "http-server build -a localhost",
     "start:example": "yarn build:example && http-server example",
+    "start:demo": "http-server build",
     "####### Testing #######": "",
     "test:interactive": "http-server build -a localhost",
     "test:local": "karma start karma.local.js",
@@ -31,7 +32,7 @@
     "build": "yarn clean && mkdir -p build && webpack && cp src/demo/* build/ && yarn build:markdown",
     "build:markdown": "markdown-toc -i --bullets '—' README.md && sed -i -e 's/—/-/g' README.md && rm -f README.md-e",
     "build:watch": "tsc --watch",
-    "build:example": "cp -a build example",
+    "build:example": "rimraf example/build && cp -a build example",
     "webpack:watch": "yarn clean && webpack --watch"
   },
   "repository": {
@@ -81,6 +82,7 @@
     "@typescript-eslint/parser": "^2.23.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
+    "bowser": "^2.9.0",
     "check-deps": "^1.4.1",
     "codecov": "^3.6.5",
     "eslint": "^6.8.0",
@@ -90,6 +92,7 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-prettier": "^3.1.2",
     "fetch-mock": "^9.2.1",
+    "git-rev-sync": "^2.0.0",
     "http-server": "^0.12.1",
     "istanbul-instrumenter-loader": "^3.0.1",
     "karma": "^4.4.1",

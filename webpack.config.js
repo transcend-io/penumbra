@@ -22,8 +22,7 @@ const config = {
     tests: `${src}/tests/index.test.ts`,
   },
   output: {
-    filename: '[name].bundle.js',
-    chunkFilename: '[name].bundle.js',
+    filename: '[name].js',
     path: join(__dirname, 'build'),
   },
   resolve: {

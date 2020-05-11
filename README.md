@@ -53,10 +53,10 @@
 
 |         | .decrypt | .encrypt |
 | ------- | -------: | -------: |
-| Chrome  |      yes |      yes |
-| Safari  |      yes |       no |
-| Edge    |      yes |      yes |
-| Firefox |      yes |      yes |
+| Chrome  |      ✅  |      ✅  |
+| Safari  |      ✅  |      ❌  |
+| Edge    |      ✅  |      ✅  |
+| Firefox |      ✅  |      ❌  |
 
 ## Usage
 
