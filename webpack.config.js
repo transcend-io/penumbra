@@ -32,7 +32,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(m?j|t)s$/,
+        test: /\.(j|t)s$/,
         use: {
           loader: 'babel-loader',
         },

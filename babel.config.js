@@ -6,12 +6,13 @@ module.exports = {
       {
         debug: false, // log babel preset-env config
         useBuiltIns: 'entry', // enable polyfills
+        modules: 'commonjs',
         corejs: 3,
       },
     ],
   ],
   plugins: [
-    '@babel/proposal-class-properties',
-    '@babel/proposal-object-rest-spread',
+    '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-proposal-object-rest-spread',
   ],
 };
