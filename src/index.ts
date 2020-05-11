@@ -7,6 +7,8 @@
  * @license Apache 2.0
  */
 
+import intoStream from 'into-stream';
+
 // exports
 import penumbra from './API';
 import MOCK_API from './mock';
@@ -16,8 +18,6 @@ import { PenumbraAPI } from './types';
 export * from './types';
 
 export { penumbra, MOCK_API };
-
-import intoStream = require('into-stream');
 
 /** Extend global Window */
 declare global {

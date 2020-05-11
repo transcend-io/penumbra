@@ -14,19 +14,21 @@ module.exports = (config) => {
       os_version: 'Mojave',
     },
     bs_firefox_pc: {
+      // Skips .encrypt tests
       base: 'BrowserStack',
       browser: 'Firefox',
       browser_version: '71.0',
       os: 'Windows',
       os_version: '10',
     },
-    // bs_safari_mac: {
-    //   base: 'BrowserStack',
-    //   browser: 'Safari',
-    //   browser_version: '13',
-    //   os: 'OS X',
-    //   os_version: 'Catalina',
-    // },
+    bs_safari_mac: {
+      // Skips .encrypt tests
+      base: 'BrowserStack',
+      browser: 'Safari',
+      browser_version: '13',
+      os: 'OS X',
+      os_version: 'Catalina',
+    },
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',

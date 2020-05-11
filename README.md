@@ -19,7 +19,7 @@
 
 <!-- toc -->
 
-- [Compatability](#compatability)
+- [Compatibility](#compatibility)
 - [Usage](#usage)
   - [Importing Penumbra](#importing-penumbra)
     - [With Yarn/NPM](#with-yarnnpm)
@@ -53,10 +53,10 @@
 
 |         | .decrypt | .encrypt |
 | ------- | -------: | -------: |
-| Chrome  |      yes |      yes |
-| Safari  |      yes |       no |
-| Edge    |      yes |      yes |
-| Firefox |      yes |      yes |
+| Chrome  |       ✅ |       ✅ |
+| Safari  |       ✅ |       ❌ |
+| Edge    |       ✅ |       ✅ |
+| Firefox |       ✅ |       ❌ |
 
 ## Usage
 

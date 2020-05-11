@@ -2,7 +2,7 @@
 # See http://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    sha: v1.3.0
+    rev: v1.3.0
     hooks:
       - id: check-merge-conflict
       - id: check-symlinks

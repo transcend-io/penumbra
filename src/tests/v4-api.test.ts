@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import test from 'tape';
+import Bowser from 'bowser';
 import {
   PenumbraAPI,
   PenumbraFile,
@@ -11,6 +12,9 @@ import {
 // import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
+
+// This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
+const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
 
 const view = self;
 
@@ -264,9 +268,9 @@ test('penumbra.getBlob()', async (t) => {
 });
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
-  if (navigator.userAgent.toLowerCase().includes('firefox')) {
+  if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      'penumbra.encrypt() test bypassed for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
+      `penumbra.encrypt() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;

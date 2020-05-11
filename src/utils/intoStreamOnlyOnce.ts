@@ -1,4 +1,4 @@
-import intoStream = require('into-stream');
+import intoStream from 'into-stream';
 
 /** Converts arrays into streams and passes  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
