@@ -275,11 +275,6 @@ export type PenumbraWorkerAPI = {
   ) => Promise<ReadableStream>;
   /**
    * Query Penumbra's level of support for the current browser.
-   *
-   * -0 - Old browser where penumbra does not work at all.
-   *  0 - Modern browser where penumbra is not yet supported.
-   *  1 - Modern browser where file size limit is low.
-   *  2 - Modern browser with full support.
    */
   supported: () => PenumbraSupportLevel;
 };
