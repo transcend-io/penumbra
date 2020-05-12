@@ -169,6 +169,18 @@ export type PenumbraTextOrURI = {
 /** Penumbra API */
 export type PenumbraAPI = typeof penumbra;
 
+/** Penumbra user agent support level */
+export enum PenumbraSupportLevel {
+  /** Old browser where Penumbra will not work at all */
+  none = -1,
+  /** Modern browser where Penumbra is not yet supported */
+  possible = 0,
+  /** Modern browser where file size limit is low */
+  size_limited = 1,
+  /** Modern browser with full support */
+  full = 2,
+}
+
 /**
  * Penumbra Worker API
  */
@@ -264,12 +276,12 @@ export type PenumbraWorkerAPI = {
   /**
    * Query Penumbra's level of support for the current browser.
    *
-   * 0 - Old browser where penumbra does not work at all.
-   * 1 - Modern browser where penumbra is not yet supported.
-   * 2 - Modern browser where file size limit is low.
-   * 3 - Modern browser with full support.
+   * -0 - Old browser where penumbra does not work at all.
+   *  0 - Modern browser where penumbra is not yet supported.
+   *  1 - Modern browser where file size limit is low.
+   *  2 - Modern browser with full support.
    */
-  supported: () => number;
+  supported: () => PenumbraSupportLevel;
 };
 
 /**

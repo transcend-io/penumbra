@@ -18,6 +18,7 @@ import {
 } from './types';
 import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
+import { supported } from './ua-support';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -532,6 +533,7 @@ const penumbra = {
   decrypt,
   getDecryptionInfo,
   save,
+  supported,
   getBlob,
   getTextOrURI,
   zip,
