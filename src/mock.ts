@@ -4,7 +4,7 @@ import { PenumbraAPI } from './types';
 const MOCK_API: PenumbraAPI = {
   get: async () => [],
   save: async () => undefined,
-  supported: () => 0,
+  supported: () => -0,
   encrypt: async () => [],
   decrypt: async () => [],
   getDecryptionInfo: async () => ({

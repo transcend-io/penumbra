@@ -38,7 +38,7 @@ test('setup', async (t) => {
 
 test('penumbra.supported() test', async (t) => {
   t.assert(
-    penumbra.supported() > PenumbraSupportLevel.possible,
+    penumbra.supported() >= PenumbraSupportLevel.size_limited,
     'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
   );
 });
