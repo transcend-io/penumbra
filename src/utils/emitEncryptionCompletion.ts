@@ -1,4 +1,5 @@
 // penumbra
+import { PenumbraEvent } from '../event';
 import { EncryptionCompletionEmit, PenumbraDecryptionInfo } from '../types';
 
 /**
@@ -17,6 +18,6 @@ export default function emitEncryptionCompletion(
   };
 
   // Dispatch the event
-  const event = new CustomEvent('penumbra-encryption-complete', emitContent);
+  const event = new PenumbraEvent('penumbra-encryption-complete', emitContent);
   self.dispatchEvent(event);
 }

@@ -14,6 +14,7 @@ import penumbra from './API';
 import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
 import { PenumbraAPI } from './types';
+import { PenumbraEvent } from './event';
 
 export * from './types';
 
@@ -34,4 +35,8 @@ declare global {
 self.intoStream = intoStream;
 self.penumbra = penumbra;
 
-self.dispatchEvent(new CustomEvent('penumbra-ready', { detail: { penumbra } }));
+if (self.dispatchEvent && PenumbraEvent) {
+  self.dispatchEvent(
+    new PenumbraEvent('penumbra-ready', { detail: { penumbra } }),
+  );
+}

@@ -114,8 +114,10 @@ export function getWorkerLocation(): WorkerLocation {
 }
 
 /** Re-dispatch events */
-function reDispatchEvent(event: CustomEvent): void {
-  view.dispatchEvent(event);
+function reDispatchEvent(event: Event): void {
+  if (view.dispatchEvent) {
+    view.dispatchEvent(event);
+  }
 }
 
 let workerThread: PenumbraWorker;

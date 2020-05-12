@@ -261,6 +261,15 @@ export type PenumbraWorkerAPI = {
     writablePort: MessagePort,
     files: PenumbraFile[],
   ) => Promise<ReadableStream>;
+  /**
+   * Query Penumbra's level of support for the current browser.
+   *
+   * 0 - Old browser where penumbra does not work at all.
+   * 1 - Modern browser where penumbra is not yet supported.
+   * 2 - Modern browser where file size limit is low.
+   * 3 - Modern browser with full support.
+   */
+  supported: () => number;
 };
 
 /**

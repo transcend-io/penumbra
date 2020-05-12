@@ -1,5 +1,6 @@
 // penumbra
 import { PenumbraEventType, ProgressEmit } from '../types';
+import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for the decryption progress
@@ -27,6 +28,6 @@ export default function emitProgress(
   };
 
   // Dispatch the event
-  const event = new CustomEvent('penumbra-progress', emitContent);
+  const event = new PenumbraEvent('penumbra-progress', emitContent);
   self.dispatchEvent(event);
 }
