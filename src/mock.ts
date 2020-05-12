@@ -1,10 +1,13 @@
 // local
-import { PenumbraAPI } from './types';
+import { PenumbraAPI, PenumbraSupportLevel } from './types';
+
+const supported = (): PenumbraSupportLevel => -0;
+supported.levels = PenumbraSupportLevel;
 
 const MOCK_API: PenumbraAPI = {
   get: async () => [],
   save: async () => undefined,
-  supported: () => -0,
+  supported,
   encrypt: async () => [],
   decrypt: async () => [],
   getDecryptionInfo: async () => ({

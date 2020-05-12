@@ -21,3 +21,5 @@ if (
 export function supported(): PenumbraSupportLevel {
   return supportLevel;
 }
+
+supported.levels = PenumbraSupportLevel;
