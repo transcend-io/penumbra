@@ -6,8 +6,10 @@ module.exports = {
       {
         debug: false, // log babel preset-env config
         useBuiltIns: 'entry', // enable polyfills
-        modules: 'commonjs',
-        corejs: 3,
+        corejs: {
+          version: 3,
+          proposals: true,
+        }, // Enable core-js and proposals
       },
     ],
   ],
