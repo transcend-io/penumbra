@@ -2,7 +2,7 @@
   "name": "@transcend-io/penumbra",
   "version": "4.7.3",
   "description": "Encrypt/decrypt anything in the browser using streams on background threads.",
-  "main": "build/penumbra.js",
+  "main": "src/index.ts",
   "directories": {
     "example": "example"
   },
