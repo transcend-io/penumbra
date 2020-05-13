@@ -3,7 +3,7 @@
   "version": "4.7.3",
   "description": "Crypto streams for the browser.",
   "main": "build/penumbra.js",
-  "types": "build/src/index.d.ts",
+  "types": "build/types/src/index.d.ts",
   "directories": {
     "example": "example"
   },
@@ -29,9 +29,9 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
-    "build": "yarn clean && mkdir -p build && webpack && cp src/demo/* build/ && yarn build:markdown",
+    "build": "yarn clean && mkdir -p build && webpack && cp src/demo/* build/ && yarn build:types && yarn build:markdown",
+    "build:types": "tsc",
     "build:markdown": "markdown-toc -i --bullets '—' README.md && sed -i -e 's/—/-/g' README.md && rm -f README.md-e",
-    "build:watch": "tsc --watch",
     "build:example": "rimraf example/build && cp -a build example",
     "webpack:watch": "yarn clean && webpack --watch"
   },

@@ -1,5 +1,5 @@
 {
-  "compileOnSave": true,
+  "compileOnSave": false,
   "compilerOptions": {
     "incremental": true,
     "target": "es2020",
@@ -8,6 +8,8 @@
     "allowJs": false,
     "declaration": true,
     "declarationMap": true,
+    "declarationDir": "build/types",
+    "emitDeclarationOnly": true, // Only used for linting and d.ts declaration. Not Babel builds
     "sourceMap": true,
     "removeComments": false,
     "esModuleInterop": true,
