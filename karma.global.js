@@ -1,5 +1,5 @@
 const { join } = require('path');
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.prod.js');
 
 const src = join(__dirname, 'src');
 
