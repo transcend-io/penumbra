@@ -41,6 +41,7 @@ test('penumbra.supported() test', async (t) => {
     penumbra.supported() >= PenumbraSupportLevel.size_limited,
     'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
   );
+  t.end();
 });
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
