@@ -1,9 +1,9 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "4.8.0",
+  "version": "4.7.5",
   "description": "Crypto streams for the browser.",
   "main": "build/penumbra.js",
-  "types": "build/src/index.d.ts",
+  "types": "build/index.d.ts",
   "directories": {
     "example": "example"
   },
@@ -29,11 +29,11 @@
     "check:deps:interactive": "npm-check -u",
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
-    "build": "yarn clean && mkdir -p build && webpack && cp src/demo/* build/ && tsc --declaration && yarn build:markdown",
+    "build": "yarn clean && mkdir -p build && webpack --config webpack.prod.js && cp src/demo/* build/ && tsc --emitDeclarationOnly --out build/index.d.ts && yarn build:markdown",
     "build:markdown": "markdown-toc -i --bullets '—' README.md && sed -i -e 's/—/-/g' README.md && rm -f README.md-e",
     "build:watch": "tsc --watch",
     "build:example": "rimraf example/build && cp -a build example",
-    "webpack:watch": "yarn clean && webpack --watch"
+    "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
   },
   "repository": {
     "type": "git",
@@ -114,6 +114,7 @@
     "typescript": "^3.8.3",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
+    "webpack-merge": "^4.2.2",
     "worker-plugin": "^4.0.2"
   }
 }
