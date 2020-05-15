@@ -12,7 +12,7 @@ if (
   typeof self.fetch === 'function'
 ) {
   supportLevel =
-    'WritableStream' in self
+    'WritableStream' in self && 'TransformStream' in self
       ? PenumbraSupportLevel.full
       : PenumbraSupportLevel.size_limited;
 }
