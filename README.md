@@ -44,6 +44,7 @@
   - [Progress Event Emitter](#progress-event-emitter)
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+  - [Querying Penumbra browser support](#querying-penumbra-browser-support)
 - [Contributing](#contributing)
 - [License](#license)
 
