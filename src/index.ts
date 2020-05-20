@@ -13,12 +13,12 @@ import intoStream from 'into-stream';
 import penumbra from './API';
 import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
-import { PenumbraAPI } from './types';
+import { PenumbraAPI, PenumbraSupportLevel } from './types';
 import { PenumbraEvent } from './event';
 
 export * from './types';
 
-export { penumbra, MOCK_API };
+export { penumbra, MOCK_API, PenumbraSupportLevel };
 
 /** Extend global Window */
 declare global {
