@@ -12,7 +12,7 @@
     "removeComments": false,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "outDir": "build",
+    "outDir": "ts-build",
     "types": ["node"],
     "composite": true,
     "moduleResolution": "node",
