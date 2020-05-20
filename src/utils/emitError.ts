@@ -2,6 +2,7 @@
 
 import { PenumbraError } from '../error';
 import { PenumbraErrorEmit } from '../types';
+import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for errors and exceptions
@@ -15,6 +16,6 @@ export default function emitError(error: PenumbraError): void {
     error instanceof PenumbraError ? error : new PenumbraError(error, 'NA');
   const emitContent: Pick<PenumbraErrorEmit, 'detail'> = { detail };
   // Dispatch the event
-  const event = new CustomEvent('penumbra-error', emitContent);
+  const event = new PenumbraEvent('penumbra-error', emitContent);
   self.dispatchEvent(event);
 }

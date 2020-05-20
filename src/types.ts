@@ -17,6 +17,18 @@ import { PenumbraError } from './error';
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
+/** Penumbra user agent support level */
+export enum PenumbraSupportLevel {
+  /** Old browser where Penumbra does not work at all */
+  none = -0,
+  /** Modern browser where Penumbra is not yet supported */
+  possible = 0,
+  /** Modern browser where file size limit is low */
+  size_limited = 1,
+  /** Modern browser with full support */
+  full = 2,
+}
+
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
  */
@@ -261,6 +273,10 @@ export type PenumbraWorkerAPI = {
     writablePort: MessagePort,
     files: PenumbraFile[],
   ) => Promise<ReadableStream>;
+  /**
+   * Query Penumbra's level of support for the current browser.
+   */
+  supported: () => PenumbraSupportLevel;
 };
 
 /**

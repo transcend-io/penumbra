@@ -6,6 +6,7 @@ import {
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
+  PenumbraSupportLevel,
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,6 +34,14 @@ test('setup', async (t) => {
   } else {
     onReady();
   }
+});
+
+test('penumbra.supported() test', async (t) => {
+  t.assert(
+    penumbra.supported() >= PenumbraSupportLevel.size_limited,
+    'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
+  );
+  t.end();
 });
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {

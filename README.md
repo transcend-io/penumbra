@@ -44,6 +44,7 @@
   - [Progress Event Emitter](#progress-event-emitter)
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+  - [Querying Penumbra browser support](#querying-penumbra-browser-support)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -397,6 +398,28 @@ if (!self.penumbra) {
   self.addEventListener('penumbra-ready', onReady);
 } else {
   onReady();
+}
+```
+
+### Querying Penumbra browser support
+
+You can check if Penumbra is supported by the current browser by comparing `penumbra.supported(): PenumbraSupportLevel` with `penumbra.supported.levels`.
+
+```ts
+if (penumbra.supported() > penumbra.supported.levels.possible) {
+  // penumbra is partially or fully supported
+}
+
+/** penumbra.supported.levels - Penumbra user agent support levels */
+enum PenumbraSupportLevel {
+  /** Old browser where Penumbra does not work at all */
+  none = -0,
+  /** Modern browser where Penumbra is not yet supported */
+  possible = 0,
+  /** Modern browser where file size limit is low */
+  size_limited = 1,
+  /** Modern browser with full support */
+  full = 2,
 }
 ```
 
