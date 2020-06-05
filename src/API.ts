@@ -3,6 +3,8 @@
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import { toWebReadableStream } from 'web-streams-node';
+import { createWriteStream } from 'streamsaver';
+import { saveAs } from 'file-saver';
 
 // Local
 import {
@@ -155,15 +157,12 @@ const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
  * @returns A promise that saves the files
  */
 async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
-  const createStreamSaver = (await import('streamsaver')).createWriteStream;
-  const { saveAs } = await import('file-saver');
-
   // Zip a list of files
   // TODO: Use streaming zip through conflux
   if ('length' in data && data.length > 1) {
     const archive = await zip(data);
     return archive.pipeTo(
-      createStreamSaver(fileName || `${DEFAULT_FILENAME}.zip`),
+      createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`),
     );
   }
 
@@ -173,7 +172,7 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
 
   // Write a single readable stream to file
   if (file.stream instanceof ReadableStream) {
-    return file.stream.pipeTo(createStreamSaver(singleFileName));
+    return file.stream.pipeTo(createWriteStream(singleFileName));
   }
   if (file.stream instanceof ArrayBuffer) {
     return saveAs(
