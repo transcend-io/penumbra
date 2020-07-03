@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Penumbra</h1>
 <p align="center">
-  <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
+  <strong>Encrypt/decrypt anything in the browser using streams on background threads.</strong>
   <br /><br />
   <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/transcend-io/conflux">conflux</a>.</i>
   <br /><br />
