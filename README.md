@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Penumbra</h1>
 <p align="center">
-  <strong>Fetch and decrypt files in the browser using whatwg streams and web workers.</strong>
+  <strong>Encrypt/decrypt anything in the browser using streams on background threads.</strong>
   <br /><br />
   <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/transcend-io/conflux">conflux</a>.</i>
   <br /><br />
@@ -11,8 +11,6 @@
   <a href="https://automate.browserstack.com/public-build/SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%"><img src='https://automate.browserstack.com/badge.svg?badge_key=SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%'/></a>
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra.svg?type=shield"/></a>
-  <a href="https://codecov.io/gh/transcend-io/penumbra"><img src="https://codecov.io/gh/transcend-io/penumbra/branch/master/graph/badge.svg" alt="Code Coverage"></a>
-  <a href="https://codeclimate.com/github/transcend-io/penumbra/maintainability"><img src="https://api.codeclimate.com/v1/badges/b87db99b427788ea3ce9/maintainability" /></a>
   <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
 </p>
 <br />
