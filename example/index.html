@@ -23,6 +23,28 @@
       </table>
     </div>
 
+    <script>
+      const encounteredJobs = new Map();
+      self.addEventListener(
+        'penumbra-progress',
+        ({ detail: { id, percent } }) => {
+          if (!encounteredJobs.has(id)) {
+            const startTime = Date.now();
+            console.log(`encountered penumbra job ${id} at ${startTime}`);
+            encounteredJobs.set(id, [startTime, -1, -1]);
+          }
+          if (percent >= 100) {
+            const [start = 0] = encounteredJobs?.get(id) || [];
+            const end = Date.now();
+            const elapsed = end - start;
+            encounteredJobs.set(id, [start, end, elapsed]);
+            console.log(
+              `penumbra job ${id} complete (took ${elapsed / 1000} seconds)`,
+            );
+          }
+        },
+      );
+    </script>
     <script src="./build/penumbra.js" async defer></script>
     <script src="index.js"></script>
   </body>
