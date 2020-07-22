@@ -7,7 +7,7 @@ import {
   PenumbraReady,
   PenumbraSupportLevel,
 } from '../types';
-import { hash } from './helpers';
+import { hash, generateRandomUint8Array, parseSize } from './helpers';
 
 // This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
 const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
@@ -47,13 +47,20 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
     t.end();
     return;
   }
-  // const GB = 1e9;
-  // const TARGET_SIZE = 2 * GB;
 
+  // TODO: use '2 GB'
+  const targetSizeLabel = '16 KB';
+  const targetSize = parseSize(targetSizeLabel);
+
+  t.comment(
+    `Generating ${targetSizeLabel} of data (${targetSize.toLocaleString()} bytes)`,
+  );
   const genArrayStart = Date.now();
-  const stream = new Uint8Array(1e4).fill(0);
+  const stream = generateRandomUint8Array(targetSize);
   const genArrayTime = (Date.now() - genArrayStart) / 1000;
-  t.comment(`Time to generate 2GB of data: ${genArrayTime} seconds`);
+  t.comment(
+    `Time to generate ${targetSizeLabel} of data: ${genArrayTime} seconds`,
+  );
 
   const hashStart = Date.now();
   const testHash = await hash('SHA-256', stream);

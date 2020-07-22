@@ -11,7 +11,7 @@ module.exports = (config) => {
     autoWatch: false,
 
     // increase browserNoActivityTimeout to 60 seconds
-    browserNoActivityTimeout: 60000,
+    browserNoActivityTimeout: 600000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
