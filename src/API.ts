@@ -421,7 +421,7 @@ export async function decrypt(
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
     const ids: number[] = [];
     const sizes: number[] = [];
-    // collect file sizes and assign encryption job IDs for completion tracking
+    // collect file sizes and assign decryption job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = file.id || jobID++));
@@ -442,7 +442,7 @@ export async function decrypt(
     // enter worker thread
     await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
       /**
-       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
+       * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */
@@ -454,7 +454,7 @@ export async function decrypt(
         transfer(writablePorts, writablePorts),
       );
     });
-    // encryption jobs submitted and still processing
+    // decryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
       // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream

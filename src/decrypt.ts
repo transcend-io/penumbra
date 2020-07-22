@@ -130,7 +130,7 @@ export function decrypt(
   const decipher = createDecipheriv('aes-256-gcm', key, iv);
   decipher.setAuthTag(authTag);
 
-  // Encrypt the stream
+  // Decrypt the stream
   return {
     ...file,
     // stream:
