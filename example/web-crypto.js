@@ -183,57 +183,57 @@ function insertIntoCell(returnedFiles) {
   });
 }
 
+// Helper to decode arraybuffer to text
+const enc = new TextDecoder('utf-8');
+
 // Decryption logic
 const onReady = async () => {
-  const output = [];
   const promises = files.map(async (file) => {
     const { url, filePrefix, mimetype, decryptionOptions } = file;
 
     // Fetch the encrypted file from S3
     const response = await fetch(url);
-    // buffer everything to mem
+    // buffer everything to memory
     const blob = await response.blob();
     // convert to array buffer
     const buff = await blob.arrayBuffer();
 
+    let plaintext;
     if (!decryptionOptions) {
-      return output.push({
-        type: 'text',
-        data: 'Skipping the plaintext stuff',
-        mimetype,
-      });
+      // It's not encrypted
+      plaintext = buff;
+    } else {
+      // Function to convert base64-encoded string to Uint8Array
+      const bufFromB64 = (str) =>
+        Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+
+      const keyData = bufFromB64(decryptionOptions.key);
+      const iv = bufFromB64(decryptionOptions.iv);
+      const authTag = bufFromB64(decryptionOptions.authTag);
+
+      // Append the 16 byte auth tag to the ciphertext
+      const combined = new Uint8Array([...new Uint8Array(buff), ...authTag]);
+
+      const key = await crypto.subtle.importKey(
+        'raw',
+        keyData,
+        'AES-GCM',
+        false,
+        ['decrypt'],
+      );
+
+      plaintext = await crypto.subtle.decrypt(
+        {
+          name: 'AES-GCM',
+          iv,
+        },
+        key,
+        combined,
+      );
     }
 
-    // Function to convert base64-encoded string to Uint8Array
-    const bufFromB64 = (str) =>
-      Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
-
-    const keyData = bufFromB64(decryptionOptions.key);
-    const iv = bufFromB64(decryptionOptions.iv);
-    const authTag = bufFromB64(decryptionOptions.authTag);
-
-    const combined = new Uint8Array([...new Uint8Array(buff), ...authTag]);
-
-    const key = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      'AES-GCM',
-      false,
-      ['decrypt'],
-    );
-
-    const plaintext = await crypto.subtle.decrypt(
-      {
-        name: 'AES-GCM',
-        iv,
-      },
-      key,
-      combined,
-    );
-
-    // Return plaintext
+    // Return decoded plaintext
     if (isViewableText(mimetype)) {
-      const enc = new TextDecoder('utf-8');
       const decodedPlaintext = enc.decode(plaintext);
       return { type: 'text', data: decodedPlaintext, mimetype };
     }
