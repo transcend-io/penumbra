@@ -1,5 +1,5 @@
 // external
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 
 // local
 const common = require('./webpack.common');
