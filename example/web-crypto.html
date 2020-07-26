@@ -10,7 +10,10 @@
     <div id="app">
       <h1>Web Crypto Demo</h1>
       <a href="index.html">Compare vs. Penumbra</a>
-      <button onclick="downloadManyFiles()">Download all data</button>
+      <!-- <button onclick="downloadManyFiles()">Download all data</button> -->
+      <p>Click the canvas below to test browser responsiveness. <a href="https://codepen.io/alexzaworski/pen/mEkvAG">Source of animation: Alex Zaworski</a></p>
+      <canvas id="c"></canvas>
+      <h2>The data below is downloaded and decrypted</h2>
       <table id="table">
         <tr id="headers">
           <th id="url">URL</th>
@@ -24,6 +27,10 @@
       </table>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/1.0.0/anime.min.js"></script>
+    <script src="jsAnimation.js"></script>
+    <script src="files.js"></script>
+    <script src="displayTable.js"></script>
     <script src="web-crypto.js"></script>
   </body>
 </html>

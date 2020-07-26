@@ -1,5 +1,6 @@
 body {
   font-family: 'Helvetica';
+  text-align: center;
 }
 
 video,
@@ -34,4 +35,11 @@ td {
   padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+canvas {
+  margin: 0 auto;
+  display: block;
+  width: 50vw;
+  height: 50vh;
 }
