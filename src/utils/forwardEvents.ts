@@ -1,5 +1,5 @@
 import {
-  EncryptionCompletionEmit,
+  JobCompletionEmit,
   EventForwarder,
   PenumbraErrorEmit,
   ProgressEmit,
@@ -7,8 +7,8 @@ import {
 
 const progressEventQueue: ProgressEmit[] = [];
 let progressEventQueueInitalized = false;
-const encryptionCompletionEventQueue: EncryptionCompletionEmit[] = [];
-let encryptionCompletionEventQueueInitalized = false;
+const jobCompletionEventQueue: JobCompletionEmit[] = [];
+let jobCompletionEventQueueInitalized = false;
 const penumbraErrorEventQueue: PenumbraErrorEmit[] = [];
 let penumbraErrorEventQueueInitialized = false;
 const errorEventQueue: ErrorEvent[] = [];
@@ -37,21 +37,21 @@ self.addEventListener(
 );
 
 self.addEventListener(
-  'penumbra-encryption-complete',
-  async (completionEvent: EncryptionCompletionEmit) => {
+  'penumbra-complete',
+  async (completionEvent: JobCompletionEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
-      if (!encryptionCompletionEventQueueInitalized) {
+      if (!jobCompletionEventQueueInitalized) {
         await Promise.all(
-          encryptionCompletionEventQueue.map(async (event) => handler(event)),
+          jobCompletionEventQueue.map(async (event) => handler(event)),
         );
-        encryptionCompletionEventQueue.length = 0;
-        encryptionCompletionEventQueueInitalized = true;
+        jobCompletionEventQueue.length = 0;
+        jobCompletionEventQueueInitalized = true;
       }
       await handler(completionEvent);
     } else {
       // Buffer events occurring prior to initialization for re-dispatch
-      encryptionCompletionEventQueue.push(completionEvent);
+      jobCompletionEventQueue.push(completionEvent);
     }
   },
 );

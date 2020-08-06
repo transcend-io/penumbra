@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 
 // Local
 import {
-  EncryptionCompletionEmit,
+  JobCompletionEmit,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
@@ -220,14 +220,14 @@ async function getBlob(
 let jobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
 
-const trackEncryptionCompletion = (
+const trackJobCompletion = (
   searchForID?: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((complete) => {
     const listener = ({
       type,
       detail: { id, decryptionInfo },
-    }: EncryptionCompletionEmit): void => {
+    }: JobCompletionEmit): void => {
       decryptionConfigs.set(id, decryptionInfo);
       if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -235,10 +235,8 @@ const trackEncryptionCompletion = (
         complete(decryptionInfo);
       }
     };
-    self.addEventListener('penumbra-encryption-complete', listener);
+    self.addEventListener('penumbra-complete', listener);
   });
-
-// trackEncryptionCompletion();
 
 /**
  * Get the decryption config for an encrypted file
@@ -253,7 +251,7 @@ export async function getDecryptionInfo(
   const { id } = file;
   if (!decryptionConfigs.has(id)) {
     // decryption config not yet received. waiting for event with promise
-    return trackEncryptionCompletion(id);
+    return trackJobCompletion(id);
   }
   return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
 }
@@ -266,7 +264,7 @@ export async function getDecryptionInfo(
  * // usage example:
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
  * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
@@ -288,7 +286,7 @@ export async function encrypt(
     throw new Error('penumbra.encrypt() only supports ReadableStreams');
   }
 
-  // collect file sizes and assign encryption job IDs for completion tracking
+  // collect file sizes and assign job IDs for completion tracking
   const ids: number[] = [];
   const sizes: number[] = [];
   files.forEach((file) => {
@@ -398,7 +396,7 @@ export async function encrypt(
  * // usage example:
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
  * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
@@ -421,7 +419,7 @@ export async function decrypt(
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
     const ids: number[] = [];
     const sizes: number[] = [];
-    // collect file sizes and assign encryption job IDs for completion tracking
+    // collect file sizes and assign job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = file.id || jobID++));
@@ -442,7 +440,7 @@ export async function decrypt(
     // enter worker thread
     await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
       /**
-       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
+       * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */
