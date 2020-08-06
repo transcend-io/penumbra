@@ -92,7 +92,7 @@ class PenumbraWorker {
   /**
    * Streaming decryption of ReadableStreams
    *
-   * @param ids - IDs for tracking encryption completion
+   * @param ids - IDs for tracking decryption completion
    * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
    * @returns ReadableStream[] of the decrypted files
