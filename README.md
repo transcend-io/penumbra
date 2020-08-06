@@ -323,9 +323,9 @@ penumbra.preconnect(...resources);
 penumbra.preload(...resources);
 ```
 
-### Encryption Completion Event Emitter
+### Encrypt/Decrypt Job Completion Event Emitter
 
-You can listen to download progress events by listening to the `penumbra-complete` event.
+You can listen to encrypt/decrypt job completion events through the `penumbra-complete` event.
 
 ```js
 window.addEventListener(
@@ -341,7 +341,7 @@ window.addEventListener(
 
 ### Progress Event Emitter
 
-You can listen to download and encryption progress events by listening to the `penumbra-progress` event.
+You can listen to download and encrypt/decrypt job progress events through the `penumbra-progress` event.
 
 ```js
 window.addEventListener(
