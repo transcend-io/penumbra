@@ -36,23 +36,22 @@ transferHandlers.set('penumbra-progress', {
   },
 });
 
-transferHandlers.set('penumbra-encryption-complete', {
+transferHandlers.set('penumbra-complete', {
   /**
-   * Checks if object is a penumbra-encryption-complete event
+   * Checks if object is a penumbra-complete event
    *
    * @param object Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
   canHandle(object: any) {
     return (
-      object instanceof PenumbraEvent &&
-      object.type === 'penumbra-encryption-complete'
+      object instanceof PenumbraEvent && object.type === 'penumbra-complete'
     );
   },
   /**
-   * Serialize penumbra-encryption-complete event down to just JobCompletion
+   * Serialize penumbra-complete event down to just JobCompletion
    *
-   * @param object Reference to the penumbra-encryption-complete PenumbraEvent
+   * @param object Reference to the penumbra-complete PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
@@ -62,10 +61,10 @@ transferHandlers.set('penumbra-encryption-complete', {
    * Re-create PenumbraEvent for re-dispatch in current context
    *
    * @param detail Structured-clone data from serialize()
-   * @returns A re-created penumbra-encryption-complete PenumbraEvent
+   * @returns A re-created penumbra-complete PenumbraEvent
    */
   deserialize(detail: any) {
-    return new PenumbraEvent('penumbra-encryption-complete', {
+    return new PenumbraEvent('penumbra-complete', {
       detail,
     });
   },

@@ -37,7 +37,7 @@ self.addEventListener(
 );
 
 self.addEventListener(
-  'penumbra-encryption-complete',
+  'penumbra-complete',
   async (completionEvent: JobCompletionEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {

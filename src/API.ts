@@ -235,7 +235,7 @@ const trackEncryptionCompletion = (
         complete(decryptionInfo);
       }
     };
-    self.addEventListener('penumbra-encryption-complete', listener);
+    self.addEventListener('penumbra-complete', listener);
   });
 
 // trackEncryptionCompletion();
@@ -266,7 +266,7 @@ export async function getDecryptionInfo(
  * // usage example:
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
  * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
@@ -398,7 +398,7 @@ export async function encrypt(
  * // usage example:
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * addEventListener('penumbra-encryption-complete',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
  * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
  * let data = [];
  * file.then(async ([encrypted]) => {

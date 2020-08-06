@@ -109,9 +109,7 @@ penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): 
 ```ts
 size = 4096 * 128;
 addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
-addEventListener('penumbra-encryption-complete', (e) =>
-  console.log(e.type, e.detail),
-);
+addEventListener('penumbra-complete', (e) => console.log(e.type, e.detail));
 file = penumbra.encrypt(null, { stream: new Uint8Array(size), size });
 data = [];
 file.then(async ([encrypted]) => {
@@ -327,11 +325,11 @@ penumbra.preload(...resources);
 
 ### Encryption Completion Event Emitter
 
-You can listen to download progress events by listening to the `penumbra-encryption-complete` event.
+You can listen to download progress events by listening to the `penumbra-complete` event.
 
 ```js
 window.addEventListener(
-  'penumbra-encryption-complete',
+  'penumbra-complete',
   ({ detail: { id, decryptionInfo } }) => {
     console.log(
       `finished encryption job #${id}%. decryption options:`,
