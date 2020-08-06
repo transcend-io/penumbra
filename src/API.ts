@@ -288,7 +288,7 @@ export async function encrypt(
     throw new Error('penumbra.encrypt() only supports ReadableStreams');
   }
 
-  // collect file sizes and assign encryption job IDs for completion tracking
+  // collect file sizes and assign job IDs for completion tracking
   const ids: number[] = [];
   const sizes: number[] = [];
   files.forEach((file) => {

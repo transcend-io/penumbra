@@ -80,7 +80,7 @@ export type PenumbraFileWithID = PenumbraFile & {
   id: number;
 };
 
-/** penumbra.encrypt() output file (internal) */
+/** penumbra file (internal) */
 export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
   stream: ReadableStream | ArrayBuffer;
@@ -145,10 +145,10 @@ export type PenumbraErrorDetails = PenumbraError;
 export type PenumbraErrorEmit = CustomEvent<PenumbraErrorDetails>;
 
 /**
- * Encryption completion event details
+ * Encryption/decryption job completion event details
  */
-export type EncryptionCompletion = {
-  /** Encryption job ID */
+export type JobCompletion = {
+  /** Job ID */
   id: number;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
@@ -157,7 +157,7 @@ export type EncryptionCompletion = {
 /**
  * The type that is emitted as progress continues
  */
-export type EncryptionCompletionEmit = CustomEvent<EncryptionCompletion>;
+export type EncryptionCompletionEmit = CustomEvent<JobCompletion>;
 
 /**
  * The type that is emitted when penumbra is ready

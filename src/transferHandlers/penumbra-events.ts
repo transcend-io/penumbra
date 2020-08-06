@@ -50,7 +50,7 @@ transferHandlers.set('penumbra-encryption-complete', {
     );
   },
   /**
-   * Serialize penumbra-encryption-complete event down to just EncryptionCompletion
+   * Serialize penumbra-encryption-complete event down to just JobCompletion
    *
    * @param object Reference to the penumbra-encryption-complete PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
