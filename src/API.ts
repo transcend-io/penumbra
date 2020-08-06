@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 
 // Local
 import {
-  EncryptionCompletionEmit,
+  JobCompletionEmit,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
@@ -227,7 +227,7 @@ const trackEncryptionCompletion = (
     const listener = ({
       type,
       detail: { id, decryptionInfo },
-    }: EncryptionCompletionEmit): void => {
+    }: JobCompletionEmit): void => {
       decryptionConfigs.set(id, decryptionInfo);
       if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -421,7 +421,7 @@ export async function decrypt(
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
     const ids: number[] = [];
     const sizes: number[] = [];
-    // collect file sizes and assign encryption job IDs for completion tracking
+    // collect file sizes and assign job IDs for completion tracking
     files.forEach((file) => {
       // eslint-disable-next-line no-plusplus, no-param-reassign
       ids.push((file.id = file.id || jobID++));
@@ -442,7 +442,7 @@ export async function decrypt(
     // enter worker thread
     await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
       /**
-       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
+       * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */

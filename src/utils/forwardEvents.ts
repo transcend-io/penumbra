@@ -1,5 +1,5 @@
 import {
-  EncryptionCompletionEmit,
+  JobCompletionEmit,
   EventForwarder,
   PenumbraErrorEmit,
   ProgressEmit,
@@ -7,7 +7,7 @@ import {
 
 const progressEventQueue: ProgressEmit[] = [];
 let progressEventQueueInitalized = false;
-const encryptionCompletionEventQueue: EncryptionCompletionEmit[] = [];
+const encryptionCompletionEventQueue: JobCompletionEmit[] = [];
 let encryptionCompletionEventQueueInitalized = false;
 const penumbraErrorEventQueue: PenumbraErrorEmit[] = [];
 let penumbraErrorEventQueueInitialized = false;
@@ -38,7 +38,7 @@ self.addEventListener(
 
 self.addEventListener(
   'penumbra-encryption-complete',
-  async (completionEvent: EncryptionCompletionEmit) => {
+  async (completionEvent: JobCompletionEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
       if (!encryptionCompletionEventQueueInitalized) {

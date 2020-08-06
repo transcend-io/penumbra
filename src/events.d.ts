@@ -2,7 +2,7 @@
 
 // penumbra
 import {
-  EncryptionCompletionEmit,
+  JobCompletionEmit,
   PenumbraErrorEmit,
   PenumbraReady,
   ProgressEmit,
@@ -16,7 +16,7 @@ declare global {
     /** Emit during Penumbra downloads */
     'penumbra-progress': ProgressEmit;
     /** Emit upon the completion of an Penumbra encryption job */
-    'penumbra-encryption-complete': EncryptionCompletionEmit;
+    'penumbra-encryption-complete': JobCompletionEmit;
     /** Emit whenever the Penumbra worker encounters any errors */
     'penumbra-error': PenumbraErrorEmit;
     /** Emit once Penumbra is ready to be used */

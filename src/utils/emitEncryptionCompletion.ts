@@ -1,6 +1,6 @@
 // penumbra
 import { PenumbraEvent } from '../event';
-import { EncryptionCompletionEmit, PenumbraDecryptionInfo } from '../types';
+import { JobCompletionEmit, PenumbraDecryptionInfo } from '../types';
 
 /**
  * An event emitter for the decryption progress
@@ -13,7 +13,7 @@ export default function emitEncryptionCompletion(
   id: number,
   decryptionInfo: PenumbraDecryptionInfo,
 ): void {
-  const emitContent: Pick<EncryptionCompletionEmit, 'detail'> = {
+  const emitContent: Pick<JobCompletionEmit, 'detail'> = {
     detail: { id, decryptionInfo },
   };
 

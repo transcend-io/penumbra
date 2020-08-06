@@ -157,7 +157,7 @@ export type JobCompletion = {
 /**
  * The type that is emitted as progress continues
  */
-export type EncryptionCompletionEmit = CustomEvent<JobCompletion>;
+export type JobCompletionEmit = CustomEvent<JobCompletion>;
 
 /**
  * The type that is emitted when penumbra is ready
