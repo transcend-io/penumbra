@@ -7,8 +7,8 @@ import {
 
 const progressEventQueue: ProgressEmit[] = [];
 let progressEventQueueInitalized = false;
-const encryptionCompletionEventQueue: JobCompletionEmit[] = [];
-let encryptionCompletionEventQueueInitalized = false;
+const jobCompletionEventQueue: JobCompletionEmit[] = [];
+let jobCompletionEventQueueInitalized = false;
 const penumbraErrorEventQueue: PenumbraErrorEmit[] = [];
 let penumbraErrorEventQueueInitialized = false;
 const errorEventQueue: ErrorEvent[] = [];
@@ -41,17 +41,17 @@ self.addEventListener(
   async (completionEvent: JobCompletionEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
-      if (!encryptionCompletionEventQueueInitalized) {
+      if (!jobCompletionEventQueueInitalized) {
         await Promise.all(
-          encryptionCompletionEventQueue.map(async (event) => handler(event)),
+          jobCompletionEventQueue.map(async (event) => handler(event)),
         );
-        encryptionCompletionEventQueue.length = 0;
-        encryptionCompletionEventQueueInitalized = true;
+        jobCompletionEventQueue.length = 0;
+        jobCompletionEventQueueInitalized = true;
       }
       await handler(completionEvent);
     } else {
       // Buffer events occurring prior to initialization for re-dispatch
-      encryptionCompletionEventQueue.push(completionEvent);
+      jobCompletionEventQueue.push(completionEvent);
     }
   },
 );

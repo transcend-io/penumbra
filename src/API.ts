@@ -220,7 +220,7 @@ async function getBlob(
 let jobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
 
-const trackEncryptionCompletion = (
+const trackJobCompletion = (
   searchForID?: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((complete) => {
@@ -238,8 +238,6 @@ const trackEncryptionCompletion = (
     self.addEventListener('penumbra-complete', listener);
   });
 
-// trackEncryptionCompletion();
-
 /**
  * Get the decryption config for an encrypted file
  *
@@ -253,7 +251,7 @@ export async function getDecryptionInfo(
   const { id } = file;
   if (!decryptionConfigs.has(id)) {
     // decryption config not yet received. waiting for event with promise
-    return trackEncryptionCompletion(id);
+    return trackJobCompletion(id);
   }
   return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
 }
