@@ -307,6 +307,8 @@ export type PenumbraWorker = {
   comlink: any;
   /** Worker initialization state */
   initialized: boolean;
+  /** Busy status (currently processing jobs) */
+  busy: boolean;
 };
 
 /**

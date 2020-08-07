@@ -39,8 +39,8 @@ if (!view.document) {
   );
 }
 
-/** Whether or not sombra has been initialized */
-const initialized = false;
+/** Whether or not Penumbra has been initialized */
+let initialized = false;
 
 // //////////// //
 // Load Workers //
@@ -50,11 +50,9 @@ if (SHOULD_LOG_EVENTS) {
   console.info('Loading penumbra script element...');
 }
 let scriptElement: HTMLScriptElement = (document.currentScript ||
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  document.querySelector('script[data-penumbra]')) as any;
+  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
 if (!scriptElement) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  scriptElement = { dataset: {} } as any;
+  scriptElement = { dataset: {} } as HTMLScriptElement;
   if (SHOULD_LOG_EVENTS) {
     console.info('Unable to locate Penumbra script element.');
   }
@@ -120,7 +118,8 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-let workerThread: PenumbraWorker;
+const maxConcurrency = navigator.hardwareConcurrency || 1;
+const workers: PenumbraWorker[] = [];
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
@@ -131,6 +130,7 @@ export async function createPenumbraWorker(
     worker,
     comlink: wrap(worker),
     initialized: false,
+    busy: false,
   };
   const Link = penumbraWorker.comlink;
   const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
@@ -141,9 +141,19 @@ export async function createPenumbraWorker(
   return penumbraWorker;
 }
 /** Initializes web worker threads */
-export async function initWorker(): Promise<void> {
+export async function initWorkers(): Promise<void> {
   const { penumbra } = getWorkerLocation();
-  workerThread = await createPenumbraWorker(penumbra);
+  if (!workers.length) {
+    workers.push(
+      ...(await Promise.all(
+        new Array(maxConcurrency).fill(() => createPenumbraWorker(penumbra)),
+      )),
+    );
+  }
+
+  if (!initialized) {
+    initialized = true;
+  }
 }
 
 /**
@@ -152,10 +162,14 @@ export async function initWorker(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
-  if (!workerThread || (workerThread && !workerThread.initialized)) {
-    await initWorker();
+  if (!workers.length || (workers[0] && !workers[0].initialized)) {
+    await initWorkers();
   }
-  return workerThread as PenumbraWorker;
+  // return any free worker or a random one if all are busy
+  return (
+    workers.find((worker) => !worker.busy) ||
+    workers[Math.floor(Math.random() * workers.length)]
+  );
 }
 
 /** Returns all active Penumbra Workers */
@@ -207,5 +221,5 @@ export async function setWorkerLocation(
       ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
       : { ...DEFAULT_WORKERS, ...options },
   );
-  return initWorker();
+  return initWorkers();
 }
