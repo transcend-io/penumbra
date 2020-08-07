@@ -150,7 +150,6 @@ export async function initWorkers(): Promise<void> {
       )),
     );
   }
-
   if (!initialized) {
     initialized = true;
   }
@@ -162,7 +161,10 @@ export async function initWorkers(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
-  if (!workers.length || (workers[0] && !workers[0].initialized)) {
+  if (
+    !workers.length ||
+    (workers.length && !workers.some((worker) => worker.initialized))
+  ) {
     await initWorkers();
   }
   // return any free worker or a random one if all are busy
