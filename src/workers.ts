@@ -175,20 +175,20 @@ export async function getWorker(): Promise<PenumbraWorker> {
 }
 
 /** Returns all active Penumbra Workers */
-async function getActiveWorkers(): Promise<PenumbraWorker[]> {
-  const worker = await getWorker();
-  return worker && worker.initialized ? [worker] : [];
+function getActiveWorkers(): PenumbraWorker[] {
+  return workers.filter((worker) => worker.initialized);
 }
 
 /**
- * Terminate Penumbra Worker and de-allocate their resources
+ * Terminate Penumbra worker and de-allocate their resources
  */
-async function cleanup(): Promise<void> {
-  (await getActiveWorkers()).forEach((thread) => {
+function cleanup(): void {
+  getActiveWorkers().forEach((thread) => {
     thread.worker.terminate();
     // eslint-disable-next-line no-param-reassign
     thread.initialized = false;
   });
+  workers.length = 0;
 }
 
 view.addEventListener('beforeunload', cleanup);
