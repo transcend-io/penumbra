@@ -97,7 +97,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 }
 
 /**
- * `penumbra.get()` API
+ * penumbra.get() API
  *
  * ```ts
  * // Load a resource and get a ReadableStream
