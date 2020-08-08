@@ -195,7 +195,10 @@ export type PenumbraWorkerAPI = {
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
-  setup: (id: number, eventListener: any) => Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  setup: (
+    id: number,
+    eventListener: (event: Event) => Promise<void>,
+  ) => Promise<void>;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
