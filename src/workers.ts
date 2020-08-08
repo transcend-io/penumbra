@@ -154,8 +154,15 @@ const onWorkerInitQueue: (() => void)[] = [];
 function getFreeWorker(): PenumbraWorker {
   // Poll for any available free workers
   const freeWorker = workers.find(({ busy }) => !busy);
+
   // return any free worker or a random one if all are busy
-  return freeWorker || workers[Math.floor(Math.random() * workers.length)];
+  const worker =
+    freeWorker || workers[Math.floor(Math.random() * workers.length)];
+
+  // Set worker as busy
+  worker.busy = true;
+
+  return worker;
 }
 
 /** Wait for workers to initialize */
@@ -207,9 +214,7 @@ export async function getWorker(): Promise<PenumbraWorker> {
   if (!initialized) {
     await initWorkers();
   }
-  const worker = getFreeWorker();
-  worker.busy = true;
-  return worker;
+  return getFreeWorker();
 }
 
 /** Returns all active Penumbra Workers */
