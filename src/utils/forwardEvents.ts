@@ -6,13 +6,13 @@ import {
 } from '../types';
 
 const progressEventQueue: ProgressEmit[] = [];
-let progressEventQueueInitalized = false;
+let progressEventQueueInit = false;
 const jobCompletionEventQueue: JobCompletionEmit[] = [];
-let jobCompletionEventQueueInitalized = false;
+let jobCompletionEventQueueInit = false;
 const penumbraErrorEventQueue: PenumbraErrorEmit[] = [];
-let penumbraErrorEventQueueInitialized = false;
+let penumbraErrorEventQueueInit = false;
 const errorEventQueue: ErrorEvent[] = [];
-let errorEventQueueInitialized = false;
+let errorEventQueueInit = false;
 
 const onPenumbraEvent: EventForwarder = {};
 
@@ -21,12 +21,12 @@ self.addEventListener(
   async (progressEvent: ProgressEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
-      if (!progressEventQueueInitalized) {
+      if (!progressEventQueueInit) {
         await Promise.all(
           progressEventQueue.map(async (event) => handler(event)),
         );
         progressEventQueue.length = 0;
-        progressEventQueueInitalized = true;
+        progressEventQueueInit = true;
       }
       await handler(progressEvent);
     } else {
@@ -41,12 +41,12 @@ self.addEventListener(
   async (completionEvent: JobCompletionEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
-      if (!jobCompletionEventQueueInitalized) {
+      if (!jobCompletionEventQueueInit) {
         await Promise.all(
           jobCompletionEventQueue.map(async (event) => handler(event)),
         );
         jobCompletionEventQueue.length = 0;
-        jobCompletionEventQueueInitalized = true;
+        jobCompletionEventQueueInit = true;
       }
       await handler(completionEvent);
     } else {
@@ -61,12 +61,12 @@ self.addEventListener(
   async (errorEvent: PenumbraErrorEmit) => {
     const { handler } = onPenumbraEvent;
     if (handler) {
-      if (!penumbraErrorEventQueueInitialized) {
+      if (!penumbraErrorEventQueueInit) {
         await Promise.all(
           penumbraErrorEventQueue.map(async (event) => handler(event)),
         );
         penumbraErrorEventQueue.length = 0;
-        penumbraErrorEventQueueInitialized = true;
+        penumbraErrorEventQueueInit = true;
       }
       await handler(errorEvent);
     } else {
@@ -79,10 +79,10 @@ self.addEventListener(
 self.addEventListener('error', async (errorEvent: ErrorEvent) => {
   const { handler } = onPenumbraEvent;
   if (handler) {
-    if (!errorEventQueueInitialized) {
+    if (!errorEventQueueInit) {
       await Promise.all(errorEventQueue.map(async (event) => handler(event)));
       errorEventQueue.length = 0;
-      errorEventQueueInitialized = true;
+      errorEventQueueInit = true;
     }
     await handler(errorEvent);
   } else {

@@ -121,6 +121,8 @@ export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
 export type ProgressDetails = {
   /** The job ID # or URL being downloaded from for decryption */
   id: string | number;
+  /** The ID of the worker thread that is processing this job */
+  worker: number | null;
   /** Event type */
   type: PenumbraEventType;
   /** Percentage completed */
@@ -185,12 +187,14 @@ export type PenumbraAPI = typeof penumbra;
  * Penumbra Worker API
  */
 export type PenumbraWorkerAPI = {
+  /** Worker ID */
+  id: number;
   /**
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setup: (eventListener: any) => Promise<void>;
+  setup: (id: number, eventListener: any) => Promise<void>;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -300,6 +304,8 @@ export type WorkerLocationOptions = Partial<WorkerLocation>;
  * An individual Penumbra Worker's interfaces
  */
 export type PenumbraWorker = {
+  /** Worker ID */
+  id: number;
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */

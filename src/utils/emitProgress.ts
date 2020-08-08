@@ -17,6 +17,9 @@ export default function emitProgress(
 ): void {
   // Calculate the progress remaining
   const percent = Math.round((totalBytesRead / contentLength) * 100);
+
+  const worker = self?.PenumbraWorker?.id || null;
+
   const emitContent: Pick<ProgressEmit, 'detail'> = {
     detail: {
       type,
@@ -24,6 +27,7 @@ export default function emitProgress(
       totalBytesRead,
       contentLength,
       id,
+      worker,
     },
   };
 

@@ -13,7 +13,7 @@ import intoStream from 'into-stream';
 import penumbra from './API';
 import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
-import { PenumbraAPI, PenumbraSupportLevel } from './types';
+import { PenumbraAPI, PenumbraSupportLevel, PenumbraWorkerAPI } from './types';
 import { PenumbraEvent } from './event';
 
 export * from './types';
@@ -22,13 +22,14 @@ export { penumbra, MOCK_API, PenumbraSupportLevel };
 
 /** Extend global Window */
 declare global {
-  /** Extend window.penumbra */
+  /** Extend self */
   interface Window {
-    /** penumbra interface */
+    /** self.penumbra interface */
     penumbra?: PenumbraAPI;
+    /** self.PenumbraWorker interface */
+    PenumbraWorker?: PenumbraWorkerAPI;
     /** TODO: remove debug intoStream global */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    intoStream: any;
+    intoStream: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

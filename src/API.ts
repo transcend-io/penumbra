@@ -221,7 +221,7 @@ let jobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (
-  searchForID?: string | number,
+  searchForID: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((complete) => {
     const listener = ({

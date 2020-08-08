@@ -9,6 +9,7 @@ import {
   PenumbraWorkerAPI,
   WorkerLocation,
   WorkerLocationOptions,
+  ProgressEmit,
 } from './types';
 
 // ////// //
@@ -128,15 +129,17 @@ export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
   const worker = new Worker(url /* , { type: 'module' } */);
+  const id = workers.length;
   const penumbraWorker: PenumbraWorker = {
     worker,
+    id,
     comlink: wrap(worker),
     initialized: false,
     busy: false,
   };
   const Link = penumbraWorker.comlink;
   const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
-    await thread.setup(proxy(reDispatchEvent));
+    await thread.setup(id, proxy(reDispatchEvent));
   });
   await setup;
   penumbraWorker.initialized = true;
@@ -171,11 +174,10 @@ export async function getWorker(): Promise<PenumbraWorker> {
   ) {
     await initWorkers();
   }
+  // Poll for any available free workers
+  const freeWorker = workers.find(({ busy }) => !busy);
   // return any free worker or a random one if all are busy
-  return (
-    workers.find((worker) => !worker.busy) ||
-    workers[Math.floor(Math.random() * workers.length)]
-  );
+  return freeWorker || workers[Math.floor(Math.random() * workers.length)];
 }
 
 /** Returns all active Penumbra Workers */
@@ -229,3 +231,14 @@ export async function setWorkerLocation(
   );
   return initWorkers();
 }
+
+/** Set worker busy state based on current progress events */
+const trackWorkerBusyState = ({
+  detail: { worker, totalBytesRead, contentLength },
+}: ProgressEmit): void => {
+  if (worker !== null) {
+    workers[worker].busy = totalBytesRead < contentLength;
+  }
+};
+
+addEventListener('penumbra-progress', trackWorkerBusyState);

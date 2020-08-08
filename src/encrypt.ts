@@ -15,7 +15,7 @@ import {
 
 // utils
 import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
-import emitEncryptionCompletion from './utils/emitEncryptionCompletion';
+import emitJobCompletion from './utils/emitJobCompletion';
 
 /* tslint:disable completed-docs */
 
@@ -66,7 +66,7 @@ export function encryptStream(
           if (totalBytesRead >= contentLength) {
             cipher.final();
             const authTag = cipher.getAuthTag();
-            emitEncryptionCompletion(jobID, {
+            emitJobCompletion(jobID, {
               key,
               iv,
               authTag,
@@ -114,7 +114,7 @@ export function encryptStream(
           if (totalBytesRead >= contentLength) {
             cipher.final();
             const authTag = cipher.getAuthTag();
-            emitEncryptionCompletion(jobID, {
+            emitJobCompletion(jobID, {
               key,
               iv,
               authTag,

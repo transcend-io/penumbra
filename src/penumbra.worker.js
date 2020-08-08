@@ -31,6 +31,9 @@ if (self.document) {
  * Penumbra Worker class
  */
 class PenumbraWorker {
+  /** Worker ID */
+  id = null;
+
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -181,9 +184,12 @@ class PenumbraWorker {
   /**
    * Forward events to main thread
    */
-  async setup(handler) {
+  async setup(id, handler) {
+    this.id = id;
     onPenumbraEvent.handler = handler;
   }
 }
+
+self.PenumbraWorker = PenumbraWorker;
 
 expose(PenumbraWorker);
