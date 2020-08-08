@@ -26,8 +26,6 @@ declare global {
   interface Window {
     /** self.penumbra interface */
     penumbra?: PenumbraAPI;
-    /** self.workerID interface (TODO: replace with better dependency injection) */
-    workerID?: number | null;
     /** TODO: remove debug intoStream global */
     intoStream: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
