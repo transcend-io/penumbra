@@ -121,7 +121,11 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-const maxConcurrency = navigator.hardwareConcurrency || 1;
+const hwConcurrency = navigator.hardwareConcurrency || 1;
+// TODO: remove this worker pool limit
+const MAX_WORKERS = 6;
+const maxConcurrency =
+  hwConcurrency > MAX_WORKERS ? MAX_WORKERS : hwConcurrency;
 const workers: PenumbraWorker[] = [];
 let workerId = 0;
 
