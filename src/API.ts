@@ -64,6 +64,7 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (writableStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
+    worker.busy = true;
     const DecryptionChannel = worker.comlink;
     const remoteStreams = resources.map(() => new RemoteReadableStream());
     const readables = remoteStreams.map((stream, i) => {
@@ -304,6 +305,7 @@ export async function encrypt(
   if (writableStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
+    worker.busy = true;
     const EncryptionChannel = worker.comlink;
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
@@ -414,6 +416,7 @@ export async function decrypt(
   if (writableStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
+    worker.busy = true;
     const DecryptionChannel = worker.comlink;
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());

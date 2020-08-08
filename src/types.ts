@@ -122,7 +122,7 @@ export type ProgressDetails = {
   /** The job ID # or URL being downloaded from for decryption */
   id: string | number;
   /** The ID of the worker thread that is processing this job */
-  worker: number | null;
+  worker?: number | null;
   /** Event type */
   type: PenumbraEventType;
   /** Percentage completed */
@@ -150,6 +150,8 @@ export type PenumbraErrorEmit = CustomEvent<PenumbraErrorDetails>;
  * Encryption/decryption job completion event details
  */
 export type JobCompletion = {
+  /** Worker ID */
+  worker?: number | null;
   /** Job ID */
   id: number;
   /** Decryption config info */

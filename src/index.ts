@@ -13,7 +13,7 @@ import intoStream from 'into-stream';
 import penumbra from './API';
 import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
-import { PenumbraAPI, PenumbraSupportLevel, PenumbraWorkerAPI } from './types';
+import { PenumbraAPI, PenumbraSupportLevel } from './types';
 import { PenumbraEvent } from './event';
 
 export * from './types';
@@ -26,8 +26,8 @@ declare global {
   interface Window {
     /** self.penumbra interface */
     penumbra?: PenumbraAPI;
-    /** self.PenumbraWorker interface */
-    PenumbraWorker?: PenumbraWorkerAPI;
+    /** self.workerID interface (TODO: replace with better dependency injection) */
+    workerID?: number | null;
     /** TODO: remove debug intoStream global */
     intoStream: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }

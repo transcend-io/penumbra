@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable import/no-webpack-loader-syntax */
 
 // comlink
@@ -10,6 +11,7 @@ import {
   WorkerLocation,
   WorkerLocationOptions,
   ProgressEmit,
+  JobCompletionEmit,
 } from './types';
 
 // ////// //
@@ -123,13 +125,16 @@ const hwConcurrency = navigator.hardwareConcurrency || 1;
 // Limit thread pool size to 8
 const maxConcurrency = Math.min(hwConcurrency, 8);
 const workers: PenumbraWorker[] = [];
+let workerId = 0;
+
+(self as any).pw = workers;
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
   const worker = new Worker(url /* , { type: 'module' } */);
-  const id = workers.length;
+  const id = workerId++;
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
@@ -149,6 +154,11 @@ export async function createPenumbraWorker(
 export async function initWorkers(): Promise<void> {
   const { penumbra } = getWorkerLocation();
   if (!workers.length) {
+    // let i = maxConcurrency;
+    // while (i--) {
+    //   // eslint-disable-next-line no-await-in-loop
+    //   workers.push(await createPenumbraWorker(penumbra));
+    // }
     workers.push(
       ...(await Promise.all(
         new Array(maxConcurrency)
@@ -236,8 +246,13 @@ export async function setWorkerLocation(
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
 }: ProgressEmit): void => {
-  if (worker !== null) {
-    workers[worker].busy = totalBytesRead < contentLength;
+  console.log('trackWorkerBusyState', {
+    worker,
+    totalBytesRead,
+    contentLength,
+  });
+  if (typeof worker === 'number' && totalBytesRead >= contentLength) {
+    workers[worker].busy = false;
   }
 };
 

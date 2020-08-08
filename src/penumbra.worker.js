@@ -22,6 +22,7 @@ import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 import { decrypt } from './decrypt';
+import { setWorkerID } from './worker-id';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -31,9 +32,6 @@ if (self.document) {
  * Penumbra Worker class
  */
 class PenumbraWorker {
-  /** Worker ID */
-  id = null;
-
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -185,11 +183,9 @@ class PenumbraWorker {
    * Forward events to main thread
    */
   async setup(id, handler) {
-    this.id = id;
+    setWorkerID(id);
     onPenumbraEvent.handler = handler;
   }
 }
-
-self.PenumbraWorker = PenumbraWorker;
 
 expose(PenumbraWorker);
