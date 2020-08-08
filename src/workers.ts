@@ -123,8 +123,6 @@ const hwConcurrency = navigator.hardwareConcurrency || 1;
 const maxConcurrency = Math.min(hwConcurrency, 4);
 const workers: PenumbraWorker[] = [];
 
-(window as any).pw = workers;
-
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
   url: URL | string,
