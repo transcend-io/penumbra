@@ -207,7 +207,9 @@ export async function getWorker(): Promise<PenumbraWorker> {
   if (!initialized) {
     await initWorkers();
   }
-  return getFreeWorker();
+  const worker = getFreeWorker();
+  worker.busy = true;
+  return worker;
 }
 
 /** Returns all active Penumbra Workers */
