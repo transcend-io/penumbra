@@ -1,6 +1,6 @@
 // FIXME: Remove the need for this file with better dependency injection
 
-let workerId: number | null = null;
+let workerID: number | null = null;
 
 /**
  * Get worker ID (if available)
@@ -8,12 +8,12 @@ let workerId: number | null = null;
  * @returns Worker ID (if available)
  */
 export function getWorkerID(): number | null {
-  return workerId;
+  return workerID;
 }
 
 /**
  * Set worker ID
  */
 export function setWorkerID(id: number | null): void {
-  workerId = id;
+  workerID = id;
 }

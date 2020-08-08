@@ -123,14 +123,14 @@ function reDispatchEvent(event: Event): void {
 
 const maxConcurrency = navigator.hardwareConcurrency || 1;
 const workers: PenumbraWorker[] = [];
-let workerId = 0;
+let workerID = 0;
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
   const worker = new Worker(url /* , { type: 'module' } */);
-  const id = workerId++;
+  const id = workerID++;
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
@@ -224,7 +224,7 @@ function cleanup(): void {
     thread.worker.terminate();
   });
   workers.length = 0;
-  workerId = 0;
+  workerID = 0;
 }
 
 view.addEventListener('beforeunload', cleanup);
