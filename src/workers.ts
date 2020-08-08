@@ -1,5 +1,4 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable import/no-webpack-loader-syntax */
+/* eslint-disable max-lines, no-plusplus, import/no-webpack-loader-syntax */
 
 // comlink
 import { proxy, wrap } from 'comlink';
