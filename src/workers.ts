@@ -177,13 +177,9 @@ const call = Function.prototype.call.bind(Function.prototype.call);
 export async function initWorkers(): Promise<void> {
   initializing = true;
   const { penumbra } = getWorkerLocation();
-  // let i = maxConcurrency - workers.length;
-  // while (i-- > 0) {
-  //   // eslint-disable-next-line no-await-in-loop
-  //   workers.push(await createPenumbraWorker(penumbra));
-  // }
   workers.push(
     ...(await Promise.all(
+      // load all workers in parallel
       new Array(Math.max(maxConcurrency - workers.length, 0))
         .fill(0) // incorrect built-in types prevent .fill()
         .map(() => createPenumbraWorker(penumbra)),
