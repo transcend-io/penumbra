@@ -120,7 +120,7 @@ function reDispatchEvent(event: Event): void {
 
 const hwConcurrency = navigator.hardwareConcurrency || 1;
 // Limit thread pool size to 8
-const maxConcurrency = Math.min(hwConcurrency, 4);
+const maxConcurrency = Math.min(hwConcurrency, 8);
 const workers: PenumbraWorker[] = [];
 
 /** Instantiate a Penumbra Worker */
