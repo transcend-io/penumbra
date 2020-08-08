@@ -6,7 +6,6 @@
  */
 export function getWorkerID(): number | null {
   const id = self.workerID;
-  console.log('getWorkerID called', { id });
   return typeof id === 'number' ? id : null;
 }
 
@@ -14,6 +13,5 @@ export function getWorkerID(): number | null {
  * Set worker ID
  */
 export function setWorkerID(id: number | null): void {
-  console.log('setWorkerID called', { id });
   self.workerID = id;
 }

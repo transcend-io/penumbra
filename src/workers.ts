@@ -271,11 +271,6 @@ export async function setWorkerLocation(
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
 }: ProgressEmit): void => {
-  console.log('trackWorkerBusyState', {
-    worker,
-    totalBytesRead,
-    contentLength,
-  });
   if (typeof worker === 'number' && totalBytesRead >= contentLength) {
     workers[worker].busy = false;
   }
