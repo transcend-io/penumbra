@@ -129,8 +129,6 @@ const maxConcurrency =
 const workers: PenumbraWorker[] = [];
 let workerId = 0;
 
-(self as any).pw = workers;
-
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
   url: URL | string,
@@ -182,9 +180,6 @@ const call = Function.prototype.call.bind(Function.prototype.call);
 /** Initializes web worker threads */
 export async function initWorkers(): Promise<void> {
   initializing = true;
-  console.log(
-    `initWorkers called (creating ${maxConcurrency - workers.length} workers)`,
-  );
   const { penumbra } = getWorkerLocation();
   // let i = maxConcurrency - workers.length;
   // while (i-- > 0) {
