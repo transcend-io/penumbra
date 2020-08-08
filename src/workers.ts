@@ -118,8 +118,12 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-const maxConcurrency = navigator.hardwareConcurrency || 1;
+const hwConcurrency = navigator.hardwareConcurrency || 1;
+// Limit thread pool size to 8
+const maxConcurrency = Math.min(hwConcurrency, 4);
 const workers: PenumbraWorker[] = [];
+
+(window as any).pw = workers;
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
@@ -144,11 +148,15 @@ export async function createPenumbraWorker(
 export async function initWorkers(): Promise<void> {
   const { penumbra } = getWorkerLocation();
   if (!workers.length) {
+    console.log('Initializing Penumbra workers...');
     workers.push(
       ...(await Promise.all(
-        new Array(maxConcurrency).fill(() => createPenumbraWorker(penumbra)),
+        new Array(maxConcurrency)
+          .fill(0) // incorrect built-in types prevent .fill()
+          .map(() => createPenumbraWorker(penumbra)),
       )),
     );
+    console.log('Penumbra workers initialized', workers);
   }
   if (!initialized) {
     initialized = true;
