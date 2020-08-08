@@ -57,7 +57,7 @@ const writableStreamsSupported = 'WritableStream' in self;
  * });
  * ```
  */
-async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
+async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
@@ -120,6 +120,13 @@ async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     }),
   );
   return decryptedFiles;
+}
+
+/** Temporary hack for multi-threading experiments */
+async function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
+  return Promise.all(
+    resources.map(async (resource) => (await getJob(resource))[0]),
+  );
 }
 
 /** Compression levels */
