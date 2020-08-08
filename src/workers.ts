@@ -146,7 +146,6 @@ export async function createPenumbraWorker(
 export async function initWorkers(): Promise<void> {
   const { penumbra } = getWorkerLocation();
   if (!workers.length) {
-    console.log('Initializing Penumbra workers...');
     workers.push(
       ...(await Promise.all(
         new Array(maxConcurrency)
@@ -154,7 +153,6 @@ export async function initWorkers(): Promise<void> {
           .map(() => createPenumbraWorker(penumbra)),
       )),
     );
-    console.log('Penumbra workers initialized', workers);
   }
   if (!initialized) {
     initialized = true;
