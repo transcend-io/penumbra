@@ -43,6 +43,8 @@ if (!view.document) {
 
 /** Whether or not Penumbra has been initialized */
 let initialized = false;
+/** Whether or not Penumbra is currently initializing workers */
+let initializing = false;
 
 // //////////// //
 // Load Workers //
@@ -145,8 +147,31 @@ export async function createPenumbraWorker(
   await setup;
   return penumbraWorker;
 }
+
+const onWorkerInitQueue: (() => void)[] = [];
+
+/** Get any free worker thread */
+function getFreeWorker(): PenumbraWorker {
+  // Poll for any available free workers
+  const freeWorker = workers.find(({ busy }) => !busy);
+  // return any free worker or a random one if all are busy
+  return freeWorker || workers[Math.floor(Math.random() * workers.length)];
+}
+
+/** Wait for workers to initialize */
+function waitForInit(): Promise<PenumbraWorker> {
+  return new Promise((resolveWorker) => {
+    onWorkerInitQueue.push(() => {
+      resolveWorker(getFreeWorker());
+    });
+  });
+}
+
+const call = Function.prototype.call.bind(Function.prototype.call);
+
 /** Initializes web worker threads */
 export async function initWorkers(): Promise<void> {
+  initializing = true;
   console.log(
     `initWorkers called (creating ${maxConcurrency - workers.length} workers)`,
   );
@@ -163,9 +188,11 @@ export async function initWorkers(): Promise<void> {
         .map(() => createPenumbraWorker(penumbra)),
     )),
   );
-  if (!initialized) {
-    initialized = true;
-  }
+  initializing = false;
+  initialized = true;
+  // Dispatch worker init ready queue
+  onWorkerInitQueue.forEach(call);
+  onWorkerInitQueue.length = 0;
 }
 
 /**
@@ -174,13 +201,13 @@ export async function initWorkers(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
-  if (workers.length < maxConcurrency) {
+  if (initializing) {
+    return waitForInit();
+  }
+  if (!initialized) {
     await initWorkers();
   }
-  // Poll for any available free workers
-  const freeWorker = workers.find(({ busy }) => !busy);
-  // return any free worker or a random one if all are busy
-  return freeWorker || workers[Math.floor(Math.random() * workers.length)];
+  return getFreeWorker();
 }
 
 /** Returns all active Penumbra Workers */
