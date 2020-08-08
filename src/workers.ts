@@ -153,18 +153,18 @@ export async function initWorkers(): Promise<void> {
     `initWorkers called (creating ${maxConcurrency - workers.length} workers)`,
   );
   const { penumbra } = getWorkerLocation();
-  let i = maxConcurrency - workers.length;
-  while (i-- > 0) {
-    // eslint-disable-next-line no-await-in-loop
-    workers.push(await createPenumbraWorker(penumbra));
-  }
-  // workers.push(
-  //   ...(await Promise.all(
-  //     new Array(Math.max(maxConcurrency - workers.length, 0))
-  //       .fill(0) // incorrect built-in types prevent .fill()
-  //       .map(() => createPenumbraWorker(penumbra)),
-  //   )),
-  // );
+  // let i = maxConcurrency - workers.length;
+  // while (i-- > 0) {
+  //   // eslint-disable-next-line no-await-in-loop
+  //   workers.push(await createPenumbraWorker(penumbra));
+  // }
+  workers.push(
+    ...(await Promise.all(
+      new Array(Math.max(maxConcurrency - workers.length, 0))
+        .fill(0) // incorrect built-in types prevent .fill()
+        .map(() => createPenumbraWorker(penumbra)),
+    )),
+  );
   if (!initialized) {
     initialized = true;
   }
