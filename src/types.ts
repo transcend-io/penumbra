@@ -195,10 +195,7 @@ export type PenumbraWorkerAPI = {
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
-  setup: (
-    id: number,
-    eventListener: (event: Event) => Promise<void>,
-  ) => Promise<void>;
+  setup: (id: number, eventListener: (event: Event) => void) => Promise<void>;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -345,5 +342,5 @@ export type PenumbraWorkers = {
 /** Worker->main thread progress forwarder */
 export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
-  handler?: (event: Event) => Promise<void>;
+  handler?: (event: Event) => void;
 };
