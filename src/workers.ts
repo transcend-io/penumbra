@@ -121,7 +121,11 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-const maxConcurrency = navigator.hardwareConcurrency || 1;
+const maxConcurrency =
+  // Default to 4 threads if nav.hwConcurrency isn't supported
+  (navigator.hardwareConcurrency || 4) -
+  // Reserve one thread for UI renderer to prevent jank
+  1;
 const workers: PenumbraWorker[] = [];
 let workerID = 0;
 
