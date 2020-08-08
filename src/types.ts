@@ -313,8 +313,6 @@ export type PenumbraWorker = {
   /** PenumbraWorker's Comlink interface */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   comlink: any;
-  /** Worker initialization state */
-  initialized: boolean;
   /** Busy status (currently processing jobs) */
   busy: boolean;
 };

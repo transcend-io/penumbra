@@ -11,7 +11,6 @@ import {
   WorkerLocation,
   WorkerLocationOptions,
   ProgressEmit,
-  JobCompletionEmit,
 } from './types';
 
 // ////// //
@@ -123,7 +122,7 @@ function reDispatchEvent(event: Event): void {
 
 const hwConcurrency = navigator.hardwareConcurrency || 1;
 // Limit thread pool size to 8
-const maxConcurrency = Math.min(hwConcurrency, 8);
+const maxConcurrency = Math.max(hwConcurrency, 8);
 const workers: PenumbraWorker[] = [];
 let workerId = 0;
 
@@ -139,7 +138,6 @@ export async function createPenumbraWorker(
     worker,
     id,
     comlink: wrap(worker),
-    initialized: false,
     busy: false,
   };
   const Link = penumbraWorker.comlink;
@@ -147,26 +145,26 @@ export async function createPenumbraWorker(
     await thread.setup(id, proxy(reDispatchEvent));
   });
   await setup;
-  penumbraWorker.initialized = true;
   return penumbraWorker;
 }
 /** Initializes web worker threads */
 export async function initWorkers(): Promise<void> {
+  console.log(
+    `initWorkers called (creating ${maxConcurrency - workers.length} workers)`,
+  );
   const { penumbra } = getWorkerLocation();
-  if (!workers.length) {
-    // let i = maxConcurrency;
-    // while (i--) {
-    //   // eslint-disable-next-line no-await-in-loop
-    //   workers.push(await createPenumbraWorker(penumbra));
-    // }
-    workers.push(
-      ...(await Promise.all(
-        new Array(maxConcurrency)
-          .fill(0) // incorrect built-in types prevent .fill()
-          .map(() => createPenumbraWorker(penumbra)),
-      )),
-    );
+  let i = maxConcurrency - workers.length;
+  while (i-- > 0) {
+    // eslint-disable-next-line no-await-in-loop
+    workers.push(await createPenumbraWorker(penumbra));
   }
+  // workers.push(
+  //   ...(await Promise.all(
+  //     new Array(Math.max(maxConcurrency - workers.length, 0))
+  //       .fill(0) // incorrect built-in types prevent .fill()
+  //       .map(() => createPenumbraWorker(penumbra)),
+  //   )),
+  // );
   if (!initialized) {
     initialized = true;
   }
@@ -178,10 +176,7 @@ export async function initWorkers(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
-  if (
-    !workers.length ||
-    (workers.length && !workers.some((worker) => worker.initialized))
-  ) {
+  if (workers.length < maxConcurrency) {
     await initWorkers();
   }
   // Poll for any available free workers
@@ -192,7 +187,7 @@ export async function getWorker(): Promise<PenumbraWorker> {
 
 /** Returns all active Penumbra Workers */
 function getActiveWorkers(): PenumbraWorker[] {
-  return workers.filter((worker) => worker.initialized);
+  return workers;
 }
 
 /**
@@ -201,10 +196,9 @@ function getActiveWorkers(): PenumbraWorker[] {
 function cleanup(): void {
   getActiveWorkers().forEach((thread) => {
     thread.worker.terminate();
-    // eslint-disable-next-line no-param-reassign
-    thread.initialized = false;
   });
   workers.length = 0;
+  workerId = 0;
 }
 
 view.addEventListener('beforeunload', cleanup);
@@ -257,3 +251,5 @@ const trackWorkerBusyState = ({
 };
 
 addEventListener('penumbra-progress', trackWorkerBusyState);
+
+throw new Error('test');
