@@ -251,5 +251,3 @@ const trackWorkerBusyState = ({
 };
 
 addEventListener('penumbra-progress', trackWorkerBusyState);
-
-throw new Error('test');
