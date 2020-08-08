@@ -1,6 +1,7 @@
+// FIXME: Remove the need for this file with better dependency injection
+
 /**
  * Get worker ID (if available)
- * TODO: Remove the need for this with better dependency injection
  *
  * @returns Worker ID (if available)
  */
