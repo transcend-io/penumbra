@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { transferHandlers } from 'comlink';
 import { PenumbraEvent } from '../event';
+import { getWorkerID } from '../worker-id';
 
 /** TODO: abstract this into a re-usable event registration & serialization helper */
 
@@ -23,7 +24,7 @@ transferHandlers.set('penumbra-progress', {
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
-    return [object.detail, []];
+    return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
@@ -55,7 +56,7 @@ transferHandlers.set('penumbra-complete', {
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
-    return [object.detail, []];
+    return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
@@ -87,7 +88,7 @@ transferHandlers.set('penumbra-error', {
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
-    return [object.detail, []];
+    return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
@@ -117,7 +118,7 @@ transferHandlers.set('error', {
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
-    return [object, []];
+    return [{ ...object, worker: getWorkerID() }, []];
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context

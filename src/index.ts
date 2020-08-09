@@ -22,13 +22,12 @@ export { penumbra, MOCK_API, PenumbraSupportLevel };
 
 /** Extend global Window */
 declare global {
-  /** Extend window.penumbra */
+  /** Extend self */
   interface Window {
-    /** penumbra interface */
+    /** self.penumbra interface */
     penumbra?: PenumbraAPI;
     /** TODO: remove debug intoStream global */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    intoStream: any;
+    intoStream: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

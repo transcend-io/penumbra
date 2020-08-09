@@ -1,4 +1,4 @@
-/* eslint-disable import/no-webpack-loader-syntax */
+/* eslint-disable max-lines, no-plusplus, import/no-webpack-loader-syntax */
 
 // comlink
 import { proxy, wrap } from 'comlink';
@@ -9,6 +9,7 @@ import {
   PenumbraWorkerAPI,
   WorkerLocation,
   WorkerLocationOptions,
+  ProgressEmit,
 } from './types';
 
 // ////// //
@@ -39,8 +40,10 @@ if (!view.document) {
   );
 }
 
-/** Whether or not sombra has been initialized */
-const initialized = false;
+/** Whether or not Penumbra has been initialized */
+let initialized = false;
+/** Whether or not Penumbra is currently initializing workers */
+let initializing = false;
 
 // //////////// //
 // Load Workers //
@@ -50,11 +53,9 @@ if (SHOULD_LOG_EVENTS) {
   console.info('Loading penumbra script element...');
 }
 let scriptElement: HTMLScriptElement = (document.currentScript ||
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  document.querySelector('script[data-penumbra]')) as any;
+  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
 if (!scriptElement) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  scriptElement = { dataset: {} } as any;
+  scriptElement = { dataset: {} } as HTMLScriptElement;
   if (SHOULD_LOG_EVENTS) {
     console.info('Unable to locate Penumbra script element.');
   }
@@ -120,30 +121,83 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-let workerThread: PenumbraWorker;
+// Set data-worker-limit to limit the maximum number of Penumbra workers
+const WORKER_LIMIT = +(script.workerLimit || 16);
+// Get available processor threads
+const availConcurrency = // Default to 4 threads if nav.hwConcurrency isn't supported
+  (navigator.hardwareConcurrency || 4) -
+  // Reserve one thread for UI renderer to prevent jank
+  1;
+const maxConcurrency =
+  availConcurrency > WORKER_LIMIT ? WORKER_LIMIT : availConcurrency;
+const workers: PenumbraWorker[] = [];
+let workerID = 0;
 
 /** Instantiate a Penumbra Worker */
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
   const worker = new Worker(url /* , { type: 'module' } */);
+  const id = workerID++;
   const penumbraWorker: PenumbraWorker = {
     worker,
+    id,
     comlink: wrap(worker),
-    initialized: false,
+    busy: false,
   };
   const Link = penumbraWorker.comlink;
   const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
-    await thread.setup(proxy(reDispatchEvent));
+    await thread.setup(id, proxy(reDispatchEvent));
   });
   await setup;
-  penumbraWorker.initialized = true;
   return penumbraWorker;
 }
+
+const onWorkerInitQueue: (() => void)[] = [];
+
+/** Get any free worker thread */
+function getFreeWorker(): PenumbraWorker {
+  // Poll for any available free workers
+  const freeWorker = workers.find(({ busy }) => !busy);
+
+  // return any free worker or a random one if all are busy
+  const worker =
+    freeWorker || workers[Math.floor(Math.random() * workers.length)];
+
+  // Set worker as busy
+  worker.busy = true;
+
+  return worker;
+}
+
+/** Wait for workers to initialize */
+function waitForInit(): Promise<PenumbraWorker> {
+  return new Promise((resolveWorker) => {
+    onWorkerInitQueue.push(() => {
+      resolveWorker(getFreeWorker());
+    });
+  });
+}
+
+const call = Function.prototype.call.bind(Function.prototype.call);
+
 /** Initializes web worker threads */
-export async function initWorker(): Promise<void> {
+export async function initWorkers(): Promise<void> {
+  initializing = true;
   const { penumbra } = getWorkerLocation();
-  workerThread = await createPenumbraWorker(penumbra);
+  workers.push(
+    ...(await Promise.all(
+      // load all workers in parallel
+      new Array(Math.max(maxConcurrency - workers.length, 0))
+        .fill(0) // incorrect built-in types prevent .fill()
+        .map(() => createPenumbraWorker(penumbra)),
+    )),
+  );
+  initializing = false;
+  initialized = true;
+  // Dispatch worker init ready queue
+  onWorkerInitQueue.forEach(call);
+  onWorkerInitQueue.length = 0;
 }
 
 /**
@@ -152,27 +206,29 @@ export async function initWorker(): Promise<void> {
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
-  if (!workerThread || (workerThread && !workerThread.initialized)) {
-    await initWorker();
+  if (initializing) {
+    return waitForInit();
   }
-  return workerThread as PenumbraWorker;
+  if (!initialized) {
+    await initWorkers();
+  }
+  return getFreeWorker();
 }
 
 /** Returns all active Penumbra Workers */
-async function getActiveWorkers(): Promise<PenumbraWorker[]> {
-  const worker = await getWorker();
-  return worker && worker.initialized ? [worker] : [];
+function getActiveWorkers(): PenumbraWorker[] {
+  return workers;
 }
 
 /**
- * Terminate Penumbra Worker and de-allocate their resources
+ * Terminate Penumbra worker and de-allocate their resources
  */
-async function cleanup(): Promise<void> {
-  (await getActiveWorkers()).forEach((thread) => {
+function cleanup(): void {
+  getActiveWorkers().forEach((thread) => {
     thread.worker.terminate();
-    // eslint-disable-next-line no-param-reassign
-    thread.initialized = false;
   });
+  workers.length = 0;
+  workerID = 0;
 }
 
 view.addEventListener('beforeunload', cleanup);
@@ -207,5 +263,16 @@ export async function setWorkerLocation(
       ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
       : { ...DEFAULT_WORKERS, ...options },
   );
-  return initWorker();
+  return initWorkers();
 }
+
+/** Set worker busy state based on current progress events */
+const trackWorkerBusyState = ({
+  detail: { worker, totalBytesRead, contentLength },
+}: ProgressEmit): void => {
+  if (typeof worker === 'number' && totalBytesRead >= contentLength) {
+    workers[worker].busy = false;
+  }
+};
+
+addEventListener('penumbra-progress', trackWorkerBusyState);

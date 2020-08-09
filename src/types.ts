@@ -121,6 +121,8 @@ export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
 export type ProgressDetails = {
   /** The job ID # or URL being downloaded from for decryption */
   id: string | number;
+  /** The ID of the worker thread that is processing this job */
+  worker?: number | null;
   /** Event type */
   type: PenumbraEventType;
   /** Percentage completed */
@@ -148,6 +150,8 @@ export type PenumbraErrorEmit = CustomEvent<PenumbraErrorDetails>;
  * Encryption/decryption job completion event details
  */
 export type JobCompletion = {
+  /** Worker ID */
+  worker?: number | null;
   /** Job ID */
   id: number;
   /** Decryption config info */
@@ -185,12 +189,13 @@ export type PenumbraAPI = typeof penumbra;
  * Penumbra Worker API
  */
 export type PenumbraWorkerAPI = {
+  /** Worker ID */
+  id: number;
   /**
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setup: (eventListener: any) => Promise<void>;
+  setup: (id: number, eventListener: (event: Event) => void) => Promise<void>;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    *
@@ -300,13 +305,15 @@ export type WorkerLocationOptions = Partial<WorkerLocation>;
  * An individual Penumbra Worker's interfaces
  */
 export type PenumbraWorker = {
+  /** Worker ID */
+  id: number;
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   comlink: any;
-  /** Worker initialization state */
-  initialized: boolean;
+  /** Busy status (currently processing jobs) */
+  busy: boolean;
 };
 
 /**
@@ -335,5 +342,5 @@ export type PenumbraWorkers = {
 /** Worker->main thread progress forwarder */
 export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
-  handler?: (event: Event) => Promise<void>;
+  handler?: (event: Event) => void;
 };

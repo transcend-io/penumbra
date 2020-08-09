@@ -3,13 +3,11 @@ import { PenumbraEvent } from '../event';
 import { JobCompletionEmit, PenumbraDecryptionInfo } from '../types';
 
 /**
- * An event emitter for the decryption progress
- * @param totalBytesRead the number of bytes read so far
- * @param contentLength the total number of bytes to read
- * @param url the URL being read from
- * @returns
+ * An event emitter for job completion
+ * @param id - Job ID
+ * @param decryptionInfo - PenumbraDecryptionInfo
  */
-export default function emitEncryptionCompletion(
+export default function emitJobCompletion(
   id: number,
   decryptionInfo: PenumbraDecryptionInfo,
 ): void {

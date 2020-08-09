@@ -1,10 +1,15 @@
+import { getWorkerID } from './worker-id';
+
 /** Penumbra error class */
 export class PenumbraError extends Error {
-  /** The download URL throwing error */
-  public downloadUrl: string;
+  /** The download URL or job ID throwing an error */
+  public id: string | number;
+
+  /** The worker ID associated with this error */
+  public worker: number | null;
 
   /** Extend new Error */
-  constructor(error: string | Error, downloadUrl: string) {
+  constructor(error: string | Error, id: string | number) {
     if (typeof error === 'string') {
       super(error);
     } else {
@@ -17,7 +22,8 @@ export class PenumbraError extends Error {
         }
       });
     }
-    this.downloadUrl = downloadUrl;
+    this.id = id;
+    this.worker = getWorkerID();
     this.name = 'PenumbraError';
   }
 

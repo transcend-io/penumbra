@@ -38,7 +38,7 @@
   - [Download many encrypted files](#download-many-encrypted-files)
 - [Advanced](#advanced)
   - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
-  - [Encryption Completion Event Emitter](#encryption-completion-event-emitter)
+  - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
   - [Progress Event Emitter](#progress-event-emitter)
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
