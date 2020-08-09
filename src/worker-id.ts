@@ -1,4 +1,5 @@
-// FIXME: Remove the need for this file with better dependency injection
+// Hacky solution to store the current worker ID without re-writing our
+// event emitters with worker ID dependency injection
 
 let workerID: number | null = null;
 
