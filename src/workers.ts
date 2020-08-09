@@ -121,11 +121,15 @@ function reDispatchEvent(event: Event): void {
   }
 }
 
-const maxConcurrency =
-  // Default to 4 threads if nav.hwConcurrency isn't supported
+// Set data-worker-limit to limit the maximum number of Penumbra workers
+const WORKER_LIMIT = +(script.workerLimit || 16);
+// Get available processor threads
+const availConcurrency = // Default to 4 threads if nav.hwConcurrency isn't supported
   (navigator.hardwareConcurrency || 4) -
   // Reserve one thread for UI renderer to prevent jank
   1;
+const maxConcurrency =
+  availConcurrency > WORKER_LIMIT ? WORKER_LIMIT : availConcurrency;
 const workers: PenumbraWorker[] = [];
 let workerID = 0;
 
