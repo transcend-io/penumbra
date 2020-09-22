@@ -132,9 +132,7 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 }
 
 /** Zip files retrieved by Penumbra */
-async function zip(
-  ...args: unknown[]
-): Promise<ReadableStream> {
+async function zip(...args: unknown[]): Promise<ReadableStream> {
   // FIXME: remove penumbra.zip (replaced with penumbra.saveZip)
   throw new Error('penumbra.zip() is currently unimplemented');
 }
@@ -332,7 +330,7 @@ async function encryptJob(
         ...files[i],
         // iv: metadata[i].iv,
         stream: stream.readable as ReadableStream,
- x       size: sizes[i],
+        size: sizes[i],
         id: ids[i],
       }),
     );
