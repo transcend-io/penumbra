@@ -802,6 +802,14 @@
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/plugin-transform-typescript" "^7.9.0"
 
+"@babel/runtime-corejs3@^7.11.0":
+  version "7.11.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.11.2.tgz#02c3029743150188edeb66541195f54600278419"
+  integrity sha512-qh5IR+8VgFz83VBa6OkaET6uN/mJOhHONuy3m1sgF0CV6mXdPSEBdA7e1eUbVvyNtANjMbg22JUv71BaDXLY6A==
+  dependencies:
+    core-js-pure "^3.0.0"
+    regenerator-runtime "^0.13.4"
+
 "@babel/runtime@^7.8.4":
   version "7.9.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.2.tgz#d90df0583a3a252f09aaa619665367bae518db06"
@@ -885,6 +893,15 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.0.0.tgz#9c13c2574c92d4503b005feca8f2e16cc1611506"
   integrity sha512-KYyTT/T6ALPkIRd2Ge080X/BsXvy9O0hcWTtMWkPvwAwF99+vn6Dv4GzrFT/Nn1LePr+FFDbRXXlqmsy9lw2zA==
+
+"@transcend-io/conflux@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@transcend-io/conflux/-/conflux-3.0.6.tgz#8d4241edef6e6702f1c5f8a81801f4d9d14057b9"
+  integrity sha512-XNMPpmoB06261rKTuPZgrc/FT5ldDZ5l8lRzwS9Pq1jcy7PnQ6gmzva3q0OrAtpwwizKgAiR8q+sWYuXJkYCaw==
+  dependencies:
+    "@babel/runtime-corejs3" "^7.11.0"
+    pako "^1.0.11"
+    web-streams-polyfill "^3.0.0"
 
 "@types/color-name@^1.1.1":
   version "1.1.1"
@@ -2011,9 +2028,9 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001038:
-  version "1.0.30001038"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001038.tgz#44da3cbca2ab6cb6aa83d1be5d324e17f141caff"
-  integrity sha512-zii9quPo96XfOiRD4TrfYGs+QsGZpb2cGiMAzPjtf/hpFgB6zCPZgJb7I1+EATeMw/o+lG8FyRAnI+CWStHcaQ==
+  version "1.0.30001133"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001133.tgz"
+  integrity sha512-s3XAUFaC/ntDb1O3lcw9K8MPeOW7KO3z9+GzAoBxfz1B0VdacXPMKgFUtG4KIsgmnbexmi013s9miVu4h+qMHw==
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
@@ -2411,6 +2428,11 @@ core-js-compat@^3.6.2:
   dependencies:
     browserslist "^4.8.3"
     semver "7.0.0"
+
+core-js-pure@^3.0.0:
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.6.5.tgz#c79e75f5e38dbc85a662d91eea52b8256d53b813"
+  integrity sha512-lacdXOimsiD0QyNf9BC/mxivNJ/ybBGJXQFKzRekp1WTHoVUWsUHEn+2T8GJAzzIhyOuXA+gOxCVN3l+5PLPUA==
 
 core-js@^2.4.0, core-js@^2.5.0:
   version "2.6.11"
@@ -5968,7 +5990,7 @@ package-json@^4.0.0, package-json@^4.0.1:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-pako@~1.0.5:
+pako@^1.0.11, pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
@@ -8112,6 +8134,11 @@ web-streams-node@^0.4.0:
     is-stream "^1.1.0"
     readable-stream-node-to-web "^1.0.1"
     web-streams-ponyfill "^1.4.1"
+
+web-streams-polyfill@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.0.0.tgz#c8bcb1e2ec1820088ca201674486a0f1feae848b"
+  integrity sha512-tcZlIJ+VBxuDXdRFF3PCZTJ3yUISGklG4hkl3CDGOlZ8XwpN90L5YsJNoSPH72wZ4nbsatE/OfIaxfM3p+6W7w==
 
 web-streams-ponyfill@^1.4.1:
   version "1.4.2"

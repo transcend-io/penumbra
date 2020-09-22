@@ -1,4 +1,5 @@
-import streamSaver from 'streamsaver';
+import { Writer } from '@transcend-io/conflux';
+import { createWriteStream } from 'streamsaver';
 import { PenumbraFile } from './types';
 
 /** Compression levels */
@@ -14,37 +15,59 @@ export enum Compression {
 }
 
 /** Wrapped WritableStream for state keeping with StreamSaver */
-export class PenumbraZipWriter extends WritableStream {
+export class PenumbraZipWriter {
   /** File writer queue */
   private queue: PenumbraFile[] = [];
+
+  /** Conflux zip writer */
+  private writer: Writer;
 
   /** Underlying WritableStream */
   private stream: WritableStream;
 
-  /** globalThis.WritableStream constructor */
+  /** Penumbra Zip Writer Constructor */
   constructor(
     name: string,
     size?: number,
+    files?: PenumbraFile[],
     compressionLevel = Compression.Store,
   ) {
-    super(); // FIXME: remove this
-    this.stream = streamSaver.createWriteStream(name, size);
+    if (compressionLevel !== Compression.Store) {
+      throw new Error(
+        `penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
+      );
+    }
+    this.writer = new Writer();
+    this.stream = createWriteStream(`${name}.zip`, size);
+    if (files) {
+      this.write(...files);
+    }
+    console.log('compression level:', compressionLevel);
   }
 
   /** Add PenumbraFiles to zip */
-  add(...files: PenumbraFile[]): void {
-    this.queue.push(...files);
+  write(...files: PenumbraFile[]): void {
+    files.forEach(({ path, filePrefix, stream }) => {
+      this.writer.write({
+        name: `${path}${filePrefix}`,
+        lastModified: new Date(0),
+        stream: () => stream,
+      });
+    });
+  }
+
+  /** Close Penumbra Zip Writer */
+  close(): void {
+    this.writer.close();
   }
 }
 
 /** Zip files retrieved by Penumbra */
-async function createZip(
+export function saveZip(
+  name = 'download',
+  size?: number,
+  files?: PenumbraFile[],
   compressionLevel: number = Compression.Store,
-): Promise<PenumbraZipWriter> {
-  if (compressionLevel !== Compression.Store) {
-    throw new Error(
-      `penumbra.createZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
-    );
-  }
-  return new PenumbraZipWriter();
+) {
+  return new PenumbraZipWriter(name, size, files, compressionLevel);
 }

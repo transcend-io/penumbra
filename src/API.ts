@@ -21,6 +21,7 @@ import {
 import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+import { saveZip } from './zip';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -134,7 +135,8 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 async function zip(
   ...args: unknown[]
 ): Promise<ReadableStream> {
-  throw new Error('penumbra.zip() is unimplemented');
+  // FIXME: remove penumbra.zip (replaced with penumbra.saveZip)
+  throw new Error('penumbra.zip() is currently unimplemented');
 }
 
 const DEFAULT_FILENAME = 'download';
@@ -554,7 +556,7 @@ const penumbra = {
   supported,
   getBlob,
   getTextOrURI,
-  zip,
+  saveZip,
   setWorkerLocation,
 };
 

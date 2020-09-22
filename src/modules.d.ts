@@ -1,4 +1,7 @@
+/* eslint-disable max-classes-per-file */
 /* tslint:disable completed-docs */
+
+import { Stream } from 'stream';
 
 /** Webpack worker-loader type setup */
 declare module 'worker-loader!*' {
@@ -66,6 +69,26 @@ declare module 'streamsaver' {
       strategy?: QueuingStrategy<W>,
     ): WritableStream<W>;
   };
+}
+
+/**
+ * Conflux
+ */
+declare module '@transcend-io/conflux' {
+  /** Conflux Zip Writer class */
+  // eslint-disable-next-line no-undef
+  export class Writer extends TransformStream {
+    constructor();
+
+    /** Write stream to filename in zip */
+    write(params: {
+      name: string;
+      lastModified: Date;
+      stream(): ReadableStream;
+    }): void;
+
+    close(): void;
+  }
 }
 
 declare module 'typedarray-to-buffer' {
