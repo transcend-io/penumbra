@@ -130,26 +130,11 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   );
 }
 
-/** Compression levels */
-export enum Compression {
-  /** No compression */
-  Store = 0,
-  /** Low compression */
-  Low = 1,
-  /** Medium compression */
-  Medium = 2,
-  /** High compression */
-  High = 3,
-}
-
 /** Zip files retrieved by Penumbra */
 async function zip(
-  data: PenumbraFile[] | PenumbraFile,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  compressionLevel: number = Compression.Store,
+  ...args: unknown[]
 ): Promise<ReadableStream> {
   throw new Error('penumbra.zip() is unimplemented');
-  // return new ReadableStream();
 }
 
 const DEFAULT_FILENAME = 'download';
@@ -345,7 +330,7 @@ async function encryptJob(
         ...files[i],
         // iv: metadata[i].iv,
         stream: stream.readable as ReadableStream,
-        size: sizes[i],
+ x       size: sizes[i],
         id: ids[i],
       }),
     );

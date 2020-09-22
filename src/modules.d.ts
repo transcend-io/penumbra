@@ -54,6 +54,18 @@ declare module 'streamsaver' {
     filename: string,
     size?: number,
   ): WritableStream;
+
+  /** DOM context WritableStream constructor */
+  type DOMContextWritableStream = globalThis.WritableStream;
+
+  /** WritableStream constructor */
+  const WritableStream: {
+    prototype: WritableStream;
+    new <W = any>(
+      underlyingSink?: UnderlyingSink<W>,
+      strategy?: QueuingStrategy<W>,
+    ): WritableStream<W>;
+  };
 }
 
 declare module 'typedarray-to-buffer' {
