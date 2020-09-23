@@ -131,12 +131,6 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   );
 }
 
-/** Zip files retrieved by Penumbra */
-async function zip(...args: unknown[]): Promise<ReadableStream> {
-  // FIXME: remove penumbra.zip (replaced with penumbra.saveZip)
-  throw new Error('penumbra.zip() is currently unimplemented');
-}
-
 const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
 const ZIP_MIME_TYPE = 'application/zip';
@@ -148,33 +142,34 @@ const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
  *
  * @param data - The data files to save
  * @param fileName - The name of the file to save to
- * @returns A promise that saves the files
+ * @returns AbortController
  */
-async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
-  // Zip a list of files
-  // TODO: Use streaming zip through conflux
+function save(
+  data: PenumbraFile[],
+  fileName?: string,
+  controller = new AbortController(),
+): AbortController {
   if ('length' in data && data.length > 1) {
-    const archive = await zip(data);
-    return archive.pipeTo(
-      createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`),
-    );
+    const archive = saveZip(fileName || `${DEFAULT_FILENAME}.zip`);
+    archive.write(...data);
+    return controller;
   }
 
   const file: PenumbraFile = 'stream' in data ? data : data[0];
   // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
+  const { signal } = controller;
 
   // Write a single readable stream to file
   if (file.stream instanceof ReadableStream) {
-    return file.stream.pipeTo(createWriteStream(singleFileName));
-  }
-  if (file.stream instanceof ArrayBuffer) {
-    return saveAs(
+    file.stream.pipeTo(createWriteStream(singleFileName), { signal });
+  } else if (file.stream instanceof ArrayBuffer) {
+    saveAs(
       new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
       singleFileName,
     );
   }
-  return undefined;
+  return controller;
 }
 
 /**

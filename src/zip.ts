@@ -16,20 +16,24 @@ export enum Compression {
 
 /** Wrapped WritableStream for state keeping with StreamSaver */
 export class PenumbraZipWriter {
-  /** File writer queue */
-  private queue: PenumbraFile[] = [];
+  /** Conflux zip writer */
+  private conflux: Writer = new Writer();
 
   /** Conflux zip writer */
-  private writer: Writer;
+  private writer: Writer = this.conflux.writable.getWriter();
 
   /** Underlying WritableStream */
   private stream: WritableStream;
+
+  /** Abort controller */
+  public controller: AbortController;
 
   /** Penumbra Zip Writer Constructor */
   constructor(
     name: string,
     size?: number,
     files?: PenumbraFile[],
+    controller = new AbortController(),
     compressionLevel = Compression.Store,
   ) {
     if (compressionLevel !== Compression.Store) {
@@ -37,12 +41,23 @@ export class PenumbraZipWriter {
         `penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
       );
     }
-    this.writer = new Writer();
-    this.stream = createWriteStream(`${name}.zip`, size);
+    const { signal } = controller;
+    this.controller = controller;
+    const { readable } = this.conflux;
+    const saveStream = createWriteStream(`${name}.zip`, size);
+    this.stream = saveStream;
     if (files) {
       this.write(...files);
     }
-    console.log('compression level:', compressionLevel);
+    console.log(`saving ${name}`);
+    readable.pipeTo(saveStream, { signal });
+    signal.addEventListener(
+      'abort',
+      () => {
+        this.writer.close();
+      },
+      { once: true },
+    );
   }
 
   /** Add PenumbraFiles to zip */
@@ -67,7 +82,8 @@ export function saveZip(
   name = 'download',
   size?: number,
   files?: PenumbraFile[],
+  controller = new AbortController(),
   compressionLevel: number = Compression.Store,
-) {
-  return new PenumbraZipWriter(name, size, files, compressionLevel);
+): PenumbraZipWriter {
+  return new PenumbraZipWriter(name, size, files, controller, compressionLevel);
 }
