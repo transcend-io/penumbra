@@ -20,17 +20,17 @@ export class PenumbraZipWriter {
   private conflux: Writer = new Writer();
 
   /** Conflux zip writer */
-  private writer: Writer = this.conflux.writable.getWriter();
+  private writer: WritableStreamDefaultWriter = this.conflux.writable.getWriter();
 
-  /** Underlying WritableStream */
-  private stream: WritableStream;
+  /** Save abortion state */
+  private aborted = false;
 
   /** Abort controller */
   public controller: AbortController;
 
   /** Penumbra Zip Writer Constructor */
   constructor(
-    name: string,
+    name = 'download',
     size?: number,
     files?: PenumbraFile[],
     controller = new AbortController(),
@@ -41,23 +41,26 @@ export class PenumbraZipWriter {
         `penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
       );
     }
-    const { signal } = controller;
+
     this.controller = controller;
-    const { readable } = this.conflux;
-    const saveStream = createWriteStream(`${name}.zip`, size);
-    this.stream = saveStream;
+    const { signal } = controller;
+    signal.addEventListener('abort', this.close.bind(this), {
+      once: true,
+    });
+
+    const saveStream = createWriteStream(
+      // Append .zip to filename unless it is already present
+      /\.zip\s*$/i.test(name) ? name : `${name}.zip`,
+      size,
+    );
+
     if (files) {
       this.write(...files);
     }
+
+    const { readable } = this.conflux;
     console.log(`saving ${name}`);
     readable.pipeTo(saveStream, { signal });
-    signal.addEventListener(
-      'abort',
-      () => {
-        this.writer.close();
-      },
-      { once: true },
-    );
   }
 
   /** Add PenumbraFiles to zip */
@@ -66,24 +69,30 @@ export class PenumbraZipWriter {
       this.writer.write({
         name: `${path}${filePrefix}`,
         lastModified: new Date(0),
-        stream: () => stream,
+        stream: () =>
+          stream instanceof ReadableStream
+            ? stream
+            : (new Response(stream).body as ReadableStream),
       });
     });
   }
 
   /** Close Penumbra Zip Writer */
   close(): void {
-    this.writer.close();
+    if (!this.aborted) {
+      this.writer.close();
+      this.aborted = true;
+    }
   }
 }
 
 /** Zip files retrieved by Penumbra */
 export function saveZip(
-  name = 'download',
+  name?: string,
   size?: number,
   files?: PenumbraFile[],
-  controller = new AbortController(),
-  compressionLevel: number = Compression.Store,
+  controller?: AbortController,
+  compressionLevel?: number,
 ): PenumbraZipWriter {
   return new PenumbraZipWriter(name, size, files, controller, compressionLevel);
 }

@@ -133,27 +133,27 @@ const onReady = async (event?: PenumbraReady) => {
   //   t.end();
   // });
 
-  test('v3 API: getBlob()', async (t) => {
-    const NYT: RemoteResource = {
-      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-      filePrefix: 'NYT',
-      mimetype: 'text/plain',
-      decryptionOptions: {
-        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-        iv: '6lNU+2vxJw6SFgse',
-        authTag: 'gadZhS1QozjEmfmHLblzbg==',
-      },
-    };
-    t.equal(
-      // wait
-      await new Response(
-        await penumbra.getBlob(await penumbra.zip(await penumbra.get(NYT))),
-      ).arrayBuffer(),
-      'some SHA-256 hash',
-      'v3 API: zip() output comparison',
-    );
-    t.end();
-  });
+  // test('v3 API: getBlob()', async (t) => {
+  //   const NYT: RemoteResource = {
+  //     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+  //     filePrefix: 'NYT',
+  //     mimetype: 'text/plain',
+  //     decryptionOptions: {
+  //       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+  //       iv: '6lNU+2vxJw6SFgse',
+  //       authTag: 'gadZhS1QozjEmfmHLblzbg==',
+  //     },
+  //   };
+  //   t.equal(
+  //     // wait
+  //     await new Response(
+  //       await penumbra.getBlob(await penumbra.zip(await penumbra.get(NYT))),
+  //     ).arrayBuffer(),
+  //     'some SHA-256 hash',
+  //     'v3 API: zip() output comparison',
+  //   );
+  //   t.end();
+  // });
 };
 
 if (!view.penumbra) {

@@ -137,6 +137,9 @@ const ZIP_MIME_TYPE = 'application/zip';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
 const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
 
+const isNumber = (number: unknown): number is number =>
+  !isNaN(number as number);
+
 /**
  * Save files retrieved by Penumbra
  *
@@ -145,17 +148,31 @@ const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
  * @returns AbortController
  */
 function save(
-  data: PenumbraFile[],
+  files: PenumbraFile[],
   fileName?: string,
   controller = new AbortController(),
 ): AbortController {
-  if ('length' in data && data.length > 1) {
-    const archive = saveZip(fileName || `${DEFAULT_FILENAME}.zip`);
-    archive.write(...data);
-    return controller;
+  let size: number | undefined = 0;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const file of files) {
+    if (!isNumber(file.size)) {
+      size = undefined;
+      break;
+    }
+    size += file.size;
+  }
+  if ('length' in files && files.length > 1) {
+    const writer = saveZip(
+      fileName || `${DEFAULT_FILENAME}.zip`,
+      size,
+      files,
+      controller,
+    );
+    writer.write(...files);
+    return writer.controller;
   }
 
-  const file: PenumbraFile = 'stream' in data ? data : data[0];
+  const file: PenumbraFile = 'stream' in files ? files : files[0];
   // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
   const { signal } = controller;
@@ -179,19 +196,18 @@ function save(
  * @returns A blob of the data
  */
 async function getBlob(
-  data: PenumbraFile[] | PenumbraFile | ReadableStream,
+  files: PenumbraFile[] | PenumbraFile | ReadableStream,
   type?: string, // = data[0].mimetype
 ): Promise<Blob> {
-  if ('length' in data && data.length > 1) {
-    return getBlob(await zip(data), type || ZIP_MIME_TYPE);
+  if ('length' in files && files.length > 1) {
+    throw new Error('penumbra.getBlob(): Called with multiple files');
   }
-
   let rs: ReadableStream;
   let fileType: string | undefined;
-  if (data instanceof ReadableStream) {
-    rs = data;
+  if (files instanceof ReadableStream) {
+    rs = files;
   } else {
-    const file = 'length' in data ? data[0] : data;
+    const file = 'length' in files ? files[0] : files;
     if (file.stream instanceof ArrayBuffer) {
       return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
     }
