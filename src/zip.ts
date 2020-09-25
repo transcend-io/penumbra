@@ -28,7 +28,16 @@ export class PenumbraZipWriter {
   /** Abort controller */
   public controller: AbortController;
 
-  /** Penumbra Zip Writer Constructor */
+  /**
+   * Penumbra zip writer constructor
+   *
+   * @param name - Filename to save to (.zip optional)
+   * @param size - Total size of archive (if known ahead of time, for 'store' compression level)
+   * @param files - PenumbraFile[] to add to zip archive
+   * @param controller - Abort controller for cancelling save
+   * @param compressionLevel - Compression level
+   * @returns PenumbraZipWriter class instance
+   */
   constructor(
     name = 'download',
     size?: number,
@@ -77,7 +86,7 @@ export class PenumbraZipWriter {
     });
   }
 
-  /** Close Penumbra Zip Writer */
+  /** Close Penumbra zip writer */
   close(): void {
     if (!this.aborted) {
       this.writer.close();
@@ -86,7 +95,16 @@ export class PenumbraZipWriter {
   }
 }
 
-/** Zip files retrieved by Penumbra */
+/**
+ * Zip files retrieved by Penumbra
+ *
+ * @param name - Filename to save to (.zip optional)
+ * @param size - Total size of archive (if known ahead of time, for 'store' compression level)
+ * @param files - PenumbraFile[] to add to zip archive
+ * @param controller - Abort controller for cancelling save
+ * @param compressionLevel - Compression level
+ * @returns PenumbraZipWriter class instance
+ */
 export function saveZip(
   name?: string,
   size?: number,

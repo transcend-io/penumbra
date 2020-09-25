@@ -12,6 +12,7 @@
 // local
 import penumbra from './API';
 import { PenumbraError } from './error';
+import { PenumbraZipWriter } from './zip';
 
 /**
  * Make selected object keys defined by K optional in type T
@@ -268,17 +269,12 @@ export type PenumbraWorkerAPI = {
     files: PenumbraFile[],
   ) => Promise<ArrayBuffer[]>;
   /**
-   * Zips one or more PenumbraFiles while keeping their path
-   * data in-tact.
+   * Creates a zip writer for saving PenumbraFiles which keeps
+   * their path data in-tact.
    *
-   * @param writablePort - Remote Web Stream writable ports
-   * @param files - PenumbraFiles to zip
-   * @returns A readable stream of zip file
+   * @returns PenumbraZipWriter
    */
-  zip: (
-    writablePort: MessagePort,
-    files: PenumbraFile[],
-  ) => Promise<ReadableStream>;
+  saveZip: () => PenumbraZipWriter;
   /**
    * Query Penumbra's level of support for the current browser.
    */
