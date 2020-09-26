@@ -155,7 +155,7 @@ export type JobCompletion = {
   /** Worker ID */
   worker?: number | null;
   /** Job ID */
-  id: number;
+  id: string | number;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
 };

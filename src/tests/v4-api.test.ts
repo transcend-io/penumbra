@@ -7,6 +7,7 @@ import {
   PenumbraReady,
   ProgressEmit,
   PenumbraSupportLevel,
+  JobCompletionEmit,
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -303,9 +304,9 @@ test('penumbra.saveZip()', async (t) => {
   const files = [
     'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
   ];
-  const unsaved = new Set(files);
+  const unsaved = new Set<string | number>(files);
   const writer = penumbra.saveZip({ debug: true });
-  const onPenumbraComplete = async ({ detail: { id } }) => {
+  const onPenumbraComplete = async ({ detail: { id } }: JobCompletionEmit) => {
     if (unsaved.has(id)) {
       unsaved.delete(id);
       if (unsaved.size === 0) {

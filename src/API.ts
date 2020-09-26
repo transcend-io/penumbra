@@ -221,7 +221,8 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
-const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
+let jobID = 0;
+const decryptionConfigs = new Map<string | number, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (
   searchForID: string | number,
