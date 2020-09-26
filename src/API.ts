@@ -133,7 +133,6 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 
 const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
-const ZIP_MIME_TYPE = 'application/zip';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
 const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
 
@@ -162,12 +161,12 @@ function save(
     size += file.size;
   }
   if ('length' in files && files.length > 1) {
-    const writer = saveZip(
-      fileName || `${DEFAULT_FILENAME}.zip`,
+    const writer = saveZip({
+      name: fileName || `${DEFAULT_FILENAME}.zip`,
       size,
       files,
       controller,
-    );
+    });
     writer.write(...files);
     return writer.controller;
   }
@@ -222,7 +221,6 @@ async function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
-let jobID = 0;
 const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (

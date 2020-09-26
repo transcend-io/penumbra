@@ -2,6 +2,22 @@ import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
 import { PenumbraFile } from './types';
 
+/** PenumbraZipWriter constructor options */
+export type ZipOptions = Partial<{
+  /** Filename to save to (.zip is optional) */
+  name: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size: number;
+  /** PenumbraFile[] to add to zip archive */
+  files: PenumbraFile[];
+  /** Abort controller for cancelling zip generation and saving */
+  controller: AbortController;
+  /** Zip archive compression level */
+  compressionLevel: number;
+  /** Store a copy of the resultant zip file in-memory for debug & testing */
+  debug: boolean;
+}>;
+
 /** Compression levels */
 export enum Compression {
   /** No compression */
@@ -25,26 +41,31 @@ export class PenumbraZipWriter {
   /** Save abortion state */
   private aborted = false;
 
+  /** Debug mode */
+  private debug = false;
+
+  /** Debug zip buffer used for testing */
+  private debugZipBuffer: Promise<ArrayBuffer> | null = null;
+
   /** Abort controller */
   public controller: AbortController;
 
   /**
    * Penumbra zip writer constructor
    *
-   * @param name - Filename to save to (.zip optional)
-   * @param size - Total size of archive (if known ahead of time, for 'store' compression level)
-   * @param files - PenumbraFile[] to add to zip archive
-   * @param controller - Abort controller for cancelling save
-   * @param compressionLevel - Compression level
+   * @param options - ZipOptions
    * @returns PenumbraZipWriter class instance
    */
-  constructor(
-    name = 'download',
-    size?: number,
-    files?: PenumbraFile[],
-    controller = new AbortController(),
-    compressionLevel = Compression.Store,
-  ) {
+  constructor(options: ZipOptions = {}) {
+    const {
+      name = 'download',
+      size,
+      files,
+      controller = new AbortController(),
+      compressionLevel = Compression.Store,
+      debug = false,
+    } = options;
+
     if (compressionLevel !== Compression.Store) {
       throw new Error(
         `penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
@@ -63,13 +84,24 @@ export class PenumbraZipWriter {
       size,
     );
 
+    const { readable } = this.conflux;
+    const [zipStream, debugZipStream]: [
+      ReadableStream,
+      ReadableStream | null,
+    ] = debug ? readable.tee() : [readable, null];
+
+    console.log(`saving ${name}`);
+    zipStream.pipeTo(saveStream, { signal });
+
     if (files) {
       this.write(...files);
     }
 
-    const { readable } = this.conflux;
-    console.log(`saving ${name}`);
-    readable.pipeTo(saveStream, { signal });
+    // Buffer zip stream for debug & testing
+    if (debug && debugZipStream) {
+      this.debug = debug;
+      this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
+    }
   }
 
   /** Add PenumbraFiles to zip */
@@ -93,24 +125,24 @@ export class PenumbraZipWriter {
       this.aborted = true;
     }
   }
+
+  /** Get buffered output (requires debug mode) */
+  getBuffer(): Promise<ArrayBuffer> {
+    if (!this.debug || !this.debugZipBuffer) {
+      throw new Error(
+        'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
+      );
+    }
+    return this.debugZipBuffer;
+  }
 }
 
 /**
  * Zip files retrieved by Penumbra
  *
- * @param name - Filename to save to (.zip optional)
- * @param size - Total size of archive (if known ahead of time, for 'store' compression level)
- * @param files - PenumbraFile[] to add to zip archive
- * @param controller - Abort controller for cancelling save
- * @param compressionLevel - Compression level
+ * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance
  */
-export function saveZip(
-  name?: string,
-  size?: number,
-  files?: PenumbraFile[],
-  controller?: AbortController,
-  compressionLevel?: number,
-): PenumbraZipWriter {
-  return new PenumbraZipWriter(name, size, files, controller, compressionLevel);
+export function saveZip(options?: ZipOptions): PenumbraZipWriter {
+  return new PenumbraZipWriter(options);
 }

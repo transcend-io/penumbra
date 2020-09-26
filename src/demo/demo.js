@@ -312,18 +312,29 @@ const onReady = async (
     ],
     [
       'penumbra.saveZip()',
-      async () => {
+      async (t) => {
         const files = [
           'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
         ];
         const unsaved = new Set(files);
-        const writer = penumbra.saveZip();
-        const onPenumbraComplete = ({ detail: { id } }) => {
+        const writer = penumbra.saveZip({ debug: true });
+        const onPenumbraComplete = async ({ detail: { id } }) => {
           if (unsaved.has(id)) {
             unsaved.delete(id);
             if (unsaved.size === 0) {
-              writer.close();
               removeEventListener('penumbra-complete', onPenumbraComplete);
+              writer.close();
+              const zipBuffer = await writer.getBuffer();
+              const zipHash = await hash('SHA-256', zipBuffer);
+              console.log('zip hash:', zipHash);
+              const referenceHash = 'TODO';
+              t.pass('zip saved');
+              t.equal(
+                zipHash,
+                referenceHash,
+                'penumbra.saveZip() output format match',
+              );
+              t.end();
             }
           }
         };
@@ -342,7 +353,6 @@ const onReady = async (
             })),
           );
         });
-        return true;
       },
     ],
   );
