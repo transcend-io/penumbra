@@ -312,48 +312,56 @@ const onReady = async (
     ],
     [
       'penumbra.saveZip()',
-      async (t) => {
-        const files = [
-          'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-        ];
-        const unsaved = new Set(files);
-        const writer = penumbra.saveZip({ debug: true });
-        const onPenumbraComplete = async ({ detail: { id } }) => {
-          if (unsaved.has(id)) {
-            unsaved.delete(id);
-            if (unsaved.size === 0) {
-              removeEventListener('penumbra-complete', onPenumbraComplete);
-              writer.close();
-              const zipBuffer = await writer.getBuffer();
-              const zipHash = await hash('SHA-256', zipBuffer);
-              console.log('zip hash:', zipHash);
-              const referenceHash = 'TODO';
-              t.pass('zip saved');
-              t.equal(
-                zipHash,
-                referenceHash,
-                'penumbra.saveZip() output format match',
-              );
-              t.end();
+      async (t) =>
+        new Promise((resolve) => {
+          const files = [
+            'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+          ];
+
+          const unsaved = new Set(files);
+          const writer = penumbra.saveZip({ debug: true });
+          const onPenumbraComplete = async ({ detail: { id } }) => {
+            console.log('onPenumbraComplete', `id=${id}`);
+            if (unsaved.has(id)) {
+              unsaved.delete(id);
+              if (unsaved.size === 0) {
+                removeEventListener('penumbra-complete', onPenumbraComplete);
+                writer.close();
+                const zipBuffer = await writer.getBuffer();
+                const zipHash = await hash('SHA-256', zipBuffer);
+                console.log('zip hash:', zipHash);
+                const referenceHash = 'TODO';
+                t.pass('zip saved');
+                t.equal(
+                  zipHash,
+                  referenceHash,
+                  'penumbra.saveZip() output format match',
+                );
+                t.end();
+                resolve(
+                  zipHash === referenceHash
+                    ? `pass (zipHash = ${zipHash})`
+                    : false,
+                );
+              }
             }
-          }
-        };
-        addEventListener('penumbra-complete', onPenumbraComplete);
-        files.forEach(async (url) => {
-          writer.write(
-            ...(await penumbra.get({
-              url,
-              filePrefix: 'test/tortoise',
-              mimetype: 'image/jpeg',
-              decryptionOptions: {
-                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-                iv: '6lNU+2vxJw6SFgse',
-                authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-              },
-            })),
-          );
-        });
-      },
+          };
+          addEventListener('penumbra-complete', onPenumbraComplete);
+          files.forEach(async (url) => {
+            writer.write(
+              ...(await penumbra.get({
+                url,
+                filePrefix: 'test/tortoise',
+                mimetype: 'image/jpeg',
+                decryptionOptions: {
+                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                  iv: '6lNU+2vxJw6SFgse',
+                  authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+                },
+              })),
+            );
+          });
+        }),
     ],
   );
 
