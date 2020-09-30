@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+
 // local
 import { PenumbraAPI, PenumbraSupportLevel } from './types';
 import { PenumbraZipWriter } from './zip';
@@ -23,11 +25,11 @@ const MOCK_API: PenumbraAPI = {
   saveZip: () =>
     (({
       /** Add PenumbraFiles to zip */
-      write(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
+      write(): void {}, // eslint-disable @typescript-eslint/no-empty-function
       /** Close zip writer */
-      close(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
-      conflux: function Writer() {} as any, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
-      writer: {} as any, // eslint-disable-line no-empty
+      close(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function
+      conflux: function Writer() {} as any, // eslint-disable-line @typescript-eslint/no-empty-function
+      writer: {} as any,
       controller: new AbortController(),
       aborted: false,
     } as any) as PenumbraZipWriter),
@@ -35,3 +37,5 @@ const MOCK_API: PenumbraAPI = {
 };
 
 export default MOCK_API;
+
+/* eslint-enable no-empty */
