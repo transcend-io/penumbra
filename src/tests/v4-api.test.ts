@@ -329,7 +329,7 @@ test('penumbra.saveZip()', async (t) => {
         const zipHash = await hash('SHA-256', zipBuffer);
         console.log('zip hash:', zipHash);
         const referenceHash =
-          '9f2fa5abf1ea26f6f7b6b8090f5b1b148406c4fb8dc95dde1fba29ec55c30950';
+          '001218c7c87e2bc0e268ff571ced74d2fa70d99785574380fcb145507fdb8bcf';
         t.equal(
           zipHash,
           referenceHash,
