@@ -77,7 +77,6 @@ export class PenumbraZipWriter {
     signal.addEventListener(
       'abort',
       () => {
-        console.log('AbortController triggered');
         this.close();
       },
       {
@@ -98,7 +97,6 @@ export class PenumbraZipWriter {
     //   ReadableStream | null,
     // ] = debug ? readable.tee() : [readable, null];
 
-    console.log(`saving ${name}`);
     zipStream.pipeTo(saveStream, { signal });
 
     if (files) {
@@ -115,7 +113,6 @@ export class PenumbraZipWriter {
   /** Add PenumbraFiles to zip */
   write(...files: PenumbraFile[]): void {
     files.forEach(({ path, filePrefix, stream }) => {
-      console.log(`writing file: ${path}${filePrefix}`);
       this.writer.write({
         name: `${path}${filePrefix}`,
         lastModified: new Date(0),
@@ -129,7 +126,6 @@ export class PenumbraZipWriter {
 
   /** Close Penumbra zip writer */
   close(): void {
-    console.log('PenumbraZipWriter.close() called');
     if (!this.closed) {
       this.writer.close();
     }
@@ -137,7 +133,6 @@ export class PenumbraZipWriter {
 
   /** Cancel Penumbra zip writer */
   abort(): void {
-    console.log('PenumbraZipWriter.abort() called');
     if (!this.controller.signal.aborted) {
       this.controller.abort();
     }
