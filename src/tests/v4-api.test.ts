@@ -305,7 +305,7 @@ test('penumbra.saveZip()', async (t) => {
     'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
   ];
   const unsaved = new Set<string | number>(files);
-  const writer = penumbra.saveZip(/* { debug: true } */);
+  const writer = penumbra.saveZip({ debug: true });
   const onProgress = async ({
     detail: { id, totalBytesRead, contentLength, percent },
   }: ProgressEmit) => {
@@ -315,16 +315,16 @@ test('penumbra.saveZip()', async (t) => {
       if (unsaved.size === 0) {
         removeEventListener('penumbra-progress', onProgress);
         writer.close();
-        // const zipBuffer = await writer.getBuffer();
-        // const zipHash = await hash('SHA-256', zipBuffer);
-        // console.log('zip hash:', zipHash);
-        // const referenceHash = '894cb8c8a4f08b5f88df3949767f4c331ff4ea30';
-        // t.equal(
-        //   zipHash,
-        //   referenceHash,
-        //   'penumbra.saveZip() output format match',
-        // );
-        t.pass('zip saved');
+        const zipBuffer = await writer.getBuffer();
+        const zipHash = await hash('SHA-256', zipBuffer);
+        console.log('zip hash:', zipHash);
+        const referenceHash =
+          'f8eb92bc1eb6e43309548b6f355ca282315af883adf0aa63b51d9352f7921b82';
+        t.equal(
+          zipHash,
+          referenceHash,
+          'penumbra.saveZip() output format matches',
+        );
         t.end();
       }
     }

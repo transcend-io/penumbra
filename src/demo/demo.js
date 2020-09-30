@@ -330,7 +330,12 @@ const onReady = async (
                 removeEventListener('penumbra-progress', onProgress);
                 writer.close();
                 console.log('closing writer');
-                resolve('pass');
+                const zipBuffer = await writer.getBuffer();
+                const zipHash = await hash('SHA-256', zipBuffer);
+                console.log('zip hash:', zipHash);
+                const referenceHash =
+                  'f8eb92bc1eb6e43309548b6f355ca282315af883adf0aa63b51d9352f7921b82';
+                resolve(zipHash === referenceHash);
               }
             }
           };

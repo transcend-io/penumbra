@@ -14,8 +14,8 @@ export type ZipOptions = Partial<{
   controller: AbortController;
   /** Zip archive compression level */
   compressionLevel: number;
-  // /** Store a copy of the resultant zip file in-memory for debug & testing */
-  // debug: boolean;
+  /** Store a copy of the resultant zip file in-memory for debug & testing */
+  debug: boolean;
 }>;
 
 /** Compression levels */
@@ -63,7 +63,7 @@ export class PenumbraZipWriter {
       files,
       controller = new AbortController(),
       compressionLevel = Compression.Store,
-      // debug = false,
+      debug = false,
     } = options;
 
     if (compressionLevel !== Compression.Store) {
@@ -91,11 +91,10 @@ export class PenumbraZipWriter {
     );
 
     const { readable } = this.conflux;
-    const zipStream = readable;
-    // const [zipStream, debugZipStream]: [
-    //   ReadableStream,
-    //   ReadableStream | null,
-    // ] = debug ? readable.tee() : [readable, null];
+    const [zipStream, debugZipStream]: [
+      ReadableStream,
+      ReadableStream | null,
+    ] = debug ? readable.tee() : [readable, null];
 
     zipStream.pipeTo(saveStream, { signal });
 
@@ -103,11 +102,11 @@ export class PenumbraZipWriter {
       this.write(...files);
     }
 
-    // // Buffer zip stream for debug & testing
-    // if (debug && debugZipStream) {
-    //   this.debug = debug;
-    //   this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
-    // }
+    // Buffer zip stream for debug & testing
+    if (debug && debugZipStream) {
+      this.debug = debug;
+      this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
+    }
   }
 
   /** Add PenumbraFiles to zip */
@@ -138,15 +137,15 @@ export class PenumbraZipWriter {
     }
   }
 
-  // /** Get buffered output (requires debug mode) */
-  // getBuffer(): Promise<ArrayBuffer> {
-  //   if (!this.debug || !this.debugZipBuffer) {
-  //     throw new Error(
-  //       'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
-  //     );
-  //   }
-  //   return this.debugZipBuffer;
-  // }
+  /** Get buffered output (requires debug mode) */
+  getBuffer(): Promise<ArrayBuffer> {
+    if (!this.debug || !this.debugZipBuffer) {
+      throw new Error(
+        'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
+      );
+    }
+    return this.debugZipBuffer;
+  }
 }
 
 /**
