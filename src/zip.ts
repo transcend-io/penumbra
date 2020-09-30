@@ -38,8 +38,8 @@ export class PenumbraZipWriter {
   /** Conflux zip writer */
   private writer: WritableStreamDefaultWriter = this.conflux.writable.getWriter();
 
-  /** Save abortion state */
-  private aborted = false;
+  /** Save completion state */
+  private closed = false;
 
   /** Debug mode */
   private debug = false;
@@ -130,9 +130,16 @@ export class PenumbraZipWriter {
   /** Close Penumbra zip writer */
   close(): void {
     console.log('PenumbraZipWriter.close() called');
-    if (!this.aborted) {
+    if (!this.closed) {
       this.writer.close();
-      this.aborted = true;
+    }
+  }
+
+  /** Cancel Penumbra zip writer */
+  abort(): void {
+    console.log('PenumbraZipWriter.abort() called');
+    if (!this.controller.signal.aborted) {
+      this.controller.abort();
     }
   }
 

@@ -315,7 +315,7 @@ test('penumbra.saveZip()', async (t) => {
         // const zipBuffer = await writer.getBuffer();
         // const zipHash = await hash('SHA-256', zipBuffer);
         // console.log('zip hash:', zipHash);
-        // const referenceHash = 'TODO';
+        // const referenceHash = '894cb8c8a4f08b5f88df3949767f4c331ff4ea30';
         // t.equal(
         //   zipHash,
         //   referenceHash,
