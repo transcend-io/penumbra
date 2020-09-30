@@ -117,8 +117,8 @@ export class PenumbraZipWriter {
    */
   write(...files: PenumbraFile[]): void {
     files.forEach(({ path, filePrefix, stream, mimetype }) => {
-      const hasExtension = /[^/]*\.\w+$/.test(filePrefix);
-      const name = `${path}${filePrefix}${
+      const hasExtension = /[^/]*\.\w+$/.test(path);
+      const name = `${path || filePrefix}${
         hasExtension ? '' : mime.extension(mimetype)
       }`;
       this.writer.write({

@@ -318,7 +318,7 @@ const onReady = async (
             {
               url:
                 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-              filePrefix: 'test/tortoise.jpg',
+              path: 'test/tortoise.jpg',
               mimetype: 'image/jpeg',
               decryptionOptions: {
                 key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',

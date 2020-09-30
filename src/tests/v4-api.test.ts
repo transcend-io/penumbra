@@ -7,7 +7,6 @@ import {
   PenumbraReady,
   ProgressEmit,
   PenumbraSupportLevel,
-  JobCompletionEmit,
   RemoteResource,
 } from '../types';
 
@@ -305,7 +304,8 @@ test('penumbra.saveZip()', async (t) => {
   const files: RemoteResource[] = [
     {
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-      filePrefix: 'tortoise.jpg',
+      // filePrefix: 'tortoise.jpg',
+      path: 'test/tortoise.jpg',
       mimetype: 'image/jpeg',
       decryptionOptions: {
         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',

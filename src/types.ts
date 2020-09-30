@@ -97,7 +97,7 @@ export type RemoteResource = {
   /** The mimetype of the resulting file */
   mimetype: string;
   /** The name of the underlying file without the extension */
-  filePrefix: string;
+  filePrefix?: string;
   /** If the file is encrypted, these are the required params */
   decryptionOptions?: PenumbraDecryptionInfo;
   /** Relative file path (needed for zipping) */
@@ -105,14 +105,6 @@ export type RemoteResource = {
   /** Fetch options */
   requestInit?: RequestInit;
 };
-
-/**
- * Remote resource where file prefix is optional
- */
-export type RemoteResourceWithoutFile = Optionalize<
-  RemoteResource,
-  'filePrefix'
->;
 
 /** Penumbra event types */
 export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';

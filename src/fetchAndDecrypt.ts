@@ -5,7 +5,7 @@ import { createDecipheriv } from 'crypto-browserify';
 // local
 import decryptStream from './decrypt';
 import { PenumbraError } from './error';
-import { RemoteResourceWithoutFile } from './types';
+import { RemoteResource } from './types';
 import { toBuff } from './utils';
 import emitError from './utils/emitError';
 
@@ -17,7 +17,7 @@ import emitError from './utils/emitError';
  * @returns A readable stream of the deciphered file
  */
 export default function fetchAndDecrypt(
-  { url, decryptionOptions }: RemoteResourceWithoutFile,
+  { url, decryptionOptions }: RemoteResource,
   fetchOptions?: RequestInit,
 ): Promise<ReadableStream> {
   return (
