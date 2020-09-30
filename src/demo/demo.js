@@ -319,7 +319,7 @@ const onReady = async (
           ];
 
           const unsaved = new Set(files);
-          const writer = penumbra.saveZip(/* { debug: true } */);
+          const writer = penumbra.saveZip({ debug: true });
           const onProgress = async ({
             detail: { id, totalBytesRead, contentLength, percent },
           }) => {
