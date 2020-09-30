@@ -1,5 +1,6 @@
 import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
+import mime from 'mime-types';
 import { PenumbraFile } from './types';
 
 /** PenumbraZipWriter constructor options */
@@ -111,9 +112,13 @@ export class PenumbraZipWriter {
 
   /** Add PenumbraFiles to zip */
   write(...files: PenumbraFile[]): void {
-    files.forEach(({ path, filePrefix, stream }) => {
+    files.forEach(({ path, filePrefix, stream, mimetype }) => {
+      const hasExtension = /[^/]*\.\w+$/.test(filePrefix);
+      const name = `${path}${filePrefix}${
+        hasExtension ? '' : mime.extension(mimetype)
+      }`;
       this.writer.write({
-        name: `${path}${filePrefix}`,
+        name,
         lastModified: new Date(0),
         stream: () =>
           stream instanceof ReadableStream
