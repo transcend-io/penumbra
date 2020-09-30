@@ -69,7 +69,8 @@ export class PenumbraZipWriter {
 
     if (compressionLevel !== Compression.Store) {
       throw new Error(
-        `penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues`,
+        // eslint-disable-next-line max-len
+        "penumbra.saveZip() doesn't support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues",
       );
     }
 
