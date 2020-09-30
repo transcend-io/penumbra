@@ -29,7 +29,7 @@
   - [.save](#save)
   - [.getBlob](#getblob)
   - [.getTextOrURI](#gettextoruri)
-  - [.zip](#zip)
+  - [.saveZip](#savezip)
   - [.setWorkerLocation](#setworkerlocation)
 - [Examples](#examples)
   - [Display encrypted text](#display-encrypted-text)
@@ -236,7 +236,7 @@ const onProgress = async ({
   }
 };
 addEventListener('penumbra-progress', onProgress);
-writer.write(...(await penumbra.get(files)));
+writer.write(...(await penumbra.get(...files)));
 ```
 
 ### .setWorkerLocation
