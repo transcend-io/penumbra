@@ -197,8 +197,6 @@ type ZipOptions = {
 penumbra.saveZip(options: ZipOptions = {}): PenumbraZipWriter;
 
 interface PenumbraZipWriter {
-  /** Zip writer constructor */
-  constructor(options?: ZipOptions);
   /** Add decrypted PenumbraFiles to zip */
   write(...files: PenumbraFile[]): void;
   /** Close Penumbra zip writer */
