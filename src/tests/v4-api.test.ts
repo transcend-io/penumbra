@@ -8,6 +8,7 @@ import {
   ProgressEmit,
   PenumbraSupportLevel,
   JobCompletionEmit,
+  RemoteResource,
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -301,7 +302,7 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 });
 
 test('penumbra.saveZip()', async (t) => {
-  const files = [
+  const files: RemoteResource[] = [
     {
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
       filePrefix: 'tortoise.jpg',
@@ -339,7 +340,7 @@ test('penumbra.saveZip()', async (t) => {
     }
   };
   addEventListener('penumbra-progress', onProgress);
-  penumbra.get(files).then((decryptedFiles: PenumbraFile[]) => {
+  penumbra.get(...files).then((decryptedFiles: PenumbraFile[]) => {
     writer.write(...decryptedFiles);
   });
 });

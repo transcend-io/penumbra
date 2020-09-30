@@ -349,7 +349,7 @@ const onReady = async (
             }
           };
           addEventListener('penumbra-progress', onProgress);
-          penumbra.get(files).then((decryptedFiles) => {
+          penumbra.get(...files).then((decryptedFiles) => {
             writer.write(...decryptedFiles);
           });
         }),
