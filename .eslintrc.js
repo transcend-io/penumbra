@@ -59,7 +59,7 @@ module.exports = {
     // "jsdoc/check-types":  ["error"],
     'max-len': [
       'error',
-      150,
+      125,
       {
         comments: 200,
       },
