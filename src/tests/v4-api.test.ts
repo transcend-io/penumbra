@@ -259,7 +259,7 @@ test('penumbra.getBlob()', async (t) => {
   const blob = await penumbra.getBlob(
     await penumbra.get({
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-      filePrefix: 'tortoise',
+      filePrefix: 'test/tortoise.jpg',
       mimetype: 'image/jpeg',
       decryptionOptions: {
         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
@@ -302,9 +302,18 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 
 test('penumbra.saveZip()', async (t) => {
   const files = [
-    'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+      filePrefix: 'tortoise.jpg',
+      mimetype: 'image/jpeg',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+      },
+    },
   ];
-  const unsaved = new Set<string | number>(files);
+  const unsaved = new Set<string | number>(files.map(({ url }) => url));
   const writer = penumbra.saveZip({ debug: true });
   const onProgress = async ({
     detail: { id, totalBytesRead, contentLength, percent },
@@ -330,18 +339,7 @@ test('penumbra.saveZip()', async (t) => {
     }
   };
   addEventListener('penumbra-progress', onProgress);
-  files.forEach(async (url) => {
-    writer.write(
-      ...(await penumbra.get({
-        url,
-        filePrefix: 'test/tortoise',
-        mimetype: 'image/jpeg',
-        decryptionOptions: {
-          key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-          iv: '6lNU+2vxJw6SFgse',
-          authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-        },
-      })),
-    );
+  penumbra.get(files).then((decryptedFiles) => {
+    writer.write(...decryptedFiles);
   });
 });

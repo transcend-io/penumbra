@@ -174,6 +174,7 @@ function save(
   const file: PenumbraFile = 'stream' in files ? files : files[0];
   // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
+
   const { signal } = controller;
 
   // Write a single readable stream to file

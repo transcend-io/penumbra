@@ -174,12 +174,69 @@ Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/
 penumbra.getTextOrURI(data: PenumbraFile[]): Promise<{ type: 'text'|'uri', data: string, mimetype: string }[]>
 ```
 
-### .zip
+### .saveZip
 
 Zip files retrieved by Penumbra.
 
 ```ts
-penumbra.zip(data: PenumbraFile[] | PenumbraFile, compressionLevel?: number): Promise<ReadableStream>
+penumbra.saveZip({
+  /** Filename to save to (.zip is optional) */
+  name?: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size?: number;
+  /** PenumbraFile[] to add to zip archive */
+  files?: PenumbraFile[];
+  /** Abort controller for cancelling zip generation and saving */
+  controller?: AbortController;
+  /** Zip archive compression level */
+  compressionLevel?: number;
+  /** Store a copy of the resultant zip file in-memory for debug & testing */
+  debug?: boolean;
+}: ZipOptions): PenumbraZipWriter;
+
+interface PenumbraZipWriter {
+  constructor(options: ZipOptions = {});
+  /** Add decrypted PenumbraFiles to zip */
+  write(...files: PenumbraFile[]): void;
+  /** Close Penumbra zip writer */
+  close(): void;
+  /** Cancel Penumbra zip writer */
+  abort(): void;
+  /** Save abortion controller */
+  controller: AbortController;
+}
+```
+
+Example:
+
+```ts
+const files = [
+  {
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+    name: 'tortoise.jpg',
+    mimetype: 'image/jpeg',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+    },
+  },
+];
+const unsaved = new Set(files.map(({ url }) => url));
+const writer = penumbra.saveZip();
+const onProgress = async ({
+  detail: { id, totalBytesRead, contentLength },
+}) => {
+  if (unsaved.has(id) && totalBytesRead === contentLength) {
+    unsaved.delete(id);
+    if (unsaved.size === 0) {
+      removeEventListener('penumbra-progress', onProgress);
+      writer.close();
+    }
+  }
+};
+addEventListener('penumbra-progress', onProgress);
+writer.write(...(await penumbra.get(files)));
 ```
 
 ### .setWorkerLocation

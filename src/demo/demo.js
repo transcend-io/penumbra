@@ -315,10 +315,19 @@ const onReady = async (
       async () =>
         new Promise((resolve) => {
           const files = [
-            'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            {
+              url:
+                'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+              filePrefix: 'test/tortoise.jpg',
+              mimetype: 'image/jpeg',
+              decryptionOptions: {
+                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                iv: '6lNU+2vxJw6SFgse',
+                authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+              },
+            },
           ];
-
-          const unsaved = new Set(files);
+          const unsaved = new Set(files.map(({ url }) => url));
           const writer = penumbra.saveZip({ debug: true });
           const onProgress = async ({
             detail: { id, totalBytesRead, contentLength, percent },
@@ -340,19 +349,8 @@ const onReady = async (
             }
           };
           addEventListener('penumbra-progress', onProgress);
-          files.forEach(async (url) => {
-            writer.write(
-              ...(await penumbra.get({
-                url,
-                filePrefix: 'test/tortoise',
-                mimetype: 'image/jpeg',
-                decryptionOptions: {
-                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-                  iv: '6lNU+2vxJw6SFgse',
-                  authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-                },
-              })),
-            );
+          penumbra.get(files).then((decryptedFiles) => {
+            writer.write(...decryptedFiles);
           });
         }),
     ],

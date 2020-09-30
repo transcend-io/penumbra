@@ -110,7 +110,11 @@ export class PenumbraZipWriter {
     }
   }
 
-  /** Add PenumbraFiles to zip */
+  /**
+   * Add decrypted PenumbraFiles to zip
+   *
+   * @param files - Decrypted PenumbraFile[] to add to zip
+   */
   write(...files: PenumbraFile[]): void {
     files.forEach(({ path, filePrefix, stream, mimetype }) => {
       const hasExtension = /[^/]*\.\w+$/.test(filePrefix);
