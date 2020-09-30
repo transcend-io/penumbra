@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc, @typescript-eslint/no-empty-function, no-empty */
+/* tslint-disable no-empty */
 
 // local
 import { PenumbraAPI, PenumbraSupportLevel } from './types';
@@ -38,4 +39,5 @@ const MOCK_API: PenumbraAPI = {
 
 export default MOCK_API;
 
+/* tslint-enable no-empty */
 /* eslint-enable require-jsdoc, @typescript-eslint/no-empty-function, no-empty */
