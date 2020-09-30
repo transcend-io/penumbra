@@ -33,10 +33,10 @@ export enum Compression {
 
 /** Wrapped WritableStream for state keeping with StreamSaver */
 export class PenumbraZipWriter {
-  /** Conflux zip writer */
+  /** Conflux zip writer instance */
   private conflux: Writer = new Writer();
 
-  /** Conflux zip writer WritableStream interface */
+  /** Conflux WritableStream interface */
   private writer: WritableStreamDefaultWriter = this.conflux.writable.getWriter();
 
   /** Save completion state */
