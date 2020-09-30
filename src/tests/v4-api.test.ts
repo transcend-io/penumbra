@@ -306,11 +306,14 @@ test('penumbra.saveZip()', async (t) => {
   ];
   const unsaved = new Set<string | number>(files);
   const writer = penumbra.saveZip(/* { debug: true } */);
-  const onPenumbraComplete = async ({ detail: { id } }: JobCompletionEmit) => {
-    if (unsaved.has(id)) {
+  const onProgress = async ({
+    detail: { id, totalBytesRead, contentLength, percent },
+  }: ProgressEmit) => {
+    console.log('onProgress', `id=${id}, percent=${percent}`);
+    if (unsaved.has(id) && totalBytesRead === contentLength) {
       unsaved.delete(id);
       if (unsaved.size === 0) {
-        removeEventListener('penumbra-complete', onPenumbraComplete);
+        removeEventListener('penumbra-progress', onProgress);
         writer.close();
         // const zipBuffer = await writer.getBuffer();
         // const zipHash = await hash('SHA-256', zipBuffer);
@@ -326,7 +329,7 @@ test('penumbra.saveZip()', async (t) => {
       }
     }
   };
-  addEventListener('penumbra-complete', onPenumbraComplete);
+  addEventListener('penumbra-progress', onProgress);
   files.forEach(async (url) => {
     writer.write(
       ...(await penumbra.get({
