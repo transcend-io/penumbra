@@ -1,3 +1,5 @@
+/* tslint:disable completed-docs */
+
 /** typedarray-to-buffer types */
 declare module 'typedarray-to-buffer' {
   type TypedArray =

@@ -1,3 +1,5 @@
+/* tslint:disable completed-docs */
+
 /**
  * StreamSaver types
  */
