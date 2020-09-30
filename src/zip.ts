@@ -14,8 +14,8 @@ export type ZipOptions = Partial<{
   controller: AbortController;
   /** Zip archive compression level */
   compressionLevel: number;
-  /** Store a copy of the resultant zip file in-memory for debug & testing */
-  debug: boolean;
+  // /** Store a copy of the resultant zip file in-memory for debug & testing */
+  // debug: boolean;
 }>;
 
 /** Compression levels */
@@ -63,7 +63,7 @@ export class PenumbraZipWriter {
       files,
       controller = new AbortController(),
       compressionLevel = Compression.Store,
-      debug = false,
+      // debug = false,
     } = options;
 
     if (compressionLevel !== Compression.Store) {
@@ -74,9 +74,16 @@ export class PenumbraZipWriter {
 
     this.controller = controller;
     const { signal } = controller;
-    signal.addEventListener('abort', this.close.bind(this), {
-      once: true,
-    });
+    signal.addEventListener(
+      'abort',
+      () => {
+        console.log('AbortController triggered');
+        this.close();
+      },
+      {
+        once: true,
+      },
+    );
 
     const saveStream = createWriteStream(
       // Append .zip to filename unless it is already present
@@ -85,10 +92,11 @@ export class PenumbraZipWriter {
     );
 
     const { readable } = this.conflux;
-    const [zipStream, debugZipStream]: [
-      ReadableStream,
-      ReadableStream | null,
-    ] = debug ? readable.tee() : [readable, null];
+    const zipStream = readable;
+    // const [zipStream, debugZipStream]: [
+    //   ReadableStream,
+    //   ReadableStream | null,
+    // ] = debug ? readable.tee() : [readable, null];
 
     console.log(`saving ${name}`);
     zipStream.pipeTo(saveStream, { signal });
@@ -97,16 +105,17 @@ export class PenumbraZipWriter {
       this.write(...files);
     }
 
-    // Buffer zip stream for debug & testing
-    if (debug && debugZipStream) {
-      this.debug = debug;
-      this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
-    }
+    // // Buffer zip stream for debug & testing
+    // if (debug && debugZipStream) {
+    //   this.debug = debug;
+    //   this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
+    // }
   }
 
   /** Add PenumbraFiles to zip */
   write(...files: PenumbraFile[]): void {
     files.forEach(({ path, filePrefix, stream }) => {
+      console.log(`writing file: ${path}${filePrefix}`);
       this.writer.write({
         name: `${path}${filePrefix}`,
         lastModified: new Date(0),
@@ -120,21 +129,22 @@ export class PenumbraZipWriter {
 
   /** Close Penumbra zip writer */
   close(): void {
+    console.log('PenumbraZipWriter.close() called');
     if (!this.aborted) {
       this.writer.close();
       this.aborted = true;
     }
   }
 
-  /** Get buffered output (requires debug mode) */
-  getBuffer(): Promise<ArrayBuffer> {
-    if (!this.debug || !this.debugZipBuffer) {
-      throw new Error(
-        'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
-      );
-    }
-    return this.debugZipBuffer;
-  }
+  // /** Get buffered output (requires debug mode) */
+  // getBuffer(): Promise<ArrayBuffer> {
+  //   if (!this.debug || !this.debugZipBuffer) {
+  //     throw new Error(
+  //       'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
+  //     );
+  //   }
+  //   return this.debugZipBuffer;
+  // }
 }
 
 /**
