@@ -23,10 +23,10 @@ const MOCK_API: PenumbraAPI = {
   saveZip: () =>
     (({
       /** Add PenumbraFiles to zip */
-      write(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function
+      write(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
       /** Close zip writer */
-      close(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function
-      conflux: function Writer() {} as any, // eslint-disable-line @typescript-eslint/no-empty-function
+      close(): void {}, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
+      conflux: function Writer() {} as any, // eslint-disable-line @typescript-eslint/no-empty-function, no-empty
       writer: {} as any, // eslint-disable-line no-empty
       controller: new AbortController(),
       aborted: false,
