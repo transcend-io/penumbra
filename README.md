@@ -152,10 +152,10 @@ return td.decode(decryptedData) === 'test';
 
 ### .save
 
-Save files retrieved by Penumbra. Downloads a .zip if there are multiple files.
+Save files retrieved by Penumbra. Downloads a .zip if there are multiple files. Returns an AbortController that can be used to cancel an in-progress save stream.
 
 ```ts
-penumbra.save(data: PenumbraFile[], fileName?: string): Promise<void>
+penumbra.save(data: PenumbraFile[], fileName?: string): AbortController
 ```
 
 ### .getBlob
@@ -176,10 +176,10 @@ penumbra.getTextOrURI(data: PenumbraFile[]): Promise<{ type: 'text'|'uri', data:
 
 ### .saveZip
 
-Zip files retrieved by Penumbra.
+Save a zip containing files retrieved by Penumbra.
 
 ```ts
-penumbra.saveZip({
+type ZipOptions = {
   /** Filename to save to (.zip is optional) */
   name?: string;
   /** Total size of archive (if known ahead of time, for 'store' compression level) */
@@ -192,10 +192,13 @@ penumbra.saveZip({
   compressionLevel?: number;
   /** Store a copy of the resultant zip file in-memory for debug & testing */
   debug?: boolean;
-}: ZipOptions): PenumbraZipWriter;
+};
+
+penumbra.saveZip(options: ZipOptions = {}): PenumbraZipWriter;
 
 interface PenumbraZipWriter {
-  constructor(options: ZipOptions = {});
+  /** Zip writer constructor */
+  constructor(options?: ZipOptions);
   /** Add decrypted PenumbraFiles to zip */
   write(...files: PenumbraFile[]): void;
   /** Close Penumbra zip writer */
