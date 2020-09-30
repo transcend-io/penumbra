@@ -36,7 +36,7 @@ export class PenumbraZipWriter {
   /** Conflux zip writer */
   private conflux: Writer = new Writer();
 
-  /** Conflux zip writer */
+  /** Conflux zip writer WritableStream interface */
   private writer: WritableStreamDefaultWriter = this.conflux.writable.getWriter();
 
   /** Save completion state */
