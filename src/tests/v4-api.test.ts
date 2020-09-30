@@ -339,7 +339,7 @@ test('penumbra.saveZip()', async (t) => {
     }
   };
   addEventListener('penumbra-progress', onProgress);
-  penumbra.get(files).then((decryptedFiles) => {
+  penumbra.get(files).then((decryptedFiles: PenumbraFile[]) => {
     writer.write(...decryptedFiles);
   });
 });
