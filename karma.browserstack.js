@@ -9,20 +9,20 @@ module.exports = (config) => {
     bs_chrome_mac: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '78.0',
+      browser_version: '85.0',
       os: 'OS X',
       os_version: 'Mojave',
     },
     bs_firefox_pc: {
-      // Skips .encrypt tests
+      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Firefox',
-      browser_version: '71.0',
+      browser_version: '80.0',
       os: 'Windows',
       os_version: '10',
     },
     bs_safari_mac: {
-      // Skips .encrypt tests
+      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Safari',
       browser_version: '13',

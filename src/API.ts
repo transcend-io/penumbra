@@ -21,6 +21,7 @@ import {
 import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+import { saveZip } from './zip';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -130,66 +131,62 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   );
 }
 
-/** Compression levels */
-export enum Compression {
-  /** No compression */
-  Store = 0,
-  /** Low compression */
-  Low = 1,
-  /** Medium compression */
-  Medium = 2,
-  /** High compression */
-  High = 3,
-}
-
-/** Zip files retrieved by Penumbra */
-async function zip(
-  data: PenumbraFile[] | PenumbraFile,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  compressionLevel: number = Compression.Store,
-): Promise<ReadableStream> {
-  throw new Error('penumbra.zip() is unimplemented');
-  // return new ReadableStream();
-}
-
 const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
-const ZIP_MIME_TYPE = 'application/zip';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
 const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
+
+const isNumber = (number: unknown): number is number =>
+  !isNaN(number as number);
 
 /**
  * Save files retrieved by Penumbra
  *
  * @param data - The data files to save
  * @param fileName - The name of the file to save to
- * @returns A promise that saves the files
+ * @returns AbortController
  */
-async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
-  // Zip a list of files
-  // TODO: Use streaming zip through conflux
-  if ('length' in data && data.length > 1) {
-    const archive = await zip(data);
-    return archive.pipeTo(
-      createWriteStream(fileName || `${DEFAULT_FILENAME}.zip`),
-    );
+function save(
+  files: PenumbraFile[],
+  fileName?: string,
+  controller = new AbortController(),
+): AbortController {
+  let size: number | undefined = 0;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const file of files) {
+    if (!isNumber(file.size)) {
+      size = undefined;
+      break;
+    }
+    size += file.size;
+  }
+  if ('length' in files && files.length > 1) {
+    const writer = saveZip({
+      name: fileName || `${DEFAULT_FILENAME}.zip`,
+      size,
+      files,
+      controller,
+    });
+    writer.write(...files);
+    return writer.controller;
   }
 
-  const file: PenumbraFile = 'stream' in data ? data : data[0];
+  const file: PenumbraFile = 'stream' in files ? files : files[0];
   // TODO: get filename extension with mime.extension()
   const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
 
+  const { signal } = controller;
+
   // Write a single readable stream to file
   if (file.stream instanceof ReadableStream) {
-    return file.stream.pipeTo(createWriteStream(singleFileName));
-  }
-  if (file.stream instanceof ArrayBuffer) {
-    return saveAs(
+    file.stream.pipeTo(createWriteStream(singleFileName), { signal });
+  } else if (file.stream instanceof ArrayBuffer) {
+    saveAs(
       new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
       singleFileName,
     );
   }
-  return undefined;
+  return controller;
 }
 
 /**
@@ -199,19 +196,18 @@ async function save(data: PenumbraFile[], fileName?: string): Promise<void> {
  * @returns A blob of the data
  */
 async function getBlob(
-  data: PenumbraFile[] | PenumbraFile | ReadableStream,
+  files: PenumbraFile[] | PenumbraFile | ReadableStream,
   type?: string, // = data[0].mimetype
 ): Promise<Blob> {
-  if ('length' in data && data.length > 1) {
-    return getBlob(await zip(data), type || ZIP_MIME_TYPE);
+  if ('length' in files && files.length > 1) {
+    throw new Error('penumbra.getBlob(): Called with multiple files');
   }
-
   let rs: ReadableStream;
   let fileType: string | undefined;
-  if (data instanceof ReadableStream) {
-    rs = data;
+  if (files instanceof ReadableStream) {
+    rs = files;
   } else {
-    const file = 'length' in data ? data[0] : data;
+    const file = 'length' in files ? files[0] : files;
     if (file.stream instanceof ArrayBuffer) {
       return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
     }
@@ -227,7 +223,7 @@ async function getBlob(
 }
 
 let jobID = 0;
-const decryptionConfigs = new Map<number, PenumbraDecryptionInfo>();
+const decryptionConfigs = new Map<string | number, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (
   searchForID: string | number,
@@ -569,7 +565,7 @@ const penumbra = {
   supported,
   getBlob,
   getTextOrURI,
-  zip,
+  saveZip,
   setWorkerLocation,
 };
 

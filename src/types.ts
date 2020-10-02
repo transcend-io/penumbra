@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+
 /**
  *
  * ## Penumbra Type Definitions
@@ -11,6 +12,7 @@
 // local
 import penumbra from './API';
 import { PenumbraError } from './error';
+import { PenumbraZipWriter } from './zip';
 
 /**
  * Make selected object keys defined by K optional in type T
@@ -95,7 +97,7 @@ export type RemoteResource = {
   /** The mimetype of the resulting file */
   mimetype: string;
   /** The name of the underlying file without the extension */
-  filePrefix: string;
+  filePrefix?: string;
   /** If the file is encrypted, these are the required params */
   decryptionOptions?: PenumbraDecryptionInfo;
   /** Relative file path (needed for zipping) */
@@ -103,14 +105,6 @@ export type RemoteResource = {
   /** Fetch options */
   requestInit?: RequestInit;
 };
-
-/**
- * Remote resource where file prefix is optional
- */
-export type RemoteResourceWithoutFile = Optionalize<
-  RemoteResource,
-  'filePrefix'
->;
 
 /** Penumbra event types */
 export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
@@ -153,7 +147,7 @@ export type JobCompletion = {
   /** Worker ID */
   worker?: number | null;
   /** Job ID */
-  id: number;
+  id: string | number;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
 };
@@ -267,17 +261,12 @@ export type PenumbraWorkerAPI = {
     files: PenumbraFile[],
   ) => Promise<ArrayBuffer[]>;
   /**
-   * Zips one or more PenumbraFiles while keeping their path
-   * data in-tact.
+   * Creates a zip writer for saving PenumbraFiles which keeps
+   * their path data in-tact.
    *
-   * @param writablePort - Remote Web Stream writable ports
-   * @param files - PenumbraFiles to zip
-   * @returns A readable stream of zip file
+   * @returns PenumbraZipWriter
    */
-  zip: (
-    writablePort: MessagePort,
-    files: PenumbraFile[],
-  ) => Promise<ReadableStream>;
+  saveZip: () => PenumbraZipWriter;
   /**
    * Query Penumbra's level of support for the current browser.
    */

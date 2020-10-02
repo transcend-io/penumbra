@@ -16,7 +16,14 @@
     "types": ["node"],
     "composite": true,
     "moduleResolution": "node",
-    "strict": true
+    "strict": true,
+    "typeRoots": [
+      "src/@types/worker-loader/index.d.ts",
+      "src/@types/streamsaver/index.d.ts",
+      "src/@types/conflux/index.d.ts",
+      "src/@types/typedarray-to-buffer/index.d.ts",
+      "src/@types/crypto-browserify/index.d.ts"
+    ]
   },
   "include": ["src/**/*", "!src/tests"],
   "exclude": ["node_modules", "build"]

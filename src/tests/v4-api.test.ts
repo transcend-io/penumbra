@@ -7,6 +7,7 @@ import {
   PenumbraReady,
   ProgressEmit,
   PenumbraSupportLevel,
+  RemoteResource,
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,6 +21,7 @@ const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
 const view = self;
 
 let penumbra: PenumbraAPI;
+
 test('setup', async (t) => {
   const onReady = async (event?: PenumbraReady) => {
     // eslint-disable-next-line no-shadow
@@ -258,7 +260,7 @@ test('penumbra.getBlob()', async (t) => {
   const blob = await penumbra.getBlob(
     await penumbra.get({
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-      filePrefix: 'tortoise',
+      filePrefix: 'test/tortoise.jpg',
       mimetype: 'image/jpeg',
       decryptionOptions: {
         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
@@ -296,5 +298,66 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
   const decryptedData = await new Response(decrypted.stream).arrayBuffer();
   t.equal(td.decode(decryptedData), input);
+  t.end();
+});
+
+test('penumbra.saveZip()', async (t) => {
+  if (['Firefox', 'Safari'].includes(browserName)) {
+    t.pass(
+      `penumbra.saveZip() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+    );
+    t.end();
+    return;
+  }
+  const files: RemoteResource[] = [
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+      // filePrefix: 'tortoise.jpg',
+      path: 'test/tortoise.jpg',
+      mimetype: 'image/jpeg',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+      },
+    },
+  ];
+  const expectedReferenceHashes = [
+    '001218c7c87e2bc0e268ff571ced74d2fa70d99785574380fcb145507fdb8bcf',
+    'b182150f323eef701b8f326581cce8e0bbb3d523c7f4d5a541f5a458e5e34f94',
+    '29adf2cc8f402bf922a08d68e039ca907a0bef8f95c1427a82483e7621995787',
+    '647c8ce22d58bd2e527b75977608ad423a95677c44886d244370bf5c8d07a83e',
+  ];
+  const unsaved = new Set<string | number>(files.map(({ url }) => url));
+  const writer = penumbra.saveZip({ debug: true });
+  const onProgress = async ({
+    detail: { id, totalBytesRead, contentLength, percent },
+  }: ProgressEmit) => {
+    console.log('onProgress', `id=${id}, percent=${percent}`);
+    if (unsaved.has(id) && totalBytesRead === contentLength) {
+      unsaved.delete(id);
+      if (unsaved.size === 0) {
+        removeEventListener('penumbra-progress', onProgress);
+        writer.close();
+        const zipBuffer = await writer.getBuffer();
+        const zipHash = await hash('SHA-256', zipBuffer);
+        console.log('zip hash:', zipHash);
+        t.ok(zipHash, 'zip hash');
+        t.ok(
+          expectedReferenceHashes.includes(zipHash.toLowerCase()),
+          'penumbra.saveZip() expected output hash',
+        );
+        t.end();
+      }
+    }
+  };
+  addEventListener('penumbra-progress', onProgress);
+  penumbra.get(...files).then((decryptedFiles: PenumbraFile[]) => {
+    writer.write(...decryptedFiles);
+  });
+});
+
+test('end of tests', async (t) => {
+  t.pass();
   t.end();
 });

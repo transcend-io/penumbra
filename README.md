@@ -29,7 +29,7 @@
   - [.save](#save)
   - [.getBlob](#getblob)
   - [.getTextOrURI](#gettextoruri)
-  - [.zip](#zip)
+  - [.saveZip](#savezip)
   - [.setWorkerLocation](#setworkerlocation)
 - [Examples](#examples)
   - [Display encrypted text](#display-encrypted-text)
@@ -152,10 +152,10 @@ return td.decode(decryptedData) === 'test';
 
 ### .save
 
-Save files retrieved by Penumbra. Downloads a .zip if there are multiple files.
+Save files retrieved by Penumbra. Downloads a .zip if there are multiple files. Returns an AbortController that can be used to cancel an in-progress save stream.
 
 ```ts
-penumbra.save(data: PenumbraFile[], fileName?: string): Promise<void>
+penumbra.save(data: PenumbraFile[], fileName?: string): AbortController
 ```
 
 ### .getBlob
@@ -174,12 +174,70 @@ Get file text (if content is text) or [URI](https://developer.mozilla.org/en-US/
 penumbra.getTextOrURI(data: PenumbraFile[]): Promise<{ type: 'text'|'uri', data: string, mimetype: string }[]>
 ```
 
-### .zip
+### .saveZip
 
-Zip files retrieved by Penumbra.
+Save a zip containing files retrieved by Penumbra.
 
 ```ts
-penumbra.zip(data: PenumbraFile[] | PenumbraFile, compressionLevel?: number): Promise<ReadableStream>
+type ZipOptions = {
+  /** Filename to save to (.zip is optional) */
+  name?: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size?: number;
+  /** PenumbraFile[] to add to zip archive */
+  files?: PenumbraFile[];
+  /** Abort controller for cancelling zip generation and saving */
+  controller?: AbortController;
+  /** Zip archive compression level */
+  compressionLevel?: number;
+  /** Store a copy of the resultant zip file in-memory for debug & testing */
+  debug?: boolean;
+};
+
+penumbra.saveZip(options: ZipOptions = {}): PenumbraZipWriter;
+
+interface PenumbraZipWriter {
+  /** Add decrypted PenumbraFiles to zip */
+  write(...files: PenumbraFile[]): void;
+  /** Close Penumbra zip writer */
+  close(): void;
+  /** Cancel Penumbra zip writer */
+  abort(): void;
+  /** Save abortion controller */
+  controller: AbortController;
+}
+```
+
+Example:
+
+```ts
+const files = [
+  {
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+    name: 'tortoise.jpg',
+    mimetype: 'image/jpeg',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+    },
+  },
+];
+const unsaved = new Set(files.map(({ url }) => url));
+const writer = penumbra.saveZip();
+const onProgress = async ({
+  detail: { id, totalBytesRead, contentLength },
+}) => {
+  if (unsaved.has(id) && totalBytesRead === contentLength) {
+    unsaved.delete(id);
+    if (unsaved.size === 0) {
+      removeEventListener('penumbra-progress', onProgress);
+      writer.close();
+    }
+  }
+};
+addEventListener('penumbra-progress', onProgress);
+writer.write(...(await penumbra.get(...files)));
 ```
 
 ### .setWorkerLocation
