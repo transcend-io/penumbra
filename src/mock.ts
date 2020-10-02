@@ -26,9 +26,7 @@ const MOCK_API: PenumbraAPI = {
   saveZip: () =>
     (({
       /** Add PenumbraFiles to zip */
-      write(): void {
-         return;
-      },
+      write(): void {},
       /** Close zip writer */
       close(): void {},
       conflux: function Writer() {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
