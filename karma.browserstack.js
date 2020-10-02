@@ -14,7 +14,7 @@ module.exports = (config) => {
       os_version: 'Mojave',
     },
     bs_firefox_pc: {
-      // Skips .encrypt tests
+      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Firefox',
       browser_version: '71.0',
@@ -22,7 +22,7 @@ module.exports = (config) => {
       os_version: '10',
     },
     bs_safari_mac: {
-      // Skips .encrypt tests
+      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Safari',
       browser_version: '13',
