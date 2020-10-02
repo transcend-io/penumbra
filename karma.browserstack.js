@@ -21,14 +21,14 @@ module.exports = (config) => {
       os: 'Windows',
       os_version: '10',
     },
-    // bs_safari_mac: {
-    //   // Skips .encrypt/.saveZip tests
-    //   base: 'BrowserStack',
-    //   browser: 'Safari',
-    //   browser_version: '13',
-    //   os: 'OS X',
-    //   os_version: 'Catalina',
-    // },
+    bs_safari_mac: {
+      // Skips .encrypt/.saveZip tests
+      base: 'BrowserStack',
+      browser: 'Safari',
+      browser_version: '13',
+      os: 'OS X',
+      os_version: 'Catalina',
+    },
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
