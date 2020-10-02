@@ -25,7 +25,7 @@ module.exports = (config) => {
       // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Safari',
-      browser_version: '14',
+      browser_version: '13',
       os: 'OS X',
       os_version: 'Catalina',
     },
