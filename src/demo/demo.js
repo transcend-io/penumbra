@@ -327,6 +327,11 @@ const onReady = async (
               },
             },
           ];
+          const expectedReferenceHashes = [
+            '001218c7c87e2bc0e268ff571ced74d2fa70d99785574380fcb145507fdb8bcf',
+            'b182150f323eef701b8f326581cce8e0bbb3d523c7f4d5a541f5a458e5e34f94',
+            '29adf2cc8f402bf922a08d68e039ca907a0bef8f95c1427a82483e7621995787',
+          ];
           const unsaved = new Set(files.map(({ url }) => url));
           const writer = penumbra.saveZip({ debug: true });
           const onProgress = async ({
@@ -342,9 +347,9 @@ const onReady = async (
                 const zipBuffer = await writer.getBuffer();
                 const zipHash = await hash('SHA-256', zipBuffer);
                 console.log('zip hash:', zipHash);
-                const referenceHash =
-                  'b182150f323eef701b8f326581cce8e0bbb3d523c7f4d5a541f5a458e5e34f94';
-                resolve(zipHash === referenceHash);
+                resolve(
+                  expectedReferenceHashes.includes(zipHash.toLowerCase()),
+                );
               }
             }
           };
