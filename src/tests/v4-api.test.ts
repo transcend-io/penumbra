@@ -351,7 +351,7 @@ test('penumbra.saveZip()', async (t) => {
         t.ok(zipHash, 'zip hash');
         t.ok(
           expectedReferenceHashes.includes(zipHash.toLowerCase()),
-          'penumbra.saveZip() expected output hash',
+          `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
         );
         t.end();
       }
