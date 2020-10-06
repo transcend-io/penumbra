@@ -326,12 +326,19 @@ const onReady = async (
                 authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
               },
             },
+            {
+              url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+              path: 'test/NYT.txt',
+              mimetype: 'text/plain',
+              decryptionOptions: {
+                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                iv: '6lNU+2vxJw6SFgse',
+                authTag: 'gadZhS1QozjEmfmHLblzbg==',
+              },
+            },
           ];
           const expectedReferenceHashes = [
-            '001218c7c87e2bc0e268ff571ced74d2fa70d99785574380fcb145507fdb8bcf',
-            'b182150f323eef701b8f326581cce8e0bbb3d523c7f4d5a541f5a458e5e34f94',
-            '29adf2cc8f402bf922a08d68e039ca907a0bef8f95c1427a82483e7621995787',
-            '647c8ce22d58bd2e527b75977608ad423a95677c44886d244370bf5c8d07a83e',
+            '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
           ];
           const unsaved = new Set(files.map(({ url }) => url));
           const writer = penumbra.saveZip({ debug: true });

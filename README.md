@@ -194,7 +194,7 @@ type ZipOptions = {
   debug?: boolean;
 };
 
-penumbra.saveZip(options: ZipOptions = {}): PenumbraZipWriter;
+penumbra.saveZip(options?: ZipOptions): PenumbraZipWriter;
 
 interface PenumbraZipWriter {
   /** Add decrypted PenumbraFiles to zip */
