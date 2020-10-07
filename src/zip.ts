@@ -118,17 +118,11 @@ export class PenumbraZipWriter {
    */
   write(...files: PenumbraFile[]): void {
     files.forEach(({ path, filePrefix, stream, mimetype }, i) => {
-      const name = path || filePrefix || '';
-      if (!name) {
-        console.warn(
-          "PenumbraZipWriter: Filename unable to be determined. Defaulting to 'download'",
-          files[i],
-        );
-      }
+      const name = path || filePrefix || 'download';
       const hasExtension = /[^/]*\.\w+$/.test(name);
-      const fullName = `${name}${hasExtension ? '' : mime.extension(mimetype)}`;
+      const fullPath = `${name}${hasExtension ? '' : mime.extension(mimetype)}`;
       this.writer.write({
-        name,
+        name: fullPath,
         lastModified: new Date(0),
         stream: () =>
           stream instanceof ReadableStream
