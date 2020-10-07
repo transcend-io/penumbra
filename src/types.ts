@@ -60,34 +60,6 @@ export type PenumbraDecryptionInfoAsBuffer = Omit<
   iv: Buffer;
 };
 
-/** Penumbra file composition */
-export type PenumbraFile = {
-  /** Backing stream */
-  stream: ReadableStream | ArrayBuffer;
-  /** File size (if backed by a ReadableStream) */
-  size?: number;
-  /** File mimetype */
-  mimetype: string;
-  /** Filename (excluding extension) */
-  filePrefix: string;
-  /** Relative file path (needed for zipping) */
-  path: string;
-  /** Optional ID for tracking encryption completion */
-  id?: number;
-};
-
-/** Penumbra file that is currently being encrypted */
-export type PenumbraFileWithID = PenumbraFile & {
-  /** ID for tracking encryption completion */
-  id: number;
-};
-
-/** penumbra file (internal) */
-export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
-  /** Encrypted output stream */
-  stream: ReadableStream | ArrayBuffer;
-};
-
 /**
  * A file to download from a remote resource, that is optionally encrypted
  */
@@ -104,6 +76,28 @@ export type RemoteResource = {
   path?: string;
   /** Fetch options */
   requestInit?: RequestInit;
+};
+
+/** Penumbra file composition */
+export type PenumbraFile = Omit<RemoteResource, 'url'> & {
+  /** Backing stream */
+  stream: ReadableStream | ArrayBuffer;
+  /** File size (if backed by a ReadableStream) */
+  size?: number;
+  /** Optional ID for tracking encryption completion */
+  id?: number | string;
+};
+
+/** Penumbra file that is currently being encrypted */
+export type PenumbraFileWithID = PenumbraFile & {
+  /** ID for tracking encryption completion */
+  id: number;
+};
+
+/** penumbra file (internal) */
+export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
+  /** Encrypted output stream */
+  stream: ReadableStream | ArrayBuffer;
 };
 
 /** Penumbra event types */
