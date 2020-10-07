@@ -117,8 +117,13 @@ export class PenumbraZipWriter {
    * @param files - Decrypted PenumbraFile[] to add to zip
    */
   write(...files: PenumbraFile[]): void {
-    files.forEach(({ path, filePrefix, stream, mimetype }) => {
-      const name = path || filePrefix || 'download';
+    files.forEach(({ path, filePrefix, stream, mimetype }, i) => {
+      const name = path || filePrefix;
+      if (!name) {
+        throw new Error(
+          'PenumbraZipWriter.write(): Unable to determine filename',
+        );
+      }
       const hasExtension = /[^/]*\.\w+$/.test(name);
       const fullPath = `${name}${hasExtension ? '' : mime.extension(mimetype)}`;
       this.writer.write({
