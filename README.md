@@ -416,13 +416,12 @@ penumbra.setWorkerLocation('/penumbra-workers/');
 // Set all worker URLs by passing a WorkerLocation object
 penumbra.setWorkerLocation({
   base: '/penumbra-workers/',
-  decrypt: 'decrypt.js'
-  zip: 'zip-debug.js' // e.g. manually use a debug worker
-  StreamSaver: 'StreamSaver.js'
+  penumbra: 'penumbra.worker.js',
+  StreamSaver: 'StreamSaver.js',
 });
 
 // Set a single worker's location
-penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
+penumbra.setWorkerLocation({ penumbra: 'penumbra.worker.js' });
 ```
 
 ### Waiting for the `penumbra-ready` event
