@@ -281,7 +281,7 @@ test('penumbra.getBlob()', async (t) => {
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.encrypt() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      `penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
@@ -304,7 +304,7 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.saveZip({ debug: true }) test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      `penumbra.saveZip({ debug: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
@@ -361,7 +361,7 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
 // test('penumbra.saveZip() (completion tracking)', async (t) => {
 //   if (['Firefox', 'Safari'].includes(browserName)) {
 //     t.pass(
-//       `penumbra.saveZip() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+//       `penumbra.saveZip() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
 //     );
 //     t.end();
 //     return;

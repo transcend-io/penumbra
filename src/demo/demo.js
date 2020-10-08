@@ -287,7 +287,7 @@ const onReady = async (
       async () => {
         if (navigator.userAgent.toLowerCase().includes('firefox')) {
           console.error(
-            'penumbra.encrypt() test bypassed for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
+            'penumbra.encrypt() test skipped for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
           );
           return true;
         }
