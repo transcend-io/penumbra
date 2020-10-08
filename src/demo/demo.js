@@ -381,8 +381,9 @@ const onReady = async (
           },
         ];
         const writer = penumbra.saveZip();
-        writer.write(...(await penumbra.get(...files)));
-        writer.close();
+        await writer.write(...(await penumbra.get(...files)));
+        await writer.close();
+        return true;
       },
     ],
   );
