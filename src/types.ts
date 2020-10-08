@@ -88,6 +88,8 @@ export type PenumbraFile = Omit<RemoteResource, 'url'> & {
   size?: number;
   /** Optional ID for tracking encryption completion */
   id?: number | string;
+  /** Last modified date */
+  lastModified?: Date;
 };
 
 /** Penumbra file that is currently being encrypted */

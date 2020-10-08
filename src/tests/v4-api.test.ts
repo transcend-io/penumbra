@@ -319,6 +319,8 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
         iv: '6lNU+2vxJw6SFgse',
         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
       },
+      // for hash consistency
+      lastModified: new Date(0),
     },
     {
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -329,12 +331,12 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
         iv: '6lNU+2vxJw6SFgse',
         authTag: 'gadZhS1QozjEmfmHLblzbg==',
       },
+      // for hash consistency
+      lastModified: new Date(0),
     },
   ];
   const expectedReferenceHashes = [
     '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
-    '99d77b346ed1cb50c54abc788db0d3ac82f23e2bd7c0fbe7488d8b9813cab20c',
-    'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
   ];
   const writer = penumbra.saveZip({ debug: true });
   await writer.write(...(await penumbra.get(...files)));

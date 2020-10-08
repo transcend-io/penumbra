@@ -121,56 +121,64 @@ export class PenumbraZipWriter {
    */
   write(...files: PenumbraFile[]): Promise<PromiseSettledResult<void>[]> {
     return Promise.allSettled(
-      files.map(async ({ path, filePrefix, stream, mimetype }) => {
-        const name = path || filePrefix;
-        if (!name) {
-          throw new Error(
-            'PenumbraZipWriter.write(): Unable to determine filename',
-          );
-        }
-        const hasExtension = /[^/]*\.\w+$/.test(name);
-        const fullPath = `${name}${
-          hasExtension ? '' : mime.extension(mimetype)
-        }`;
-        const reader = (stream instanceof ReadableStream
-          ? stream
-          : (new Response(stream).body as ReadableStream)
-        ).getReader();
-        const writeComplete = new Promise<void>((resolve) => {
-          const completionTrackerStream = new ReadableStream({
-            /** Start completion tracker-wrapped ReadableStream */
-            async start(controller) {
-              // eslint-disable-next-line no-constant-condition
-              while (true) {
-                // eslint-disable-next-line no-await-in-loop
-                const { done, value } = await reader.read();
+      files.map(
+        async ({
+          path,
+          filePrefix,
+          stream,
+          mimetype,
+          lastModified = new Date(),
+        }) => {
+          const name = path || filePrefix;
+          if (!name) {
+            throw new Error(
+              'PenumbraZipWriter.write(): Unable to determine filename',
+            );
+          }
+          const hasExtension = /[^/]*\.\w+$/.test(name);
+          const fullPath = `${name}${
+            hasExtension ? '' : mime.extension(mimetype)
+          }`;
+          const reader = (stream instanceof ReadableStream
+            ? stream
+            : (new Response(stream).body as ReadableStream)
+          ).getReader();
+          const writeComplete = new Promise<void>((resolve) => {
+            const completionTrackerStream = new ReadableStream({
+              /** Start completion tracker-wrapped ReadableStream */
+              async start(controller) {
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                  // eslint-disable-next-line no-await-in-loop
+                  const { done, value } = await reader.read();
 
-                // When no more data needs to be consumed, break the reading
-                if (done) {
-                  resolve();
-                  break;
+                  // When no more data needs to be consumed, break the reading
+                  if (done) {
+                    resolve();
+                    break;
+                  }
+
+                  // Enqueue the next data chunk into our target stream
+                  controller.enqueue(value);
                 }
 
-                // Enqueue the next data chunk into our target stream
-                controller.enqueue(value);
-              }
+                // Close the stream
+                controller.close();
+                reader.releaseLock();
+              },
+            });
 
-              // Close the stream
-              controller.close();
-              reader.releaseLock();
-            },
+            this.writer.write({
+              name: fullPath,
+              lastModified,
+              stream: () => completionTrackerStream,
+            });
           });
 
-          this.writer.write({
-            name: fullPath,
-            lastModified: new Date(),
-            stream: () => completionTrackerStream,
-          });
-        });
-
-        this.pendingWrites.push(writeComplete);
-        return writeComplete;
-      }),
+          this.pendingWrites.push(writeComplete);
+          return writeComplete;
+        },
+      ),
     );
   }
 
@@ -179,6 +187,7 @@ export class PenumbraZipWriter {
     await Promise.allSettled(this.pendingWrites);
     if (!this.closed) {
       this.writer.close();
+      this.closed = true;
     }
   }
 
@@ -191,6 +200,11 @@ export class PenumbraZipWriter {
 
   /** Get buffered output (requires debug mode) */
   getBuffer(): Promise<ArrayBuffer> {
+    if (!this.closed) {
+      throw new Error(
+        'getBuffer() can only be called when a PenumbraZipWriter is closed',
+      );
+    }
     if (!this.debug || !this.debugZipBuffer) {
       throw new Error(
         'getBuffer() can only be called on a PenumbraZipWriter in debug mode',
