@@ -301,10 +301,10 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
-test('penumbra.saveZip()', async (t) => {
+test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.saveZip() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      `penumbra.saveZip({ debug: true }) test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
@@ -336,36 +336,51 @@ test('penumbra.saveZip()', async (t) => {
     '99d77b346ed1cb50c54abc788db0d3ac82f23e2bd7c0fbe7488d8b9813cab20c',
     'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
   ];
-  const unsaved = new Set<string | number>(files.map(({ url }) => url));
   const writer = penumbra.saveZip({ debug: true });
-  const onProgress = async ({
-    detail: { id, totalBytesRead, contentLength, percent },
-  }: ProgressEmit) => {
-    console.log('onProgress', `id=${id}, percent=${percent}`);
-    if (unsaved.has(id) && totalBytesRead === contentLength) {
-      unsaved.delete(id);
-      if (unsaved.size === 0) {
-        removeEventListener('penumbra-progress', onProgress);
-        writer.close();
-        const zipBuffer = await writer.getBuffer();
-        const zipHash = await hash('SHA-256', zipBuffer);
-        console.log('zip hash:', zipHash);
-        t.ok(zipHash, 'zip hash');
-        t.ok(
-          expectedReferenceHashes.includes(zipHash.toLowerCase()),
-          `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
-        );
-        t.end();
-      }
-    }
-  };
-  addEventListener('penumbra-progress', onProgress);
-  penumbra.get(...files).then((decryptedFiles: PenumbraFile[]) => {
-    writer.write(...decryptedFiles);
-  });
+  await writer.write(...(await penumbra.get(...files)));
+  await writer.close();
+  const zipBuffer = await writer.getBuffer();
+  const zipHash = await hash('SHA-256', zipBuffer);
+  console.log('zip hash:', zipHash);
+  t.ok(zipHash, 'zip hash');
+  t.ok(
+    expectedReferenceHashes.includes(zipHash.toLowerCase()),
+    `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
+  );
 });
 
-test('end of tests', async (t) => {
-  t.pass();
-  t.end();
+test('penumbra.saveZip() (completion tracking)', async (t) => {
+  if (['Firefox', 'Safari'].includes(browserName)) {
+    t.pass(
+      `penumbra.saveZip() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+    );
+    t.end();
+    return;
+  }
+  const files = [
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+      path: 'test/tortoise.jpg',
+      mimetype: 'image/jpeg',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+      },
+    },
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+      path: 'test/NYT.txt',
+      mimetype: 'text/plain',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'gadZhS1QozjEmfmHLblzbg==',
+      },
+    },
+  ];
+  const writer = penumbra.saveZip();
+  await writer.write(...(await penumbra.get(...files)));
+  await writer.close();
+  t.ok('zip saved');
 });
