@@ -337,6 +337,7 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
   ];
   const expectedReferenceHashes = [
     '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
+    'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
   ];
   const writer = penumbra.saveZip({ debug: true });
   await writer.write(...(await penumbra.get(...files)));
