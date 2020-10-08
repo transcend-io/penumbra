@@ -182,13 +182,14 @@ export class PenumbraZipWriter {
     );
   }
 
-  /** Close Penumbra zip writer */
-  async close(): Promise<void> {
-    await Promise.allSettled(this.pendingWrites);
+  /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
+  async close(): Promise<PromiseSettledResult<void>[]> {
+    const writes = await Promise.allSettled(this.pendingWrites);
     if (!this.closed) {
       this.writer.close();
       this.closed = true;
     }
+    return writes;
   }
 
   /** Cancel Penumbra zip writer */
