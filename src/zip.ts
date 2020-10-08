@@ -46,13 +46,13 @@ export class PenumbraZipWriter {
   private debug = false;
 
   /** Debug zip buffer used for testing */
-  private debugZipBuffer: Promise<ArrayBuffer> | null = null;
+  private debugZipBuffer: Promise<ArrayBuffer> | undefined;
 
   /** Pending unfinished write() calls */
   private pendingWrites: Promise<void>[] = [];
 
   /** Abort controller */
-  public controller: AbortController;
+  private controller: AbortController;
 
   /**
    * Penumbra zip writer constructor

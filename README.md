@@ -203,8 +203,6 @@ interface PenumbraZipWriter {
   close(): Promise<void>;
   /** Cancel Penumbra zip writer */
   abort(): void;
-  /** Save abortion controller */
-  controller: AbortController;
 }
 ```
 
