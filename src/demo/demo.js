@@ -349,7 +349,6 @@ const onReady = async (
           await writer.write(...(await penumbra.get(...files)));
           await writer.close();
           const zipBuffer = await writer.getBuffer();
-          window.foo = zipBuffer;
           const zipHash = await hash('SHA-256', zipBuffer);
           console.log('zip hash:', zipHash);
           resolve(expectedReferenceHashes.includes(zipHash.toLowerCase()));
