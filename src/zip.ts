@@ -103,14 +103,14 @@ export class PenumbraZipWriter {
 
     zipStream.pipeTo(saveStream, { signal });
 
-    if (files) {
-      this.write(...files);
-    }
-
     // Buffer zip stream for debug & testing
     if (debug && debugZipStream) {
       this.debug = debug;
       this.debugZipBuffer = new Response(debugZipStream).arrayBuffer();
+    }
+
+    if (files) {
+      this.write(...files);
     }
   }
 
