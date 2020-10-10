@@ -43,6 +43,11 @@ module.exports = (config) => {
   config.set({
     ...globalConfig,
 
+    captureTimeout: 400000,
+    browserDisconnectTolerance: 3,
+    browserDisconnectTimeout: 400000,
+    browserNoActivityTimeout: 400000,
+
     // global config of your BrowserStack account
     browserStack: {
       username: 'benjaminbrook3',
