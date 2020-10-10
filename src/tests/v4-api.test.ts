@@ -342,6 +342,7 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
   const writer = penumbra.saveZip({ debug: true });
   await writer.write(...(await penumbra.get(...files)));
   await writer.close();
+  t.pass('zip saved');
   const zipBuffer = await writer.getBuffer();
   const zipHash = await hash('SHA-256', zipBuffer);
   console.log('zip hash:', zipHash);
@@ -350,4 +351,5 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
     expectedReferenceHashes.includes(zipHash.toLowerCase()),
     `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
   );
+  t.end();
 });
