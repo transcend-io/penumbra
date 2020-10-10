@@ -9,7 +9,7 @@ module.exports = (config) => {
     bs_chrome_pc: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '86',
+      browser_version: '85',
       os: 'Windows',
       os_version: '10',
     },
@@ -32,7 +32,7 @@ module.exports = (config) => {
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
-      browser_version: '86',
+      browser_version: '85',
       os: 'Windows',
       os_version: '10',
     },
