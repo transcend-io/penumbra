@@ -7,7 +7,6 @@ import {
   PenumbraReady,
   ProgressEmit,
   PenumbraSupportLevel,
-  RemoteResource,
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -281,7 +280,7 @@ test('penumbra.getBlob()', async (t) => {
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.encrypt() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      `penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
@@ -301,10 +300,10 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
-test('penumbra.saveZip()', async (t) => {
+test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.saveZip() test bypassed for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      `penumbra.saveZip({ debug: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
@@ -319,6 +318,8 @@ test('penumbra.saveZip()', async (t) => {
         iv: '6lNU+2vxJw6SFgse',
         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
       },
+      // for hash consistency
+      lastModified: new Date(0),
     },
     {
       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -329,43 +330,26 @@ test('penumbra.saveZip()', async (t) => {
         iv: '6lNU+2vxJw6SFgse',
         authTag: 'gadZhS1QozjEmfmHLblzbg==',
       },
+      // for hash consistency
+      lastModified: new Date(0),
     },
   ];
   const expectedReferenceHashes = [
     '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
-    '99d77b346ed1cb50c54abc788db0d3ac82f23e2bd7c0fbe7488d8b9813cab20c',
     'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
+    '1fb6d556738fae8138816a2e09bbfd026cd4abaabde2633634a1a699569bceeb',
   ];
-  const unsaved = new Set<string | number>(files.map(({ url }) => url));
   const writer = penumbra.saveZip({ debug: true });
-  const onProgress = async ({
-    detail: { id, totalBytesRead, contentLength, percent },
-  }: ProgressEmit) => {
-    console.log('onProgress', `id=${id}, percent=${percent}`);
-    if (unsaved.has(id) && totalBytesRead === contentLength) {
-      unsaved.delete(id);
-      if (unsaved.size === 0) {
-        removeEventListener('penumbra-progress', onProgress);
-        writer.close();
-        const zipBuffer = await writer.getBuffer();
-        const zipHash = await hash('SHA-256', zipBuffer);
-        console.log('zip hash:', zipHash);
-        t.ok(zipHash, 'zip hash');
-        t.ok(
-          expectedReferenceHashes.includes(zipHash.toLowerCase()),
-          `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
-        );
-        t.end();
-      }
-    }
-  };
-  addEventListener('penumbra-progress', onProgress);
-  penumbra.get(...files).then((decryptedFiles: PenumbraFile[]) => {
-    writer.write(...decryptedFiles);
-  });
-});
-
-test('end of tests', async (t) => {
-  t.pass();
+  await writer.write(...(await penumbra.get(...files)));
+  await writer.close();
+  t.pass('zip saved');
+  const zipBuffer = await writer.getBuffer();
+  const zipHash = await hash('SHA-256', zipBuffer);
+  console.log('zip hash:', zipHash);
+  t.ok(zipHash, 'zip hash');
+  t.ok(
+    expectedReferenceHashes.includes(zipHash.toLowerCase()),
+    `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
+  );
   t.end();
 });

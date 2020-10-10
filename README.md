@@ -198,13 +198,11 @@ penumbra.saveZip(options?: ZipOptions): PenumbraZipWriter;
 
 interface PenumbraZipWriter {
   /** Add decrypted PenumbraFiles to zip */
-  write(...files: PenumbraFile[]): void;
-  /** Close Penumbra zip writer */
-  close(): void;
+  write(...files: PenumbraFile[]): Promise<void>;
+  /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
+  close(): Promise<void>;
   /** Cancel Penumbra zip writer */
   abort(): void;
-  /** Save abortion controller */
-  controller: AbortController;
 }
 ```
 
@@ -223,21 +221,9 @@ const files = [
     },
   },
 ];
-const unsaved = new Set(files.map(({ url }) => url));
 const writer = penumbra.saveZip();
-const onProgress = async ({
-  detail: { id, totalBytesRead, contentLength },
-}) => {
-  if (unsaved.has(id) && totalBytesRead === contentLength) {
-    unsaved.delete(id);
-    if (unsaved.size === 0) {
-      removeEventListener('penumbra-progress', onProgress);
-      writer.close();
-    }
-  }
-};
-addEventListener('penumbra-progress', onProgress);
-writer.write(...(await penumbra.get(...files)));
+await writer.write(...(await penumbra.get(...files)));
+await writer.close();
 ```
 
 ### .setWorkerLocation
@@ -428,13 +414,12 @@ penumbra.setWorkerLocation('/penumbra-workers/');
 // Set all worker URLs by passing a WorkerLocation object
 penumbra.setWorkerLocation({
   base: '/penumbra-workers/',
-  decrypt: 'decrypt.js'
-  zip: 'zip-debug.js' // e.g. manually use a debug worker
-  StreamSaver: 'StreamSaver.js'
+  penumbra: 'penumbra.worker.js',
+  StreamSaver: 'StreamSaver.js',
 });
 
 // Set a single worker's location
-penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
+penumbra.setWorkerLocation({ penumbra: 'penumbra.worker.js' });
 ```
 
 ### Waiting for the `penumbra-ready` event

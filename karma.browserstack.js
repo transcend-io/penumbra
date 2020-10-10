@@ -6,18 +6,18 @@ module.exports = (config) => {
   // TODO add more browsers. this util is useful:
   // https://www.browserstack.com/automate/capabilities
   const customLaunchers = {
-    bs_chrome_mac: {
+    bs_chrome_pc: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '85.0',
-      os: 'OS X',
-      os_version: 'Mojave',
+      browser_version: '85',
+      os: 'Windows',
+      os_version: '10',
     },
     bs_firefox_pc: {
       // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Firefox',
-      browser_version: '80.0',
+      browser_version: '80',
       os: 'Windows',
       os_version: '10',
     },
@@ -32,7 +32,7 @@ module.exports = (config) => {
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
-      browser_version: '80',
+      browser_version: '85',
       os: 'Windows',
       os_version: '10',
     },
@@ -42,6 +42,11 @@ module.exports = (config) => {
 
   config.set({
     ...globalConfig,
+
+    captureTimeout: 400000,
+    browserDisconnectTolerance: 3,
+    browserDisconnectTimeout: 400000,
+    browserNoActivityTimeout: 400000,
 
     // global config of your BrowserStack account
     browserStack: {

@@ -287,7 +287,7 @@ const onReady = async (
       async () => {
         if (navigator.userAgent.toLowerCase().includes('firefox')) {
           console.error(
-            'penumbra.encrypt() test bypassed for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
+            'penumbra.encrypt() test skipped for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
           );
           return true;
         }
@@ -311,9 +311,10 @@ const onReady = async (
       },
     ],
     [
-      'penumbra.saveZip()',
+      'penumbra.saveZip({ debug: true }) (zip hash checking)',
       async () =>
-        new Promise((resolve) => {
+        // eslint-disable-next-line no-async-promise-executor
+        new Promise(async (resolve) => {
           const files = [
             {
               url:
@@ -325,6 +326,8 @@ const onReady = async (
                 iv: '6lNU+2vxJw6SFgse',
                 authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
               },
+              // for hash consistency
+              lastModified: new Date(0),
             },
             {
               url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -335,39 +338,55 @@ const onReady = async (
                 iv: '6lNU+2vxJw6SFgse',
                 authTag: 'gadZhS1QozjEmfmHLblzbg==',
               },
+              // for hash consistency
+              lastModified: new Date(0),
             },
           ];
           const expectedReferenceHashes = [
             '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
-            '99d77b346ed1cb50c54abc788db0d3ac82f23e2bd7c0fbe7488d8b9813cab20c',
             'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
+            '1fb6d556738fae8138816a2e09bbfd026cd4abaabde2633634a1a699569bceeb',
           ];
-          const unsaved = new Set(files.map(({ url }) => url));
           const writer = penumbra.saveZip({ debug: true });
-          const onProgress = async ({
-            detail: { id, totalBytesRead, contentLength, percent },
-          }) => {
-            console.log('onProgress', `id=${id}, percent=${percent}`);
-            if (unsaved.has(id) && totalBytesRead === contentLength) {
-              unsaved.delete(id);
-              if (unsaved.size === 0) {
-                removeEventListener('penumbra-progress', onProgress);
-                writer.close();
-                console.log('closing writer');
-                const zipBuffer = await writer.getBuffer();
-                const zipHash = await hash('SHA-256', zipBuffer);
-                console.log('zip hash:', zipHash);
-                resolve(
-                  expectedReferenceHashes.includes(zipHash.toLowerCase()),
-                );
-              }
-            }
-          };
-          addEventListener('penumbra-progress', onProgress);
-          penumbra.get(...files).then((decryptedFiles) => {
-            writer.write(...decryptedFiles);
-          });
+          await writer.write(...(await penumbra.get(...files)));
+          await writer.close();
+          const zipBuffer = await writer.getBuffer();
+          const zipHash = await hash('SHA-256', zipBuffer);
+          console.log('zip hash:', zipHash);
+          resolve(expectedReferenceHashes.includes(zipHash.toLowerCase()));
         }),
+    ],
+    [
+      'penumbra.saveZip() (completion tracking only)',
+      async () => {
+        const files = [
+          {
+            url:
+              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            path: 'test/tortoise.jpg',
+            mimetype: 'image/jpeg',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+            },
+          },
+          {
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+            path: 'test/NYT.txt',
+            mimetype: 'text/plain',
+            decryptionOptions: {
+              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+              iv: '6lNU+2vxJw6SFgse',
+              authTag: 'gadZhS1QozjEmfmHLblzbg==',
+            },
+          },
+        ];
+        const writer = penumbra.saveZip();
+        await writer.write(...(await penumbra.get(...files)));
+        await writer.close();
+        return true;
+      },
     ],
   );
 

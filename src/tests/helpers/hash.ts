@@ -7,7 +7,7 @@
  */
 export default async function hash(
   algorithm: string,
-  ab: ArrayBuffer,
+  ab: ArrayBuffer | Promise<ArrayBuffer>,
 ): Promise<string> {
   const digest = new Uint8Array(
     await crypto.subtle.digest(algorithm, await ab),

@@ -168,7 +168,7 @@ function save(
       controller,
     });
     writer.write(...files);
-    return writer.controller;
+    return controller;
   }
 
   const file: PenumbraFile = 'stream' in files ? files : files[0];
