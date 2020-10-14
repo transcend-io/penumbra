@@ -1,3 +1,4 @@
+import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
@@ -120,7 +121,7 @@ export class PenumbraZipWriter {
    * @param files - Decrypted PenumbraFile[] to add to zip
    */
   write(...files: PenumbraFile[]): Promise<PromiseSettledResult<void>[]> {
-    return Promise.allSettled(
+    return allSettled(
       files.map(
         async ({
           path,
@@ -184,7 +185,7 @@ export class PenumbraZipWriter {
 
   /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
   async close(): Promise<PromiseSettledResult<void>[]> {
-    const writes = await Promise.allSettled(this.pendingWrites);
+    const writes = await allSettled(this.pendingWrites);
     if (!this.closed) {
       this.writer.close();
       this.closed = true;
