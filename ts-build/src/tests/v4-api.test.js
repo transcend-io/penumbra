@@ -1,0 +1,303 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable max-lines */
+const tape_1 = __importDefault(require("tape"));
+const bowser_1 = __importDefault(require("bowser"));
+const types_1 = require("../types");
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// import penumbra from '../API';
+const helpers_1 = require("./helpers");
+// This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
+const browserName = bowser_1.default.getParser(navigator.userAgent).getBrowserName();
+const view = self;
+let penumbra;
+tape_1.default('setup', async (t) => {
+    const onReady = async (event) => {
+        // eslint-disable-next-line no-shadow
+        penumbra = ((event && event.detail.penumbra) ||
+            view.penumbra);
+        t.pass('setup finished');
+        t.end();
+    };
+    if (!view.penumbra) {
+        view.addEventListener('penumbra-ready', onReady);
+    }
+    else {
+        onReady();
+    }
+});
+tape_1.default('penumbra.supported() test', async (t) => {
+    t.assert(penumbra.supported() >= types_1.PenumbraSupportLevel.size_limited, 'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full');
+    t.end();
+});
+tape_1.default('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
+    const NYT = {
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+        filePrefix: 'NYT',
+        mimetype: 'text/plain',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+        },
+    };
+    const { type: test1Type, data: test1Text } = await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
+    const test1Hash = await helpers_1.hash('SHA-256', new TextEncoder().encode(test1Text));
+    const ref1Hash = '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
+    t.equal(test1Type, 'text');
+    t.equal(test1Hash, ref1Hash);
+    t.end();
+});
+tape_1.default('progress event test', async (t) => {
+    let result;
+    const progressEventName = 'penumbra-progress';
+    const fail = () => {
+        result = false;
+    };
+    const initTimeout = helpers_1.timeout(fail, 60);
+    let stallTimeout;
+    let initFinished = false;
+    let progressStarted = false;
+    let lastPercent;
+    const onprogress = ({ detail: { percent } }) => {
+        if (!Number.isNaN(percent)) {
+            if (percent === 100) {
+                // Resource is already loaded
+                if (initFinished) {
+                    stallTimeout.clear();
+                }
+                else {
+                    initTimeout.clear();
+                }
+                view.removeEventListener(progressEventName, onprogress);
+                result = true;
+                return;
+            }
+            if (!initFinished) {
+                initTimeout.clear();
+                stallTimeout = helpers_1.timeout(fail, 10);
+                initFinished = true;
+                lastPercent = percent;
+            }
+            else if (!progressStarted) {
+                if (percent > lastPercent) {
+                    stallTimeout.clear();
+                    progressStarted = true;
+                }
+            }
+            if (progressStarted && percent > 25) {
+                view.removeEventListener(progressEventName, onprogress);
+                result = true;
+            }
+        }
+        lastPercent = percent;
+    };
+    view.addEventListener(progressEventName, onprogress);
+    const [{ stream }] = await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
+        filePrefix: 'k',
+        mimetype: 'video/webm',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
+        },
+    });
+    await new Response(stream).arrayBuffer();
+    t.ok(result);
+    t.end();
+});
+tape_1.default('penumbra.get() with multiple resources', async (t) => {
+    const resources = await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+        filePrefix: 'NYT',
+        mimetype: 'text/plain',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+        },
+    }, {
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+        filePrefix: 'tortoise',
+        mimetype: 'image/jpeg',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        },
+    });
+    const hashes = await Promise.all(resources.map(async ({ stream }) => helpers_1.hash('SHA-256', await new Response(stream).arrayBuffer())));
+    const referenceHash1 = '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
+    const referenceHash2 = '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+    t.equal(hashes[0], referenceHash1);
+    t.equal(hashes[1], referenceHash2);
+    t.end();
+});
+tape_1.default('penumbra.get() images (as ReadableStream)', async (t) => {
+    const [{ stream }] = await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+        filePrefix: 'tortoise',
+        mimetype: 'image/jpeg',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        },
+    });
+    const imageBytes = await new Response(stream).arrayBuffer();
+    const imageHash = await helpers_1.hash('SHA-256', imageBytes);
+    const referenceHash = '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+    t.equal(imageHash, referenceHash);
+    t.end();
+});
+tape_1.default('penumbra.getTextOrURI(): images (as URL)', async (t) => {
+    const { type, data: url } = await penumbra.getTextOrURI(await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+        filePrefix: 'tortoise',
+        mimetype: 'image/jpeg',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        },
+    }))[0];
+    let isURL;
+    try {
+        // tslint:disable-next-line: no-unused-expression
+        new URL(url, location.href); // eslint-disable-line no-new
+        isURL = type === 'uri';
+    }
+    catch (ex) {
+        isURL = false;
+    }
+    const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
+    const imageHash = await helpers_1.hash('SHA-256', imageBytes);
+    const referenceHash = '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+    t.true(isURL);
+    t.equal(imageHash, referenceHash);
+    t.end();
+});
+tape_1.default('penumbra.getTextOrURI(): including image in document', async (t) => {
+    const { data: url } = await penumbra.getTextOrURI(await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+        filePrefix: 'tortoise',
+        mimetype: 'image/jpeg',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        },
+    }))[0];
+    const testImage = new Image();
+    const result = await new Promise((resolve) => {
+        // 5-second timeout for the image to load
+        helpers_1.timeout(() => resolve(false), 5);
+        const onLoad = () => {
+            testImage.removeEventListener('load', onLoad);
+            testImage.remove();
+            resolve(true);
+        };
+        const onError = () => {
+            testImage.removeEventListener('error', onError);
+            testImage.remove();
+            resolve(false);
+        };
+        testImage.addEventListener('load', onLoad);
+        testImage.addEventListener('error', onError);
+        testImage.src = url;
+        // testImage.style.visibility = 'hidden';
+        // document.body.appendChild(testImage);
+    });
+    t.ok(result);
+    t.end();
+});
+tape_1.default('penumbra.getBlob()', async (t) => {
+    const blob = await penumbra.getBlob(await penumbra.get({
+        url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+        filePrefix: 'test/tortoise.jpg',
+        mimetype: 'image/jpeg',
+        decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        },
+    }));
+    const imageBytes = await new Response(blob).arrayBuffer();
+    const imageHash = await helpers_1.hash('SHA-256', imageBytes);
+    const referenceHash = '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+    t.equal(imageHash, referenceHash);
+    t.end();
+});
+tape_1.default('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
+    if (['Firefox', 'Safari'].includes(browserName)) {
+        t.pass(`penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`);
+        t.end();
+        return;
+    }
+    const te = new TextEncoder();
+    const td = new TextDecoder();
+    const input = 'test';
+    const stream = te.encode(input);
+    const { byteLength: size } = stream;
+    const options = null;
+    const file = { stream, size };
+    const [encrypted] = await penumbra.encrypt(options, file);
+    const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
+    const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
+    const decryptedData = await new Response(decrypted.stream).arrayBuffer();
+    t.equal(td.decode(decryptedData), input);
+    t.end();
+});
+tape_1.default('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
+    if (['Firefox', 'Safari'].includes(browserName)) {
+        t.pass(`penumbra.saveZip({ debug: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`);
+        t.end();
+        return;
+    }
+    const files = [
+        {
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            path: 'test/tortoise.jpg',
+            mimetype: 'image/jpeg',
+            decryptionOptions: {
+                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                iv: '6lNU+2vxJw6SFgse',
+                authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+            },
+            // for hash consistency
+            lastModified: new Date(0),
+        },
+        {
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+            path: 'test/NYT.txt',
+            mimetype: 'text/plain',
+            decryptionOptions: {
+                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                iv: '6lNU+2vxJw6SFgse',
+                authTag: 'gadZhS1QozjEmfmHLblzbg==',
+            },
+            // for hash consistency
+            lastModified: new Date(0),
+        },
+    ];
+    const expectedReferenceHashes = [
+        '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
+        'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
+        '1fb6d556738fae8138816a2e09bbfd026cd4abaabde2633634a1a699569bceeb',
+    ];
+    const writer = penumbra.saveZip({ debug: true });
+    await writer.write(...(await penumbra.get(...files)));
+    await writer.close();
+    t.pass('zip saved');
+    const zipBuffer = await writer.getBuffer();
+    const zipHash = await helpers_1.hash('SHA-256', zipBuffer);
+    console.log('zip hash:', zipHash);
+    t.ok(zipHash, 'zip hash');
+    t.ok(expectedReferenceHashes.includes(zipHash.toLowerCase()), `penumbra.saveZip() expected output hash (actual: ${zipHash})`);
+    t.end();
+});
+//# sourceMappingURL=v4-api.test.js.map

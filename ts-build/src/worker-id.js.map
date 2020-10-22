@@ -1,0 +1,1 @@
+{"version":3,"file":"worker-id.js","sourceRoot":"","sources":["../../src/worker-id.ts"],"names":[],"mappings":";AAAA,uEAAuE;AACvE,qDAAqD;;AAErD,IAAI,QAAQ,GAAkB,IAAI,CAAC;AAEnC;;;;GAIG;AACH,SAAgB,WAAW;IACzB,OAAO,QAAQ,CAAC;AAClB,CAAC;AAFD,kCAEC;AAED;;GAEG;AACH,SAAgB,WAAW,CAAC,EAAiB;IAC3C,QAAQ,GAAG,EAAE,CAAC;AAChB,CAAC;AAFD,kCAEC"}
