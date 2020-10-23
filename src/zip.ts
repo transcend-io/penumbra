@@ -51,7 +51,7 @@ export class PenumbraZipWriter extends EventTarget {
   private completedWrites = 0;
 
   /** Total zip archive size */
-  private byteSize: number | null = 0;
+  private byteSize: number | null;
 
   /** Current zip archive size */
   private bytesWritten = 0;
@@ -67,7 +67,7 @@ export class PenumbraZipWriter extends EventTarget {
 
     const {
       name = 'download',
-      size,
+      size = 0,
       files,
       controller = new AbortController(),
       compressionLevel = Compression.Store,
@@ -84,6 +84,7 @@ export class PenumbraZipWriter extends EventTarget {
       );
     }
 
+    this.byteSize = size;
     this.allowDuplicates = allowDuplicates;
     this.controller = controller;
     const { signal } = controller;
