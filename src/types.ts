@@ -10,11 +10,11 @@
  */
 
 // local
-import penumbra from './API';
-import { PenumbraError } from './error';
-import { PenumbraZipWriter } from './zip';
+import type penumbra from './API';
+import type { PenumbraError } from './error';
+import type { PenumbraZipWriter } from './zip';
 
-export { PenumbraZipWriter } from './zip';
+export type { PenumbraZipWriter } from './zip';
 
 /**
  * Make selected object keys defined by K optional in type T
@@ -78,6 +78,8 @@ export type RemoteResource = {
   path?: string;
   /** Fetch options */
   requestInit?: RequestInit;
+  /** Last modified date */
+  lastModified?: Date;
 };
 
 /** Penumbra file composition */
@@ -126,9 +128,41 @@ export type ProgressDetails = {
 };
 
 /**
- * The type that is emitted as progress continues
+ * The type that is emitted as progress continuesZipWrite
  */
 export type ProgressEmit = CustomEvent<ProgressDetails>;
+
+/**
+ * Zip progress event details
+ */
+export type ZipProgressDetails = {
+  /** The ID of the worker thread that is processing this job */
+  worker?: number | null;
+  /** Percentage completed */
+  percent: number;
+  /** Total bytes read */
+  totalBytesRead: number;
+  /** Total number of bytes to read */
+  contentLength: number;
+};
+
+/**
+ * The type that is emitted as zip writes progresses
+ */
+export type ZipProgressEmit = CustomEvent<ZipProgressDetails>;
+
+/**
+ * Zip completion event details
+ */
+export type ZipCompletionDetails = {
+  /** The ID of the worker thread that is processing this job */
+  worker?: number | null;
+};
+
+/**
+ * The type that is emitted as progress continues
+ */
+export type ZipCompletionEmit = CustomEvent<ZipCompletionDetails>;
 
 /**
  * Penumbra error event details
