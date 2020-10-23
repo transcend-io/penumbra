@@ -84,8 +84,8 @@ export class PenumbraZipWriter extends EventTarget {
       );
     }
 
-    if (!isNaN(size as number)) {
-      this.byteSize = size as number;
+    if (size !== undefined && size !== null) {
+      this.byteSize = size;
     }
     this.allowDuplicates = allowDuplicates;
     this.controller = controller;
