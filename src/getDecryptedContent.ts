@@ -18,9 +18,10 @@ export default async function getDecryptedContent(
 ): Promise<string | Response> {
   // Fetch the resource
   const rs = await fetchAndDecrypt(resource);
+  const { mimetype = '' } = resource;
 
   // Return the decrypted content
-  const type = resource.mimetype
+  const type = mimetype
     .split('/')[0]
     .trim()
     .toLowerCase();
@@ -28,7 +29,7 @@ export default async function getDecryptedContent(
     if (MEDIA_TYPES.includes(type)) {
       return getMediaSrcFromRS(rs);
     }
-    if (type === 'text' || TEXT_TYPES.test(resource.mimetype)) {
+    if (type === 'text' || TEXT_TYPES.test(mimetype)) {
       return getTextFromRS(rs);
     }
   }

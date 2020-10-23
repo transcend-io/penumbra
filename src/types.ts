@@ -69,7 +69,7 @@ export type RemoteResource = {
   /** The URL to fetch the encrypted or unencrypted file from */
   url: string;
   /** The mimetype of the resulting file */
-  mimetype: string;
+  mimetype?: string;
   /** The name of the underlying file without the extension */
   filePrefix?: string;
   /** If the file is encrypted, these are the required params */
@@ -205,7 +205,7 @@ export type PenumbraTextOrURI = {
   /** Data */
   data: string;
   /** MIME type */
-  mimetype: string;
+  mimetype?: string;
 };
 
 /** Penumbra API */

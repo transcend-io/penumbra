@@ -169,7 +169,10 @@ export class PenumbraZipWriter extends EventTarget {
               'PenumbraZipWriter.write(): Unable to determine filename',
             );
           }
-          const [filename, extension = mime.extension(mimetype)] = name
+          const [
+            filename,
+            extension = mimetype ? mime.extension(mimetype) : '',
+          ] = name
             .split(/(\.\w+\s*$)/) // split filename extension
             .filter(Boolean); // filter empty matches
           let filePath = `${filename}${extension}`;
