@@ -180,7 +180,7 @@ export class PenumbraZipWriter extends EventTarget {
             if (zip.allowDuplicates) {
               console.warn(warning);
             } else {
-              this.abort();
+              zip.abort();
               throw new Error(warning);
             }
 
