@@ -355,6 +355,7 @@ const onReady = async (
           );
           const expectedReferenceHashes = [
             '10ac213becf558c7467a438810ea6e6b7ca1c9766c736273a955555a808a21b2',
+            '2b8c82efb241668778c56a7bd9f8f6da389149ba7607f5249c88618bca70f017',
           ];
           let progressEventFiredAndWorking = false;
           let completeEventFired = false;
