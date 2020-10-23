@@ -365,3 +365,31 @@ export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
   handler?: (event: Event) => void;
 };
+
+/** PenumbraZipWriter constructor options */
+export type ZipOptions = Partial<{
+  /** Filename to save to (.zip is optional) */
+  name?: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size?: number;
+  /** Files (in-memory & remote) to add to zip archive */
+  files: PenumbraFile[];
+  /** Abort controller for cancelling zip generation and saving */
+  controller: AbortController;
+  /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
+  allowDuplicates: boolean;
+  /** Zip archive compression level */
+  compressionLevel: number;
+  /** Store a copy of the resultant zip file in-memory for inspection & testing */
+  saveBuffer: boolean;
+  /**
+   * Auto-registered `'progress'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('progress', onProgress)`
+   */
+  onProgress?(event: ZipProgressEmit): void;
+  /**
+   * Auto-registered `'write-complete'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('complete', onComplete)`
+   */
+  onComplete?(event: ZipCompletionEmit): void;
+}>;
