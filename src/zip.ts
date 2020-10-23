@@ -2,7 +2,7 @@ import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
-import type { PenumbraFile, ZipOptions } from './types';
+import { PenumbraFile, ZipOptions } from './types';
 import emitZipProgress from './utils/emitZipProgress';
 import emitZipCompletion from './utils/emitZipCompletion';
 
@@ -74,13 +74,13 @@ export class PenumbraZipWriter extends EventTarget {
       saveBuffer = false,
       allowDuplicates = true,
       onProgress,
-      onComplete
+      onComplete,
     } = options;
 
     if (compressionLevel !== Compression.Store) {
       throw new Error(
         // eslint-disable-next-line max-len
-        "penumbra.saveZip() does not support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues",
+        'penumbra.saveZip() does not support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues',
       );
     }
 
@@ -143,12 +143,14 @@ export class PenumbraZipWriter extends EventTarget {
     const zip = this;
     // Add file sizes to total zip size
     if (zip.byteSize !== null) {
-      const sizes = files.map(({size}) => size);
+      const sizes = files.map(({ size }) => size);
       const sizeUnknown = sizes.some((size) => isNaN(size as number));
       if (sizeUnknown) {
         zip.byteSize = null;
       } else {
-        zip.byteSize += files.map(({ size }) => size || 0).reduce((acc, val) => acc + val);
+        zip.byteSize += files
+          .map(({ size }) => size || 0)
+          .reduce((acc, val) => acc + val);
       }
     }
     return allSettled(
@@ -218,7 +220,11 @@ export class PenumbraZipWriter extends EventTarget {
                     zip.completedWrites++;
                     // Emit file-granular progress events when total byte size can't be determined
                     if (zip.byteSize === null) {
-                      emitZipProgress(zip, zip.completedWrites, zip.writes.length);
+                      emitZipProgress(
+                        zip,
+                        zip.completedWrites,
+                        zip.writes.length,
+                      );
                     }
                     if (zip.completedWrites >= zip.writes.length) {
                       emitZipCompletion(zip);

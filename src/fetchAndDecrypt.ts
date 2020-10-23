@@ -3,7 +3,7 @@
 import { createDecipheriv } from 'crypto-browserify';
 
 // local
-import type { RemoteResource } from './types';
+import { RemoteResource } from './types';
 import decryptStream from './decrypt';
 import { PenumbraError } from './error';
 import { toBuff } from './utils';

@@ -10,11 +10,11 @@
  */
 
 // local
-import type penumbra from './API';
-import type { PenumbraError } from './error';
-import type { PenumbraZipWriter } from './zip';
+import penumbra from './API';
+import { PenumbraError } from './error';
+import { PenumbraZipWriter } from './zip';
 
-export type { PenumbraZipWriter } from './zip';
+export { PenumbraZipWriter } from './zip';
 
 /**
  * Make selected object keys defined by K optional in type T

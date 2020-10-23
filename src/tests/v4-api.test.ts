@@ -1,20 +1,19 @@
 /* eslint-disable max-lines */
 import test from 'tape';
 import Bowser from 'bowser';
-import type {
+import {
   PenumbraAPI,
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
   ZipProgressEmit,
-  ZipCompletionEmit,
+  PenumbraSupportLevel,
 } from '../types';
-import { PenumbraSupportLevel } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import penumbra from '../API';
 import { hash, timeout } from './helpers';
-import type { TimeoutManager } from './helpers/timeout';
+import { TimeoutManager } from './helpers/timeout';
 
 // This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
 const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
@@ -352,7 +351,6 @@ test('penumbra.saveZip({ saveBuffer: true }) (zip hash checking & auto-renaming)
   const expectedReferenceHashes = [
     '10ac213becf558c7467a438810ea6e6b7ca1c9766c736273a955555a808a21b2',
     '2b8c82efb241668778c56a7bd9f8f6da389149ba7607f5249c88618bca70f017',
-
   ];
   let progressEventFiredAndWorking = false;
   let completeEventFired = false;
@@ -361,17 +359,22 @@ test('penumbra.saveZip({ saveBuffer: true }) (zip hash checking & auto-renaming)
     files,
     /** onProgress handler */
     onProgress(event: ZipProgressEmit) {
-      progressEventFiredAndWorking = expectedProgressProps.every((prop) => prop in event.detail);
+      progressEventFiredAndWorking = expectedProgressProps.every(
+        (prop) => prop in event.detail,
+      );
     },
     /** onComplete handler */
     onComplete() {
       completeEventFired = true;
     },
     allowDuplicates: true,
-    saveBuffer: true
+    saveBuffer: true,
   });
   await writer.close();
-  t.ok(progressEventFiredAndWorking, 'zip progress event fired & emitted expected properties');
+  t.ok(
+    progressEventFiredAndWorking,
+    'zip progress event fired & emitted expected properties',
+  );
   t.ok(completeEventFired, 'zip complete event fired');
   t.pass('zip saved');
   const zipBuffer = await writer.getBuffer();

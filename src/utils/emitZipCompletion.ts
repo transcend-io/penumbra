@@ -1,5 +1,5 @@
 // penumbra
-import type { PenumbraZipWriter, ZipCompletionEmit } from '../types';
+import { PenumbraZipWriter, ZipCompletionEmit } from '../types';
 import { PenumbraEvent } from '../event';
 
 /**
@@ -8,7 +8,7 @@ import { PenumbraEvent } from '../event';
  */
 export default function emitZipCompletion(writer: PenumbraZipWriter): void {
   const emitContent: Pick<ZipCompletionEmit, 'detail'> = {
-    detail: { },
+    detail: {},
   };
 
   // Dispatch the event

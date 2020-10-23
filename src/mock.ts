@@ -3,7 +3,7 @@
 
 // local
 import { PenumbraAPI, PenumbraSupportLevel } from './types';
-import type { PenumbraZipWriter } from './zip';
+import { PenumbraZipWriter } from './zip';
 
 const supported = (): PenumbraSupportLevel => -0;
 supported.levels = PenumbraSupportLevel;
