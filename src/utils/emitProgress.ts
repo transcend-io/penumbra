@@ -14,6 +14,7 @@ export default function emitProgress(
   totalBytesRead: number,
   contentLength: number,
   id: string | number,
+  target: EventTarget = self,
 ): void {
   // Calculate the progress remaining
   const percent = Math.round((totalBytesRead / contentLength) * 100);
@@ -30,5 +31,5 @@ export default function emitProgress(
 
   // Dispatch the event
   const event = new PenumbraEvent('penumbra-progress', emitContent);
-  self.dispatchEvent(event);
+  target.dispatchEvent(event);
 }

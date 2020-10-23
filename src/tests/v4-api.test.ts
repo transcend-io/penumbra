@@ -6,6 +6,7 @@ import {
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
+  ZipProgressEmit,
   PenumbraSupportLevel,
 } from '../types';
 
@@ -300,23 +301,24 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
-test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
+test('penumbra.saveZip({ saveBuffer: true }) (zip hash checking & auto-renaming)', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
-      `penumbra.saveZip({ debug: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+      // eslint-disable-next-line max-len
+      `penumbra.saveZip({ saveBuffer: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
     );
     t.end();
     return;
   }
-  const files = [
+  const files = await penumbra.get(
     {
-      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-      path: 'test/tortoise.jpg',
-      mimetype: 'image/jpeg',
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+      path: 'test/NYT.txt',
+      mimetype: 'text/plain',
       decryptionOptions: {
         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
         iv: '6lNU+2vxJw6SFgse',
-        authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
+        authTag: 'gadZhS1QozjEmfmHLblzbg==',
       },
       // for hash consistency
       lastModified: new Date(0),
@@ -333,15 +335,47 @@ test('penumbra.saveZip({ debug: true }) (zip hash checking)', async (t) => {
       // for hash consistency
       lastModified: new Date(0),
     },
-  ];
+    {
+      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+      path: 'test/NYT.txt',
+      mimetype: 'text/plain',
+      decryptionOptions: {
+        key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+        iv: '6lNU+2vxJw6SFgse',
+        authTag: 'gadZhS1QozjEmfmHLblzbg==',
+      },
+      // for hash consistency
+      lastModified: new Date(0),
+    },
+  );
   const expectedReferenceHashes = [
-    '390da5d34d30c66687b340443da75f06826141fd169bf9bc95b5ac8a5a23968f',
-    'e0df17053159a9e77a28d3deddbca7e4df7f42f0b5f66d58ce785341a18a7bab',
-    '1fb6d556738fae8138816a2e09bbfd026cd4abaabde2633634a1a699569bceeb',
+    '10ac213becf558c7467a438810ea6e6b7ca1c9766c736273a955555a808a21b2',
+    '2b8c82efb241668778c56a7bd9f8f6da389149ba7607f5249c88618bca70f017',
   ];
-  const writer = penumbra.saveZip({ debug: true });
-  await writer.write(...(await penumbra.get(...files)));
+  let progressEventFiredAndWorking = false;
+  let completeEventFired = false;
+  const expectedProgressProps = ['percent', 'totalBytesRead', 'contentLength'];
+  const writer = penumbra.saveZip({
+    files,
+    /** onProgress handler */
+    onProgress(event: ZipProgressEmit) {
+      progressEventFiredAndWorking = expectedProgressProps.every(
+        (prop) => prop in event.detail,
+      );
+    },
+    /** onComplete handler */
+    onComplete() {
+      completeEventFired = true;
+    },
+    allowDuplicates: true,
+    saveBuffer: true,
+  });
   await writer.close();
+  t.ok(
+    progressEventFiredAndWorking,
+    'zip progress event fired & emitted expected properties',
+  );
+  t.ok(completeEventFired, 'zip complete event fired');
   t.pass('zip saved');
   const zipBuffer = await writer.getBuffer();
   const zipHash = await hash('SHA-256', zipBuffer);

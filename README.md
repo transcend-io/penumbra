@@ -188,22 +188,47 @@ type ZipOptions = {
   files?: PenumbraFile[];
   /** Abort controller for cancelling zip generation and saving */
   controller?: AbortController;
+  /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
+  allowDuplicates: boolean;
   /** Zip archive compression level */
   compressionLevel?: number;
-  /** Store a copy of the resultant zip file in-memory for debug & testing */
-  debug?: boolean;
+  /** Store a copy of the resultant zip file in-memory for inspection & testing */
+  saveBuffer?: boolean;
+  /**
+   * Auto-registered `'progress'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('progress', onProgress)`
+   */
+  onProgress?(event: CustomEvent<ZipProgressDetails>): void;
+  /**
+   * Auto-registered `'complete'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('complete', onComplete)`
+   */
+  onComplete?(event: CustomEvent<{}>): void;
 };
 
 penumbra.saveZip(options?: ZipOptions): PenumbraZipWriter;
 
-interface PenumbraZipWriter {
+interface PenumbraZipWriter extends EventTarget {
   /** Add decrypted PenumbraFiles to zip */
   write(...files: PenumbraFile[]): Promise<void>;
   /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
   close(): Promise<void>;
   /** Cancel Penumbra zip writer */
   abort(): void;
+  /** Get buffered output (requires saveBuffer mode) */
+  getBuffer(): Promise<ArrayBuffer>;
+  /** Get all written & pending file paths */
+  getFiles(): string[];
 }
+
+type ZipProgressDetails = {
+  /** Percentage completed */
+  percent: number;
+  /** Total bytes read */
+  totalBytesRead: number;
+  /** Total number of bytes to read */
+  contentLength: number;
+};
 ```
 
 Example:

@@ -64,7 +64,7 @@ module.exports = {
         comments: 200,
       },
     ],
-    'max-lines': ['error', 250],
+    'max-lines': ['error', 350],
     // "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
     'no-bitwise': [
       'error',

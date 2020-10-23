@@ -539,7 +539,7 @@ export async function decrypt(
 function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   return files.map(
     async (file): Promise<PenumbraTextOrURI> => {
-      const { mimetype } = file;
+      const { mimetype = '' } = file;
       if (isViewableText(mimetype)) {
         return {
           type: 'text',

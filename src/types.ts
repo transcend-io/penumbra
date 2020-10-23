@@ -69,7 +69,7 @@ export type RemoteResource = {
   /** The URL to fetch the encrypted or unencrypted file from */
   url: string;
   /** The mimetype of the resulting file */
-  mimetype: string;
+  mimetype?: string;
   /** The name of the underlying file without the extension */
   filePrefix?: string;
   /** If the file is encrypted, these are the required params */
@@ -78,6 +78,8 @@ export type RemoteResource = {
   path?: string;
   /** Fetch options */
   requestInit?: RequestInit;
+  /** Last modified date */
+  lastModified?: Date;
 };
 
 /** Penumbra file composition */
@@ -126,9 +128,41 @@ export type ProgressDetails = {
 };
 
 /**
- * The type that is emitted as progress continues
+ * The type that is emitted as progress continuesZipWrite
  */
 export type ProgressEmit = CustomEvent<ProgressDetails>;
+
+/**
+ * Zip progress event details
+ */
+export type ZipProgressDetails = {
+  /** The ID of the worker thread that is processing this job */
+  worker?: number | null;
+  /** Percentage completed */
+  percent: number;
+  /** Total bytes read */
+  totalBytesRead: number;
+  /** Total number of bytes to read */
+  contentLength: number;
+};
+
+/**
+ * The type that is emitted as zip writes progresses
+ */
+export type ZipProgressEmit = CustomEvent<ZipProgressDetails>;
+
+/**
+ * Zip completion event details
+ */
+export type ZipCompletionDetails = {
+  /** The ID of the worker thread that is processing this job */
+  worker?: number | null;
+};
+
+/**
+ * The type that is emitted as progress continues
+ */
+export type ZipCompletionEmit = CustomEvent<ZipCompletionDetails>;
 
 /**
  * Penumbra error event details
@@ -171,7 +205,7 @@ export type PenumbraTextOrURI = {
   /** Data */
   data: string;
   /** MIME type */
-  mimetype: string;
+  mimetype?: string;
 };
 
 /** Penumbra API */
@@ -331,3 +365,31 @@ export type EventForwarder = {
   /** Comlink-proxied main thread progress event transfer handler */
   handler?: (event: Event) => void;
 };
+
+/** PenumbraZipWriter constructor options */
+export type ZipOptions = Partial<{
+  /** Filename to save to (.zip is optional) */
+  name?: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size?: number;
+  /** Files (in-memory & remote) to add to zip archive */
+  files: PenumbraFile[];
+  /** Abort controller for cancelling zip generation and saving */
+  controller: AbortController;
+  /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
+  allowDuplicates: boolean;
+  /** Zip archive compression level */
+  compressionLevel: number;
+  /** Store a copy of the resultant zip file in-memory for inspection & testing */
+  saveBuffer: boolean;
+  /**
+   * Auto-registered `'progress'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('progress', onProgress)`
+   */
+  onProgress?(event: ZipProgressEmit): void;
+  /**
+   * Auto-registered `'write-complete'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('complete', onComplete)`
+   */
+  onComplete?(event: ZipCompletionEmit): void;
+}>;
