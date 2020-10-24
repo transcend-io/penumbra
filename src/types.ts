@@ -80,6 +80,8 @@ export type RemoteResource = {
   requestInit?: RequestInit;
   /** Last modified date */
   lastModified?: Date;
+  /** Expected file size */
+  size?: number;
 };
 
 /** Penumbra file composition */
@@ -136,14 +138,12 @@ export type ProgressEmit = CustomEvent<ProgressDetails>;
  * Zip progress event details
  */
 export type ZipProgressDetails = {
-  /** The ID of the worker thread that is processing this job */
-  worker?: number | null;
   /** Percentage completed */
-  percent: number;
-  /** Total bytes read */
-  totalBytesRead: number;
-  /** Total number of bytes to read */
-  contentLength: number;
+  percent: number | null;
+  /** Total items written */
+  written: number;
+  /** Total number of expected items to write */
+  size: number | null;
 };
 
 /**
@@ -154,10 +154,7 @@ export type ZipProgressEmit = CustomEvent<ZipProgressDetails>;
 /**
  * Zip completion event details
  */
-export type ZipCompletionDetails = {
-  /** The ID of the worker thread that is processing this job */
-  worker?: number | null;
-};
+export type ZipCompletionDetails = {};
 
 /**
  * The type that is emitted as progress continues
