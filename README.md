@@ -204,10 +204,6 @@ type ZipOptions = {
    * `PenumbraZipWriter.addEventListener('complete', onComplete)`
    */
   onComplete?(event: CustomEvent<{}>): void;
-  /**
-   * Get observed zip size after all pending writes are resolved
-   */
-  getSize(): Promise<number>;
 };
 
 penumbra.saveZip(options?: ZipOptions): PenumbraZipWriter;
@@ -232,6 +228,10 @@ interface PenumbraZipWriter extends EventTarget {
   getBuffer(): Promise<ArrayBuffer>;
   /** Get all written & pending file paths */
   getFiles(): string[];
+  /**
+   * Get observed zip size after all pending writes are resolved
+   */
+  getSize(): Promise<number>;
 }
 
 type ZipProgressDetails = {
