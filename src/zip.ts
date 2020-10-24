@@ -27,9 +27,13 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   if (results.every(({ status }) => status === 'fulfilled')) {
     return (results as PromiseFulfilledResult<number>[])
       .map(({ value }) => value)
-      .reduce((acc, item) => acc + item);
+      .reduce((acc, item) => acc + item, 0);
   }
-  const errors = results.filter(({ status }) => status === 'rejected');
+  const errors = results.filter(({ status }) => status === 'rejected') as PromiseRejectedResult[];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const error of errors) {
+    console.error(error.reason);
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   throw new (self as any).AggregateError(
     errors,
@@ -169,7 +173,7 @@ export class PenumbraZipWriter extends EventTarget {
     // Add file sizes to total zip size
     const sizes = files.map(({ size }) => size);
     const totalWriteSize = sizes.every((size) => isN(size))
-      ? (sizes as number[]).reduce((acc, val) => acc + val)
+      ? (sizes as number[]).reduce((acc, val) => acc + val, 0)
       : null;
     if (zip.byteSize !== null) {
       if (totalWriteSize === null) {
@@ -239,9 +243,10 @@ export class PenumbraZipWriter extends EventTarget {
                   // eslint-disable-next-line no-await-in-loop
                   const { done, value } = await reader.read();
                   if (value) {
-                    writeSize += value.byteLength;
+                    const chunkSize = value.byteLength;
+                    writeSize += chunkSize;
                     if (zip.byteSize !== null) {
-                      zip.bytesWritten += value.byteLength;
+                      zip.bytesWritten += chunkSize;
                       emitZipProgress(zip, zip.bytesWritten, zip.byteSize);
                     }
                   }
@@ -261,7 +266,7 @@ export class PenumbraZipWriter extends EventTarget {
                     if (zip.completedWrites >= zip.writes.length) {
                       emitZipCompletion(zip);
                     }
-                    // Restore zip.byteSize once it is calculable
+                    // Re-calculate zip.byteSize after indeterminate writes
                     if (totalWriteSize === null) {
                       let size = 0;
                       // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
