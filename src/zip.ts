@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
@@ -110,23 +111,17 @@ export class PenumbraZipWriter extends EventTarget {
     const { signal } = controller;
     signal.addEventListener(
       'abort',
-      () => {
-        this.close();
-      },
-      {
-        once: true,
-      },
+      () => { this.close() },
+      { once: true }
     );
 
     // Auto-register onProgress & onComplete listeners
     if (typeof onProgress === 'function') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.addEventListener('progress', onProgress as any);
+      this.addEventListener('progress', onProgress as EventListener);
     }
 
     if (typeof onComplete === 'function') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.addEventListener('complete', onComplete as any);
+      this.addEventListener('complete', onComplete as EventListener, { once: true });
     }
 
     const saveStream = createWriteStream(
@@ -170,16 +165,20 @@ export class PenumbraZipWriter extends EventTarget {
   async write(...files: PenumbraFile[]): Promise<number> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const zip = this;
+
     // Add file sizes to total zip size
+    const sizes = files.map(({ size }) => size);
+    const totalWriteSize = sizes.every((size) => isN(size))
+      ? (sizes as number[]).reduce((acc, val) => acc + val)
+      : null;
     if (zip.byteSize !== null) {
-      const sizes = files.map(({ size }) => size);
-      const sizeUnknown = sizes.some((size) => !isN(size));
-      if (sizeUnknown) {
+      if (totalWriteSize === null) {
         zip.byteSize = null;
       } else {
-        zip.byteSize += (sizes as number[]).reduce((acc, val) => acc + val);
+        zip.byteSize += totalWriteSize;
       }
     }
+
     return sumWrites(
       files.map(
         async ({
@@ -261,6 +260,17 @@ export class PenumbraZipWriter extends EventTarget {
                     }
                     if (zip.completedWrites >= zip.writes.length) {
                       emitZipCompletion(zip);
+                    }
+                    // Restore zip.byteSize once it is calculable
+                    if (totalWriteSize === null) {
+                      let size = 0;
+                      // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
+                      for await (const write of zip.writes) {
+                        size += write;
+                      }
+                      if (zip.byteSize === null) {
+                        zip.byteSize = size;
+                      }
                     }
                     break;
                   }
