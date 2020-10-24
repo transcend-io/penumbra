@@ -429,8 +429,14 @@ const onReady = async (
         const closeSize = await writer.close();
         const size = await writer.getSize();
         const expectedSize = 270826;
-        console.log(size === closeSize, 'writer.close() size matches writer.getSize()');
-        console.log(size === expectedSize, `expected zip size (actual: ${size})`);
+        console.log(
+          size === closeSize,
+          'writer.close() size matches writer.getSize()',
+        );
+        console.log(
+          size === expectedSize,
+          `expected zip size (actual: ${size})`,
+        );
 
         return size === expectedSize;
       },
