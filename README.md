@@ -182,7 +182,7 @@ Save a zip containing files retrieved by Penumbra.
 type ZipOptions = {
   /** Filename to save to (.zip is optional) */
   name?: string;
-  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  /** Total size of archive in bytes (if known ahead of time, for 'store' compression level) */
   size?: number;
   /** PenumbraFile[] to add to zip archive */
   files?: PenumbraFile[];
@@ -204,15 +204,28 @@ type ZipOptions = {
    * `PenumbraZipWriter.addEventListener('complete', onComplete)`
    */
   onComplete?(event: CustomEvent<{}>): void;
+  /**
+   * Get observed zip size after all pending writes are resolved
+   */
+  getSize(): Promise<number>;
 };
 
 penumbra.saveZip(options?: ZipOptions): PenumbraZipWriter;
 
 interface PenumbraZipWriter extends EventTarget {
-  /** Add decrypted PenumbraFiles to zip */
-  write(...files: PenumbraFile[]): Promise<void>;
-  /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
-  close(): Promise<void>;
+  /**
+   * Add decrypted PenumbraFiles to zip
+   *
+   * @param files - Decrypted PenumbraFile[] to add to zip
+   * @returns Total observed size of write call in bytes
+   */
+  write(...files: PenumbraFile[]): Promise<number>;
+  /**
+   * Enqueue closing of the Penumbra zip writer (after pending writes finish)
+   *
+   * @returns Total observed zip size in bytes after close completes
+   */
+  close(): Promise<number>;
   /** Cancel Penumbra zip writer */
   abort(): void;
   /** Get buffered output (requires saveBuffer mode) */

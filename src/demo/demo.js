@@ -311,7 +311,7 @@ const onReady = async (
       },
     ],
     [
-      'penumbra.saveZip({ saveBuffer: true }) (zip hash checking)',
+      'penumbra.saveZip({ saveBuffer: true }) (getBuffer(), getSize() and auto-renaming)',
       async () =>
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
@@ -388,7 +388,13 @@ const onReady = async (
           const zipBuffer = await writer.getBuffer();
           const zipHash = await hash('SHA-256', zipBuffer);
           console.log('zip hash:', zipHash);
-          resolve(expectedReferenceHashes.includes(zipHash.toLowerCase()));
+          const size = await writer.getSize();
+          const expectedSize = 2622;
+          console.log(`zip size: ${size} (expected ${expectedSize})`);
+          resolve(
+            expectedReferenceHashes.includes(zipHash.toLowerCase()) &&
+              size === expectedSize,
+          );
         }),
     ],
     [

@@ -18,6 +18,24 @@ export enum Compression {
   High = 3,
 }
 
+const isN = (value: unknown): value is number =>
+  value !== null && !isNaN(value as number);
+
+const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
+  const results = await allSettled<Promise<number>[]>(writes);
+  if (results.every(({ status }) => status === 'fulfilled')) {
+    return (results as PromiseFulfilledResult<number>[])
+      .map(({ value }) => value)
+      .reduce((acc, item) => acc + item);
+  }
+  const errors = results.filter(({ status }) => status === 'rejected');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  throw new (self as any).AggregateError(
+    errors,
+    `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
+  );
+};
+
 /** Wrapped WritableStream for state keeping with StreamSaver */
 export class PenumbraZipWriter extends EventTarget {
   /** Conflux zip writer instance */
@@ -45,7 +63,7 @@ export class PenumbraZipWriter extends EventTarget {
   private controller: AbortController;
 
   /** All pending finished and unfinished zip file writes */
-  private writes: Promise<void>[] = [];
+  private writes: Promise<number>[] = [];
 
   /** Number of finished zip file writes */
   private completedWrites = 0;
@@ -84,7 +102,7 @@ export class PenumbraZipWriter extends EventTarget {
       );
     }
 
-    if (size !== undefined && size !== null) {
+    if (isN(size)) {
       this.byteSize = size;
     }
     this.allowDuplicates = allowDuplicates;
@@ -137,17 +155,25 @@ export class PenumbraZipWriter extends EventTarget {
   }
 
   /**
+   * Get observed zip size after all pending writes are resolved
+   */
+  getSize(): Promise<number> {
+    return sumWrites(this.writes);
+  }
+
+  /**
    * Add decrypted PenumbraFiles to zip
    *
    * @param files - Decrypted PenumbraFile[] to add to zip
+   * @returns Total observed size of write call in bytes
    */
-  write(...files: PenumbraFile[]): Promise<PromiseSettledResult<void>[]> {
+  async write(...files: PenumbraFile[]): Promise<number> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const zip = this;
     // Add file sizes to total zip size
     if (zip.byteSize !== null) {
       const sizes = files.map(({ size }) => size);
-      const sizeUnknown = sizes.some((size) => isNaN(size as number));
+      const sizeUnknown = sizes.some((size) => !isN(size));
       if (sizeUnknown) {
         zip.byteSize = null;
       } else {
@@ -156,7 +182,7 @@ export class PenumbraZipWriter extends EventTarget {
           .reduce((acc, val) => acc + val);
       }
     }
-    return allSettled(
+    return sumWrites(
       files.map(
         async ({
           path,
@@ -165,6 +191,7 @@ export class PenumbraZipWriter extends EventTarget {
           mimetype,
           lastModified = new Date(),
         }) => {
+          let writeSize = 0;
           // Resolve file path
           const name = path || filePrefix;
           if (!name) {
@@ -182,23 +209,22 @@ export class PenumbraZipWriter extends EventTarget {
 
           // Handle duplicate files
           if (zip.files.has(filePath)) {
-            const warning = `penumbra.saveZip(): Duplicate file detected: ${filePath}`;
-            if (zip.allowDuplicates) {
-              console.warn(warning);
-            } else {
-              zip.abort();
-              throw new Error(warning);
-            }
-
+            const dupe = filePath;
             // This code picks a filename when auto-renaming conflicting files.
             // If {filename}{extension} exists it will create {filename} (1){extension}, etc.
             let i = 0;
             // eslint-disable-next-line no-plusplus
             while (zip.files.has(`${filename} (${++i})${extension}`));
             filePath = `${filename} (${i})${extension}`;
-            console.warn(
-              `penumbra.saveZip(): Duplicate file renamed: ${filePath}`,
-            );
+            const warning = `penumbra.saveZip(): Duplicate file ${JSON.stringify(
+              dupe,
+            )} renamed to ${JSON.stringify(filePath)}`;
+            if (zip.allowDuplicates) {
+              console.warn(warning);
+            } else {
+              zip.abort();
+              throw new Error(warning);
+            }
           }
 
           zip.files.add(filePath);
@@ -207,7 +233,7 @@ export class PenumbraZipWriter extends EventTarget {
             ? stream
             : (new Response(stream).body as ReadableStream)
           ).getReader();
-          const writeComplete = new Promise<void>((resolve) => {
+          const writeComplete = new Promise<number>((resolve) => {
             const completionTrackerStream = new ReadableStream({
               /** Start completion tracker-wrapped ReadableStream */
               async start(controller) {
@@ -215,13 +241,16 @@ export class PenumbraZipWriter extends EventTarget {
                 while (true) {
                   // eslint-disable-next-line no-await-in-loop
                   const { done, value } = await reader.read();
-                  if (zip.byteSize !== null) {
-                    zip.bytesWritten += value.byteLength;
-                    emitZipProgress(zip, zip.bytesWritten, zip.byteSize);
+                  if (value) {
+                    writeSize += value.byteLength;
+                    if (zip.byteSize !== null) {
+                      zip.bytesWritten += value.byteLength;
+                      emitZipProgress(zip, zip.bytesWritten, zip.byteSize);
+                    }
                   }
                   // When no more data needs to be consumed, break the reading
                   if (done) {
-                    resolve();
+                    resolve(writeSize);
                     // eslint-disable-next-line no-plusplus
                     zip.completedWrites++;
                     // Emit file-granular progress events when total byte size can't be determined
@@ -256,20 +285,25 @@ export class PenumbraZipWriter extends EventTarget {
           });
 
           zip.writes.push(writeComplete);
+
           return writeComplete;
         },
       ),
     );
   }
 
-  /** Enqueue closing of the Penumbra zip writer (after pending writes finish) */
-  async close(): Promise<PromiseSettledResult<void>[]> {
-    const writes = await allSettled(this.writes);
+  /**
+   * Enqueue closing of the Penumbra zip writer (after pending writes finish)
+   *
+   * @returns Total observed zip size in bytes after close completes
+   */
+  async close(): Promise<number> {
+    const size = this.getSize();
     if (!this.closed) {
       this.writer.close();
       this.closed = true;
     }
-    return writes;
+    return size;
   }
 
   /** Cancel Penumbra zip writer */

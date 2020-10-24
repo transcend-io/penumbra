@@ -301,7 +301,7 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
-test('penumbra.saveZip({ saveBuffer: true }) (zip hash checking & auto-renaming)', async (t) => {
+test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
   if (['Firefox', 'Safari'].includes(browserName)) {
     t.pass(
       // eslint-disable-next-line max-len
@@ -385,5 +385,11 @@ test('penumbra.saveZip({ saveBuffer: true }) (zip hash checking & auto-renaming)
     expectedReferenceHashes.includes(zipHash.toLowerCase()),
     `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
   );
+
+  const size = await writer.getSize();
+  const expectedSize = 2622;
+
+  t.equals(size, expectedSize, 'expected zip size');
+
   t.end();
 });
