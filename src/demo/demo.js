@@ -398,7 +398,7 @@ const onReady = async (
         }),
     ],
     [
-      'penumbra.saveZip() (completion tracking only)',
+      'penumbra.saveZip() (completion & size tracking only)',
       async () => {
         const files = [
           {
@@ -425,8 +425,14 @@ const onReady = async (
         ];
         const writer = penumbra.saveZip();
         await writer.write(...(await penumbra.get(...files)));
-        await writer.close();
-        return true;
+
+        const closeSize = await writer.close();
+        const size = await writer.getSize();
+        const expectedSize = 270826;
+        console.log(size === closeSize, 'writer.close() size matches writer.getSize()');
+        console.log(size === expectedSize, `expected zip size (actual: ${size})`);
+
+        return size === expectedSize;
       },
     ],
   );
