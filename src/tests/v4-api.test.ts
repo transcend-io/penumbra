@@ -388,7 +388,6 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
 
   const size = await writer.getSize();
   const expectedSize = 2622;
-
   t.equals(size, expectedSize, `expected zip size (actual: ${size})`);
 
   t.end();
