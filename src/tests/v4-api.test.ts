@@ -311,6 +311,7 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
   }
   const expectedReferenceHashes = [
     '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
+    '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
   ];
   let progressEventFiredAndWorking = false;
   let completeEventFired = false;
