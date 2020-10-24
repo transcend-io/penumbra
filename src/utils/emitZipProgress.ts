@@ -11,17 +11,17 @@ import { PenumbraEvent } from '../event';
  */
 export default function emitZipProgress(
   writer: PenumbraZipWriter,
-  totalBytesRead: number,
-  contentLength: number,
+  written: number,
+  size: number | null,
 ): void {
   // Calculate the progress remaining
-  const percent = Math.round((totalBytesRead / contentLength) * 100);
+  const percent = size === null ? null : Math.round((written / size) * 100);
 
   const emitContent: Pick<ZipProgressEmit, 'detail'> = {
     detail: {
       percent,
-      totalBytesRead,
-      contentLength,
+      written,
+      size,
     },
   };
 

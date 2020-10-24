@@ -13,7 +13,8 @@ import intoStream from 'into-stream';
 import penumbra from './API';
 import MOCK_API from './mock';
 import './transferHandlers/penumbra-events';
-import { PenumbraAPI, PenumbraSupportLevel } from './types';
+import { PenumbraAPI } from './types';
+import { PenumbraSupportLevel } from './enums';
 import { PenumbraEvent } from './event';
 
 export * from './types';

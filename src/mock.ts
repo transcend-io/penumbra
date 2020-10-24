@@ -2,7 +2,8 @@
 /* tslint-disable no-empty */
 
 // local
-import { PenumbraAPI, PenumbraSupportLevel } from './types';
+import { PenumbraAPI } from './types';
+import { PenumbraSupportLevel } from './enums';
 import { PenumbraZipWriter } from './zip';
 
 const supported = (): PenumbraSupportLevel => -0;

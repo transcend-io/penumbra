@@ -11,6 +11,7 @@
 
 // local
 import penumbra from './API';
+import { PenumbraSupportLevel } from './enums';
 import { PenumbraError } from './error';
 import { PenumbraZipWriter } from './zip';
 
@@ -20,18 +21,6 @@ export { PenumbraZipWriter } from './zip';
  * Make selected object keys defined by K optional in type T
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
-
-/** Penumbra user agent support level */
-export enum PenumbraSupportLevel {
-  /** Old browser where Penumbra does not work at all */
-  none = -0,
-  /** Modern browser where Penumbra is not yet supported */
-  possible = 0,
-  /** Modern browser where file size limit is low */
-  size_limited = 1,
-  /** Modern browser with full support */
-  full = 2,
-}
 
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
@@ -80,6 +69,8 @@ export type RemoteResource = {
   requestInit?: RequestInit;
   /** Last modified date */
   lastModified?: Date;
+  /** Expected file size */
+  size?: number;
 };
 
 /** Penumbra file composition */
@@ -136,14 +127,12 @@ export type ProgressEmit = CustomEvent<ProgressDetails>;
  * Zip progress event details
  */
 export type ZipProgressDetails = {
-  /** The ID of the worker thread that is processing this job */
-  worker?: number | null;
   /** Percentage completed */
-  percent: number;
-  /** Total bytes read */
-  totalBytesRead: number;
-  /** Total number of bytes to read */
-  contentLength: number;
+  percent: number | null;
+  /** Total items written */
+  written: number;
+  /** Total number of expected items to write */
+  size: number | null;
 };
 
 /**
@@ -154,10 +143,7 @@ export type ZipProgressEmit = CustomEvent<ZipProgressDetails>;
 /**
  * Zip completion event details
  */
-export type ZipCompletionDetails = {
-  /** The ID of the worker thread that is processing this job */
-  worker?: number | null;
-};
+export type ZipCompletionDetails = {};
 
 /**
  * The type that is emitted as progress continues

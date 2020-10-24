@@ -1,4 +1,4 @@
-import { PenumbraSupportLevel } from './types';
+import { PenumbraSupportLevel } from './enums';
 
 let supportLevel: PenumbraSupportLevel = PenumbraSupportLevel.none;
 

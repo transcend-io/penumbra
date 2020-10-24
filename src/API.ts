@@ -17,11 +17,12 @@ import {
   PenumbraTextOrURI,
   PenumbraWorkerAPI,
   RemoteResource,
+  ZipOptions,
 } from './types';
+import { PenumbraZipWriter } from './zip';
 import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
-import { saveZip } from './zip';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -138,6 +139,16 @@ const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
 
 const isNumber = (number: unknown): number is number =>
   !isNaN(number as number);
+
+/**
+ * Zip files retrieved by Penumbra
+ *
+ * @param options - ZipOptions
+ * @returns PenumbraZipWriter class instance
+ */
+function saveZip(options?: ZipOptions): PenumbraZipWriter {
+  return new PenumbraZipWriter(options);
+}
 
 /**
  * Save files retrieved by Penumbra

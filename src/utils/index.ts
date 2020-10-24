@@ -6,10 +6,6 @@
  * @module utils
  */
 
-// Needed for generator support
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-
 // local
 export { default as emitProgress } from './emitProgress';
 export { default as emitJobCompletion } from './emitJobCompletion';

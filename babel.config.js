@@ -5,11 +5,12 @@ module.exports = {
       '@babel/preset-env',
       {
         debug: false, // log babel preset-env config
-        useBuiltIns: 'entry', // enable polyfills
-        corejs: {
-          version: 3,
-          proposals: true,
-        }, // Enable core-js and proposals
+        targets: {
+          edge: '18',
+          firefox: '80',
+          chrome: '85',
+          safari: '14',
+        },
       },
     ],
   ],

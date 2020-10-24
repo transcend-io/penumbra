@@ -311,61 +311,17 @@ const onReady = async (
       },
     ],
     [
-      'penumbra.saveZip({ saveBuffer: true }) (zip hash checking)',
+      'penumbra.saveZip({ saveBuffer: true }) (getBuffer(), getSize() and auto-renaming)',
       async () =>
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
-          const files = await penumbra.get(
-            {
-              url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-              path: 'test/NYT.txt',
-              mimetype: 'text/plain',
-              decryptionOptions: {
-                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-                iv: '6lNU+2vxJw6SFgse',
-                authTag: 'gadZhS1QozjEmfmHLblzbg==',
-              },
-              // for hash consistency
-              lastModified: new Date(0),
-            },
-            {
-              url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-              path: 'test/NYT.txt',
-              mimetype: 'text/plain',
-              decryptionOptions: {
-                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-                iv: '6lNU+2vxJw6SFgse',
-                authTag: 'gadZhS1QozjEmfmHLblzbg==',
-              },
-              // for hash consistency
-              lastModified: new Date(0),
-            },
-            {
-              url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-              path: 'test/NYT.txt',
-              mimetype: 'text/plain',
-              decryptionOptions: {
-                key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-                iv: '6lNU+2vxJw6SFgse',
-                authTag: 'gadZhS1QozjEmfmHLblzbg==',
-              },
-              // for hash consistency
-              lastModified: new Date(0),
-            },
-          );
           const expectedReferenceHashes = [
-            '10ac213becf558c7467a438810ea6e6b7ca1c9766c736273a955555a808a21b2',
-            '2b8c82efb241668778c56a7bd9f8f6da389149ba7607f5249c88618bca70f017',
+            '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
           ];
           let progressEventFiredAndWorking = false;
           let completeEventFired = false;
-          const expectedProgressProps = [
-            'percent',
-            'totalBytesRead',
-            'contentLength',
-          ];
+          const expectedProgressProps = ['percent', 'written', 'size'];
           const writer = penumbra.saveZip({
-            files,
             /** onProgress handler */
             onProgress(event) {
               progressEventFiredAndWorking = expectedProgressProps.every(
@@ -379,6 +335,68 @@ const onReady = async (
             allowDuplicates: true,
             saveBuffer: true,
           });
+          writer.write(
+            ...(await penumbra.get(
+              {
+                size: 874,
+                url:
+                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                path: 'test/NYT.txt',
+                mimetype: 'text/plain',
+                decryptionOptions: {
+                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                  iv: '6lNU+2vxJw6SFgse',
+                  authTag: 'gadZhS1QozjEmfmHLblzbg==',
+                },
+                // for hash consistency
+                lastModified: new Date(0),
+              },
+              {
+                size: 874,
+                url:
+                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                path: 'test/NYT.txt',
+                mimetype: 'text/plain',
+                decryptionOptions: {
+                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                  iv: '6lNU+2vxJw6SFgse',
+                  authTag: 'gadZhS1QozjEmfmHLblzbg==',
+                },
+                // for hash consistency
+                lastModified: new Date(0),
+              },
+            )),
+          );
+          writer.write(
+            ...(await penumbra.get(
+              {
+                url:
+                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                path: 'test/NYT.txt',
+                mimetype: 'text/plain',
+                decryptionOptions: {
+                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                  iv: '6lNU+2vxJw6SFgse',
+                  authTag: 'gadZhS1QozjEmfmHLblzbg==',
+                },
+                // for hash consistency
+                lastModified: new Date(0),
+              },
+              {
+                url:
+                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                path: 'test/NYT.txt',
+                mimetype: 'text/plain',
+                decryptionOptions: {
+                  key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+                  iv: '6lNU+2vxJw6SFgse',
+                  authTag: 'gadZhS1QozjEmfmHLblzbg==',
+                },
+                // for hash consistency
+                lastModified: new Date(0),
+              },
+            )),
+          );
           await writer.close();
           console.log(
             progressEventFiredAndWorking,
@@ -388,11 +406,20 @@ const onReady = async (
           const zipBuffer = await writer.getBuffer();
           const zipHash = await hash('SHA-256', zipBuffer);
           console.log('zip hash:', zipHash);
-          resolve(expectedReferenceHashes.includes(zipHash.toLowerCase()));
+          const size = await writer.getSize();
+          const expectedSize = 3496;
+          console.log(
+            size === expectedSize,
+            `expected zip size (actual: ${size})`,
+          );
+          resolve(
+            expectedReferenceHashes.includes(zipHash.toLowerCase()) &&
+              size === expectedSize,
+          );
         }),
     ],
     [
-      'penumbra.saveZip() (completion tracking only)',
+      'penumbra.saveZip() (completion & size tracking only)',
       async () => {
         const files = [
           {
@@ -419,8 +446,20 @@ const onReady = async (
         ];
         const writer = penumbra.saveZip();
         await writer.write(...(await penumbra.get(...files)));
-        await writer.close();
-        return true;
+
+        const closeSize = await writer.close();
+        const size = await writer.getSize();
+        const expectedSize = 270826;
+        console.log(
+          size === closeSize,
+          'writer.close() size matches writer.getSize()',
+        );
+        console.log(
+          size === expectedSize,
+          `expected zip size (actual: ${size})`,
+        );
+
+        return size === expectedSize;
       },
     ],
   );
