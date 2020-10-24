@@ -11,6 +11,7 @@
 
 // local
 import penumbra from './API';
+import { PenumbraSupportLevel } from './enums';
 import { PenumbraError } from './error';
 import { PenumbraZipWriter } from './zip';
 
@@ -20,18 +21,6 @@ export { PenumbraZipWriter } from './zip';
  * Make selected object keys defined by K optional in type T
  */
 type Optionalize<T, K extends keyof T> = Omit<T, K> & Partial<T>;
-
-/** Penumbra user agent support level */
-export enum PenumbraSupportLevel {
-  /** Old browser where Penumbra does not work at all */
-  none = -0,
-  /** Modern browser where Penumbra is not yet supported */
-  possible = 0,
-  /** Modern browser where file size limit is low */
-  size_limited = 1,
-  /** Modern browser with full support */
-  full = 2,
-}
 
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)

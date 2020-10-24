@@ -6,18 +6,7 @@ import mime from 'mime-types';
 import { PenumbraFile, ZipOptions } from './types';
 import emitZipProgress from './utils/emitZipProgress';
 import emitZipCompletion from './utils/emitZipCompletion';
-
-/** Compression levels */
-export enum Compression {
-  /** No compression */
-  Store = 0,
-  /** Low compression */
-  Low = 1,
-  /** Medium compression */
-  Medium = 2,
-  /** High compression */
-  High = 3,
-}
+import { Compression } from './enums';
 
 const isN = (value: unknown): value is number =>
   value !== null && !isNaN(value as number);
@@ -29,7 +18,9 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
       .map(({ value }) => value)
       .reduce((acc, item) => acc + item, 0);
   }
-  const errors = results.filter(({ status }) => status === 'rejected') as PromiseRejectedResult[];
+  const errors = results.filter(
+    ({ status }) => status === 'rejected',
+  ) as PromiseRejectedResult[];
   // eslint-disable-next-line no-restricted-syntax
   for (const error of errors) {
     console.error(error.reason);
@@ -115,8 +106,10 @@ export class PenumbraZipWriter extends EventTarget {
     const { signal } = controller;
     signal.addEventListener(
       'abort',
-      () => { this.close() },
-      { once: true }
+      () => {
+        this.close();
+      },
+      { once: true },
     );
 
     // Auto-register onProgress & onComplete listeners
@@ -125,7 +118,9 @@ export class PenumbraZipWriter extends EventTarget {
     }
 
     if (typeof onComplete === 'function') {
-      this.addEventListener('complete', onComplete as EventListener, { once: true });
+      this.addEventListener('complete', onComplete as EventListener, {
+        once: true,
+      });
     }
 
     const saveStream = createWriteStream(
@@ -345,14 +340,4 @@ export class PenumbraZipWriter extends EventTarget {
   getFiles(): string[] {
     return [...this.files];
   }
-}
-
-/**
- * Zip files retrieved by Penumbra
- *
- * @param options - ZipOptions
- * @returns PenumbraZipWriter class instance
- */
-export function saveZip(options?: ZipOptions): PenumbraZipWriter {
-  return new PenumbraZipWriter(options);
 }

@@ -6,9 +6,8 @@ import {
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
-  ZipProgressEmit,
-  PenumbraSupportLevel,
 } from '../types';
+import { PenumbraSupportLevel } from '../enums';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import penumbra from '../API';
