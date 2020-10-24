@@ -177,9 +177,7 @@ export class PenumbraZipWriter extends EventTarget {
       if (sizeUnknown) {
         zip.byteSize = null;
       } else {
-        zip.byteSize += (files as { size: number }[])
-          .map(({ size }) => size)
-          .reduce((acc, val) => acc + val);
+        zip.byteSize += (sizes as number[]).reduce((acc, val) => acc + val);
       }
     }
     return sumWrites(
