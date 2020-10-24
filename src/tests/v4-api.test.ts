@@ -383,13 +383,13 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
   t.ok(zipHash, 'zip hash');
   t.ok(
     expectedReferenceHashes.includes(zipHash.toLowerCase()),
-    `penumbra.saveZip() expected output hash (actual: ${zipHash})`,
+    `expected zip hash (actual: ${zipHash})`,
   );
 
   const size = await writer.getSize();
   const expectedSize = 2622;
 
-  t.equals(size, expectedSize, 'expected zip size');
+  t.equals(size, expectedSize, `expected zip size (actual: ${size})`);
 
   t.end();
 });
