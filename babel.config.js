@@ -11,11 +11,6 @@ module.exports = {
           chrome: '85',
           safari: '14',
         },
-        // useBuiltIns: 'entry', // enable polyfills
-        // corejs: {
-        //   version: 3,
-        //   proposals: true,
-        // }, // Enable core-js and proposals
       },
     ],
   ],
