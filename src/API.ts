@@ -20,7 +20,7 @@ import {
   ZipOptions,
 } from './types';
 import { PenumbraZipWriter } from './zip';
-import { blobCache, intoStreamOnlyOnce, isViewableText } from './utils';
+import { blobCache, intoStreamOnlyOnce, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 
@@ -136,9 +136,6 @@ const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
 const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
-
-const isNumber = (number: unknown): number is number =>
-  !isNaN(number as number);
 
 /**
  * Zip files retrieved by Penumbra

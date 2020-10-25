@@ -19,3 +19,4 @@ export { default as toBuff } from './toBuff';
 export { default as blobCache } from './blobCache';
 export { default as isViewableText } from './isViewableText';
 export { default as intoStreamOnlyOnce } from './intoStreamOnlyOnce';
+export { default as isNumber } from './isNumber';

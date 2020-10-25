@@ -4,12 +4,8 @@ import { Writer } from '@transcend-io/conflux';
 import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
 import { PenumbraFile, ZipOptions } from './types';
-import emitZipProgress from './utils/emitZipProgress';
-import emitZipCompletion from './utils/emitZipCompletion';
+import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
-
-const isN = (value: unknown): value is number =>
-  value !== null && !isNaN(value as number);
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -98,7 +94,7 @@ export class PenumbraZipWriter extends EventTarget {
       );
     }
 
-    if (isN(size)) {
+    if (isNumber(size)) {
       this.byteSize = size;
     }
     this.allowDuplicates = allowDuplicates;
@@ -167,7 +163,7 @@ export class PenumbraZipWriter extends EventTarget {
 
     // Add file sizes to total zip size
     const sizes = files.map(({ size }) => size);
-    const totalWriteSize = sizes.every((size) => isN(size))
+    const totalWriteSize = sizes.every((size) => isNumber(size))
       ? (sizes as number[]).reduce((acc, val) => acc + val, 0)
       : null;
     if (zip.byteSize !== null) {
@@ -214,9 +210,9 @@ export class PenumbraZipWriter extends EventTarget {
             filePath = `${filename} (${i})${extension}`;
             const warning = `penumbra.saveZip(): Duplicate file ${JSON.stringify(
               dupe,
-            )} renamed to ${JSON.stringify(filePath)}`;
+            )}`;
             if (zip.allowDuplicates) {
-              console.warn(warning);
+              console.warn(`${warning} renamed to ${JSON.stringify(filePath)}`);
             } else {
               zip.abort();
               throw new Error(warning);
