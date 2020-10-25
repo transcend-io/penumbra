@@ -143,7 +143,7 @@ const DEFAULT_MIME_TYPE = 'application/octet-stream';
 const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
 
 /**
- * Zip files retrieved by Penumbra
+ * Save a zip containing files retrieved by Penumbra
  *
  * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance

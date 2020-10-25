@@ -28,7 +28,12 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   );
 };
 
-/** Wrapped WritableStream for state keeping with StreamSaver */
+/**
+ * Save a zip containing files retrieved by Penumbra
+ *
+ * @param options - ZipOptions
+ * @returns PenumbraZipWriter class instance
+ */
 export class PenumbraZipWriter extends EventTarget {
   /** Conflux zip writer instance */
   private conflux: Writer = new Writer();

@@ -127,11 +127,11 @@ export type ProgressEmit = CustomEvent<ProgressDetails>;
  * Zip progress event details
  */
 export type ZipProgressDetails = {
-  /** Percentage completed */
+  /** Percentage completed. `null` indicates indetermination */
   percent: number | null;
-  /** Total items written */
+  /** The number of bytes or items written so far */
   written: number;
-  /** Total number of expected items to write */
+  /** The total number of bytes or items to write. `null` indicates indetermination */
   size: number | null;
 };
 
