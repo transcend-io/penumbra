@@ -20,7 +20,12 @@ import {
   ZipOptions,
 } from './types';
 import { PenumbraZipWriter } from './zip';
-import { blobCache, intoStreamOnlyOnce, isNumber, isViewableText } from './utils';
+import {
+  blobCache,
+  intoStreamOnlyOnce,
+  isNumber,
+  isViewableText,
+} from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 
