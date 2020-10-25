@@ -235,12 +235,12 @@ interface PenumbraZipWriter extends EventTarget {
 }
 
 type ZipProgressDetails = {
-  /** Percentage completed */
-  percent: number;
-  /** Total bytes read */
-  totalBytesRead: number;
-  /** Total number of bytes to read */
-  contentLength: number;
+  /** Percentage completed. `null` indicates indetermination */
+  percent: number | null;
+  /** The number of bytes or items written so far */
+  written: number;
+  /** The total number of bytes or items to write. `null` indicates indetermination */
+  size: number | null;
 };
 ```
 

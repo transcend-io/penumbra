@@ -5,8 +5,8 @@ import { PenumbraEvent } from '../event';
 /**
  * An event emitter for PenumbraZipWriter progress
  * @param writer - PenumbraZipWriter instance
- * @param totalBytesRead - The number of bytes or items written so far
- * @param contentLength - The total number of bytes or items to write
+ * @param written - The number of bytes or items written so far
+ * @param size - The total number of bytes or items to write
  * @returns
  */
 export default function emitZipProgress(
