@@ -31,6 +31,7 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
 /**
  * Save a zip containing files retrieved by Penumbra
  *
+ * @example new PenumbraZipWriter(options)
  * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance
  */
