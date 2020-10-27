@@ -69,5 +69,8 @@
     "webm",
     "zh"
   ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true,
+  "prettier.packageManager": "yarn",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
