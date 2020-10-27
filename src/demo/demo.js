@@ -285,12 +285,6 @@ const onReady = async (
     [
       'penumbra.encrypt()',
       async () => {
-        if (navigator.userAgent.toLowerCase().includes('firefox')) {
-          console.error(
-            'penumbra.encrypt() test skipped for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
-          );
-          return true;
-        }
         const te = new TextEncoder();
         const td = new TextDecoder();
         const input = 'test';

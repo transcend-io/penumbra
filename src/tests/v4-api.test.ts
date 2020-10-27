@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import test from 'tape';
-import Bowser from 'bowser';
 import {
   PenumbraAPI,
   PenumbraFile,
@@ -9,13 +8,8 @@ import {
 } from '../types';
 import { PenumbraSupportLevel } from '../enums';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
-
-// This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
-const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
 
 const view = self;
 
@@ -278,13 +272,6 @@ test('penumbra.getBlob()', async (t) => {
 });
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
-  if (['Firefox', 'Safari'].includes(browserName)) {
-    t.pass(
-      `penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
-    );
-    t.end();
-    return;
-  }
   const te = new TextEncoder();
   const td = new TextDecoder();
   const input = 'test';
@@ -301,14 +288,6 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 });
 
 test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
-  if (['Firefox', 'Safari'].includes(browserName)) {
-    t.pass(
-      // eslint-disable-next-line max-len
-      `penumbra.saveZip({ saveBuffer: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
-    );
-    t.end();
-    return;
-  }
   const expectedReferenceHashes = [
     '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
     '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',

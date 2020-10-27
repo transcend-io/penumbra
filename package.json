@@ -85,7 +85,6 @@
     "@typescript-eslint/parser": "^2.23.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
-    "bowser": "^2.9.0",
     "check-deps": "^1.4.1",
     "codecov": "^3.6.5",
     "eslint": "^6.8.0",
