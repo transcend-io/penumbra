@@ -467,9 +467,6 @@ const onReady = async (
   // eslint-disable-next-line no-restricted-syntax
   for await (const [name, test] of tests) {
     const passed = await test();
-    // .catch((ex) => {
-    //   console.error(name, ex);
-    // });
     failures += !passed;
     console.log(
       `%c${

@@ -49,14 +49,13 @@ export default function fetchAndDecrypt(
         const { iv, authTag, key } = decryptionOptions;
 
         // Convert to buffers
-        const bufferKey = key instanceof Buffer ? key : toBuff(key);
+        const bufferKey = toBuff(key);
         // Grab from header if possible
         const bufferIv =
           iv instanceof Buffer
             ? iv
             : toBuff(response.headers.get('x-penumbra-iv') || iv);
-        const bufferAuthTag =
-          authTag instanceof Buffer ? authTag : toBuff(authTag);
+        const bufferAuthTag = toBuff(authTag);
 
         // Construct the decipher
         const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
@@ -66,7 +65,7 @@ export default function fetchAndDecrypt(
         return decryptStream(
           response.body,
           decipher,
-          Number(response.headers.get('Content-Length') || '0'),
+          Number(response.headers.get('Content-Length') || 0),
           url,
           bufferKey,
           bufferIv,

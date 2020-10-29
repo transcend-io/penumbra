@@ -17,6 +17,7 @@ import {
   PenumbraFile,
 } from './types';
 import {
+  emitJobCompletion,
   // emitJobCompletion,
   emitProgress,
   intoStreamOnlyOnce,
@@ -66,11 +67,11 @@ export function decryptStream(
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
 
-          // TODO lazy auth tag from response trailer
-          // if (totalBytesRead >= contentLength) {
-          //   decipher.final();
-          //   emitJobCompletion(id, { key, iv, authTag });
-          // }
+          // Auth tag from response trailer
+          if (totalBytesRead >= contentLength) {
+            decipher.final();
+            emitJobCompletion(id, { key, iv, authTag });
+          }
         },
       }),
     );
@@ -90,12 +91,12 @@ export function decryptStream(
       function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
-            // decipher.final();
+            decipher.final();
             if (!finished) {
               controller.close();
               finished = true;
             }
-            // emitJobCompletion(id, { key, iv, authTag });
+            emitJobCompletion(id, { key, iv, authTag });
             return;
           }
 
@@ -138,12 +139,9 @@ export default function decrypt(
   size = file.size || size;
 
   // Convert to Buffers
-  const key = options.key instanceof Buffer ? options.key : toBuff(options.key);
-  const iv = options.iv instanceof Buffer ? options.iv : toBuff(options.iv);
-  const authTag =
-    options.authTag instanceof Buffer
-      ? options.authTag
-      : toBuff(options.authTag);
+  const key = toBuff(options.key);
+  const iv = toBuff(options.iv);
+  const authTag = toBuff(options.authTag);
 
   // Construct the decipher
   const decipher = createDecipheriv('aes-256-gcm', key, iv);
@@ -154,7 +152,6 @@ export default function decrypt(
     ...file,
     stream: decryptStream(
       intoStreamOnlyOnce(file.stream),
-      /** TODO: address this TypeScript confusion  */
       decipher,
       size,
       id,

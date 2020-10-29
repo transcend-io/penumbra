@@ -157,11 +157,15 @@ class PenumbraWorker {
       const writable = fromWritablePort(writablePorts[i]);
       const id = ids[i];
       const size = sizes[i];
-      const encrypted = encrypt(options, {
-        stream,
+      const encrypted = encrypt(
+        options,
+        {
+          stream,
+          size,
+          id,
+        },
         size,
-        id,
-      });
+      );
       encrypted.stream.pipeTo(writable);
     });
   }
