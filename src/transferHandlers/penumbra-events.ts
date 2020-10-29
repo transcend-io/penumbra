@@ -130,7 +130,14 @@ transferHandlers.set('error', {
     const event = new ErrorEvent('error', detail);
     if (detail) {
       Object.keys(detail).forEach((key) => {
-        (event as any)[key] = detail[key];
+        const descriptor = Object.getOwnPropertyDescriptor(event, key);
+        if (
+          key !== 'isTrusted' &&
+          descriptor &&
+          (descriptor.configurable || 'set' in descriptor)
+        ) {
+          (event as any)[key] = detail[key];
+        }
       });
     }
     return event;

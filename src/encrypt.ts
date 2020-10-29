@@ -1,15 +1,14 @@
 // external modules
-// import {
-//   TransformStream as TransformStreamPonyfill,
-//   ReadableStream as ReadableStreamPonyfill,
-// } from 'web-streams-polyfill/ponyfill';
+import {
+  // ReadableStream as ReadableStreamPonyfill,
+  TransformStream as TransformStreamPonyfill,
+} from 'web-streams-polyfill/ponyfill';
 import { createCipheriv } from 'crypto-browserify';
 
 // local
 import { CipherGCM } from 'crypto';
-import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
-import { toWebReadableStream } from 'web-streams-node';
+// import { toWebReadableStream } from 'web-streams-node';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
@@ -28,7 +27,7 @@ import {
 /* tslint:disable completed-docs */
 
 // const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
-// const TransformStream = self.TransformStream || TransformStreamPonyfill;
+const TransformStream = self.TransformStream || TransformStreamPonyfill;
 
 // external modules
 
@@ -45,18 +44,17 @@ import {
  */
 export function encryptStream(
   jobID: number,
-  rs: ReadableStream | Readable,
+  rs: ReadableStream,
   cipher: CipherGCM,
   contentLength: number,
   key: Buffer,
   iv: Buffer,
 ): ReadableStream {
-  const stream: ReadableStream =
-    rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
+  const stream: ReadableStream = intoStreamOnlyOnce(rs);
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if ('TransformStream' in self) {
+  if (TransformStream) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
       new TransformStream({
@@ -170,7 +168,7 @@ export default function encrypt(
     // eslint-disable-next-line no-param-reassign
     options = {
       ...options,
-      key: Buffer.from(
+      key: toBuffer(
         crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
       ),
     };
@@ -182,7 +180,7 @@ export default function encrypt(
 
   // Convert to Buffers
   const key = toBuff(options.key);
-  const iv = Buffer.from(
+  const iv = toBuff(
     (options as PenumbraDecryptionInfo).iv
       ? toBuff((options as PenumbraDecryptionInfo).iv)
       : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)),

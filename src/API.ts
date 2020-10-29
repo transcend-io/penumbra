@@ -1,13 +1,10 @@
 /* eslint-disable max-lines */
-import {
-  ReadableStream as ReadableStreamPonyfill,
-  WritableStream as WritableStreamPonyfill,
-} from 'web-streams-polyfill/ponyfill';
+import { WritableStream as WritableStreamPonyfill } from 'web-streams-polyfill/ponyfill';
 
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
-import { toWebReadableStream } from 'web-streams-node';
+// import { toWebReadableStream } from 'web-streams-node';
 import streamSaver from 'streamsaver';
 import { saveAs } from 'file-saver';
 
@@ -34,7 +31,6 @@ import {
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 
-const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
 const { createWriteStream } = streamSaver;
 if (!self.WritableStream) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -358,7 +354,7 @@ async function encryptJob(
       // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
-        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
+        : intoStreamOnlyOnce(files[i].stream)
       ).pipeTo(remoteWritableStream.writable);
     });
 
@@ -397,9 +393,9 @@ async function encryptJob(
       (file): PenumbraEncryptedFile => {
         const { stream } = encryptFile(options, file, file.size as number);
         return {
-          stream,
           ...file,
           ...options,
+          stream,
         };
       },
     ),
@@ -484,21 +480,21 @@ async function decryptJob(
         transfer(writablePorts, writablePorts),
       );
     });
-    // encryption jobs submitted and still processing
+    // decryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
       // pipe input files into remote writable streams for worker
       (files[i].stream instanceof ReadableStream
         ? files[i].stream
-        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
+        : intoStreamOnlyOnce(files[i].stream)
       ).pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams
     const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
-        stream: stream.readable as ReadableStream,
         size: sizes[i],
         id: ids[i],
+        stream: stream.readable as ReadableStream,
       }),
     );
     return readables;

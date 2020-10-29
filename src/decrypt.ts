@@ -1,30 +1,30 @@
 /* tslint:disable completed-docs */
 
 // external modules
-// import {
-//   TransformStream as TransformStreamPonyfill,
-//   ReadableStream as ReadableStreamPonyfill,
-// } from 'web-streams-polyfill/ponyfill';
+import {
+  // ReadableStream as ReadableStreamPonyfill,
+  TransformStream as TransformStreamPonyfill,
+} from 'web-streams-polyfill/ponyfill';
 import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
 // utils
-import { toWebReadableStream } from 'web-streams-node';
+// import { toWebReadableStream } from 'web-streams-node';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
 import {
-  emitJobCompletion,
+  // emitJobCompletion,
   emitProgress,
   intoStreamOnlyOnce,
   toBuff,
 } from './utils';
 
 // const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
-// const TransformStream = self.TransformStream || TransformStreamPonyfill;
+const TransformStream = self.TransformStream || TransformStreamPonyfill;
 
 /**
  * Decrypts a readable stream
@@ -47,12 +47,11 @@ export function decryptStream(
   iv: Buffer,
   authTag: Buffer,
 ): ReadableStream {
-  const stream: ReadableStream =
-    rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
+  const stream: ReadableStream = intoStreamOnlyOnce(rs);
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if ('TransformStream' in self) {
+  if (TransformStream) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
       new TransformStream({
@@ -67,7 +66,7 @@ export function decryptStream(
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
 
-          // Auth tag from response trailer
+          // TODO lazy auth tag from response trailer
           // if (totalBytesRead >= contentLength) {
           //   decipher.final();
           //   emitJobCompletion(id, { key, iv, authTag });
@@ -91,11 +90,11 @@ export function decryptStream(
       function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
+            // decipher.final();
             if (!finished) {
               controller.close();
               finished = true;
             }
-            // decipher.final();
             // emitJobCompletion(id, { key, iv, authTag });
             return;
           }
@@ -127,6 +126,7 @@ export function decryptStream(
 export default function decrypt(
   options: PenumbraDecryptionInfo,
   file: PenumbraEncryptedFile,
+  // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraFile {
   if (!options || !options.key || !options.iv || !options.authTag) {
@@ -139,8 +139,7 @@ export default function decrypt(
 
   // Convert to Buffers
   const key = options.key instanceof Buffer ? options.key : toBuff(options.key);
-  const iv =
-    options.iv instanceof Buffer ? options.iv : Buffer.from(options.iv);
+  const iv = options.iv instanceof Buffer ? options.iv : toBuff(options.iv);
   const authTag =
     options.authTag instanceof Buffer
       ? options.authTag
@@ -153,10 +152,6 @@ export default function decrypt(
   // Encrypt the stream
   return {
     ...file,
-    // stream:
-    //   file.stream instanceof ReadableStream
-    //     ? encryptStream(file.stream, cipher, size)
-    //     : encryptBuffer(file.stream, cipher),
     stream: decryptStream(
       intoStreamOnlyOnce(file.stream),
       /** TODO: address this TypeScript confusion  */
