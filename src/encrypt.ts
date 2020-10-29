@@ -1,4 +1,8 @@
 // external modules
+// import {
+//   TransformStream as TransformStreamPonyfill,
+//   ReadableStream as ReadableStreamPonyfill,
+// } from 'web-streams-polyfill/ponyfill';
 import { createCipheriv } from 'crypto-browserify';
 
 // local
@@ -14,20 +18,29 @@ import {
 } from './types';
 
 // utils
-import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
-import emitJobCompletion from './utils/emitJobCompletion';
+import {
+  emitProgress,
+  intoStreamOnlyOnce,
+  toBuff,
+  emitJobCompletion,
+} from './utils';
 
 /* tslint:disable completed-docs */
+
+// const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
+// const TransformStream = self.TransformStream || TransformStreamPonyfill;
 
 // external modules
 
 /**
  * Encrypts a readable stream
  *
+ * @param id - Job ID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
  * @param contentLength - The content length of the file, in bytes
- * @param url - The URL to read the encrypted file from (only used for the event emitter)
+ * @param key - Decryption key Buffer
+ * @param iv - Decryption IV Buffer
  * @returns A readable stream of decrypted data
  */
 export function encryptStream(

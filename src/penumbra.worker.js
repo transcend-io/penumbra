@@ -10,6 +10,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
 
+import 'web-streams-polyfill';
+
 import { transfer, expose } from 'comlink';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 
@@ -18,7 +20,7 @@ import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
-import { decrypt } from './decrypt';
+import decrypt from './decrypt';
 import { setWorkerID } from './worker-id';
 
 if (self.document) {

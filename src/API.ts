@@ -1,9 +1,14 @@
 /* eslint-disable max-lines */
+import {
+  ReadableStream as ReadableStreamPonyfill,
+  WritableStream as WritableStreamPonyfill,
+} from 'web-streams-polyfill/ponyfill';
+
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import { toWebReadableStream } from 'web-streams-node';
-import { createWriteStream } from 'streamsaver';
+import streamSaver from 'streamsaver';
 import { saveAs } from 'file-saver';
 
 // Local
@@ -28,6 +33,13 @@ import {
 } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+
+const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
+const { createWriteStream } = streamSaver;
+if (!self.WritableStream) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (streamSaver as any).WritableStream = WritableStreamPonyfill;
+}
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -192,7 +204,9 @@ function save(
 
   // Write a single readable stream to file
   if (file.stream instanceof ReadableStream) {
-    file.stream.pipeTo(createWriteStream(singleFileName), { signal });
+    file.stream.pipeTo(createWriteStream(singleFileName), {
+      signal,
+    });
   } else if (file.stream instanceof ArrayBuffer) {
     saveAs(
       new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
@@ -509,7 +523,7 @@ async function decryptJob(
   //     return decryptedFiles;
   //   },
   // );
-  const { decrypt: decryptFile } = await import('./decrypt');
+  const { default: decryptFile } = await import('./decrypt');
   const decryptedFiles: PenumbraFile[] = await Promise.all(
     files.map(async (file) => decryptFile(options, file, file.size as number)),
   );

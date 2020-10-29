@@ -4,7 +4,7 @@ import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import { RemoteResource } from './types';
-import decryptStream from './decrypt';
+import { decryptStream } from './decrypt';
 import { PenumbraError } from './error';
 import { toBuff } from './utils';
 import emitError from './utils/emitError';
@@ -49,10 +49,14 @@ export default function fetchAndDecrypt(
         const { iv, authTag, key } = decryptionOptions;
 
         // Convert to buffers
-        const bufferKey = toBuff(key);
+        const bufferKey = key instanceof Buffer ? key : toBuff(key);
         // Grab from header if possible
-        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
-        const bufferAuthTag = toBuff(authTag);
+        const bufferIv =
+          iv instanceof Buffer
+            ? iv
+            : toBuff(response.headers.get('x-penumbra-iv') || iv);
+        const bufferAuthTag =
+          authTag instanceof Buffer ? authTag : toBuff(authTag);
 
         // Construct the decipher
         const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
@@ -64,6 +68,9 @@ export default function fetchAndDecrypt(
           decipher,
           Number(response.headers.get('Content-Length') || '0'),
           url,
+          bufferKey,
+          bufferIv,
+          bufferAuthTag,
         );
       })
   );

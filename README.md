@@ -50,12 +50,16 @@
 
 ## Compatibility
 
-|         | .decrypt | .encrypt |
-| ------- | -------: | -------: |
-| Chrome  |       ✅ |       ✅ |
-| Safari  |       ✅ |       ❌ |
-| Edge    |       ✅ |       ✅ |
-| Firefox |       ✅ |       ❌ |
+|         | .decrypt | .encrypt | .saveZip |
+| ------- | -------: | -------: | -------: |
+| Chrome  |       ✅ |       ✅ |       ✅ |
+| Safari  |       ✅ |       ❌ |       ✅ |
+| Edge    |       ✅ |       ✅ |       ✅ |
+| Firefox |       ✅ |       ❌ |       ✅ |
+
+✅ = Full support
+
+❌ = 15 MiB limit
 
 ## Usage
 

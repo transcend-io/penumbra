@@ -301,7 +301,9 @@ const onReady = async (
         const decryptedData = await new Response(
           decrypted.stream,
         ).arrayBuffer();
-        return td.decode(decryptedData) === input;
+        const decryptedText = td.decode(decryptedData);
+        console.log('decrypted text:', decryptedText);
+        return decryptedText === input;
       },
     ],
     [
@@ -311,6 +313,8 @@ const onReady = async (
         new Promise(async (resolve) => {
           const expectedReferenceHashes = [
             '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
+            '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
+            '7559c3628a54a498b715edbbb9a0f16fc65e94eaaf185b41e91f6bddf1a8e02e',
           ];
           let progressEventFiredAndWorking = false;
           let completeEventFired = false;

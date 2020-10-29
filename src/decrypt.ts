@@ -1,6 +1,10 @@
 /* tslint:disable completed-docs */
 
 // external modules
+// import {
+//   TransformStream as TransformStreamPonyfill,
+//   ReadableStream as ReadableStreamPonyfill,
+// } from 'web-streams-polyfill/ponyfill';
 import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
@@ -12,7 +16,15 @@ import {
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
-import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
+import {
+  emitJobCompletion,
+  emitProgress,
+  intoStreamOnlyOnce,
+  toBuff,
+} from './utils';
+
+// const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
+// const TransformStream = self.TransformStream || TransformStreamPonyfill;
 
 /**
  * Decrypts a readable stream
@@ -21,13 +33,19 @@ import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
  * @param decipher - The crypto module's decipher
  * @param contentLength - The content length of the file, in bytes
  * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
+ * @param key - Decryption key Buffer
+ * @param iv - Decryption IV Buffer
+ * @param authTag - Decryption authTag Buffer
  * @returns A readable stream of decrypted data
  */
-export default function decryptStream(
+export function decryptStream(
   rs: ReadableStream,
   decipher: DecipherGCM,
   contentLength: number,
   id: string | number,
+  key: Buffer,
+  iv: Buffer,
+  authTag: Buffer,
 ): ReadableStream {
   const stream: ReadableStream =
     rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
@@ -49,9 +67,10 @@ export default function decryptStream(
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
 
-          // TODO lazy auth tag from response trailer
+          // Auth tag from response trailer
           // if (totalBytesRead >= contentLength) {
           //   decipher.final();
+          //   emitJobCompletion(id, { key, iv, authTag });
           // }
         },
       }),
@@ -76,6 +95,8 @@ export default function decryptStream(
               controller.close();
               finished = true;
             }
+            // decipher.final();
+            // emitJobCompletion(id, { key, iv, authTag });
             return;
           }
 
@@ -103,10 +124,9 @@ export default function decryptStream(
  * @param file - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export function decrypt(
+export default function decrypt(
   options: PenumbraDecryptionInfo,
   file: PenumbraEncryptedFile,
-  // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraFile {
   if (!options || !options.key || !options.iv || !options.authTag) {
@@ -143,6 +163,9 @@ export function decrypt(
       decipher,
       size,
       id,
+      key,
+      iv,
+      authTag,
     ),
     id,
   };

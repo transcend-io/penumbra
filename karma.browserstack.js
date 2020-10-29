@@ -3,8 +3,6 @@ const { short } = require('git-rev-sync');
 const getGlobalConfig = require('./karma.global');
 
 module.exports = (config) => {
-  // TODO add more browsers. this util is useful:
-  // https://www.browserstack.com/automate/capabilities
   const customLaunchers = {
     bs_chrome_pc: {
       base: 'BrowserStack',
@@ -14,7 +12,6 @@ module.exports = (config) => {
       os_version: '10',
     },
     bs_firefox_pc: {
-      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Firefox',
       browser_version: '80',
@@ -22,9 +19,12 @@ module.exports = (config) => {
       os_version: '10',
     },
     bs_safari_mac: {
-      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Safari',
+      /**
+       * TODO: Update this once BrowserStack supports Safari 14
+       * [issue url here]
+       */
       browser_version: '13',
       os: 'OS X',
       os_version: 'Catalina',

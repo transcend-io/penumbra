@@ -1,11 +1,18 @@
 /* eslint-disable prettier/prettier */
+import { WritableStream as WritableStreamPonyfill } from 'web-streams-polyfill/ponyfill';
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
-import { createWriteStream } from 'streamsaver';
+import streamSaver from 'streamsaver';
 import mime from 'mime-types';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
+
+const { createWriteStream } = streamSaver;
+if (!self.WritableStream) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (streamSaver as any).WritableStream = WritableStreamPonyfill;
+}
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
