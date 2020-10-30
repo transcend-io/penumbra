@@ -12,7 +12,7 @@ transferHandlers.set('penumbra-progress', {
    * @param object Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any) {
+  canHandle(object: any): object is CustomEvent {
     return (
       object instanceof PenumbraEvent && object.type === 'penumbra-progress'
     );
@@ -44,7 +44,7 @@ transferHandlers.set('penumbra-complete', {
    * @param object Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any) {
+  canHandle(object: any): object is CustomEvent {
     return (
       object instanceof PenumbraEvent && object.type === 'penumbra-complete'
     );
@@ -73,12 +73,12 @@ transferHandlers.set('penumbra-complete', {
 
 transferHandlers.set('penumbra-error', {
   /**
-   * Checks if object is a penumbra-progress event
+   * Checks if object is a penumbra-error event
    *
    * @param object Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any) {
+  canHandle(object: any): object is CustomEvent {
     return object instanceof PenumbraEvent && object.type === 'penumbra-error';
   },
   /**
@@ -103,12 +103,12 @@ transferHandlers.set('penumbra-error', {
 
 transferHandlers.set('error', {
   /**
-   * Checks if object is a penumbra-progress event
+   * Checks if object is an error event
    *
    * @param object Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any) {
+  canHandle(object: any): object is ErrorEvent {
     return object instanceof ErrorEvent && object.type === 'error';
   },
   /**
