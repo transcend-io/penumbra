@@ -31,12 +31,6 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   );
 };
 
-// const { createWriteStream } = streamSaver;
-// if (!WritableStreamIsNative) {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   (streamSaver as any).WritableStream = WritableStreamPonyfill;
-// }
-
 /**
  * Save a zip containing files retrieved by Penumbra
  *
