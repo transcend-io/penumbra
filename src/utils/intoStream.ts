@@ -12,6 +12,7 @@ const intoStream = (
     | Buffer,
 ): ReadableStream =>
   input instanceof NativeReadableStream ||
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (input as any)?.constructor?.name === 'ReadableStream'
     ? (input as ReadableStream)
     : input instanceof ArrayBuffer || ArrayBuffer.isView(input)
