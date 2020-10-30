@@ -53,15 +53,18 @@
 |         | .decrypt | .encrypt | .saveZip |
 | ------- | -------: | -------: | -------: |
 | Chrome  |       ✅ |       ✅ |       ✅ |
-| Safari  |       🟡 |       🟡 |       🟡 |
 | Edge    |       ✅ |       ✅ |       ✅ |
-| Firefox |       ❌ |       ❌ |       ❌ |
+| Safari  |       🟡 |       🟡 |       🟡 |
+| Firefox |       🟡 |       🟡 |       🟡 |
+| Edge 18 |       ❓ |       ❓ |       ❓ |
 
 ✅ = Full support
 
 🟡 = 16 MiB limit
 
 ❌ = No support
+
+❓ = Unknown
 
 ## Usage
 
