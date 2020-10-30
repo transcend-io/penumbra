@@ -39,40 +39,40 @@ export function encryptStream(
   const stream: ReadableStream = rs;
   let totalBytesRead = 0;
 
-  // TransformStreams are supported
-  if (TransformStream && fullReadableStreamSupport) {
-    return stream.pipeThrough(
-      // eslint-disable-next-line no-undef
-      new (TransformStream as typeof self.TransformStream)({
-        transform: async (chunk, controller) => {
-          const bufferChunk = toBuffer(chunk);
+  // // TransformStreams are supported
+  // if (TransformStream && fullReadableStreamSupport) {
+  //   return stream.pipeThrough(
+  //     // eslint-disable-next-line no-undef
+  //     new (TransformStream as typeof self.TransformStream)({
+  //       transform: async (chunk, controller) => {
+  //         const bufferChunk = toBuffer(chunk);
 
-          // Encrypt chunk and send it out
-          const encryptedChunk = cipher.update(bufferChunk);
-          controller.enqueue(encryptedChunk);
+  //         // Encrypt chunk and send it out
+  //         const encryptedChunk = cipher.update(bufferChunk);
+  //         controller.enqueue(encryptedChunk);
 
-          // Emit a progress update
-          totalBytesRead += bufferChunk.length;
-          emitProgress(
-            'encrypt',
-            totalBytesRead,
-            contentLength,
-            '[encrypted file]',
-          );
+  //         // Emit a progress update
+  //         totalBytesRead += bufferChunk.length;
+  //         emitProgress(
+  //           'encrypt',
+  //           totalBytesRead,
+  //           contentLength,
+  //           '[encrypted file]',
+  //         );
 
-          if (totalBytesRead >= contentLength) {
-            cipher.final();
-            const authTag = cipher.getAuthTag();
-            emitJobCompletion(jobID, {
-              key,
-              iv,
-              authTag,
-            });
-          }
-        },
-      }),
-    );
-  }
+  //         if (totalBytesRead >= contentLength) {
+  //           cipher.final();
+  //           const authTag = cipher.getAuthTag();
+  //           emitJobCompletion(jobID, {
+  //             key,
+  //             iv,
+  //             authTag,
+  //           });
+  //         }
+  //       },
+  //     }),
+  //   );
+  // }
 
   // TransformStream not supported, revert to ReadableStream
   const reader = stream.getReader();

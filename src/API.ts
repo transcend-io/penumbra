@@ -65,15 +65,15 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       resolver.href = url;
       const path = resolver.pathname; // derive path from URL
       return {
-        stream: stream.readable,
         path,
         // derived path is overridden if PenumbraFile contains path
         ...resources[i],
+        stream: stream.readable,
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
-      await thread.get(transfer(writablePorts, writablePorts), resources);
+    new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
+      thread.get(transfer(writablePorts, writablePorts), resources);
     });
     return readables as PenumbraFile[];
   }
@@ -89,7 +89,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
         throw new Error('penumbra.get(): RemoteResource missing URL');
       }
       return {
-        stream: await new Response(await fetchAndDecrypt(resource)).body,
+        stream: new Response(await fetchAndDecrypt(resource)).body,
         ...resource,
       } as PenumbraFile;
     }),
@@ -127,7 +127,11 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  */
 export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   return Promise.all(
-    resources.map(async (resource) => (await getJob(resource))[0]),
+    resources.map((resource) =>
+      (getJob(resource) as Promise<[PenumbraFile]>).then(
+        ([decrypted]) => decrypted,
+      ),
+    ),
   );
 }
 
@@ -198,7 +202,7 @@ function save(
  * @param data - The data to load
  * @returns A blob of the data
  */
-async function getBlob(
+function getBlob(
   files: PenumbraFile[] | PenumbraFile | ReadableStream,
   type?: string, // = data[0].mimetype
 ): Promise<Blob> {
@@ -211,10 +215,18 @@ async function getBlob(
     rs = files;
   } else {
     const file = 'length' in files ? files[0] : files;
-    if (file.stream instanceof ArrayBuffer) {
-      return new Blob(
-        [new Uint8Array(file.stream, 0, file.stream.byteLength)],
-        { type: file.mimetype },
+    if (file.stream instanceof ArrayBuffer || ArrayBuffer.isView(file.stream)) {
+      return Promise.resolve(
+        new Blob(
+          [
+            new Uint8Array(
+              file.stream as ArrayBufferLike,
+              0,
+              file.stream.byteLength,
+            ),
+          ],
+          { type: file.mimetype },
+        ),
       );
     }
     rs = file.stream;
@@ -403,7 +415,11 @@ export function encrypt(
   ...files: PenumbraFile[]
 ): Promise<PenumbraEncryptedFile[]> {
   return Promise.all(
-    files.map(async (file) => (await encryptJob(options, file))[0]),
+    files.map((file) =>
+      (encryptJob(options, file) as Promise<[PenumbraEncryptedFile]>).then(
+        ([encrypted]) => encrypted,
+      ),
+    ),
   );
 }
 
@@ -444,7 +460,7 @@ async function decryptJob(
       ({ writablePort }) => writablePort,
     );
     // enter worker thread
-    await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+    await new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
       /**
        * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
@@ -499,8 +515,8 @@ async function decryptJob(
   //   },
   // );
   // const { default: decryptFile } = await import('./decrypt');
-  const decryptedFiles: PenumbraFile[] = await Promise.all(
-    files.map(async (file) => decryptFile(options, file, file.size as number)),
+  const decryptedFiles: PenumbraFile[] = files.map((file) =>
+    decryptFile(options, file, file.size as number),
   );
   return decryptedFiles;
 }
@@ -523,12 +539,16 @@ async function decryptJob(
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  */
-export async function decrypt(
+export function decrypt(
   options: PenumbraDecryptionInfo,
   ...files: PenumbraEncryptedFile[]
 ): Promise<PenumbraFile[]> {
   return Promise.all(
-    files.map(async (file) => (await decryptJob(options, file))[0]),
+    files.map((file) =>
+      (decryptJob(options, file) as Promise<[PenumbraFile]>).then(
+        ([decrypted]) => decrypted,
+      ),
+    ),
   );
 }
 

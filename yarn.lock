@@ -904,10 +904,10 @@
     pako "^1.0.11"
     web-streams-polyfill "^3.0.0"
 
-"@transcend-io/remote-web-streams@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@transcend-io/remote-web-streams/-/remote-web-streams-1.0.4.tgz#f6aad026f5be954b0592f3dcf28fff39a742171f"
-  integrity sha512-XJD+mpogoodGwboU5jhNz5azDW2mgSPNptZaHJxSyga2CfdVxFP3DGxwtj0e6Jwxok9+pL4T5Gccb9UZFuuT8Q==
+"@transcend-io/remote-web-streams@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@transcend-io/remote-web-streams/-/remote-web-streams-1.0.5.tgz#747c5652b55592acf811d6b5f051272feb0fdb8c"
+  integrity sha512-Ff/TsLZiOVKHH+0Gvx6nUn/KKHjY5o0uf9PWqxpEBL4yfVczIIFUDqiGEOKP9aN09Z+34q64yyZ7o3vk0mVH0Q==
   dependencies:
     web-streams-polyfill "^3.0.0"
 

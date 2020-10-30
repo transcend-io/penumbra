@@ -66,7 +66,7 @@
     "into-stream": "^5.1.1",
     "mime-types": "^2.1.26",
     "promise.allsettled": "^1.0.2",
-    "@transcend-io/remote-web-streams": "1.0.4",
+    "@transcend-io/remote-web-streams": "1.0.5",
     "remote-web-streams": "0.1.0",
     "streamsaver": "^2.0.4",
     "typedarray-to-buffer": "^3.1.5",
