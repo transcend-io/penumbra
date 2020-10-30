@@ -38,31 +38,31 @@ export function decryptStream(
 ): ReadableStream {
   let totalBytesRead = 0;
 
-  // // TransformStreams are supported
-  // if (TransformStream && fullReadableStreamSupport) {
-  //   return stream.pipeThrough(
-  //     // eslint-disable-next-line no-undef
-  //     new (TransformStream as typeof self.TransformStream)({
-  //       transform: async (chunk, controller) => {
-  //         const bufferChunk = toBuffer(chunk);
+  // TransformStreams are supported
+  if (TransformStream && fullReadableStreamSupport) {
+    return stream.pipeThrough(
+      // eslint-disable-next-line no-undef
+      new (TransformStream as typeof self.TransformStream)({
+        transform: async (chunk, controller) => {
+          const bufferChunk = toBuffer(chunk);
 
-  //         // Decrypt chunk and send it out
-  //         const decryptedChunk = decipher.update(bufferChunk);
-  //         controller.enqueue(decryptedChunk);
+          // Decrypt chunk and send it out
+          const decryptedChunk = decipher.update(bufferChunk);
+          controller.enqueue(decryptedChunk);
 
-  //         // Emit a progress update
-  //         totalBytesRead += bufferChunk.length;
-  //         emitProgress('decrypt', totalBytesRead, contentLength, id);
+          // Emit a progress update
+          totalBytesRead += bufferChunk.length;
+          emitProgress('decrypt', totalBytesRead, contentLength, id);
 
-  //         // Auth tag from response trailer
-  //         if (totalBytesRead >= contentLength) {
-  //           decipher.final();
-  //           emitJobCompletion(id, { key, iv, authTag });
-  //         }
-  //       },
-  //     }),
-  //   );
-  // }
+          // Auth tag from response trailer
+          if (totalBytesRead >= contentLength) {
+            decipher.final();
+            emitJobCompletion(id, { key, iv, authTag });
+          }
+        },
+      }),
+    );
+  }
 
   let finished = false;
   // TransformStream not supported, revert to ReadableStream
