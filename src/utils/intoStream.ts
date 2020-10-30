@@ -1,4 +1,5 @@
 import { toWebReadableStream } from 'web-streams-node';
+import { NativeReadableStream } from '../streams';
 
 /** Converts arrays into ReadableStreams  */
 const intoStream = (
@@ -10,7 +11,7 @@ const intoStream = (
     | NodeJS.TypedArray
     | Buffer,
 ): ReadableStream =>
-  input instanceof ReadableStream ||
+  input instanceof NativeReadableStream ||
   (input as any)?.constructor?.name === 'ReadableStream'
     ? (input as ReadableStream)
     : input instanceof ArrayBuffer || ArrayBuffer.isView(input)

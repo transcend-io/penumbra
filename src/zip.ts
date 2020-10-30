@@ -6,12 +6,7 @@ import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
 // import { WritableStreamPonyfill, WritableStreamIsNative } from './streams';
 import { PenumbraFile, ZipOptions } from './types';
-import {
-  isNumber,
-  emitZipProgress,
-  emitZipCompletion,
-  intoStream,
-} from './utils';
+import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
 import { ReadableStream } from './streams';
 
@@ -241,7 +236,7 @@ export class PenumbraZipWriter extends EventTarget {
 
           zip.files.add(filePath);
 
-          const reader = intoStream(stream).getReader();
+          const reader = stream.getReader();
           const writeComplete = new Promise<number>((resolve) => {
             const completionTrackerStream = new ReadableStream({
               /** Start completion tracker-wrapped ReadableStream */

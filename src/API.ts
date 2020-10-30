@@ -29,7 +29,7 @@ import {
   ZipOptions,
 } from './types';
 import { PenumbraZipWriter } from './zip';
-import { blobCache, intoStream, isNumber, isViewableText } from './utils';
+import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 
@@ -92,9 +92,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
         throw new Error('penumbra.get(): RemoteResource missing URL');
       }
       return {
-        stream: await new Response(
-          await fetchAndDecrypt(resource),
-        ).arrayBuffer(),
+        stream: await new Response(await fetchAndDecrypt(resource)).body,
         ...resource,
       } as PenumbraFile;
     }),
@@ -190,23 +188,10 @@ function save(
   const { signal } = controller;
 
   // Write a single readable stream to file
-  if (file.stream instanceof ReadableStream) {
-    if (!file.stream.pipeTo) {
-      // wrap with ponyfilled readablestream if pipeTo is missing
-      file.stream = new ReadableStreamPonyfill(file.stream);
-    }
-    file.stream.pipeTo(createWriteStream(singleFileName), {
-      signal,
-    });
-  } else if (
-    file.stream instanceof ArrayBuffer ||
-    ArrayBuffer.isView(file.stream)
-  ) {
-    saveAs(
-      new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
-      singleFileName,
-    );
-  }
+  file.stream.pipeTo(createWriteStream(singleFileName), {
+    signal,
+  });
+
   return controller;
 }
 
@@ -347,10 +332,11 @@ async function encryptJob(
 
     // encryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      const stream = intoStream(files[i].stream);
-      // eslint-disable-next-line no-param-reassign
-      files[i].stream = stream;
-      stream.pipeTo(remoteWritableStream.writable);
+      console.log('files[i].stream', {
+        pipeTo: files[i].stream.pipeTo,
+        stream: files[i].stream,
+      });
+      files[i].stream.pipeTo(remoteWritableStream.writable);
     });
 
     // construct output files with corresponding remote readable streams
@@ -477,10 +463,11 @@ async function decryptJob(
     });
     // decryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      const stream = intoStream(files[i].stream);
-      // eslint-disable-next-line no-param-reassign
-      files[i].stream = stream;
-      stream.pipeTo(remoteWritableStream.writable);
+      console.log('files[i].stream', {
+        pipeTo: files[i].stream.pipeTo,
+        stream: files[i].stream,
+      });
+      files[i].stream.pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams
     const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(

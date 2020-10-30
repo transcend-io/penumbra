@@ -76,7 +76,7 @@ export type RemoteResource = {
 /** Penumbra file composition */
 export type PenumbraFile = Omit<RemoteResource, 'url'> & {
   /** Backing stream */
-  stream: ReadableStream | ArrayBuffer;
+  stream: ReadableStream;
   /** File size (if backed by a ReadableStream) */
   size?: number;
   /** Optional ID for tracking encryption completion */
@@ -94,7 +94,7 @@ export type PenumbraFileWithID = PenumbraFile & {
 /** penumbra file (internal) */
 export type PenumbraEncryptedFile = Omit<PenumbraFileWithID, 'stream'> & {
   /** Encrypted output stream */
-  stream: ReadableStream | ArrayBuffer;
+  stream: ReadableStream;
 };
 
 /** Penumbra event types */

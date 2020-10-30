@@ -13,7 +13,7 @@ import {
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
-import { emitJobCompletion, emitProgress, intoStream, toBuff } from './utils';
+import { emitJobCompletion, emitProgress, toBuff } from './utils';
 
 /**
  * Decrypts a readable stream
@@ -137,15 +137,7 @@ export default function decrypt(
   // Encrypt the stream
   return {
     ...file,
-    stream: decryptStream(
-      intoStream(file.stream),
-      decipher,
-      size,
-      id,
-      key,
-      iv,
-      authTag,
-    ),
+    stream: decryptStream(file.stream, decipher, size, id, key, iv, authTag),
     id,
   };
 }

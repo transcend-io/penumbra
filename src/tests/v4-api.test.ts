@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import test from 'tape';
-import Bowser from 'bowser';
 import {
   PenumbraAPI,
   PenumbraFile,
@@ -11,9 +10,6 @@ import { PenumbraSupportLevel } from '../enums';
 
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
-
-// This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
-const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
 
 const view = self;
 
@@ -276,18 +272,12 @@ test('penumbra.getBlob()', async (t) => {
 });
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
-  if (['Firefox', 'Safari'].includes(browserName)) {
-    t.pass(
-      `penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
-    );
-    t.end();
-    return;
-  }
   const te = new TextEncoder();
   const td = new TextDecoder();
   const input = 'test';
-  const stream = te.encode(input);
-  const { byteLength: size } = stream;
+  const buffer = te.encode(input);
+  const { byteLength: size } = buffer;
+  const stream = new Response(buffer).body;
   const options = null;
   const file = ({ stream, size } as unknown) as PenumbraFile;
   const [encrypted] = await penumbra.encrypt(options, file);

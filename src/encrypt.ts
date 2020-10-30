@@ -13,7 +13,7 @@ import {
 } from './types';
 
 // utils
-import { emitProgress, intoStream, toBuff, emitJobCompletion } from './utils';
+import { emitProgress, toBuff, emitJobCompletion } from './utils';
 
 /* tslint:disable completed-docs */
 
@@ -181,7 +181,7 @@ export default function encrypt(
     //   file.stream instanceof ReadableStream
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(id, intoStream(file.stream), cipher, size, key, iv),
+    stream: encryptStream(id, file.stream, cipher, size, key, iv),
     id,
   };
 }

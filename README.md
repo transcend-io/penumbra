@@ -116,7 +116,10 @@ penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): 
 size = 4096 * 128;
 addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
 addEventListener('penumbra-complete', (e) => console.log(e.type, e.detail));
-file = penumbra.encrypt(null, { stream: new Uint8Array(size), size });
+file = penumbra.encrypt(null, {
+  stream: new Response(new Uint8Array(size)).body,
+  size,
+});
 data = [];
 file.then(async ([encrypted]) => {
   console.log('encryption complete');

@@ -289,8 +289,9 @@ const onReady = async (
         const te = new TextEncoder();
         const td = new TextDecoder();
         const input = 'test';
-        const stream = te.encode(input);
-        const { byteLength: size } = stream;
+        const buffer = te.encode(input);
+        const { byteLength: size } = buffer;
+        const stream = new Response(buffer).body;
         const options = null;
         const file = {
           stream,
