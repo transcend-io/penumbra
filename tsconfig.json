@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "outDir": "ts-build",
-    "types": ["node"],
+    "types": [],
     "composite": true,
     "moduleResolution": "node",
     "strict": true,
