@@ -230,7 +230,10 @@ async function getBlob(
   } else {
     const file = 'length' in files ? files[0] : files;
     if (file.stream instanceof ArrayBuffer) {
-      return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
+      return new Blob(
+        [new Uint8Array(file.stream, 0, file.stream.byteLength)],
+        { type: file.mimetype },
+      );
     }
     rs = file.stream;
     fileType = file.mimetype;
@@ -555,7 +558,7 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   return files.map(
     async (file): Promise<PenumbraTextOrURI> => {
       const { mimetype = '' } = file;
-      if (isViewableText(mimetype)) {
+      if (mimetype && isViewableText(mimetype)) {
         return {
           type: 'text',
           data: await new Response(file.stream).text(),

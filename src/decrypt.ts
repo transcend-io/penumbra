@@ -5,11 +5,7 @@ import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
-import {
-  TransformStream,
-  ReadableStream,
-  fullReadableStreamSupport,
-} from './streams';
+import { TransformStream, fullReadableStreamSupport } from './streams';
 
 // utils
 import {
