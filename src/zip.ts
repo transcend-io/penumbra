@@ -2,12 +2,13 @@
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
 // import streamSaver from 'streamsaver';
+import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
 // import { WritableStreamPonyfill, WritableStreamIsNative } from './streams';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
-import { ReadableStream, createWriteStream } from './streams';
+import { ReadableStream } from './streams';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -29,6 +30,12 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
     `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
   );
 };
+
+// const { createWriteStream } = streamSaver;
+// if (!WritableStreamIsNative) {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   (streamSaver as any).WritableStream = WritableStreamPonyfill;
+// }
 
 /**
  * Save a zip containing files retrieved by Penumbra

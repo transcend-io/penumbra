@@ -4,8 +4,6 @@ import {
   TransformStream as TransformStreamPonyfill,
 } from 'web-streams-polyfill/ponyfill';
 
-import streamSaver from 'streamsaver';
-
 // Replace every Stream API on browsers that don't support pipeThrough & pipeTo
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const NativeReadableStream = self.ReadableStream as any;
@@ -35,13 +33,6 @@ export {
   WritableStreamPonyfill,
   TransformStreamPonyfill,
 };
-
-if (!WritableStreamIsNative) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (streamSaver as any).WritableStream = WritableStreamPonyfill;
-}
-
-export const { createWriteStream } = streamSaver;
 
 // We could make a Proxy layer that upgrades all ReadableStream.*() calls into a new stream for Firefox.
 // It might be better to just wait for Mozilla to finish their streams implementation instead.

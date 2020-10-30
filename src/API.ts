@@ -5,7 +5,15 @@ import {
   RemoteReadableStream,
   RemoteWritableStream,
 } from '@transcend-io/remote-web-streams';
-import { ReadableStream, createWriteStream } from './streams';
+import streamSaver from 'streamsaver';
+// import { createWriteStream } from 'streamsaver';
+import { saveAs } from 'file-saver';
+import {
+  ReadableStream,
+  ReadableStreamPonyfill,
+  WritableStreamIsNative,
+  WritableStreamPonyfill,
+} from './streams';
 
 // Local
 import {
@@ -36,6 +44,12 @@ const resolver = document.createElementNS(
 ) as HTMLAnchorElement;
 
 const writableStreamsSupported = 'WritableStream' in self;
+
+const { createWriteStream } = streamSaver;
+if (!WritableStreamIsNative) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (streamSaver as any).WritableStream = WritableStreamPonyfill;
+}
 
 /**
  * Retrieve and decrypt files (batch job)
