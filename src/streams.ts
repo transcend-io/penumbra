@@ -7,6 +7,7 @@ import {
 // Replace every Stream API on browsers that don't support pipeThrough & pipeTo
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const NativeReadableStream = self.ReadableStream as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const nativeReadableStreamProto = NativeReadableStream.prototype as any;
 export const fullReadableStreamSupport: boolean =
   nativeReadableStreamProto?.pipeTo && nativeReadableStreamProto?.pipeThrough;
