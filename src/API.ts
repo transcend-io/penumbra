@@ -127,11 +127,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  */
 export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   return Promise.all(
-    resources.map((resource) =>
-      (getJob(resource) as Promise<[PenumbraFile]>).then(
-        ([decrypted]) => decrypted,
-      ),
-    ),
+    resources.map(async (resource) => (await getJob(resource))[0]),
   );
 }
 
@@ -415,11 +411,7 @@ export function encrypt(
   ...files: PenumbraFile[]
 ): Promise<PenumbraEncryptedFile[]> {
   return Promise.all(
-    files.map((file) =>
-      (encryptJob(options, file) as Promise<[PenumbraEncryptedFile]>).then(
-        ([encrypted]) => encrypted,
-      ),
-    ),
+    files.map(async (file) => (await encryptJob(options, file))[0]),
   );
 }
 
@@ -544,11 +536,7 @@ export function decrypt(
   ...files: PenumbraEncryptedFile[]
 ): Promise<PenumbraFile[]> {
   return Promise.all(
-    files.map((file) =>
-      (decryptJob(options, file) as Promise<[PenumbraFile]>).then(
-        ([decrypted]) => decrypted,
-      ),
-    ),
+    files.map(async (file) => (await decryptJob(options, file))[0]),
   );
 }
 
