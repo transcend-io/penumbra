@@ -9,7 +9,6 @@
 /* eslint-disable import/extensions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
-
 import { transfer, expose } from 'comlink';
 import {
   fromWritablePort,
@@ -23,7 +22,6 @@ import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 import decrypt from './decrypt';
 import { setWorkerID } from './worker-id';
-import { ReadableStreamPonyfill } from './streams';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -64,11 +62,7 @@ class PenumbraWorker {
       const { requestInit } = resource;
       const remoteStream = fromWritablePort(writablePorts[i]);
       fetchAndDecrypt(resource, requestInit).then((localStream) => {
-        if (localStream.pipeTo) {
-          localStream.pipeTo(remoteStream);
-        } else {
-          new ReadableStreamPonyfill(localStream).pipeTo(remoteStream);
-        }
+        localStream.pipeTo(remoteStream);
       });
     });
   }
@@ -134,11 +128,7 @@ class PenumbraWorker {
         },
         size,
       );
-      if (decrypted.stream.pipeTo) {
-        decrypted.stream.pipeTo(writable);
-      } else {
-        new ReadableStreamPonyfill(decrypted.stream).pipeTo(writable);
-      }
+      decrypted.stream.pipeTo(writable);
     });
   }
 
@@ -179,11 +169,7 @@ class PenumbraWorker {
         },
         size,
       );
-      if (encrypted.stream.pipeTo) {
-        encrypted.stream.pipeTo(writable);
-      } else {
-        new ReadableStreamPonyfill(encrypted.stream).pipeTo(writable);
-      }
+      encrypted.stream.pipeTo(writable);
     });
   }
 
