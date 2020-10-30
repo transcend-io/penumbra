@@ -6,9 +6,9 @@ import toBuffer from 'typedarray-to-buffer';
  * @param i - The input buffer or string
  * @returns Enforced as buffer
  */
-export default (i: Buffer | string | Uint8Array): Buffer =>
-  i instanceof Uint8Array
-    ? toBuffer(i)
+export default (i: Buffer | string | ArrayBufferView): Buffer =>
+  ArrayBuffer.isView(i)
+    ? toBuffer(i as NodeJS.TypedArray)
     : typeof i === 'string'
     ? Buffer.from(i, 'base64')
     : i;

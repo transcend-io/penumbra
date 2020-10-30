@@ -1,14 +1,14 @@
 // external modules
-import {
-  // ReadableStream as ReadableStreamPonyfill,
-  TransformStream as TransformStreamPonyfill,
-} from 'web-streams-polyfill/ponyfill';
 import { createCipheriv } from 'crypto-browserify';
 
 // local
 import { CipherGCM } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
-// import { toWebReadableStream } from 'web-streams-node';
+import {
+  TransformStream,
+  ReadableStream,
+  fullReadableStreamSupport,
+} from './streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
@@ -17,19 +17,9 @@ import {
 } from './types';
 
 // utils
-import {
-  emitProgress,
-  intoStreamOnlyOnce,
-  toBuff,
-  emitJobCompletion,
-} from './utils';
+import { emitProgress, intoStream, toBuff, emitJobCompletion } from './utils';
 
 /* tslint:disable completed-docs */
-
-// const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
-const TransformStream = self.TransformStream || TransformStreamPonyfill;
-
-// external modules
 
 /**
  * Encrypts a readable stream
@@ -50,14 +40,14 @@ export function encryptStream(
   key: Buffer,
   iv: Buffer,
 ): ReadableStream {
-  const stream: ReadableStream = intoStreamOnlyOnce(rs);
+  const stream: ReadableStream = rs;
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if (TransformStream) {
+  if (TransformStream && fullReadableStreamSupport) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
-      new TransformStream({
+      new (TransformStream as typeof self.TransformStream)({
         transform: async (chunk, controller) => {
           const bufferChunk = toBuffer(chunk);
 
@@ -195,14 +185,7 @@ export default function encrypt(
     //   file.stream instanceof ReadableStream
     //     ? encryptStream(file.stream, cipher, size)
     //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(
-      id,
-      intoStreamOnlyOnce(file.stream),
-      cipher,
-      size,
-      key,
-      iv,
-    ),
+    stream: encryptStream(id, intoStream(file.stream), cipher, size, key, iv),
     id,
   };
 }

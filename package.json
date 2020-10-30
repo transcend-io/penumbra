@@ -66,10 +66,12 @@
     "into-stream": "^5.1.1",
     "mime-types": "^2.1.26",
     "promise.allsettled": "^1.0.2",
+    "@transcend-io/remote-web-streams": "1.0.4",
     "remote-web-streams": "0.1.0",
     "streamsaver": "^2.0.4",
     "typedarray-to-buffer": "^3.1.5",
-    "web-streams-node": "^0.4.0"
+    "web-streams-node": "^0.4.0",
+    "web-streams-polyfill": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

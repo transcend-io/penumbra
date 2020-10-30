@@ -1,31 +1,23 @@
 /* tslint:disable completed-docs */
 
 // external modules
-import {
-  // ReadableStream as ReadableStreamPonyfill,
-  TransformStream as TransformStreamPonyfill,
-} from 'web-streams-polyfill/ponyfill';
 import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
+import {
+  TransformStream,
+  ReadableStream,
+  fullReadableStreamSupport,
+} from './streams';
+
 // utils
-// import { toWebReadableStream } from 'web-streams-node';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
 } from './types';
-import {
-  emitJobCompletion,
-  // emitJobCompletion,
-  emitProgress,
-  intoStreamOnlyOnce,
-  toBuff,
-} from './utils';
-
-// const ReadableStream = self.ReadableStream || ReadableStreamPonyfill;
-const TransformStream = self.TransformStream || TransformStreamPonyfill;
+import { emitJobCompletion, emitProgress, intoStream, toBuff } from './utils';
 
 /**
  * Decrypts a readable stream
@@ -40,7 +32,7 @@ const TransformStream = self.TransformStream || TransformStreamPonyfill;
  * @returns A readable stream of decrypted data
  */
 export function decryptStream(
-  rs: ReadableStream,
+  stream: ReadableStream,
   decipher: DecipherGCM,
   contentLength: number,
   id: string | number,
@@ -48,14 +40,13 @@ export function decryptStream(
   iv: Buffer,
   authTag: Buffer,
 ): ReadableStream {
-  const stream: ReadableStream = intoStreamOnlyOnce(rs);
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if (TransformStream) {
+  if (TransformStream && fullReadableStreamSupport) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
-      new TransformStream({
+      new (TransformStream as typeof self.TransformStream)({
         transform: async (chunk, controller) => {
           const bufferChunk = toBuffer(chunk);
 
@@ -151,7 +142,7 @@ export default function decrypt(
   return {
     ...file,
     stream: decryptStream(
-      intoStreamOnlyOnce(file.stream),
+      intoStream(file.stream),
       decipher,
       size,
       id,

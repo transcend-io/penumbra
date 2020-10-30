@@ -53,13 +53,15 @@
 |         | .decrypt | .encrypt | .saveZip |
 | ------- | -------: | -------: | -------: |
 | Chrome  |       ✅ |       ✅ |       ✅ |
-| Safari  |       ✅ |       ❌ |       ✅ |
+| Safari  |       🟡 |       🟡 |       🟡 |
 | Edge    |       ✅ |       ✅ |       ✅ |
-| Firefox |       ✅ |       ❌ |       ✅ |
+| Firefox |       ❌ |       ❌ |       ❌ |
 
 ✅ = Full support
 
-❌ = 15 MiB limit
+🟡 = 16 MiB limit
+
+❌ = No support
 
 ## Usage
 
@@ -139,13 +141,12 @@ penumbra.decrypt(options: PenumbraDecryptionInfo, ...files: PenumbraEncryptedFil
 ```
 
 ```ts
-const { intoStream } = self;
 const te = new TextEncoder();
 const td = new TextDecoder();
 const data = te.encode('test');
 const { byteLength: size } = data;
 const [encrypted] = await penumbra.encrypt(null, {
-  stream: intoStream(data),
+  stream: data,
   size,
 });
 const options = await penumbra.getDecryptionInfo(encrypted);

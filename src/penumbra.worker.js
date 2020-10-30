@@ -11,7 +11,10 @@
 /* eslint-disable class-methods-use-this */
 
 import { transfer, expose } from 'comlink';
-import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
+import {
+  fromWritablePort,
+  fromReadablePort,
+} from '@transcend-io/remote-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
@@ -20,6 +23,7 @@ import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 import decrypt from './decrypt';
 import { setWorkerID } from './worker-id';
+import { ReadableStreamPonyfill } from './streams';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -36,7 +40,7 @@ class PenumbraWorker {
    * @param resources - The remote resource to download
    * @returns ReadableStream[] of the deciphered files
    */
-  async get(writablePorts, resources) {
+  get(writablePorts, resources) {
     const writableCount = writablePorts.length;
     const resourceCount = resources.length;
     if (writableCount !== resourceCount) {
@@ -51,7 +55,7 @@ class PenumbraWorker {
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    resources.forEach(async (resource, i) => {
+    resources.forEach((resource, i) => {
       if (!('url' in resource)) {
         throw new Error(
           'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
@@ -59,8 +63,13 @@ class PenumbraWorker {
       }
       const { requestInit } = resource;
       const remoteStream = fromWritablePort(writablePorts[i]);
-      const localStream = await fetchAndDecrypt(resource, requestInit);
-      localStream.pipeTo(remoteStream);
+      fetchAndDecrypt(resource, requestInit).then((localStream) => {
+        if (localStream.pipeTo) {
+          localStream.pipeTo(remoteStream);
+        } else {
+          new ReadableStreamPonyfill(localStream).pipeTo(remoteStream);
+        }
+      });
     });
   }
 
@@ -71,18 +80,19 @@ class PenumbraWorker {
    * @param resources - The remote resource to download
    * @returns ArrayBuffer[] of the deciphered files
    */
-  async getBuffers(resources) {
+  getBuffers(resources) {
     return Promise.all(
-      resources.map(async (resource) => {
+      resources.map((resource) => {
         if (!('url' in resource)) {
           throw new Error(
             'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
           );
         }
-        const buffer = await new Response(
-          await fetchAndDecrypt(resource),
-        ).arrayBuffer();
-        return transfer(buffer, buffer);
+        return fetchAndDecrypt(resource).then((stream) =>
+          new Response(stream)
+            .arrayBuffer()
+            .then((buffer) => transfer(buffer, buffer)),
+        );
       }),
     );
   }
@@ -95,7 +105,7 @@ class PenumbraWorker {
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
    * @returns ReadableStream[] of the decrypted files
    */
-  async decrypt(options, ids, sizes, readablePorts, writablePorts) {
+  decrypt(options, ids, sizes, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -110,12 +120,11 @@ class PenumbraWorker {
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    readablePorts.forEach(async (readablePort, i) => {
+    readablePorts.forEach((readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
       const id = ids[i];
       const size = sizes[i];
-      // const decrypted = decryptStream(stream, decipher, size, id);
       const decrypted = decrypt(
         options,
         {
@@ -125,7 +134,11 @@ class PenumbraWorker {
         },
         size,
       );
-      decrypted.stream.pipeTo(writable);
+      if (decrypted.stream.pipeTo) {
+        decrypted.stream.pipeTo(writable);
+      } else {
+        new ReadableStreamPonyfill(decrypted.stream).pipeTo(writable);
+      }
     });
   }
 
@@ -137,7 +150,7 @@ class PenumbraWorker {
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
    */
-  async encrypt(options, ids, sizes, readablePorts, writablePorts) {
+  encrypt(options, ids, sizes, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -166,7 +179,11 @@ class PenumbraWorker {
         },
         size,
       );
-      encrypted.stream.pipeTo(writable);
+      if (encrypted.stream.pipeTo) {
+        encrypted.stream.pipeTo(writable);
+      } else {
+        new ReadableStreamPonyfill(encrypted.stream).pipeTo(writable);
+      }
     });
   }
 
@@ -176,14 +193,14 @@ class PenumbraWorker {
    * @param buffers - The file buffers to encrypt
    * @returns ArrayBuffer[] of the encrypted files
    */
-  async encryptBuffers() {
+  encryptBuffers() {
     //
   }
 
   /**
    * Forward events to main thread
    */
-  async setup(id, handler) {
+  setup(id, handler) {
     setWorkerID(id);
     onPenumbraEvent.handler = handler;
   }
