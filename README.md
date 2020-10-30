@@ -60,7 +60,7 @@
 
 ✅ = Full support
 
-🟡 = 16 MiB limit
+🟡 = 32 MiB limit
 
 ❌ = No support
 
