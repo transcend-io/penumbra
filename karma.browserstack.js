@@ -22,8 +22,8 @@ module.exports = (config) => {
       base: 'BrowserStack',
       browser: 'Safari',
       /**
-       * TODO: Update this once BrowserStack supports Safari 14
-       * [issue url here]
+       * TODO: https://github.com/transcend-io/penumbra/issues/164
+       * Update this once BrowserStack supports Safari 14
        */
       browser_version: '13',
       os: 'OS X',
