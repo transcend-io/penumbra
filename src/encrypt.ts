@@ -177,11 +177,7 @@ export default function encrypt(
   // Encrypt the stream
   return {
     ...file,
-    // stream:
-    //   file.stream instanceof ReadableStream
-    //     ? encryptStream(file.stream, cipher, size)
-    //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(id, file.stream, cipher, size, key, iv),
     id,
+    stream: encryptStream(id, file.stream, cipher, size, key, iv),
   };
 }

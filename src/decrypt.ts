@@ -137,7 +137,7 @@ export default function decrypt(
   // Encrypt the stream
   return {
     ...file,
-    stream: decryptStream(file.stream, decipher, size, id, key, iv, authTag),
     id,
+    stream: decryptStream(file.stream, decipher, size, id, key, iv, authTag),
   };
 }

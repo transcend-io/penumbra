@@ -89,8 +89,8 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
         throw new Error('penumbra.get(): RemoteResource missing URL');
       }
       return {
-        stream: new Response(await fetchAndDecrypt(resource)).body,
         ...resource,
+        stream: new Response(await fetchAndDecrypt(resource)).body,
       } as PenumbraFile;
     }),
   );
