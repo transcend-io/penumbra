@@ -5,7 +5,7 @@ import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
 import toBuffer from 'typedarray-to-buffer';
 
-import { TransformStream, fullReadableStreamSupport } from './streams';
+import { TransformStream } from './streams';
 
 // utils
 import {
@@ -39,7 +39,7 @@ export function decryptStream(
   let totalBytesRead = 0;
 
   // TransformStreams are supported
-  if (TransformStream && fullReadableStreamSupport) {
+  if ('TransformStream' in self) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
       new (TransformStream as typeof self.TransformStream)({

@@ -30,11 +30,6 @@ import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 
-// TODO: re-remove these imports as they add another ~200KB
-import decryptFile from './decrypt';
-import encryptFile from './encrypt';
-import fetchAndDecrypt from './fetchAndDecrypt';
-
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
@@ -78,7 +73,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     return readables as PenumbraFile[];
   }
 
-  // const { default: fetchAndDecrypt } = await import('./fetchAndDecrypt');
+  const { default: fetchAndDecrypt } = await import('./fetchAndDecrypt');
   /**
    * Fetch remote files from URLs, decipher them (if encrypted),
    * fully buffer the response, and return ArrayBuffer[]
@@ -373,7 +368,7 @@ async function encryptJob(
       );
     }
   });
-  // const { default: encryptFile } = await import('./encrypt');
+  const { default: encryptFile } = await import('./encrypt');
   const encryptedFiles = await Promise.all(
     filesWithIds.map(
       (file): PenumbraEncryptedFile => {
@@ -506,7 +501,8 @@ async function decryptJob(
   //     return decryptedFiles;
   //   },
   // );
-  // const { default: decryptFile } = await import('./decrypt');
+
+  const { default: decryptFile } = await import('./decrypt');
   const decryptedFiles: PenumbraFile[] = files.map((file) =>
     decryptFile(options, file, file.size as number),
   );
