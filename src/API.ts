@@ -6,11 +6,8 @@ import {
   RemoteWritableStream,
 } from '@transcend-io/remote-web-streams';
 import streamSaver from 'streamsaver';
-// import { createWriteStream } from 'streamsaver';
-import { saveAs } from 'file-saver';
 import {
   ReadableStream,
-  ReadableStreamPonyfill,
   WritableStreamIsNative,
   WritableStreamPonyfill,
 } from './streams';
