@@ -1,7 +1,5 @@
-/* eslint-disable prefer-spread */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable max-lines */
 const view = self;
 
 const tests = [];
@@ -337,9 +335,8 @@ const onReady = async (
             saveBuffer: true,
           });
 
-          writer.write.apply(
-            writer,
-            await penumbra.get(
+          writer.write(
+            ...(await penumbra.get(
               {
                 size: 874,
                 url:
@@ -368,11 +365,10 @@ const onReady = async (
                 // for hash consistency
                 lastModified: new Date(0),
               },
-            ),
+            )),
           );
-          writer.write.apply(
-            writer,
-            await penumbra.get(
+          writer.write(
+            ...(await penumbra.get(
               {
                 url:
                   'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -399,7 +395,7 @@ const onReady = async (
                 // for hash consistency
                 lastModified: new Date(0),
               },
-            ),
+            )),
           );
           await writer.close();
           console.log(
@@ -449,10 +445,7 @@ const onReady = async (
           },
         ];
         const writer = penumbra.saveZip();
-        await writer.write.apply(
-          writer,
-          await penumbra.get.apply(penumbra, files),
-        );
+        await writer.write(...(await penumbra.get(...files)));
 
         const closeSize = await writer.close();
         const size = await writer.getSize();
