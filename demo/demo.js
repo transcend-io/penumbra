@@ -45,6 +45,12 @@ const onReady = async (
     [
       'penumbra.get() and penumbra.getTextOrURI() test (no credentials)',
       async () => {
+        if (!self.TextEncoder) {
+          console.warn(
+            'skipping test due to lack of browser support for TextEncoder',
+          );
+          return false;
+        }
         const cacheBuster = Math.random()
           .toString(10)
           .slice(2);
@@ -285,6 +291,12 @@ const onReady = async (
     [
       'penumbra.encrypt()',
       async () => {
+        if (!self.TextEncoder || !self.TextDecoder) {
+          console.warn(
+            'skipping test due to lack of browser support for TextEncoder/TextDecoder',
+          );
+          return false;
+        }
         const te = new TextEncoder();
         const td = new TextDecoder();
         const input = 'test';

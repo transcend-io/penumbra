@@ -40,6 +40,14 @@ test('penumbra.supported() test', async (t) => {
 });
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
+  if (!self.TextEncoder) {
+    console.warn(
+      'skipping test due to lack of browser support for TextEncoder',
+    );
+    t.pass('test skipped');
+    t.end();
+    return;
+  }
   const NYT = {
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
@@ -272,6 +280,14 @@ test('penumbra.getBlob()', async (t) => {
 });
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
+  if (!self.TextEncoder || !self.TextDecoder) {
+    console.warn(
+      'skipping test due to lack of browser support for TextEncoder/TextDecoder',
+    );
+    t.pass('test skipped');
+    t.end();
+    return;
+  }
   const te = new TextEncoder();
   const td = new TextDecoder();
   const input = 'test';
