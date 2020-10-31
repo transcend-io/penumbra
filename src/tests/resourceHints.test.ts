@@ -1,5 +1,5 @@
 import test from 'tape';
-import { preconnect, preload } from '../fetchMany';
+import { preconnect, preload } from '../resource-hints';
 
 test('preconnect', async (t) => {
   const measurePreconnects = () =>
