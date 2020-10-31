@@ -7,11 +7,7 @@ import {
 } from '@transcend-io/remote-web-streams';
 import streamSaver from 'streamsaver';
 import mime from 'mime-types';
-import {
-  ReadableStream,
-  WritableStreamIsNative,
-  WritableStreamPonyfill,
-} from './streams';
+import { WritableStreamIsNative, WritableStreamPonyfill } from './streams';
 
 // Local
 import {
