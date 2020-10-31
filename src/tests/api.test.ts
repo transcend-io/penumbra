@@ -61,7 +61,10 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
   const { type: test1Type, data: test1Text } = await penumbra.getTextOrURI(
     await penumbra.get(NYT),
   )[0];
-  const test1Hash = await hash('SHA-256', new TextEncoder().encode(test1Text));
+  const test1Hash = await hash(
+    'SHA-256',
+    new self.TextEncoder().encode(test1Text),
+  );
   const ref1Hash =
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
 
@@ -328,8 +331,8 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
     t.end();
     return;
   }
-  const te = new TextEncoder();
-  const td = new TextDecoder();
+  const te = new self.TextEncoder();
+  const td = new self.TextDecoder();
   const input = 'test';
   const buffer = te.encode(input);
   const { byteLength: size } = buffer;
