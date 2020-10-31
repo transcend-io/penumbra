@@ -18,7 +18,7 @@
     "start:example": "rimraf example/build && yarn build:example && http-server example/build/",
     "start:demo": "rimraf demo/build && yarn build:demo && http-server demo/build/",
     "####### Testing #######": "",
-    "test:interactive": "http-server build -a localhost",
+    "test:interactive": "yarn start:demo",
     "test:local": "karma start karma.local.js",
     "test:local:rebuild": "yarn && karma start karma.local.js",
     "test:browserstack": "karma start karma.browserstack.js",
