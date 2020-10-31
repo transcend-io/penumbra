@@ -6,6 +6,7 @@ import {
   RemoteWritableStream,
 } from '@transcend-io/remote-web-streams';
 import streamSaver from 'streamsaver';
+import mime from 'mime-types';
 import {
   ReadableStream,
   WritableStreamIsNative,
@@ -29,7 +30,6 @@ import { PenumbraZipWriter } from './zip';
 import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
-import mime from 'mime-types';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
