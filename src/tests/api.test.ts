@@ -260,7 +260,7 @@ test('penumbra.getTextOrURI(): including image in document', async (t) => {
   t.end();
 });
 
-test('preconnect', async (t) => {
+test('penumbra.preconnect()', async (t) => {
   const measurePreconnects = () =>
     document.querySelectorAll('link[rel="preconnect"]').length;
   const start = measurePreconnects();
@@ -280,7 +280,7 @@ test('preconnect', async (t) => {
   t.end();
 });
 
-test('preload', async (t) => {
+test('penumbra.preload()', async (t) => {
   const measurePreloads = () =>
     document.querySelectorAll('link[rel="preload"]').length;
   const start = measurePreloads();
