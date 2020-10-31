@@ -29,6 +29,7 @@ import { PenumbraZipWriter } from './zip';
 import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+import mime from 'mime-types';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -162,6 +163,8 @@ function save(
     }
     size += file.size;
   }
+
+  // Multiple files
   if ('length' in files && files.length > 1) {
     const writer = saveZip({
       name: fileName || `${DEFAULT_FILENAME}.zip`,
@@ -173,9 +176,16 @@ function save(
     return controller;
   }
 
+  // Single file
   const file: PenumbraFile = 'stream' in files ? files : files[0];
-  // TODO: get filename extension with mime.extension()
-  const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
+  const [
+    filename,
+    extension = file.mimetype ? mime.extension(file.mimetype) : '',
+  ] = (fileName || file.filePrefix || DEFAULT_FILENAME)
+    .split(/(\.\w+\s*$)/) // split filename extension
+    .filter(Boolean); // filter empty matches
+
+  const singleFileName = `${filename}${extension}`;
 
   const { signal } = controller;
 
