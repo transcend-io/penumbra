@@ -266,8 +266,8 @@ const onReady = async (
       },
     ],
     [
-      'preconnect',
-      async (t) => {
+      'penumbra.preconnect()',
+      async () => {
         const measurePreconnects = () =>
           document.querySelectorAll('link[rel="preconnect"]').length;
         const start = measurePreconnects();
@@ -283,13 +283,12 @@ const onReady = async (
         });
         const after = measurePreconnects();
         cleanup();
-        t.assert(start < after);
-        t.end();
+        return start < after;
       },
     ],
     [
-      'preload',
-      async (t) => {
+      'penumbra.preload()',
+      async () => {
         const measurePreloads = () =>
           document.querySelectorAll('link[rel="preload"]').length;
         const start = measurePreloads();
@@ -305,8 +304,7 @@ const onReady = async (
         });
         const after = measurePreloads();
         cleanup();
-        t.assert(start < after);
-        t.end();
+        return start < after;
       },
     ],
     [
