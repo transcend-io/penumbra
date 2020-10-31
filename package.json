@@ -16,7 +16,7 @@
     "ts:lint": "tslint --project .",
     "####### Start #########": "",
     "start:example": "rimraf example/build && yarn build:example && http-server example/build/",
-    "start:demo": "rimraf demo/build && yarn build:example && http-server example/build/",
+    "start:demo": "rimraf demo/build && yarn build:demo && http-server demo/build/",
     "####### Testing #######": "",
     "test:interactive": "http-server build -a localhost",
     "test:local": "karma start karma.local.js",
