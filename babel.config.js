@@ -9,7 +9,7 @@ module.exports = {
           edge: '18',
           firefox: '80',
           chrome: '85',
-          safari: '13',
+          safari: '14',
         },
       },
     ],
