@@ -30,6 +30,7 @@ import { PenumbraZipWriter } from './zip';
 import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+import { preconnect, preload } from './resource-hints';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -565,6 +566,8 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 }
 
 const penumbra = {
+  preconnect,
+  preload,
   get,
   encrypt,
   decrypt,

@@ -71,7 +71,7 @@ const onReady = async (
         } = await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
         const test1Hash = await hash(
           'SHA-256',
-          new TextEncoder().encode(test1Text),
+          new self.TextEncoder().encode(test1Text),
         );
         const ref1Hash =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
@@ -266,6 +266,50 @@ const onReady = async (
       },
     ],
     [
+      'preconnect',
+      async (t) => {
+        const measurePreconnects = () =>
+          document.querySelectorAll('link[rel="preconnect"]').length;
+        const start = measurePreconnects();
+        const cleanup = penumbra.preconnect({
+          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+          filePrefix: 'NYT',
+          mimetype: 'text/plain',
+          decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+          },
+        });
+        const after = measurePreconnects();
+        cleanup();
+        t.assert(start < after);
+        t.end();
+      },
+    ],
+    [
+      'preload',
+      async (t) => {
+        const measurePreloads = () =>
+          document.querySelectorAll('link[rel="preload"]').length;
+        const start = measurePreloads();
+        const cleanup = penumbra.preload({
+          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+          filePrefix: 'NYT',
+          mimetype: 'text/plain',
+          decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+          },
+        });
+        const after = measurePreloads();
+        cleanup();
+        t.assert(start < after);
+        t.end();
+      },
+    ],
+    [
       'penumbra.getBlob()',
       async () => {
         const blob = await penumbra.getBlob(
@@ -297,8 +341,8 @@ const onReady = async (
           );
           return false;
         }
-        const te = new TextEncoder();
-        const td = new TextDecoder();
+        const te = new self.TextEncoder();
+        const td = new self.TextDecoder();
         const input = 'test';
         const buffer = te.encode(input);
         const { byteLength: size } = buffer;
