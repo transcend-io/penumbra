@@ -266,7 +266,7 @@ const onReady = async (
       },
     ],
     [
-      'preconnect',
+      'penumbra.preconnect()',
       async () => {
         const measurePreconnects = () =>
           document.querySelectorAll('link[rel="preconnect"]').length;
