@@ -36,15 +36,6 @@ module.exports = (config) => {
     //   device: null,
     //   real_mobile: null,
     // },
-    bs_edge_pc: {
-      base: 'BrowserStack',
-      browser: 'Edge',
-      browser_version: '18',
-      os: 'Windows',
-      os_version: '10',
-      device: null,
-      real_mobile: null,
-    },
   };
 
   const globalConfig = getGlobalConfig(config);

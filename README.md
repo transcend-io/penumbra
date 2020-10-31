@@ -50,21 +50,19 @@
 
 ## Compatibility
 
-|         | .decrypt | .encrypt | .saveZip |
-| ------- | -------: | -------: | -------: |
-| Chrome  |       ✅ |       ✅ |       ✅ |
-| Edge    |       ✅ |       ✅ |       ✅ |
-| Safari  |       🟡 |       🟡 |       🟡 |
-| Firefox |       🟡 |       🟡 |       🟡 |
-| Edge 18 |       ❓ |       ❓ |       ❓ |
+|          | .decrypt | .encrypt | .saveZip |
+| -------- | -------: | -------: | -------: |
+| Chrome   |       ✅ |       ✅ |       ✅ |
+| Edge >18 |       ✅ |       ✅ |       ✅ |
+| Safari   |       🟡 |       🟡 |       🟡 |
+| Firefox  |       🟡 |       🟡 |       🟡 |
+| Edge 18  |       ❌ |       ❌ |       ❌ |
 
 ✅ = Full support
 
 🟡 = 32 MiB limit
 
 ❌ = No support
-
-❓ = Unknown
 
 ## Usage
 
