@@ -4,7 +4,7 @@ import { createCipheriv } from 'crypto-browserify';
 // local
 import { CipherGCM } from 'crypto';
 import toBuffer from 'typedarray-to-buffer';
-import { TransformStream, ReadableStream } from './streams';
+import { TransformStream } from './streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
