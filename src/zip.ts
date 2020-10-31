@@ -1,11 +1,14 @@
 /* eslint-disable prettier/prettier */
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
+// import streamSaver from 'streamsaver';
 import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
+// import { WritableStreamPonyfill, WritableStreamIsNative } from './streams';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
+import { ReadableStream } from './streams';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -227,10 +230,7 @@ export class PenumbraZipWriter extends EventTarget {
 
           zip.files.add(filePath);
 
-          const reader = (stream instanceof ReadableStream
-            ? stream
-            : (new Response(stream).body as ReadableStream)
-          ).getReader();
+          const reader = stream.getReader();
           const writeComplete = new Promise<number>((resolve) => {
             const completionTrackerStream = new ReadableStream({
               /** Start completion tracker-wrapped ReadableStream */

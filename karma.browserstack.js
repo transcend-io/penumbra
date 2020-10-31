@@ -3,8 +3,6 @@ const { short } = require('git-rev-sync');
 const getGlobalConfig = require('./karma.global');
 
 module.exports = (config) => {
-  // TODO add more browsers. this util is useful:
-  // https://www.browserstack.com/automate/capabilities
   const customLaunchers = {
     bs_chrome_pc: {
       base: 'BrowserStack',
@@ -12,30 +10,32 @@ module.exports = (config) => {
       browser_version: '85',
       os: 'Windows',
       os_version: '10',
+      device: null,
+      real_mobile: null,
     },
     bs_firefox_pc: {
-      // Skips .encrypt/.saveZip tests
       base: 'BrowserStack',
       browser: 'Firefox',
       browser_version: '80',
       os: 'Windows',
       os_version: '10',
+      device: null,
+      real_mobile: null,
     },
-    bs_safari_mac: {
-      // Skips .encrypt/.saveZip tests
-      base: 'BrowserStack',
-      browser: 'Safari',
-      browser_version: '13',
-      os: 'OS X',
-      os_version: 'Catalina',
-    },
-    bs_edge_pc: {
-      base: 'BrowserStack',
-      browser: 'Edge',
-      browser_version: '85',
-      os: 'Windows',
-      os_version: '10',
-    },
+    /**
+     * TODO: https://github.com/transcend-io/penumbra/issues/164
+     * Uncomment this entry once BrowserStack supports Safari 14.
+     * In the meantime Safari can be tested locally through `yarn start:demo`.
+     */
+    // bs_safari_mac: {
+    //   base: 'BrowserStack',
+    //   browser: 'Safari',
+    //   browser_version: '14',
+    //   os: 'OS X',
+    //   os_version: 'Catalina',
+    //   device: null,
+    //   real_mobile: null,
+    // },
   };
 
   const globalConfig = getGlobalConfig(config);

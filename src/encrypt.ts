@@ -3,9 +3,8 @@ import { createCipheriv } from 'crypto-browserify';
 
 // local
 import { CipherGCM } from 'crypto';
-import { Readable } from 'stream';
 import toBuffer from 'typedarray-to-buffer';
-import { toWebReadableStream } from 'web-streams-node';
+import { TransformStream } from './streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
@@ -14,39 +13,37 @@ import {
 } from './types';
 
 // utils
-import { emitProgress, intoStreamOnlyOnce, toBuff } from './utils';
-import emitJobCompletion from './utils/emitJobCompletion';
+import { emitProgress, toBuff, emitJobCompletion } from './utils';
 
 /* tslint:disable completed-docs */
-
-// external modules
 
 /**
  * Encrypts a readable stream
  *
+ * @param id - Job ID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
  * @param contentLength - The content length of the file, in bytes
- * @param url - The URL to read the encrypted file from (only used for the event emitter)
+ * @param key - Decryption key Buffer
+ * @param iv - Decryption IV Buffer
  * @returns A readable stream of decrypted data
  */
 export function encryptStream(
   jobID: number,
-  rs: ReadableStream | Readable,
+  rs: ReadableStream,
   cipher: CipherGCM,
   contentLength: number,
   key: Buffer,
   iv: Buffer,
 ): ReadableStream {
-  const stream: ReadableStream =
-    rs instanceof ReadableStream ? rs : toWebReadableStream(rs);
+  const stream: ReadableStream = rs;
   let totalBytesRead = 0;
 
   // TransformStreams are supported
   if ('TransformStream' in self) {
     return stream.pipeThrough(
       // eslint-disable-next-line no-undef
-      new TransformStream({
+      new (TransformStream as typeof self.TransformStream)({
         transform: async (chunk, controller) => {
           const bufferChunk = toBuffer(chunk);
 
@@ -157,7 +154,7 @@ export default function encrypt(
     // eslint-disable-next-line no-param-reassign
     options = {
       ...options,
-      key: Buffer.from(
+      key: toBuffer(
         crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
       ),
     };
@@ -169,7 +166,7 @@ export default function encrypt(
 
   // Convert to Buffers
   const key = toBuff(options.key);
-  const iv = Buffer.from(
+  const iv = toBuff(
     (options as PenumbraDecryptionInfo).iv
       ? toBuff((options as PenumbraDecryptionInfo).iv)
       : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)),
@@ -180,18 +177,7 @@ export default function encrypt(
   // Encrypt the stream
   return {
     ...file,
-    // stream:
-    //   file.stream instanceof ReadableStream
-    //     ? encryptStream(file.stream, cipher, size)
-    //     : encryptBuffer(file.stream, cipher),
-    stream: encryptStream(
-      id,
-      intoStreamOnlyOnce(file.stream),
-      cipher,
-      size,
-      key,
-      iv,
-    ),
     id,
+    stream: encryptStream(id, file.stream, cipher, size, key, iv),
   };
 }

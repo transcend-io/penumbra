@@ -50,12 +50,19 @@
 
 ## Compatibility
 
-|         | .decrypt | .encrypt |
-| ------- | -------: | -------: |
-| Chrome  |       ✅ |       ✅ |
-| Safari  |       ✅ |       ❌ |
-| Edge    |       ✅ |       ✅ |
-| Firefox |       ✅ |       ❌ |
+|          | .decrypt | .encrypt | .saveZip |
+| -------- | -------: | -------: | -------: |
+| Chrome   |       ✅ |       ✅ |       ✅ |
+| Edge >18 |       ✅ |       ✅ |       ✅ |
+| Safari   |       🟡 |       🟡 |       🟡 |
+| Firefox  |       🟡 |       🟡 |       🟡 |
+| Edge 18  |       ❌ |       ❌ |       ❌ |
+
+✅ = Full support
+
+🟡 = 32 MiB limit
+
+❌ = No support
 
 ## Usage
 
@@ -110,7 +117,10 @@ penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): 
 size = 4096 * 128;
 addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
 addEventListener('penumbra-complete', (e) => console.log(e.type, e.detail));
-file = penumbra.encrypt(null, { stream: new Uint8Array(size), size });
+file = penumbra.encrypt(null, {
+  stream: new Response(new Uint8Array(size)).body,
+  size,
+});
 data = [];
 file.then(async ([encrypted]) => {
   console.log('encryption complete');
@@ -135,13 +145,12 @@ penumbra.decrypt(options: PenumbraDecryptionInfo, ...files: PenumbraEncryptedFil
 ```
 
 ```ts
-const { intoStream } = self;
 const te = new TextEncoder();
 const td = new TextDecoder();
 const data = te.encode('test');
 const { byteLength: size } = data;
 const [encrypted] = await penumbra.encrypt(null, {
-  stream: intoStream(data),
+  stream: data,
   size,
 });
 const options = await penumbra.getDecryptionInfo(encrypted);

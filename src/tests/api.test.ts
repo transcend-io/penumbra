@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import test from 'tape';
-import Bowser from 'bowser';
 import {
   PenumbraAPI,
   PenumbraFile,
@@ -9,13 +8,8 @@ import {
 } from '../types';
 import { PenumbraSupportLevel } from '../enums';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// import penumbra from '../API';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
-
-// This browser name, e.g. 'Chrome', 'Safari', 'Firefox', ...
-const browserName = Bowser.getParser(navigator.userAgent).getBrowserName();
 
 const view = self;
 
@@ -46,6 +40,14 @@ test('penumbra.supported() test', async (t) => {
 });
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
+  if (!self.TextEncoder) {
+    console.warn(
+      'skipping test due to lack of browser support for TextEncoder',
+    );
+    t.pass('test skipped');
+    t.end();
+    return;
+  }
   const NYT = {
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
     filePrefix: 'NYT',
@@ -59,7 +61,10 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
   const { type: test1Type, data: test1Text } = await penumbra.getTextOrURI(
     await penumbra.get(NYT),
   )[0];
-  const test1Hash = await hash('SHA-256', new TextEncoder().encode(test1Text));
+  const test1Hash = await hash(
+    'SHA-256',
+    new self.TextEncoder().encode(test1Text),
+  );
   const ref1Hash =
     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
 
@@ -255,6 +260,46 @@ test('penumbra.getTextOrURI(): including image in document', async (t) => {
   t.end();
 });
 
+test('preconnect', async (t) => {
+  const measurePreconnects = () =>
+    document.querySelectorAll('link[rel="preconnect"]').length;
+  const start = measurePreconnects();
+  const cleanup = penumbra.preconnect({
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+    filePrefix: 'NYT',
+    mimetype: 'text/plain',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'gadZhS1QozjEmfmHLblzbg==',
+    },
+  });
+  const after = measurePreconnects();
+  cleanup();
+  t.assert(start < after);
+  t.end();
+});
+
+test('preload', async (t) => {
+  const measurePreloads = () =>
+    document.querySelectorAll('link[rel="preload"]').length;
+  const start = measurePreloads();
+  const cleanup = penumbra.preload({
+    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+    filePrefix: 'NYT',
+    mimetype: 'text/plain',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'gadZhS1QozjEmfmHLblzbg==',
+    },
+  });
+  const after = measurePreloads();
+  cleanup();
+  t.assert(start < after);
+  t.end();
+});
+
 test('penumbra.getBlob()', async (t) => {
   const blob = await penumbra.getBlob(
     await penumbra.get({
@@ -278,18 +323,20 @@ test('penumbra.getBlob()', async (t) => {
 });
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
-  if (['Firefox', 'Safari'].includes(browserName)) {
-    t.pass(
-      `penumbra.encrypt() test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
+  if (!self.TextEncoder || !self.TextDecoder) {
+    console.warn(
+      'skipping test due to lack of browser support for TextEncoder/TextDecoder',
     );
+    t.pass('test skipped');
     t.end();
     return;
   }
-  const te = new TextEncoder();
-  const td = new TextDecoder();
+  const te = new self.TextEncoder();
+  const td = new self.TextDecoder();
   const input = 'test';
-  const stream = te.encode(input);
-  const { byteLength: size } = stream;
+  const buffer = te.encode(input);
+  const { byteLength: size } = buffer;
+  const stream = new Response(buffer).body;
   const options = null;
   const file = ({ stream, size } as unknown) as PenumbraFile;
   const [encrypted] = await penumbra.encrypt(options, file);
@@ -301,17 +348,10 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 });
 
 test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
-  if (['Firefox', 'Safari'].includes(browserName)) {
-    t.pass(
-      // eslint-disable-next-line max-len
-      `penumbra.saveZip({ saveBuffer: true }) test skipped for ${browserName}. TODO: Fix penumbra.encrypt() in ${browserName}!`,
-    );
-    t.end();
-    return;
-  }
   const expectedReferenceHashes = [
     '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
     '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
+    '7559c3628a54a498b715edbbb9a0f16fc65e94eaaf185b41e91f6bddf1a8e02e',
   ];
   let progressEventFiredAndWorking = false;
   let completeEventFired = false;

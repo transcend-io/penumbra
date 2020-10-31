@@ -1,10 +1,17 @@
 /* eslint-disable max-lines */
 // Remote
 import { transfer } from 'comlink';
-import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
-import { toWebReadableStream } from 'web-streams-node';
-import { createWriteStream } from 'streamsaver';
-import { saveAs } from 'file-saver';
+import {
+  RemoteReadableStream,
+  RemoteWritableStream,
+} from '@transcend-io/remote-web-streams';
+import streamSaver from 'streamsaver';
+import mime from 'mime-types';
+import {
+  ReadableStream,
+  WritableStreamIsNative,
+  WritableStreamPonyfill,
+} from './streams';
 
 // Local
 import {
@@ -20,14 +27,10 @@ import {
   ZipOptions,
 } from './types';
 import { PenumbraZipWriter } from './zip';
-import {
-  blobCache,
-  intoStreamOnlyOnce,
-  isNumber,
-  isViewableText,
-} from './utils';
+import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
+import { preconnect, preload } from './resource-hints';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -35,6 +38,12 @@ const resolver = document.createElementNS(
 ) as HTMLAnchorElement;
 
 const writableStreamsSupported = 'WritableStream' in self;
+
+const { createWriteStream } = streamSaver;
+if (!WritableStreamIsNative) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (streamSaver as any).WritableStream = WritableStreamPonyfill;
+}
 
 /**
  * Retrieve and decrypt files (batch job)
@@ -53,35 +62,19 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       resolver.href = url;
       const path = resolver.pathname; // derive path from URL
       return {
-        stream: stream.readable,
         path,
         // derived path is overridden if PenumbraFile contains path
         ...resources[i],
+        stream: stream.readable,
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
-      await thread.get(transfer(writablePorts, writablePorts), resources);
+    new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
+      thread.get(transfer(writablePorts, writablePorts), resources);
     });
     return readables as PenumbraFile[];
   }
 
-  // let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
-  //   async (thread: PenumbraWorkerAPI) => {
-  //     const buffers = await thread.getBuffers(resources);
-  //     decryptedFiles = buffers.map((stream, i) => {
-  //       const { url } = resources[i];
-  //       resolver.href = url;
-  //       const path = resolver.pathname;
-  //       return {
-  //         stream,
-  //         path,
-  //         ...resources[i],
-  //       };
-  //     });
-  //     return decryptedFiles;
-  //   },
-  // );
   const { default: fetchAndDecrypt } = await import('./fetchAndDecrypt');
   /**
    * Fetch remote files from URLs, decipher them (if encrypted),
@@ -93,10 +86,8 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
         throw new Error('penumbra.get(): RemoteResource missing URL');
       }
       return {
-        stream: await new Response(
-          await fetchAndDecrypt(resource),
-        ).arrayBuffer(),
         ...resource,
+        stream: new Response(await fetchAndDecrypt(resource)).body,
       } as PenumbraFile;
     }),
   );
@@ -140,7 +131,7 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
 /** Maximum allowed resource size for encrypt/decrypt on the main thread */
-const MAX_ALLOWED_SIZE_MAIN_THREAD = 16 * 1024 * 1024; // 16 MiB
+const MAX_ALLOWED_SIZE_MAIN_THREAD = 32 * 1024 * 1024; // 32 MiB
 
 /**
  * Save a zip containing files retrieved by Penumbra
@@ -173,6 +164,8 @@ function save(
     }
     size += file.size;
   }
+
+  // Multiple files
   if ('length' in files && files.length > 1) {
     const writer = saveZip({
       name: fileName || `${DEFAULT_FILENAME}.zip`,
@@ -184,21 +177,24 @@ function save(
     return controller;
   }
 
+  // Single file
   const file: PenumbraFile = 'stream' in files ? files : files[0];
-  // TODO: get filename extension with mime.extension()
-  const singleFileName = fileName || file.filePrefix || DEFAULT_FILENAME;
+  const [
+    filename,
+    extension = file.mimetype ? mime.extension(file.mimetype) : '',
+  ] = (fileName || file.filePrefix || DEFAULT_FILENAME)
+    .split(/(\.\w+\s*$)/) // split filename extension
+    .filter(Boolean); // filter empty matches
+
+  const singleFileName = `${filename}${extension}`;
 
   const { signal } = controller;
 
   // Write a single readable stream to file
-  if (file.stream instanceof ReadableStream) {
-    file.stream.pipeTo(createWriteStream(singleFileName), { signal });
-  } else if (file.stream instanceof ArrayBuffer) {
-    saveAs(
-      new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]),
-      singleFileName,
-    );
-  }
+  file.stream.pipeTo(createWriteStream(singleFileName), {
+    signal,
+  });
+
   return controller;
 }
 
@@ -208,7 +204,7 @@ function save(
  * @param data - The data to load
  * @returns A blob of the data
  */
-async function getBlob(
+function getBlob(
   files: PenumbraFile[] | PenumbraFile | ReadableStream,
   type?: string, // = data[0].mimetype
 ): Promise<Blob> {
@@ -221,8 +217,19 @@ async function getBlob(
     rs = files;
   } else {
     const file = 'length' in files ? files[0] : files;
-    if (file.stream instanceof ArrayBuffer) {
-      return new Blob([new Uint8Array(file.stream, 0, file.stream.byteLength)]);
+    if (file.stream instanceof ArrayBuffer || ArrayBuffer.isView(file.stream)) {
+      return Promise.resolve(
+        new Blob(
+          [
+            new Uint8Array(
+              file.stream as ArrayBufferLike,
+              0,
+              file.stream.byteLength,
+            ),
+          ],
+          { type: file.mimetype },
+        ),
+      );
     }
     rs = file.stream;
     fileType = file.mimetype;
@@ -286,11 +293,6 @@ async function encryptJob(
     throw new Error('penumbra.encrypt() called without arguments');
   }
 
-  // Ensure readable streams
-  if (files.some((file) => file.stream instanceof ArrayBuffer)) {
-    throw new Error('penumbra.encrypt() only supports ReadableStreams');
-  }
-
   // collect file sizes and assign job IDs for completion tracking
   const ids: number[] = [];
   const sizes: number[] = [];
@@ -341,11 +343,7 @@ async function encryptJob(
 
     // encryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      // pipe input files into remote writable streams for worker
-      (files[i].stream instanceof ReadableStream
-        ? files[i].stream
-        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
-      ).pipeTo(remoteWritableStream.writable);
+      files[i].stream.pipeTo(remoteWritableStream.writable);
     });
 
     // construct output files with corresponding remote readable streams
@@ -353,7 +351,7 @@ async function encryptJob(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
         // iv: metadata[i].iv,
-        stream: stream.readable as ReadableStream,
+        stream: stream.readable,
         size: sizes[i],
         id: ids[i],
       }),
@@ -383,9 +381,9 @@ async function encryptJob(
       (file): PenumbraEncryptedFile => {
         const { stream } = encryptFile(options, file, file.size as number);
         return {
-          stream,
           ...file,
           ...options,
+          stream,
         };
       },
     ),
@@ -402,7 +400,7 @@ async function encryptJob(
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
  * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
- * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
+ * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
  *   console.log('encryption started');
@@ -456,7 +454,7 @@ async function decryptJob(
       ({ writablePort }) => writablePort,
     );
     // enter worker thread
-    await new DecryptionChannel().then(async (thread: PenumbraWorkerAPI) => {
+    await new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
       /**
        * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
@@ -470,21 +468,17 @@ async function decryptJob(
         transfer(writablePorts, writablePorts),
       );
     });
-    // encryption jobs submitted and still processing
+    // decryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      // pipe input files into remote writable streams for worker
-      (files[i].stream instanceof ReadableStream
-        ? files[i].stream
-        : toWebReadableStream(intoStreamOnlyOnce(files[i].stream))
-      ).pipeTo(remoteWritableStream.writable);
+      files[i].stream.pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams
     const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
-        stream: stream.readable as ReadableStream,
         size: sizes[i],
         id: ids[i],
+        stream: stream.readable,
       }),
     );
     return readables;
@@ -499,6 +493,7 @@ async function decryptJob(
     }
   });
 
+  // Buffered worker solution:
   // let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
   //   async (thread: PenumbraWorkerAPI) => {
   //     const buffers = await thread.getBuffers(options, files);
@@ -509,9 +504,10 @@ async function decryptJob(
   //     return decryptedFiles;
   //   },
   // );
-  const { decrypt: decryptFile } = await import('./decrypt');
-  const decryptedFiles: PenumbraFile[] = await Promise.all(
-    files.map(async (file) => decryptFile(options, file, file.size as number)),
+
+  const { default: decryptFile } = await import('./decrypt');
+  const decryptedFiles: PenumbraFile[] = files.map((file) =>
+    decryptFile(options, file, file.size as number),
   );
   return decryptedFiles;
 }
@@ -527,14 +523,14 @@ async function decryptJob(
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
  * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
- * file = penumbra.encrypt(null, {stream:intoStream(new Uint8Array(size)), size});
+ * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
  *   console.log('encryption started');
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  */
-export async function decrypt(
+export function decrypt(
   options: PenumbraDecryptionInfo,
   ...files: PenumbraEncryptedFile[]
 ): Promise<PenumbraFile[]> {
@@ -553,7 +549,7 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   return files.map(
     async (file): Promise<PenumbraTextOrURI> => {
       const { mimetype = '' } = file;
-      if (isViewableText(mimetype)) {
+      if (mimetype && isViewableText(mimetype)) {
         return {
           type: 'text',
           data: await new Response(file.stream).text(),
@@ -570,6 +566,8 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
 }
 
 const penumbra = {
+  preconnect,
+  preload,
   get,
   encrypt,
   decrypt,

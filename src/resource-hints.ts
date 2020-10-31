@@ -1,5 +1,4 @@
 // local
-import fetchAndDecrypt from './fetchAndDecrypt';
 import { RemoteResource } from './types';
 import { getOrigins } from './utils';
 
@@ -73,25 +72,4 @@ export function preload(...resources: RemoteResource[]): () => void {
     resources.map(({ url }) => url),
     'preload',
   );
-}
-
-/**
- * Fetch multiple resources to be zipped. Returns a list of ReadableStreams for each fetch request.
- *
- * ```ts
- * fetchMany(...resources).then((results) => zipAll(results, resources))
- * ```
- *
- * @param resources - The remote files to download
- * @returns Readable streams of the decrypted files
- */
-export default async function fetchMany(
-  ...resources: RemoteResource[]
-): Promise<ReadableStream[]> {
-  const cleanup = preconnect(...resources);
-  const results = await Promise.all(
-    resources.map((resource) => fetchAndDecrypt(resource)),
-  );
-  cleanup();
-  return results;
 }

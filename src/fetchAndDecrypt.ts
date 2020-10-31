@@ -4,7 +4,7 @@ import { createDecipheriv } from 'crypto-browserify';
 
 // local
 import { RemoteResource } from './types';
-import decryptStream from './decrypt';
+import { decryptStream } from './decrypt';
 import { PenumbraError } from './error';
 import { toBuff } from './utils';
 import emitError from './utils/emitError';
@@ -51,7 +51,10 @@ export default function fetchAndDecrypt(
         // Convert to buffers
         const bufferKey = toBuff(key);
         // Grab from header if possible
-        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
+        const bufferIv =
+          iv instanceof Buffer
+            ? iv
+            : toBuff(response.headers.get('x-penumbra-iv') || iv);
         const bufferAuthTag = toBuff(authTag);
 
         // Construct the decipher
@@ -62,8 +65,11 @@ export default function fetchAndDecrypt(
         return decryptStream(
           response.body,
           decipher,
-          Number(response.headers.get('Content-Length') || '0'),
+          Number(response.headers.get('Content-Length') || 0),
           url,
+          bufferKey,
+          bufferIv,
+          bufferAuthTag,
         );
       })
   );

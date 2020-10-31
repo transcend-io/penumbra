@@ -7,8 +7,6 @@
  * @license Apache 2.0
  */
 
-import intoStream from 'into-stream';
-
 // exports
 import penumbra from './API';
 import MOCK_API from './mock';
@@ -27,12 +25,9 @@ declare global {
   interface Window {
     /** self.penumbra interface */
     penumbra?: PenumbraAPI;
-    /** TODO: remove debug intoStream global */
-    intoStream: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 
-self.intoStream = intoStream;
 self.penumbra = penumbra;
 
 if (self.dispatchEvent && PenumbraEvent) {

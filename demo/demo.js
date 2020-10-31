@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable max-lines */
 const view = self;
 
 const tests = [];
+const results = [];
 let failures = 0;
 
 /**
@@ -45,6 +45,12 @@ const onReady = async (
     [
       'penumbra.get() and penumbra.getTextOrURI() test (no credentials)',
       async () => {
+        if (!self.TextEncoder) {
+          console.warn(
+            'skipping test due to lack of browser support for TextEncoder',
+          );
+          return false;
+        }
         const cacheBuster = Math.random()
           .toString(10)
           .slice(2);
@@ -65,7 +71,7 @@ const onReady = async (
         } = await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
         const test1Hash = await hash(
           'SHA-256',
-          new TextEncoder().encode(test1Text),
+          new self.TextEncoder().encode(test1Text),
         );
         const ref1Hash =
           '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
@@ -260,6 +266,50 @@ const onReady = async (
       },
     ],
     [
+      'preconnect',
+      async (t) => {
+        const measurePreconnects = () =>
+          document.querySelectorAll('link[rel="preconnect"]').length;
+        const start = measurePreconnects();
+        const cleanup = penumbra.preconnect({
+          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+          filePrefix: 'NYT',
+          mimetype: 'text/plain',
+          decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+          },
+        });
+        const after = measurePreconnects();
+        cleanup();
+        t.assert(start < after);
+        t.end();
+      },
+    ],
+    [
+      'preload',
+      async (t) => {
+        const measurePreloads = () =>
+          document.querySelectorAll('link[rel="preload"]').length;
+        const start = measurePreloads();
+        const cleanup = penumbra.preload({
+          url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+          filePrefix: 'NYT',
+          mimetype: 'text/plain',
+          decryptionOptions: {
+            key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+            iv: '6lNU+2vxJw6SFgse',
+            authTag: 'gadZhS1QozjEmfmHLblzbg==',
+          },
+        });
+        const after = measurePreloads();
+        cleanup();
+        t.assert(start < after);
+        t.end();
+      },
+    ],
+    [
       'penumbra.getBlob()',
       async () => {
         const blob = await penumbra.getBlob(
@@ -285,17 +335,18 @@ const onReady = async (
     [
       'penumbra.encrypt()',
       async () => {
-        if (navigator.userAgent.toLowerCase().includes('firefox')) {
-          console.error(
-            'penumbra.encrypt() test skipped for Firefox. TODO: Fix penumbra.encrypt() in Firefox!',
+        if (!self.TextEncoder || !self.TextDecoder) {
+          console.warn(
+            'skipping test due to lack of browser support for TextEncoder/TextDecoder',
           );
-          return true;
+          return false;
         }
-        const te = new TextEncoder();
-        const td = new TextDecoder();
+        const te = new self.TextEncoder();
+        const td = new self.TextDecoder();
         const input = 'test';
-        const stream = te.encode(input);
-        const { byteLength: size } = stream;
+        const buffer = te.encode(input);
+        const { byteLength: size } = buffer;
+        const stream = new Response(buffer).body;
         const options = null;
         const file = {
           stream,
@@ -307,7 +358,9 @@ const onReady = async (
         const decryptedData = await new Response(
           decrypted.stream,
         ).arrayBuffer();
-        return td.decode(decryptedData) === input;
+        const decryptedText = td.decode(decryptedData);
+        console.log('decrypted text:', decryptedText);
+        return decryptedText === input;
       },
     ],
     [
@@ -317,6 +370,8 @@ const onReady = async (
         new Promise(async (resolve) => {
           const expectedReferenceHashes = [
             '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
+            '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
+            '7559c3628a54a498b715edbbb9a0f16fc65e94eaaf185b41e91f6bddf1a8e02e',
           ];
           let progressEventFiredAndWorking = false;
           let completeEventFired = false;
@@ -335,6 +390,7 @@ const onReady = async (
             allowDuplicates: true,
             saveBuffer: true,
           });
+
           writer.write(
             ...(await penumbra.get(
               {
@@ -467,19 +523,24 @@ const onReady = async (
   const getTestColor = (passed) => (passed ? 'limegreen' : 'crimson');
 
   // eslint-disable-next-line no-restricted-syntax
-  for await (const [name, test] of tests) {
-    const passed = await test();
-    failures += !passed;
-    console.log(
-      `%c${
-        passed ? '✅ PASS' : '❌ FAIL'
-      } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
-      `font-size:larger;color:${getTestColor(passed)}`,
-      '',
-      'color:gray',
-      '',
+  for (const [name, test] of tests) {
+    results.push(
+      // eslint-disable-next-line no-loop-func
+      test().then((passed) => {
+        failures += !passed;
+        console.log(
+          `%c${
+            passed ? '✅ PASS' : '❌ FAIL'
+          } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
+          `font-size:larger;color:${getTestColor(passed)}`,
+          '',
+          'color:gray',
+          '',
+        );
+      }),
     );
   }
+  await Promise.all(results);
   console.log(
     `%c${
       failures
