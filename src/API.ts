@@ -342,10 +342,6 @@ async function encryptJob(
 
     // encryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      console.log('files[i].stream', {
-        pipeTo: files[i].stream.pipeTo,
-        stream: files[i].stream,
-      });
       files[i].stream.pipeTo(remoteWritableStream.writable);
     });
 
@@ -473,10 +469,6 @@ async function decryptJob(
     });
     // decryption jobs submitted and still processing
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      console.log('files[i].stream', {
-        pipeTo: files[i].stream.pipeTo,
-        stream: files[i].stream,
-      });
       files[i].stream.pipeTo(remoteWritableStream.writable);
     });
     // construct output files with corresponding remote readable streams
