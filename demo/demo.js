@@ -267,7 +267,7 @@ const onReady = async (
     ],
     [
       'preconnect',
-      async (t) => {
+      async () => {
         const measurePreconnects = () =>
           document.querySelectorAll('link[rel="preconnect"]').length;
         const start = measurePreconnects();
@@ -288,7 +288,7 @@ const onReady = async (
     ],
     [
       'preload',
-      async (t) => {
+      async () => {
         const measurePreloads = () =>
           document.querySelectorAll('link[rel="preload"]').length;
         const start = measurePreloads();
