@@ -13,6 +13,8 @@ const MOCK_API: PenumbraAPI = {
   get: async () => [],
   save: () => new AbortController(),
   supported,
+  preconnect: () => () => {},
+  preload: () => () => {},
   encrypt: async () => [],
   decrypt: async () => [],
   getDecryptionInfo: async () => ({
