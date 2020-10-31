@@ -283,8 +283,7 @@ const onReady = async (
         });
         const after = measurePreconnects();
         cleanup();
-        t.assert(start < after);
-        t.end();
+        return start < after;
       },
     ],
     [
@@ -305,8 +304,7 @@ const onReady = async (
         });
         const after = measurePreloads();
         cleanup();
-        t.assert(start < after);
-        t.end();
+        return start < after;
       },
     ],
     [
