@@ -287,7 +287,7 @@ const onReady = async (
       },
     ],
     [
-      'preload',
+      'penumbra.preload()',
       async () => {
         const measurePreloads = () =>
           document.querySelectorAll('link[rel="preload"]').length;
