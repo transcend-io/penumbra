@@ -18,13 +18,13 @@ module.exports = (config) => {
       os: 'Windows',
       os_version: '10',
     },
+    /**
+     * TODO: https://github.com/transcend-io/penumbra/issues/164
+     * Update this entry once BrowserStack supports Safari 14.
+     */
     bs_safari_mac: {
       base: 'BrowserStack',
       browser: 'Safari',
-      /**
-       * TODO: https://github.com/transcend-io/penumbra/issues/164
-       * Update this once BrowserStack supports Safari 14
-       */
       browser_version: '13',
       os: 'OS X',
       os_version: 'Catalina',
