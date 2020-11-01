@@ -282,7 +282,9 @@ test('penumbra.preconnect()', async (t) => {
 
 test('penumbra.preload()', async (t) => {
   const measurePreloads = () =>
-    document.querySelectorAll('link[rel="preload"]').length;
+    document.querySelectorAll(
+      'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
+    ).length;
   const start = measurePreloads();
   const cleanup = penumbra.preload({
     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
