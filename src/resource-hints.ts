@@ -27,16 +27,23 @@ const nooper = (): CleanupResourceHints => (): void => {
  * A helper function that creates a set resource hints
  *
  * @param urls - The urls to add the resource hint to
+ * @param rel - Type of link rel that is being being hinted
+ * @param fetch - Request resource as a cross-origin fetch
  * @returns A function removing the resource hints
  */
 export function createResourceHintHelper(
   urls: string[],
   rel: LinkRel,
+  fetch = false,
 ): CleanupResourceHints {
   if (self.document) {
     const links = urls.map((href) => {
       const link = document.createElement('link');
       link.rel = rel;
+      if (fetch) {
+        link.as = 'fetch';
+        link.crossOrigin = 'use-credentials';
+      }
       link.href = href;
       document.head.appendChild(link);
       return link;
@@ -71,5 +78,6 @@ export function preload(...resources: RemoteResource[]): () => void {
   return createResourceHintHelper(
     resources.map(({ url }) => url),
     'preload',
+    true,
   );
 }
