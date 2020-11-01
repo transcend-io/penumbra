@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "4.18.1",
+  "version": "4.18.2",
   "description": "Crypto streams for the browser.",
   "main": "build/penumbra.js",
   "types": "ts-build/src/index.d.ts",
@@ -41,6 +41,9 @@
   },
   "keywords": [
     "browser",
+    "crypto",
+    "worker",
+    "encryption",
     "decryption",
     "stream",
     "client"
