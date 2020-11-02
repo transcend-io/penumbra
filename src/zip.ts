@@ -9,6 +9,7 @@ import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
 import { ReadableStream } from './streams';
+import throwOutside from './utils/throwOutside';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -27,13 +28,13 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
       console.error(error.reason);
     }
     // Throw AggregateError to console
-    setTimeout(() => {
+    throwOutside(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      throw new (self as any).AggregateError(
+      new (self as any).AggregateError(
         errors,
         `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
-      );
-    });
+      ),
+    );
   }
 
   return sum;
