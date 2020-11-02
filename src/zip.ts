@@ -19,7 +19,7 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
     .map(({ value }) => value)
     .reduce((acc, item) => acc + item, 0);
 
-  if (results.some(({ status }) => status !== 'fulfilled')) {
+  if (results.some(({ status }) => status === 'rejected')) {
     const errors = results.filter(
       ({ status }) => status === 'rejected',
     ) as PromiseRejectedResult[];
