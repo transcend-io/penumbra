@@ -9,26 +9,35 @@ import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
 import { ReadableStream } from './streams';
+import throwOutside from './utils/throwOutside';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
-  if (results.every(({ status }) => status === 'fulfilled')) {
-    return (results as PromiseFulfilledResult<number>[])
-      .map(({ value }) => value)
-      .reduce((acc, item) => acc + item, 0);
+  const sum = (results.filter(
+    ({ status }) => status === 'fulfilled',
+  ) as PromiseFulfilledResult<number>[])
+    .map(({ value }) => value)
+    .reduce((acc, item) => acc + item, 0);
+
+  if (results.some(({ status }) => status === 'rejected')) {
+    const errors = results.filter(
+      ({ status }) => status === 'rejected',
+    ) as PromiseRejectedResult[];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const error of errors) {
+      console.error(error.reason);
+    }
+    // Throw AggregateError to console
+    throwOutside(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      new (self as any).AggregateError(
+        errors,
+        `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
+      ),
+    );
   }
-  const errors = results.filter(
-    ({ status }) => status === 'rejected',
-  ) as PromiseRejectedResult[];
-  // eslint-disable-next-line no-restricted-syntax
-  for (const error of errors) {
-    console.error(error.reason);
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  throw new (self as any).AggregateError(
-    errors,
-    `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
-  );
+
+  return sum;
 };
 
 /**
