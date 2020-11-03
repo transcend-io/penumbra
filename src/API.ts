@@ -32,10 +32,6 @@ import { getWorker, setWorkerLocation } from './workers';
 import { advancedStreamsSupported, supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 
-// import decryptFile from './decrypt';
-// import encryptFile from './encrypt';
-// import fetchAndDecrypt from './fetchAndDecrypt';
-
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
