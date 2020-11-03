@@ -87,7 +87,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       }
       return {
         ...resource,
-        stream: new Response(await fetchAndDecrypt(resource)).body,
+        stream: await fetchAndDecrypt(resource),
       } as PenumbraFile;
     }),
   );
