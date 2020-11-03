@@ -29,15 +29,13 @@ import {
 import { PenumbraZipWriter } from './zip';
 import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
-import { supported } from './ua-support';
+import { advancedStreamsSupported, supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
 ) as HTMLAnchorElement;
-
-const writableStreamsSupported = 'WritableStream' in self;
 
 const { createWriteStream } = streamSaver;
 if (!WritableStreamIsNative) {
@@ -52,7 +50,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
-  if (writableStreamsSupported) {
+  if (advancedStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const DecryptionChannel = worker.comlink;
@@ -308,7 +306,7 @@ async function encryptJob(
   });
 
   // We stream the encryption if supported by the browser
-  if (writableStreamsSupported) {
+  if (advancedStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const EncryptionChannel = worker.comlink;
@@ -427,7 +425,7 @@ async function decryptJob(
   if (files.length === 0) {
     throw new Error('penumbra.decrypt() called without arguments');
   }
-  if (writableStreamsSupported) {
+  if (advancedStreamsSupported) {
     // WritableStream constructor supported
     const worker = await getWorker();
     const DecryptionChannel = worker.comlink;
