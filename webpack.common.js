@@ -11,12 +11,11 @@ module.exports = {
     fs: 'empty',
   },
   entry: {
-    penumbra: join(__dirname, 'src', 'index.ts'),
-    'penumbra.worker': join(__dirname, 'src', 'penumbra.worker.js'),
-    tests: join(__dirname, 'src', 'tests', 'index.test.ts'),
+    main: join(__dirname, 'src', 'index.ts'),
+    worker: join(__dirname, 'src', 'worker.penumbra.js'),
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].penumbra.js',
     path: join(__dirname, 'build'),
   },
   resolve: {

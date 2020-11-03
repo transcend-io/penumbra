@@ -20,7 +20,7 @@ import {
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: 'penumbra.worker.js',
+  penumbra: 'worker.penumbra.js',
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
@@ -240,11 +240,11 @@ view.addEventListener('beforeunload', cleanup);
  *
  * ```ts
  * // Set only the Penumbra Worker URL by passing a string. Base URL is derived from this
- * penumbra.setWorkerLocation('/penumbra-workers/penumbra.worker.js')
+ * penumbra.setWorkerLocation('/penumbra-workers/worker.penumbra.js')
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
  *   base: '/penumbra-workers/',
- *   penumbra: 'penumbra.worker.js',
+ *   penumbra: 'worker.penumbra.js',
  *   StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
