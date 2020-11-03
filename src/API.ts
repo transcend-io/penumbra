@@ -73,7 +73,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     return readables as PenumbraFile[];
   }
 
-  const { default: fetchAndDecrypt } = await import('./fetchAndDecrypt');
+  const { fetchAndDecrypt } = await import('./crypto');
   /**
    * Fetch remote files from URLs, decipher them (if encrypted),
    * fully buffer the response, and return ArrayBuffer[]
@@ -373,7 +373,7 @@ async function encryptJob(
       );
     }
   });
-  const { default: encryptFile } = await import('./encrypt');
+  const { encrypt: encryptFile } = await import('./crypto');
   const encryptedFiles = await Promise.all(
     filesWithIds.map(
       (file): PenumbraEncryptedFile => {
@@ -503,7 +503,7 @@ async function decryptJob(
   //   },
   // );
 
-  const { default: decryptFile } = await import('./decrypt');
+  const { decrypt: decryptFile } = await import('./crypto');
   const decryptedFiles: PenumbraFile[] = files.map((file) =>
     decryptFile(options, file, file.size as number),
   );
