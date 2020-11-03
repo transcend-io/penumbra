@@ -16,7 +16,7 @@ module.exports = (config) => ({
   // list of files / patterns to load in the browser
   files: [
     {
-      pattern: 'src/penumbra.worker.js',
+      pattern: 'src/worker.penumbra.js',
       included: false,
       served: true,
       nocache: false,

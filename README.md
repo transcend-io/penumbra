@@ -86,7 +86,7 @@ penumbra.get(...files).then(penumbra.save);
 #### Vanilla JS
 
 ```html
-<script src="lib/penumbra.js"></script>
+<script src="lib/main.penumbra.js"></script>
 <script>
   penumbra
     .get(...files)
@@ -461,18 +461,18 @@ penumbra.setWorkerLocation('/penumbra-workers/');
 // Set all worker URLs by passing a WorkerLocation object
 penumbra.setWorkerLocation({
   base: '/penumbra-workers/',
-  penumbra: 'penumbra.worker.js',
+  penumbra: 'worker.penumbra.js',
   StreamSaver: 'StreamSaver.js',
 });
 
 // Set a single worker's location
-penumbra.setWorkerLocation({ penumbra: 'penumbra.worker.js' });
+penumbra.setWorkerLocation({ penumbra: 'worker.penumbra.js' });
 ```
 
 ### Waiting for the `penumbra-ready` event
 
 ```html
-<script src="lib/penumbra.js" async defer></script>
+<script src="lib/main.penumbra.js" async defer></script>
 ```
 
 ```ts
@@ -507,6 +507,37 @@ enum PenumbraSupportLevel {
   /** Modern browser with full support */
   full = 2,
 }
+```
+
+## Webpack
+
+Penumbra is compiled and bundled on npm. The recommended use is to copy in the penumbra build files into your webpack build.
+We do this with `copy-webpack-plugin`
+
+i.e.
+
+```js
+const fs = require('fs');
+const CopyPlugin = require('copy-webpack-plugin');
+const path = require('path');
+const PENUMBRA_DIRECTORY = path.join(
+  __dirname,
+  'node_modules',
+  '@transcend-io/penumbra',
+  'build',
+);
+
+module.exports = {
+  plugins: [
+    new CopyPlugin({
+      patterns: fs.readdirSync(PENUMBRA_DIRECTORY)
+        .filter((fil) => fil.indexOf('.') > 0)
+        .map((fil) => ({
+          from: `${PENUMBRA_DIRECTORY}/${fil}`,
+          to: `${outputPath}/${fil}`,
+        })),
+    }),
+  ]
 ```
 
 ## Contributing
