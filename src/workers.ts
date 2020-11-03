@@ -11,6 +11,7 @@ import {
   WorkerLocationOptions,
   ProgressEmit,
 } from './types';
+import { advancedStreamsSupported } from './ua-support';
 
 // ////// //
 // Config //
@@ -254,6 +255,10 @@ view.addEventListener('beforeunload', cleanup);
 export async function setWorkerLocation(
   options: WorkerLocationOptions | string,
 ): Promise<void> {
+  // Workers require WritableStream & TransformStream
+  if (!advancedStreamsSupported) {
+    return undefined;
+  }
   if (initialized) {
     console.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();
