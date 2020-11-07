@@ -54,11 +54,13 @@
 | -------- | -------: | -------: | -------: |
 | Chrome   |       ✅ |       ✅ |       ✅ |
 | Edge >18 |       ✅ |       ✅ |       ✅ |
-| Safari   |       🟡 |       🟡 |       🟡 |
-| Firefox  |       🟡 |       🟡 |       🟡 |
+| Safari   |       🐢 |       🐢 |       🟡 |
+| Firefox  |       🐢 |       🐢 |       🟡 |
 | Edge 18  |       ❌ |       ❌ |       ❌ |
 
-✅ = Full support
+✅ = Full support with workers
+
+🐢 = Uses main thread (lacks native WritableStream support)
 
 🟡 = 32 MiB limit
 
