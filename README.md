@@ -99,6 +99,34 @@ penumbra.get(...files).then(penumbra.save);
 
 _Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchronous loading._
 
+### RemoteResource
+
+`penumbra.get()` uses RemoteResource descriptors to specify where to request resources and their various decryption parameters.
+
+```ts
+/**
+ * A file to download from a remote resource, that is optionally encrypted
+ */
+type RemoteResource = {
+  /** The URL to fetch the encrypted or unencrypted file from */
+  url: string;
+  /** The mimetype of the resulting file */
+  mimetype?: string;
+  /** The name of the underlying file without the extension */
+  filePrefix?: string;
+  /** If the file is encrypted, these are the required params */
+  decryptionOptions?: PenumbraDecryptionInfo;
+  /** Relative file path (needed for zipping) */
+  path?: string;
+  /** Fetch options */
+  requestInit?: RequestInit;
+  /** Last modified date */
+  lastModified?: Date;
+  /** Expected file size */
+  size?: number;
+};
+```
+
 ### .get
 
 Fetch and decrypt remote files.
