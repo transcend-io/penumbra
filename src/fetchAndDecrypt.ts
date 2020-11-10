@@ -13,15 +13,15 @@ import emitError from './utils/emitError';
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
  *
  * @param resource - The remote resource to download
- * @param fetchOptions - Options to include in the download URL fetch. Set to `{ credentials: 'include' }` to include credentials for a CORS request.
  * @returns A readable stream of the deciphered file
  */
-export default function fetchAndDecrypt(
-  { url, decryptionOptions }: RemoteResource,
-  fetchOptions?: RequestInit,
-): Promise<ReadableStream> {
+export default function fetchAndDecrypt({
+  url,
+  decryptionOptions,
+  requestInit,
+}: RemoteResource): Promise<ReadableStream> {
   return (
-    fetch(url, fetchOptions)
+    fetch(url, requestInit)
       // Retrieve ReadableStream body
       .then((response) => {
         if (response.status >= 400) {
