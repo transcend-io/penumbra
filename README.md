@@ -22,6 +22,7 @@
   - [Importing Penumbra](#importing-penumbra)
     - [With Yarn/NPM](#with-yarnnpm)
     - [Vanilla JS](#vanilla-js)
+  - [RemoteResource](#remoteresource)
   - [.get](#get)
   - [.encrypt](#encrypt)
   - [.getDecryptionInfo](#getdecryptioninfo)
@@ -43,6 +44,7 @@
   - [Configure worker location](#configure-worker-location)
   - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
   - [Querying Penumbra browser support](#querying-penumbra-browser-support)
+- [Webpack](#webpack)
 - [Contributing](#contributing)
 - [License](#license)
 
