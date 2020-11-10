@@ -51,10 +51,7 @@ export default function fetchAndDecrypt({
         // Convert to buffers
         const bufferKey = toBuff(key);
         // Grab from header if possible
-        const bufferIv =
-          iv instanceof Buffer
-            ? iv
-            : toBuff(response.headers.get('x-penumbra-iv') || iv);
+        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
         const bufferAuthTag = toBuff(authTag);
 
         // Construct the decipher
