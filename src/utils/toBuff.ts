@@ -7,11 +7,15 @@ import toBuffer from 'typedarray-to-buffer';
  * @param i - The input buffer or string
  * @returns Enforced as buffer
  */
-export default (i: Buffer | string | ArrayBufferView): Buffer =>
-  toBuffer(
+export default (i: Buffer | string | ArrayBufferView): Buffer => {
+  if (typeof i === 'string') {
+    console.log(Uint8Array.from(atob(i), (c) => c.charCodeAt(0)));
+  }
+  return toBuffer(
     ArrayBuffer.isView(i)
       ? // input is a typed array
         ((i as unknown) as NodeJS.TypedArray)
       : // input is a base64 string
         Uint8Array.from(atob(i), (c) => c.charCodeAt(0)),
   );
+};
