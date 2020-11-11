@@ -35,6 +35,7 @@ export function decryptStream(
   key: Buffer,
   iv: Buffer,
   authTag: Buffer,
+  ignoreAuthTag = false,
 ): ReadableStream {
   let totalBytesRead = 0;
 
@@ -56,7 +57,9 @@ export function decryptStream(
 
           // Auth tag from response trailer
           if (totalBytesRead >= contentLength) {
-            decipher.final();
+            if (!ignoreAuthTag) {
+              decipher.final();
+            }
             emitJobCompletion(id, { key, iv, authTag });
           }
         },
@@ -78,7 +81,9 @@ export function decryptStream(
       function push(): void {
         reader.read().then(({ done, value }) => {
           if (done) {
-            decipher.final();
+            if (!ignoreAuthTag) {
+              decipher.final();
+            }
             if (!finished) {
               controller.close();
               finished = true;
@@ -138,6 +143,15 @@ export default function decrypt(
   return {
     ...file,
     id,
-    stream: decryptStream(file.stream, decipher, size, id, key, iv, authTag),
+    stream: decryptStream(
+      file.stream,
+      decipher,
+      size,
+      id,
+      key,
+      iv,
+      authTag,
+      file.ignoreAuthTag,
+    ),
   };
 }

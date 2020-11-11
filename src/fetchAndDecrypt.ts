@@ -19,6 +19,7 @@ export default function fetchAndDecrypt({
   url,
   decryptionOptions,
   requestInit,
+  ignoreAuthTag,
 }: RemoteResource): Promise<ReadableStream> {
   return (
     fetch(url, requestInit)
@@ -67,6 +68,7 @@ export default function fetchAndDecrypt({
           bufferKey,
           bufferIv,
           bufferAuthTag,
+          ignoreAuthTag,
         );
       })
   );

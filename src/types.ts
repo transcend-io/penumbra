@@ -71,6 +71,13 @@ export type RemoteResource = {
   lastModified?: Date;
   /** Expected file size */
   size?: number;
+  /**
+   * Disable calling .final() to validate the authTag.
+   *
+   * This is useful when providing x-penumbra-iv which is used
+   * when the iv is not known
+   */
+  ignoreAuthTag?: boolean;
 };
 
 /** Penumbra file composition */
