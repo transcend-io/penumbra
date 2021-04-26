@@ -52,13 +52,14 @@
 
 ## Compatibility
 
-|          | .decrypt | .encrypt | .saveZip |
-| -------- | -------: | -------: | -------: |
-| Chrome   |       ✅ |       ✅ |       ✅ |
-| Edge >18 |       ✅ |       ✅ |       ✅ |
-| Safari   |       🐢 |       🐢 |       🟡 |
-| Firefox  |       🐢 |       🐢 |       🟡 |
-| Edge 18  |       ❌ |       ❌ |       ❌ |
+|              | .decrypt | .encrypt | .saveZip |
+| ------------ | -------: | -------: | -------: |
+| Chrome       |       ✅ |       ✅ |       ✅ |
+| Edge >18     |       ✅ |       ✅ |       ✅ |
+| Safari ≥14.1 |       ✅ |       ✅ |       ✅ |
+| Safari <14.1 |       🐢 |       🐢 |       🟡 |
+| Firefox      |       🐢 |       🐢 |       🟡 |
+| Edge 18      |       ❌ |       ❌ |       ❌ |
 
 ✅ = Full support with workers
 
