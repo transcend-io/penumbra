@@ -57,7 +57,7 @@ export function encryptStream(
             'encrypt',
             totalBytesRead,
             contentLength,
-            '[encrypted file]',
+            jobID,
           );
 
           if (totalBytesRead >= contentLength) {
@@ -105,7 +105,7 @@ export function encryptStream(
             'encrypt',
             totalBytesRead,
             contentLength,
-            '[encrypted file]',
+            jobID,
           );
 
           if (totalBytesRead >= contentLength) {
