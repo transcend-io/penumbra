@@ -144,6 +144,14 @@ Encrypt files.
 
 ```ts
 penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): Promise<PenumbraEncryptedFile[]>
+
+/**
+ * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
+ */
+type PenumbraEncryptionOptions = {
+  /** Encryption key */
+  key: string | Buffer;
+};
 ```
 
 #### .encrypt() examples:
