@@ -146,6 +146,10 @@ Encrypt files.
 penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): Promise<PenumbraEncryptedFile[]>
 ```
 
+#### .encrypt() examples:
+
+Encrypt an empty stream:
+
 ```ts
 size = 4096 * 128;
 addEventListener('penumbra-progress', (e) => console.log(e.type, e.detail));
@@ -159,6 +163,30 @@ file.then(async ([encrypted]) => {
   console.log('encryption complete');
   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
 });
+```
+
+Encrypt and decrypt text:
+
+```ts
+const te = new self.TextEncoder();
+const td = new self.TextDecoder();
+const input = '[test string]';
+const buffer = te.encode(input);
+const { byteLength: size } = buffer;
+const stream = new Response(buffer).body;
+const options = null;
+const file = {
+  stream,
+  size,
+};
+const [encrypted] = await penumbra.encrypt(options, file);
+const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
+const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
+const decryptedData = await new Response(
+  decrypted.stream,
+).arrayBuffer();
+const decryptedText = td.decode(decryptedData);
+console.log('decrypted text:', decryptedText);
 ```
 
 ### .getDecryptionInfo
