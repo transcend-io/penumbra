@@ -5,13 +5,9 @@ import {
   RemoteReadableStream,
   RemoteWritableStream,
 } from '@transcend-io/remote-web-streams';
-import streamSaver from 'streamsaver';
 import mime from 'mime-types';
-import {
-  ReadableStream,
-  WritableStreamIsNative,
-  WritableStreamPonyfill,
-} from './streams';
+import { streamSaver } from './streamsaver';
+import { ReadableStream } from './streams';
 
 // Local
 import {
@@ -36,12 +32,6 @@ const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
 ) as HTMLAnchorElement;
-
-const { createWriteStream } = streamSaver;
-if (!WritableStreamIsNative) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (streamSaver as any).WritableStream = WritableStreamPonyfill;
-}
 
 /**
  * Retrieve and decrypt files (batch job)
@@ -189,7 +179,7 @@ function save(
   const { signal } = controller;
 
   // Write a single readable stream to file
-  file.stream.pipeTo(createWriteStream(singleFileName), {
+  file.stream.pipeTo(streamSaver.createWriteStream(singleFileName), {
     signal,
   });
 

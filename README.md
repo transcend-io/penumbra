@@ -25,6 +25,7 @@
   - [RemoteResource](#remoteresource)
   - [.get](#get)
   - [.encrypt](#encrypt)
+    - [.encrypt() examples:](#encrypt-examples)
   - [.getDecryptionInfo](#getdecryptioninfo)
   - [.decrypt](#decrypt)
   - [.save](#save)
