@@ -11,14 +11,14 @@ git:
   depth: 2
 
 # Node version
-node_js: "10.15.0"
+node_js: "17.4.0"
 
 before_install:
   # Dynamically create an `.npmrc` file
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > "$HOME/.npmrc"
-  # Ensure that npm version is 6.4.1
-  - if [[ `npm -v` != 6.4.1 ]]; then npm i -g npm@6.4.1; fi
-  - npm install -g yarn@1.17.3
+  # Ensure that npm version is 8.4.0
+  - if [[ `npm -v` != 8.4.0 ]]; then npm i -g npm@8.4.0; fi
+  - npm install -g yarn@1.22.5
   # Install pre-commit
   - curl https://pre-commit.com/install-local.py | python -
   # To ensure the aws command can be found
