@@ -1,10 +1,8 @@
 /* eslint-disable prettier/prettier */
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
-// import streamSaver from 'streamsaver';
-import { createWriteStream } from 'streamsaver';
 import mime from 'mime-types';
-// import { WritableStreamPonyfill, WritableStreamIsNative } from './streams';
+import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
@@ -137,7 +135,7 @@ export class PenumbraZipWriter extends EventTarget {
       });
     }
 
-    const saveStream = createWriteStream(
+    const saveStream = streamSaver.createWriteStream(
       // Append .zip to filename unless it is already present
       /\.zip\s*$/i.test(name) ? name : `${name}.zip`,
       size,
