@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Crypto streams for the browser.",
   "main": "build/main.penumbra.js",
   "types": "ts-build/src/index.d.ts",
@@ -61,7 +61,7 @@
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
-    "@transcend-io/conflux": "^3.2.0",
+    "@transcend-io/conflux": "^3.2.2",
     "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.3.1",
     "core-js": "^3.21.1",

@@ -1485,13 +1485,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.11.0":
-  version: 7.11.2
-  resolution: "@babel/runtime-corejs3@npm:7.11.2"
+"@babel/runtime-corejs3@npm:^7.17.2":
+  version: 7.17.2
+  resolution: "@babel/runtime-corejs3@npm:7.17.2"
   dependencies:
-    core-js-pure: ^3.0.0
+    core-js-pure: ^3.20.2
     regenerator-runtime: ^0.13.4
-  checksum: a055ddc9f0403164b4db7ea3344bca6d12ad0d7b9aecad6a6bef121e943dbec717827df88d91237d618eb294dfcce564e0c17f631858536859638ca55d938171
+  checksum: fc7ba261913c66347434051c74b00f320fb5fda7c72f4a4378045b39e31a39420bba2b2cf3fd59367834b43689215b12cb0587a599c95e9619562e1ebec071a7
   languageName: node
   linkType: hard
 
@@ -1770,15 +1770,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@transcend-io/conflux@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@transcend-io/conflux@npm:3.2.0"
+"@transcend-io/conflux@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@transcend-io/conflux@npm:3.2.2"
   dependencies:
-    "@babel/runtime-corejs3": ^7.11.0
-    jsbi: ^3.1.2
+    "@babel/runtime-corejs3": ^7.17.2
+    jsbi: ^3.2.5
     pako: ^1.0.11
-    web-streams-polyfill: ^3.0.0
-  checksum: 1cf3450a57e0db0def34f70f255906e4adcb6278995bd20e0d0c379e03a9d7714353d8020b92e0dcd822905405d021d6ccd8ed7abe90cf8346d848cb5f1af024
+    web-streams-polyfill: ^3.2.0
+  checksum: 630b2f371e899718e662928cd0ae6f7b5939b67a03df4d46c257bce6a7dcb04efc98d663b54c7eaa54444f5daa2e348c66dc55b7f04b59893f07165e4aa72b84
   languageName: node
   linkType: hard
 
@@ -1790,7 +1790,7 @@ __metadata:
     "@babel/plugin-proposal-class-properties": ^7.16.7
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@transcend-io/conflux": ^3.2.0
+    "@transcend-io/conflux": ^3.2.2
     "@transcend-io/remote-web-streams": 1.0.5
     "@types/mime-types": ^2.1.1
     "@types/node": ^17.0.21
@@ -3938,10 +3938,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js-pure@npm:^3.0.0":
-  version: 3.6.5
-  resolution: "core-js-pure@npm:3.6.5"
-  checksum: abc307bdfc0acec5bfa0c06d77e55ed524ca703cc4b4ee61054918ca3badea7b07cc89520425e86d27bdcd78aa5aa3408a7d393dcf7b29bb0bec8869c82081d8
+"core-js-pure@npm:^3.20.2":
+  version: 3.21.1
+  resolution: "core-js-pure@npm:3.21.1"
+  checksum: 00a5dff599b7fb0b30746a638b9d0edbdc0df24ed1580ca56be595fbe3c78c375d37fc4e1bff23627109229702c9ee8ea2587a66b8280eb33b85160aa4e401e9
   languageName: node
   linkType: hard
 
@@ -6938,10 +6938,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsbi@npm:^3.1.2":
-  version: 3.1.4
-  resolution: "jsbi@npm:3.1.4"
-  checksum: 8dad8122b5060642d5763405f3c210c385747d5b5e95639e8bddbb2bb5d06fc55a25c6d7d7dec7cbc071d4db58a9525578d29a58d1357976c03d75b3712f83a4
+"jsbi@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "jsbi@npm:3.2.5"
+  checksum: 642d1bb139ad1c1e96c4907eb159565e980a0d168487626b493d0d0b7b341da0e43001089d3b21703fe17b18a7a6c0f42c92026f71d54471ed0a0d1b3015ec0f
   languageName: node
   linkType: hard
 
