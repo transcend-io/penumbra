@@ -206,7 +206,6 @@ test('penumbra.getTextOrURI(): images (as URL)', async (t) => {
   )[0];
   let isURL;
   try {
-    // tslint:disable-next-line: no-unused-expression
     new URL(url, location.href); // eslint-disable-line no-new
     isURL = type === 'uri';
   } catch (ex) {
@@ -340,7 +339,7 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   const { byteLength: size } = buffer;
   const stream = new Response(buffer).body;
   const options = null;
-  const file = ({ stream, size } as unknown) as PenumbraFile;
+  const file = { stream, size } as unknown as PenumbraFile;
   const [encrypted] = await penumbra.encrypt(options, file);
   const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
   const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
@@ -359,7 +358,11 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
   let completeEventFired = false;
   const expectedProgressProps = ['percent', 'written', 'size'];
   const writer = penumbra.saveZip({
-    /** onProgress handler */
+    /**
+     * onProgress handler
+     *
+     * @param event
+     */
     onProgress(event) {
       progressEventFiredAndWorking = expectedProgressProps.every(
         (prop) => prop in event.detail,

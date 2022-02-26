@@ -240,7 +240,11 @@ export class PenumbraZipWriter extends EventTarget {
           const reader = stream.getReader();
           const writeComplete = new Promise<number>((resolve) => {
             const completionTrackerStream = new ReadableStream({
-              /** Start completion tracker-wrapped ReadableStream */
+              /**
+               * Start completion tracker-wrapped ReadableStream
+               *
+               * @param controller
+               */
               async start(controller) {
                 // eslint-disable-next-line no-constant-condition
                 while (true) {

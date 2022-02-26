@@ -4,9 +4,12 @@ import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for the decryption progress
- * @param totalBytesRead the number of bytes read so far
- * @param contentLength the total number of bytes to read
- * @param id the unique job ID # or URL being read from
+ *
+ * @param type
+ * @param totalBytesRead - the number of bytes read so far
+ * @param contentLength - the total number of bytes to read
+ * @param id - the unique job ID # or URL being read from
+ * @param target
  * @returns
  */
 export default function emitProgress(

@@ -35,6 +35,8 @@ const resolver = document.createElementNS(
 
 /**
  * Retrieve and decrypt files (batch job)
+ *
+ * @param resources
  */
 async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
@@ -109,6 +111,8 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  *   },
  * });
  * ```
+ *
+ * @param resources
  */
 export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   return Promise.all(
@@ -135,7 +139,9 @@ function saveZip(options?: ZipOptions): PenumbraZipWriter {
  * Save files retrieved by Penumbra
  *
  * @param data - The data files to save
+ * @param files
  * @param fileName - The name of the file to save to
+ * @param controller
  * @returns AbortController
  */
 function save(
@@ -190,6 +196,8 @@ function save(
  * Load files retrieved by Penumbra into memory as a Blob
  *
  * @param data - The data to load
+ * @param files
+ * @param type
  * @returns A blob of the data
  */
 function getBlob(
@@ -257,6 +265,8 @@ const trackJobCompletion = (
  * ```ts
  * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
  * ```
+ *
+ * @param file
  */
 export async function getDecryptionInfo(
   file: PenumbraEncryptedFile,
@@ -271,6 +281,9 @@ export async function getDecryptionInfo(
 
 /**
  * Encrypt files (batch job)
+ *
+ * @param options
+ * @param files
  */
 async function encryptJob(
   options: PenumbraEncryptionOptions | null,
@@ -317,6 +330,8 @@ async function encryptJob(
        * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
+       *
+       * @param thread
        */
       (thread) => {
         thread.encrypt(
@@ -357,7 +372,7 @@ async function encryptJob(
   filesWithIds.forEach(({ size = 0 }) => {
     totalSize += size;
     if (totalSize > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      console.error(`Your browser doesn't support streaming encryption.`);
+      console.error('Your browser doesn\'t support streaming encryption.');
       throw new Error(
         'penumbra.encrypt(): File is too large to encrypt without writable streams',
       );
@@ -395,6 +410,9 @@ async function encryptJob(
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  * ```
+ *
+ * @param options
+ * @param files
  */
 export function encrypt(
   options: PenumbraEncryptionOptions | null,
@@ -407,6 +425,9 @@ export function encrypt(
 
 /**
  * Decrypt files encrypted by penumbra.encrypt() (batch job)
+ *
+ * @param options
+ * @param files
  */
 async function decryptJob(
   options: PenumbraDecryptionInfo,
@@ -474,7 +495,7 @@ async function decryptJob(
 
   files.forEach(({ size = 0 }) => {
     if (size > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      console.error(`Your browser doesn't support streaming decryption.`);
+      console.error('Your browser doesn\'t support streaming decryption.');
       throw new Error(
         'penumbra.decrypt(): File is too large to decrypt without writable streams',
       );
@@ -517,6 +538,26 @@ async function decryptJob(
  *   console.log('encryption started');
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
+ * @param options
+ * @param {...any} files
  */
 export function decrypt(
   options: PenumbraDecryptionInfo,

@@ -8,6 +8,7 @@ const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*
 /**
  * Determine if the file mimetype is known for displaying
  *
+ * @param mimetype
  * @returns 'probably', 'maybe', or '' depending on if mime type can be displayed
  */
 export default function isViewableText(mimetype: string): boolean {

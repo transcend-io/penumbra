@@ -25,9 +25,12 @@
 
     table.appendChild(row);
   });
-})();
+}());
 
 // Insert file info into the table
+/**
+ * @param returnedFiles
+ */
 window.insertIntoCell = function insertIntoCell(returnedFiles) {
   const headerIds = Array.from(document.getElementById('headers').children).map(
     (child) => child.id,

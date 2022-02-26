@@ -9,7 +9,7 @@ transferHandlers.set('penumbra-progress', {
   /**
    * Checks if object is a penumbra-progress event
    *
-   * @param object Object being passed through Comlink.transfer()
+   * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
   canHandle(object: any): object is CustomEvent {
@@ -20,7 +20,7 @@ transferHandlers.set('penumbra-progress', {
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
    *
-   * @param object Reference to the penumbra-progress PenumbraEvent
+   * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
@@ -29,7 +29,7 @@ transferHandlers.set('penumbra-progress', {
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
    *
-   * @param detail Structured-clone data from serialize()
+   * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
   deserialize(detail: any) {
@@ -41,7 +41,7 @@ transferHandlers.set('penumbra-complete', {
   /**
    * Checks if object is a penumbra-complete event
    *
-   * @param object Object being passed through Comlink.transfer()
+   * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
   canHandle(object: any): object is CustomEvent {
@@ -52,7 +52,7 @@ transferHandlers.set('penumbra-complete', {
   /**
    * Serialize penumbra-complete event down to just JobCompletion
    *
-   * @param object Reference to the penumbra-complete PenumbraEvent
+   * @param object - Reference to the penumbra-complete PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
@@ -61,7 +61,7 @@ transferHandlers.set('penumbra-complete', {
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
    *
-   * @param detail Structured-clone data from serialize()
+   * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-complete PenumbraEvent
    */
   deserialize(detail: any) {
@@ -75,7 +75,7 @@ transferHandlers.set('penumbra-error', {
   /**
    * Checks if object is a penumbra-error event
    *
-   * @param object Object being passed through Comlink.transfer()
+   * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
   canHandle(object: any): object is CustomEvent {
@@ -84,7 +84,7 @@ transferHandlers.set('penumbra-error', {
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
    *
-   * @param object Reference to the penumbra-progress PenumbraEvent
+   * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
@@ -93,7 +93,7 @@ transferHandlers.set('penumbra-error', {
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
    *
-   * @param detail Structured-clone data from serialize()
+   * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
   deserialize(detail: any) {
@@ -105,7 +105,7 @@ transferHandlers.set('error', {
   /**
    * Checks if object is an error event
    *
-   * @param object Object being passed through Comlink.transfer()
+   * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
   canHandle(object: any): object is ErrorEvent {
@@ -114,7 +114,7 @@ transferHandlers.set('error', {
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
    *
-   * @param object Reference to the penumbra-progress PenumbraEvent
+   * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
   serialize(object: any) {
@@ -123,7 +123,7 @@ transferHandlers.set('error', {
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
    *
-   * @param detail Structured-clone data from serialize()
+   * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
   deserialize(detail: any) {

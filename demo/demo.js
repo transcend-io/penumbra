@@ -35,7 +35,11 @@ function timeout(callback, delay) {
   };
 }
 
-/** Penumbra has loaded */
+/**
+ * Penumbra has loaded
+ *
+ * @param root0
+ */
 const onReady = async (
   { detail: { penumbra } } = {
     detail: view,
@@ -51,9 +55,7 @@ const onReady = async (
           );
           return false;
         }
-        const cacheBuster = Math.random()
-          .toString(10)
-          .slice(2);
+        const cacheBuster = Math.random().toString(10).slice(2);
         await penumbra.setWorkerLocation(`worker.penumbra.js?${cacheBuster}`);
         const NYT = {
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
@@ -65,10 +67,8 @@ const onReady = async (
             authTag: 'gadZhS1QozjEmfmHLblzbg==',
           },
         };
-        const {
-          type: test1Type,
-          data: test1Text,
-        } = await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
+        const { type: test1Type, data: test1Text } =
+          await penumbra.getTextOrURI(await penumbra.get(NYT))[0];
         const test1Hash = await hash(
           'SHA-256',
           new self.TextEncoder().encode(test1Text),
@@ -152,8 +152,7 @@ const onReady = async (
             },
           },
           {
-            url:
-              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -201,8 +200,7 @@ const onReady = async (
       async () => {
         const { type, data: url } = await penumbra.getTextOrURI(
           await penumbra.get({
-            url:
-              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -214,7 +212,6 @@ const onReady = async (
         )[0];
         let isURL;
         try {
-          // tslint:disable-next-line: no-unused-expression
           new URL(url, location.href); // eslint-disable-line no-new
           isURL = type === 'uri';
         } catch (ex) {
@@ -232,8 +229,7 @@ const onReady = async (
       async () => {
         const { data: url } = await penumbra.getTextOrURI(
           await penumbra.get({
-            url:
-              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -312,8 +308,7 @@ const onReady = async (
       async () => {
         const blob = await penumbra.getBlob(
           await penumbra.get({
-            url:
-              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             filePrefix: 'tortoise',
             mimetype: 'image/jpeg',
             decryptionOptions: {
@@ -375,7 +370,11 @@ const onReady = async (
           let completeEventFired = false;
           const expectedProgressProps = ['percent', 'written', 'size'];
           const writer = penumbra.saveZip({
-            /** onProgress handler */
+            /**
+             * onProgress handler
+             *
+             * @param event
+             */
             onProgress(event) {
               progressEventFiredAndWorking = expectedProgressProps.every(
                 (prop) => prop in event.detail,
@@ -393,8 +392,7 @@ const onReady = async (
             ...(await penumbra.get(
               {
                 size: 874,
-                url:
-                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
                 path: 'test/NYT.txt',
                 mimetype: 'text/plain',
                 decryptionOptions: {
@@ -407,8 +405,7 @@ const onReady = async (
               },
               {
                 size: 874,
-                url:
-                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
                 path: 'test/NYT.txt',
                 mimetype: 'text/plain',
                 decryptionOptions: {
@@ -424,8 +421,7 @@ const onReady = async (
           writer.write(
             ...(await penumbra.get(
               {
-                url:
-                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
                 path: 'test/NYT.txt',
                 mimetype: 'text/plain',
                 decryptionOptions: {
@@ -437,8 +433,7 @@ const onReady = async (
                 lastModified: new Date(0),
               },
               {
-                url:
-                  'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+                url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
                 path: 'test/NYT.txt',
                 mimetype: 'text/plain',
                 decryptionOptions: {
@@ -477,8 +472,7 @@ const onReady = async (
       async () => {
         const files = [
           {
-            url:
-              'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
             path: 'test/tortoise.jpg',
             mimetype: 'image/jpeg',
             decryptionOptions: {

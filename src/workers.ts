@@ -80,6 +80,8 @@ const resolver = document.createElementNS(
 
 /**
  * Resolve a potentially relative URL into an absolute URL
+ *
+ * @param url
  */
 function resolve(url: string): URL {
   resolver.href = url;
@@ -115,7 +117,11 @@ export function getWorkerLocation(): WorkerLocation {
   };
 }
 
-/** Re-dispatch events */
+/**
+ * Re-dispatch events
+ *
+ * @param event
+ */
 function reDispatchEvent(event: Event): void {
   if (view.dispatchEvent) {
     view.dispatchEvent(event);
@@ -135,7 +141,11 @@ const maxConcurrency =
 const workers: PenumbraWorker[] = [];
 let workerID = 0;
 
-/** Instantiate a Penumbra Worker */
+/**
+ * Instantiate a Penumbra Worker
+ *
+ * @param url
+ */
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
@@ -272,7 +282,11 @@ export async function setWorkerLocation(
   return initWorkers();
 }
 
-/** Set worker busy state based on current progress events */
+/**
+ * Set worker busy state based on current progress events
+ *
+ * @param root0
+ */
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
 }: ProgressEmit): void => {

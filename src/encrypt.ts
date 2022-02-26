@@ -15,12 +15,11 @@ import {
 // utils
 import { emitProgress, toBuff, emitJobCompletion } from './utils';
 
-/* tslint:disable completed-docs */
-
 /**
  * Encrypts a readable stream
  *
  * @param id - Job ID
+ * @param jobID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
  * @param contentLength - The content length of the file, in bytes
@@ -53,12 +52,7 @@ export function encryptStream(
 
           // Emit a progress update
           totalBytesRead += bufferChunk.length;
-          emitProgress(
-            'encrypt',
-            totalBytesRead,
-            contentLength,
-            jobID,
-          );
+          emitProgress('encrypt', totalBytesRead, contentLength, jobID);
 
           if (totalBytesRead >= contentLength) {
             cipher.final();
@@ -79,6 +73,8 @@ export function encryptStream(
   return new ReadableStream({
     /**
      * Controller
+     *
+     * @param controller
      */
     start(controller) {
       /**
@@ -101,12 +97,7 @@ export function encryptStream(
 
           // Emit a progress update
           totalBytesRead += chunk.length;
-          emitProgress(
-            'encrypt',
-            totalBytesRead,
-            contentLength,
-            jobID,
-          );
+          emitProgress('encrypt', totalBytesRead, contentLength, jobID);
 
           if (totalBytesRead >= contentLength) {
             cipher.final();
@@ -137,7 +128,9 @@ const IV_RANDOMNESS = 12;
 /**
  * Encrypts a file and returns a ReadableStream
  *
+ * @param options
  * @param file - The remote resource to download
+ * @param size
  * @returns A readable stream of the deciphered file
  */
 export default function encrypt(

@@ -1,0 +1,26 @@
+name: Install Yarn Dependencies
+description: Installs Yarn Dependencies
+runs:
+  using: 'composite'
+  steps:
+    # Install Yarn v2 dependencies
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.17.3'
+    - run: npm install -g "yarn@1.22.5"
+      shell: bash
+    - uses: actions/cache@v2
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: |
+          .yarn/cache
+          .yarn/unplugged
+          .yarn/install-state.gz
+          .pnp.cjs
+        key: ${{ runner.os }}-${{ runner.arch }}-yarn-v2-${{ hashFiles('**/yarn.lock', '**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-yarn-v2-
+    - run: yarn install --immutable
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      name: Install yarn deps
+      shell: bash

@@ -16,7 +16,11 @@ const blobCache: BlobCacheManager = {
       (u: string) => new URL(u),
     );
   },
-  /** Write to Blob cache */
+  /**
+   * Write to Blob cache
+   *
+   * @param cache
+   */
   set(cache: URL[] | string[]): void {
     localStorage.blobCache = JSON.stringify(cache);
   },

@@ -11,7 +11,12 @@ export class PenumbraError extends Error {
   /** Error message */
   public message: string;
 
-  /** Extend new Error */
+  /**
+   * Extend new Error
+   *
+   * @param error
+   * @param id
+   */
   constructor(error: string | Error, id: string | number) {
     if (typeof error === 'string') {
       super(error);

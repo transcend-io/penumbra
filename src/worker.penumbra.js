@@ -93,7 +93,9 @@ class PenumbraWorker {
   /**
    * Streaming decryption of ReadableStreams
    *
+   * @param options
    * @param ids - IDs for tracking decryption completion
+   * @param sizes
    * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
    * @returns ReadableStream[] of the decrypted files
@@ -134,7 +136,9 @@ class PenumbraWorker {
   /**
    * Streaming encryption of ReadableStreams
    *
+   * @param options
    * @param ids - IDs for tracking encryption completion
+   * @param sizes
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @returns ReadableStream[] of the encrypted files
@@ -184,6 +188,9 @@ class PenumbraWorker {
 
   /**
    * Forward events to main thread
+   *
+   * @param id
+   * @param handler
    */
   setup(id, handler) {
     setWorkerID(id);

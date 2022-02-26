@@ -13,15 +13,7 @@ export type LinkRel = 'preconnect' | 'preload';
 export type CleanupResourceHints = () => void;
 
 /** No-op function generator */
-// tslint:disable-next-line: no-empty, no-empty-function
-const nooper = (): CleanupResourceHints => (): void => {
-  /**
-   * Appeasing tslint with an unnecessary comment
-   *
-   * @example const noop = nooper(); noop();
-   * Expected results: None
-   */
-};
+const nooper = (): CleanupResourceHints => (): void => {};
 
 /**
  * A helper function that creates a set resource hints
@@ -60,6 +52,7 @@ export function createResourceHintHelper(
  * This should speed up HTTP/2 connections, but not HTTP/1.1.
  *
  * @param origins - Origins of the files to pre-connect to
+ * @param resources
  * @returns A function removing the links that were appended to the DOM
  */
 export function preconnect(...resources: RemoteResource[]): () => void {
@@ -72,6 +65,7 @@ export function preconnect(...resources: RemoteResource[]): () => void {
  * Connect to and start loading URLs before they are needed.
  *
  * @param urls - The URLs to preload
+ * @param resources
  * @returns A function that removes the link tags that were appended to the DOM
  */
 export function preload(...resources: RemoteResource[]): () => void {
