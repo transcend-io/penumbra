@@ -54,6 +54,12 @@ module.exports = {
     // Disabled //
     // //////// //
 
+    /** We use self a lot */
+    'no-restricted-globals': 0,
+
+    /** We went rogue and use snake case here */
+    '@typescript-eslint/camelcase': 0,
+
     /** Handled by prettier */
     'comma-dangle': 0,
     'operator-linebreak': 0,
@@ -236,9 +242,6 @@ module.exports = {
     /** Should not alias this to another command */
     '@typescript-eslint/no-this-alias': ['error'],
 
-    /** Prevent use of global variables */
-    'no-restricted-globals': ['error'],
-
     /** No unnecessary async statements on a function */
     'require-await': ['error'],
 
@@ -253,6 +256,14 @@ module.exports = {
     '@typescript-eslint/ban-types': ['error'],
     '@typescript-eslint/no-explicit-any': ['error'],
   },
+  overrides: [
+    {
+      files: ['**/*.js'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': 0,
+      },
+    },
+  ],
   settings: {
     /** Allow for typescript alias resolution */
     'import/resolver': {

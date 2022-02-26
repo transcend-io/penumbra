@@ -1,3 +1,43 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+## Table of Contents
+
+- [Penumbra](#penumbra)
+  - [Compatibility](#compatibility)
+  - [Usage](#usage)
+    - [Importing Penumbra](#importing-penumbra)
+      - [With Yarn/NPM](#with-yarnnpm)
+      - [Vanilla JS](#vanilla-js)
+    - [RemoteResource](#remoteresource)
+    - [.get](#get)
+    - [.encrypt](#encrypt)
+      - [.encrypt() examples:](#encrypt-examples)
+    - [.getDecryptionInfo](#getdecryptioninfo)
+    - [.decrypt](#decrypt)
+    - [.save](#save)
+    - [.getBlob](#getblob)
+    - [.getTextOrURI](#gettextoruri)
+    - [.saveZip](#savezip)
+    - [.setWorkerLocation](#setworkerlocation)
+  - [Examples](#examples)
+    - [Display encrypted text](#display-encrypted-text)
+    - [Display encrypted image](#display-encrypted-image)
+    - [Download an encrypted file](#download-an-encrypted-file)
+    - [Download many encrypted files](#download-many-encrypted-files)
+  - [Advanced](#advanced)
+    - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+    - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
+    - [Progress Event Emitter](#progress-event-emitter)
+    - [Configure worker location](#configure-worker-location)
+    - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
+    - [Querying Penumbra browser support](#querying-penumbra-browser-support)
+  - [Webpack](#webpack)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <p align="center">
   <img alt="Penumbra by Transcend" src="https://user-images.githubusercontent.com/7354176/61583246-43519500-aaea-11e9-82a2-e7470f3d4e00.png"/>
 </p>
@@ -14,42 +54,6 @@
   <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
 </p>
 <br />
-
-<!-- toc -->
-
-- [Compatibility](#compatibility)
-- [Usage](#usage)
-  - [Importing Penumbra](#importing-penumbra)
-    - [With Yarn/NPM](#with-yarnnpm)
-    - [Vanilla JS](#vanilla-js)
-  - [RemoteResource](#remoteresource)
-  - [.get](#get)
-  - [.encrypt](#encrypt)
-    - [.encrypt() examples:](#encrypt-examples)
-  - [.getDecryptionInfo](#getdecryptioninfo)
-  - [.decrypt](#decrypt)
-  - [.save](#save)
-  - [.getBlob](#getblob)
-  - [.getTextOrURI](#gettextoruri)
-  - [.saveZip](#savezip)
-  - [.setWorkerLocation](#setworkerlocation)
-- [Examples](#examples)
-  - [Display encrypted text](#display-encrypted-text)
-  - [Display encrypted image](#display-encrypted-image)
-  - [Download an encrypted file](#download-an-encrypted-file)
-  - [Download many encrypted files](#download-many-encrypted-files)
-- [Advanced](#advanced)
-  - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
-  - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
-  - [Progress Event Emitter](#progress-event-emitter)
-  - [Configure worker location](#configure-worker-location)
-  - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
-  - [Querying Penumbra browser support](#querying-penumbra-browser-support)
-- [Webpack](#webpack)
-- [Contributing](#contributing)
-- [License](#license)
-
-<!-- tocstop -->
 
 ## Compatibility
 
@@ -191,9 +195,7 @@ const file = {
 const [encrypted] = await penumbra.encrypt(options, file);
 const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
 const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
-const decryptedData = await new Response(
-  decrypted.stream,
-).arrayBuffer();
+const decryptedData = await new Response(decrypted.stream).arrayBuffer();
 const decryptedText = td.decode(decryptedData);
 console.log('decrypted text:', decryptedText);
 ```

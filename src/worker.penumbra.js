@@ -6,8 +6,6 @@
  * @license Apache 2.0
  */
 
-/* eslint-disable import/extensions */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable class-methods-use-this */
 import { transfer, expose } from 'comlink';
 import {
@@ -22,6 +20,7 @@ import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
 import decrypt from './decrypt';
 import { setWorkerID } from './worker-id';
+import { logger } from './logger';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -36,7 +35,6 @@ class PenumbraWorker {
    *
    * @param writablePorts - Remote Web Stream writable ports
    * @param resources - The remote resource to download
-   * @returns ReadableStream[] of the deciphered files
    */
   get(writablePorts, resources) {
     const writableCount = writablePorts.length;
@@ -47,7 +45,7 @@ class PenumbraWorker {
         writableCount,
         resourceCount,
       );
-      console.warn(
+      logger.warn(
         `Writable ports (${writableCount}) <-> Resources (${resourceCount}) count mismatch. ${
           '' //
         }Truncating to common subset (${writablePorts.length}).`,
@@ -93,12 +91,11 @@ class PenumbraWorker {
   /**
    * Streaming decryption of ReadableStreams
    *
-   * @param options
+   * @param options - Options
    * @param ids - IDs for tracking decryption completion
-   * @param sizes
-   * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
+   * @param sizes - Sizes
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
-   * @returns ReadableStream[] of the decrypted files
+   * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
    */
   decrypt(options, ids, sizes, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
@@ -109,7 +106,7 @@ class PenumbraWorker {
         writableCount,
         readableCount,
       );
-      console.warn(
+      logger.warn(
         `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
           '' //
         }Truncating to common subset (${writablePorts.length}).`,
@@ -136,12 +133,11 @@ class PenumbraWorker {
   /**
    * Streaming encryption of ReadableStreams
    *
-   * @param options
+   * @param options - Options
    * @param ids - IDs for tracking encryption completion
-   * @param sizes
-   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param sizes - Sizes
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
-   * @returns ReadableStream[] of the encrypted files
+   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    */
   encrypt(options, ids, sizes, readablePorts, writablePorts) {
     const writableCount = writablePorts.length;
@@ -152,13 +148,13 @@ class PenumbraWorker {
         writableCount,
         readableCount,
       );
-      console.warn(
+      logger.warn(
         `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
           '' //
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    readablePorts.forEach(async (readablePort, i) => {
+    readablePorts.forEach((readablePort, i) => {
       const stream = fromReadablePort(readablePorts[i]);
       const writable = fromWritablePort(writablePorts[i]);
       const id = ids[i];
@@ -179,8 +175,6 @@ class PenumbraWorker {
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers
    *
-   * @param buffers - The file buffers to encrypt
-   * @returns ArrayBuffer[] of the encrypted files
    */
   encryptBuffers() {
     //
@@ -189,8 +183,8 @@ class PenumbraWorker {
   /**
    * Forward events to main thread
    *
-   * @param id
-   * @param handler
+   * @param id - ID
+   * @param handler - handler
    */
   setup(id, handler) {
     setWorkerID(id);
@@ -199,3 +193,4 @@ class PenumbraWorker {
 }
 
 expose(PenumbraWorker);
+/* eslint-enable class-methods-use-this */

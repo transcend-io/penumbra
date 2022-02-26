@@ -22,9 +22,7 @@ self.addEventListener(
     const { handler } = onPenumbraEvent;
     if (handler) {
       if (!progressEventQueueInit) {
-        await Promise.all(
-          progressEventQueue.map(async (event) => handler(event)),
-        );
+        await Promise.all(progressEventQueue.map((event) => handler(event)));
         progressEventQueue.length = 0;
         progressEventQueueInit = true;
       }
@@ -43,7 +41,7 @@ self.addEventListener(
     if (handler) {
       if (!jobCompletionEventQueueInit) {
         await Promise.all(
-          jobCompletionEventQueue.map(async (event) => handler(event)),
+          jobCompletionEventQueue.map((event) => handler(event)),
         );
         jobCompletionEventQueue.length = 0;
         jobCompletionEventQueueInit = true;
@@ -63,7 +61,7 @@ self.addEventListener(
     if (handler) {
       if (!penumbraErrorEventQueueInit) {
         await Promise.all(
-          penumbraErrorEventQueue.map(async (event) => handler(event)),
+          penumbraErrorEventQueue.map((event) => handler(event)),
         );
         penumbraErrorEventQueue.length = 0;
         penumbraErrorEventQueueInit = true;
@@ -80,7 +78,7 @@ self.addEventListener('error', async (errorEvent: ErrorEvent) => {
   const { handler } = onPenumbraEvent;
   if (handler) {
     if (!errorEventQueueInit) {
-      await Promise.all(errorEventQueue.map(async (event) => handler(event)));
+      await Promise.all(errorEventQueue.map((event) => handler(event)));
       errorEventQueue.length = 0;
       errorEventQueueInit = true;
     }

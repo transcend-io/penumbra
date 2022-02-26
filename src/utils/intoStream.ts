@@ -4,7 +4,8 @@ import { NativeReadableStream } from '../streams';
 /**
  * Converts arrays into ReadableStreams
  *
- * @param input
+ * @param input - Input
+ * @returns Stream
  */
 const intoStream = (
   input:

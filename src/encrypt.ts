@@ -14,12 +14,12 @@ import {
 
 // utils
 import { emitProgress, toBuff, emitJobCompletion } from './utils';
+import { logger } from './logger';
 
 /**
  * Encrypts a readable stream
  *
- * @param id - Job ID
- * @param jobID
+ * @param jobID - Job ID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
  * @param contentLength - The content length of the file, in bytes
@@ -41,9 +41,8 @@ export function encryptStream(
   // TransformStreams are supported
   if ('TransformStream' in self) {
     return stream.pipeThrough(
-      // eslint-disable-next-line no-undef
       new (TransformStream as typeof self.TransformStream)({
-        transform: async (chunk, controller) => {
+        transform: (chunk, controller) => {
           const bufferChunk = toBuffer(chunk);
 
           // Encrypt chunk and send it out
@@ -74,7 +73,7 @@ export function encryptStream(
     /**
      * Controller
      *
-     * @param controller
+     * @param controller - Controller
      */
     start(controller) {
       /**
@@ -115,9 +114,13 @@ export function encryptStream(
   });
 }
 
-/** Encrypt a buffer */
+/**
+ * Encrypt a buffer
+ *
+ * @returns Buffer
+ */
 export function encryptBuffer(): ArrayBuffer {
-  console.error('penumbra encryptBuffer() is not yet implemented');
+  logger.error('penumbra encryptBuffer() is not yet implemented');
   return new ArrayBuffer(10);
 }
 
@@ -128,20 +131,19 @@ const IV_RANDOMNESS = 12;
 /**
  * Encrypts a file and returns a ReadableStream
  *
- * @param options
+ * @param options - Options
  * @param file - The remote resource to download
- * @param size
+ * @param size - Size
  * @returns A readable stream of the deciphered file
  */
 export default function encrypt(
   options: PenumbraEncryptionOptions | null,
   file: PenumbraFileWithID,
-  // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraEncryptedFile {
   // Generate a key if one is not provided
   if (!options || !options.key) {
-    console.debug(
+    logger.debug(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
     );
     // eslint-disable-next-line no-param-reassign

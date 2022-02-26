@@ -27,6 +27,7 @@ import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { advancedStreamsSupported, supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
+import { logger } from './logger';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -36,7 +37,8 @@ const resolver = document.createElementNS(
 /**
  * Retrieve and decrypt files (batch job)
  *
- * @param resources
+ * @param resources - Resources
+ * @returns Penumbra files
  */
 async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
@@ -112,7 +114,8 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  * });
  * ```
  *
- * @param resources
+ * @param resources - Resources to fetch
+ * @returns Penumbra files
  */
 export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   return Promise.all(
@@ -138,10 +141,9 @@ function saveZip(options?: ZipOptions): PenumbraZipWriter {
 /**
  * Save files retrieved by Penumbra
  *
- * @param data - The data files to save
- * @param files
+ * @param files - Files to save
  * @param fileName - The name of the file to save to
- * @param controller
+ * @param controller - Controller
  * @returns AbortController
  */
 function save(
@@ -195,9 +197,8 @@ function save(
 /**
  * Load files retrieved by Penumbra into memory as a Blob
  *
- * @param data - The data to load
- * @param files
- * @param type
+ * @param files - Files to load
+ * @param type - Mimetype
  * @returns A blob of the data
  */
 function getBlob(
@@ -266,9 +267,10 @@ const trackJobCompletion = (
  * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
  * ```
  *
- * @param file
+ * @param file - File to get info for
+ * @returns Decryption info
  */
-export async function getDecryptionInfo(
+export function getDecryptionInfo(
   file: PenumbraEncryptedFile,
 ): Promise<PenumbraDecryptionInfo> {
   const { id } = file;
@@ -276,14 +278,15 @@ export async function getDecryptionInfo(
     // decryption config not yet received. waiting for event with promise
     return trackJobCompletion(id);
   }
-  return decryptionConfigs.get(id) as PenumbraDecryptionInfo;
+  return Promise.resolve(decryptionConfigs.get(id) as PenumbraDecryptionInfo);
 }
 
 /**
  * Encrypt files (batch job)
  *
- * @param options
- * @param files
+ * @param options - Options
+ * @param files - Files to operate on
+ * @returns Encrypted files
  */
 async function encryptJob(
   options: PenumbraEncryptionOptions | null,
@@ -331,7 +334,7 @@ async function encryptJob(
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        *
-       * @param thread
+       * @param thread - Thread
        */
       (thread) => {
         thread.encrypt(
@@ -372,7 +375,7 @@ async function encryptJob(
   filesWithIds.forEach(({ size = 0 }) => {
     totalSize += size;
     if (totalSize > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      console.error('Your browser doesn\'t support streaming encryption.');
+      logger.error("Your browser doesn't support streaming encryption.");
       throw new Error(
         'penumbra.encrypt(): File is too large to encrypt without writable streams',
       );
@@ -380,16 +383,14 @@ async function encryptJob(
   });
   const { encrypt: encryptFile } = await import('./crypto');
   const encryptedFiles = await Promise.all(
-    filesWithIds.map(
-      (file): PenumbraEncryptedFile => {
-        const { stream } = encryptFile(options, file, file.size as number);
-        return {
-          ...file,
-          ...options,
-          stream,
-        };
-      },
-    ),
+    filesWithIds.map((file): PenumbraEncryptedFile => {
+      const { stream } = encryptFile(options, file, file.size as number);
+      return {
+        ...file,
+        ...options,
+        stream,
+      };
+    }),
   );
   return encryptedFiles;
 }
@@ -411,8 +412,9 @@ async function encryptJob(
  * });
  * ```
  *
- * @param options
- * @param files
+ * @param options - Options
+ * @param files - Files
+ * @returns Encrypted files
  */
 export function encrypt(
   options: PenumbraEncryptionOptions | null,
@@ -426,8 +428,9 @@ export function encrypt(
 /**
  * Decrypt files encrypted by penumbra.encrypt() (batch job)
  *
- * @param options
- * @param files
+ * @param options - Options
+ * @param files - Files
+ * @returns Penumbra files
  */
 async function decryptJob(
   options: PenumbraDecryptionInfo,
@@ -495,7 +498,7 @@ async function decryptJob(
 
   files.forEach(({ size = 0 }) => {
     if (size > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      console.error('Your browser doesn\'t support streaming decryption.');
+      logger.error("Your browser doesn't support streaming decryption.");
       throw new Error(
         'penumbra.decrypt(): File is too large to decrypt without writable streams',
       );
@@ -538,26 +541,11 @@ async function decryptJob(
  *   console.log('encryption started');
  *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
- * @param options
- * @param {...any} files
+ * ```
+ *
+ * @param options - Options
+ * @param files - Files
+ * @returns Files
  */
 export function decrypt(
   options: PenumbraDecryptionInfo,
@@ -575,23 +563,21 @@ export function decrypt(
  * @returns A list with the text itself or a URI encoding the file if applicable
  */
 function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
-  return files.map(
-    async (file): Promise<PenumbraTextOrURI> => {
-      const { mimetype = '' } = file;
-      if (mimetype && isViewableText(mimetype)) {
-        return {
-          type: 'text',
-          data: await new Response(file.stream).text(),
-          mimetype,
-        };
-      }
-      const url = URL.createObjectURL(await getBlob(file));
-      const cache = blobCache.get();
-      cache.push(new URL(url));
-      blobCache.set(cache);
-      return { type: 'uri', data: url, mimetype };
-    },
-  );
+  return files.map(async (file): Promise<PenumbraTextOrURI> => {
+    const { mimetype = '' } = file;
+    if (mimetype && isViewableText(mimetype)) {
+      return {
+        type: 'text',
+        data: await new Response(file.stream).text(),
+        mimetype,
+      };
+    }
+    const url = URL.createObjectURL(await getBlob(file));
+    const cache = blobCache.get();
+    cache.push(new URL(url));
+    blobCache.set(cache);
+    return { type: 'uri', data: url, mimetype };
+  });
 }
 
 const penumbra = {
@@ -610,3 +596,4 @@ const penumbra = {
 };
 
 export default penumbra;
+/* eslint-enable max-lines */

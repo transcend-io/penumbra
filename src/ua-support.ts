@@ -19,7 +19,11 @@ if (
     : PenumbraSupportLevel.size_limited;
 }
 
-/** Get Penumbra user agent support level */
+/**
+ * Get Penumbra user agent support level
+ *
+ * @returns Support level
+ */
 export function supported(): PenumbraSupportLevel {
   return supportLevel;
 }

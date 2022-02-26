@@ -19,7 +19,7 @@ declare module 'streamsaver' {
 
   /** WritableStream constructor */
   const WritableStream: {
-    /** */
+    /** Prototype */
     prototype: WritableStream;
     new <W = any>( // eslint-disable-line @typescript-eslint/no-explicit-any
       underlyingSink?: UnderlyingSink<W>,

@@ -1,16 +1,16 @@
 /* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const view = self;
 
 const tests = [];
 const results = [];
 let failures = 0;
+const logger = console;
 
 /**
  * Get the cryptographic hash of an ArrayBuffer
  *
- * @param ab - ArrayBuffer to digest
  * @param algorithm - Cryptographic hash digest algorithm
+ * @param ab - ArrayBuffer to digest
  * @returns Hexadecimal hash digest string
  */
 async function hash(algorithm, ab) {
@@ -38,7 +38,7 @@ function timeout(callback, delay) {
 /**
  * Penumbra has loaded
  *
- * @param root0
+ * @param options - Options
  */
 const onReady = async (
   { detail: { penumbra } } = {
@@ -50,7 +50,7 @@ const onReady = async (
       'penumbra.get() and penumbra.getTextOrURI() test (no credentials)',
       async () => {
         if (!self.TextEncoder) {
-          console.warn(
+          logger.warn(
             'skipping test due to lack of browser support for TextEncoder',
           );
           return false;
@@ -263,7 +263,7 @@ const onReady = async (
     ],
     [
       'penumbra.preconnect()',
-      async () => {
+      () => {
         const measurePreconnects = () =>
           document.querySelectorAll('link[rel="preconnect"]').length;
         const start = measurePreconnects();
@@ -284,7 +284,7 @@ const onReady = async (
     ],
     [
       'penumbra.preload()',
-      async () => {
+      () => {
         const measurePreloads = () =>
           document.querySelectorAll('link[rel="preload"]').length;
         const start = measurePreloads();
@@ -329,7 +329,7 @@ const onReady = async (
       'penumbra.encrypt()',
       async () => {
         if (!self.TextEncoder || !self.TextDecoder) {
-          console.warn(
+          logger.warn(
             'skipping test due to lack of browser support for TextEncoder/TextDecoder',
           );
           return false;
@@ -352,13 +352,13 @@ const onReady = async (
           decrypted.stream,
         ).arrayBuffer();
         const decryptedText = td.decode(decryptedData);
-        console.log('decrypted text:', decryptedText);
+        logger.log('decrypted text:', decryptedText);
         return decryptedText === input;
       },
     ],
     [
       'penumbra.saveZip({ saveBuffer: true }) (getBuffer(), getSize() and auto-renaming)',
-      async () =>
+      () =>
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
           const expectedReferenceHashes = [
@@ -373,7 +373,7 @@ const onReady = async (
             /**
              * onProgress handler
              *
-             * @param event
+             * @param event - Event
              */
             onProgress(event) {
               progressEventFiredAndWorking = expectedProgressProps.every(
@@ -447,17 +447,17 @@ const onReady = async (
             )),
           );
           await writer.close();
-          console.log(
+          logger.log(
             progressEventFiredAndWorking,
             'zip progress event fired & emitted expected properties',
           );
-          console.log(completeEventFired, 'zip complete event fired');
+          logger.log(completeEventFired, 'zip complete event fired');
           const zipBuffer = await writer.getBuffer();
           const zipHash = await hash('SHA-256', zipBuffer);
-          console.log('zip hash:', zipHash);
+          logger.log('zip hash:', zipHash);
           const size = await writer.getSize();
           const expectedSize = 3496;
-          console.log(
+          logger.log(
             size === expectedSize,
             `expected zip size (actual: ${size})`,
           );
@@ -498,11 +498,11 @@ const onReady = async (
         const closeSize = await writer.close();
         const size = await writer.getSize();
         const expectedSize = 270826;
-        console.log(
+        logger.log(
           size === closeSize,
           'writer.close() size matches writer.getSize()',
         );
-        console.log(
+        logger.log(
           size === expectedSize,
           `expected zip size (actual: ${size})`,
         );
@@ -520,7 +520,7 @@ const onReady = async (
       // eslint-disable-next-line no-loop-func
       test().then((passed) => {
         failures += !passed;
-        console.log(
+        logger.log(
           `%c${
             passed ? '✅ PASS' : '❌ FAIL'
           } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
@@ -533,7 +533,7 @@ const onReady = async (
     );
   }
   await Promise.all(results);
-  console.log(
+  logger.log(
     `%c${
       failures
         ? `❌ ${failures} test${failures > 1 ? 's' : ''} failed`
@@ -548,3 +548,4 @@ if (!view.penumbra) {
 } else {
   onReady();
 }
+/* eslint-enable max-lines */

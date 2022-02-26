@@ -1,4 +1,4 @@
-/* eslint-disable max-lines, no-plusplus, import/no-webpack-loader-syntax */
+/* eslint-disable no-plusplus */
 
 // comlink
 import { proxy, wrap } from 'comlink';
@@ -12,6 +12,7 @@ import {
   ProgressEmit,
 } from './types';
 import { advancedStreamsSupported } from './ua-support';
+import { logger } from './logger';
 
 // ////// //
 // Config //
@@ -51,14 +52,14 @@ let initializing = false;
 // //////////// //
 
 if (SHOULD_LOG_EVENTS) {
-  console.info('Loading penumbra script element...');
+  logger.info('Loading penumbra script element...');
 }
 let scriptElement: HTMLScriptElement = (document.currentScript ||
   document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
 if (!scriptElement) {
   scriptElement = { dataset: {} } as HTMLScriptElement;
   if (SHOULD_LOG_EVENTS) {
-    console.info('Unable to locate Penumbra script element.');
+    logger.info('Unable to locate Penumbra script element.');
   }
 }
 
@@ -81,7 +82,8 @@ const resolver = document.createElementNS(
 /**
  * Resolve a potentially relative URL into an absolute URL
  *
- * @param url
+ * @param url - URL
+ * @returns Url resolved
  */
 function resolve(url: string): URL {
   resolver.href = url;
@@ -95,7 +97,7 @@ function resolve(url: string): URL {
 /**
  * Gets worker location configuration
  *
- * @param options - A stream of bytes to be saved to disk
+ * @returns Worker location
  */
 export function getWorkerLocation(): WorkerLocation {
   const config = JSON.parse(script.workers || '{}');
@@ -120,7 +122,7 @@ export function getWorkerLocation(): WorkerLocation {
 /**
  * Re-dispatch events
  *
- * @param event
+ * @param event - Event
  */
 function reDispatchEvent(event: Event): void {
   if (view.dispatchEvent) {
@@ -144,7 +146,8 @@ let workerID = 0;
 /**
  * Instantiate a Penumbra Worker
  *
- * @param url
+ * @param url - URL
+ * @returns Worker
  */
 export async function createPenumbraWorker(
   url: URL | string,
@@ -167,7 +170,11 @@ export async function createPenumbraWorker(
 
 const onWorkerInitQueue: (() => void)[] = [];
 
-/** Get any free worker thread */
+/**
+ * Get any free worker thread
+ *
+ * @returns Worker
+ */
 function getFreeWorker(): PenumbraWorker {
   // Poll for any available free workers
   const freeWorker = workers.find(({ busy }) => !busy);
@@ -182,7 +189,11 @@ function getFreeWorker(): PenumbraWorker {
   return worker;
 }
 
-/** Wait for workers to initialize */
+/**
+ * Wait for workers to initialize
+ *
+ * @returns Worker
+ */
 function waitForInit(): Promise<PenumbraWorker> {
   return new Promise((resolveWorker) => {
     onWorkerInitQueue.push(() => {
@@ -227,7 +238,11 @@ export async function getWorker(): Promise<PenumbraWorker> {
   return getFreeWorker();
 }
 
-/** Returns all active Penumbra Workers */
+/**
+ * Returns all active Penumbra Workers
+ *
+ * @returns Workers
+ */
 function getActiveWorkers(): PenumbraWorker[] {
   return workers;
 }
@@ -248,7 +263,6 @@ view.addEventListener('beforeunload', cleanup);
 /**
  * Configure the location of Penumbra's worker threads
  *
- * @param options - Worker location options
  *
  * ```ts
  * // Set only the Penumbra Worker URL by passing a string. Base URL is derived from this
@@ -262,30 +276,33 @@ view.addEventListener('beforeunload', cleanup);
  * // Set a single worker's location
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
  * ```
+ *
+ * @param options - Worker location options
  */
 export async function setWorkerLocation(
   options: WorkerLocationOptions | string,
 ): Promise<void> {
   // Workers require WritableStream & TransformStream
   if (!advancedStreamsSupported) {
-    return undefined;
+    return;
   }
   if (initialized) {
-    console.warn('Penumbra Workers are already active. Reinitializing...');
+    logger.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();
+    return;
   }
   script.workers = JSON.stringify(
     typeof options === 'string'
       ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
       : { ...DEFAULT_WORKERS, ...options },
   );
-  return initWorkers();
+  await initWorkers();
 }
 
 /**
  * Set worker busy state based on current progress events
  *
- * @param root0
+ * @param options - Options
  */
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
@@ -296,3 +313,4 @@ const trackWorkerBusyState = ({
 };
 
 addEventListener('penumbra-progress', trackWorkerBusyState);
+/* eslint-enable no-plusplus */

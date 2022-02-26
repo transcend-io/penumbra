@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const c = document.getElementById('c');
 const ctx = c.getContext('2d');
 let cH;
@@ -8,13 +6,19 @@ let bgColor = '#FF6138';
 const animations = [];
 const circles = [];
 
-const colorPicker = (function() {
+const colorPicker = (function () {
   const colors = ['#FF6138', '#FFBE53', '#2980B9', '#282741'];
   let index = 0;
+  /**
+   *
+   */
   function next() {
     index = index++ < colors.length - 1 ? index : 0;
     return colors[index];
   }
+  /**
+   *
+   */
   function current() {
     return colors[index];
   }
@@ -24,22 +28,35 @@ const colorPicker = (function() {
   };
 })();
 
+/**
+ * @param animation
+ */
 function removeAnimation(animation) {
   const index = animations.indexOf(animation);
   if (index > -1) animations.splice(index, 1);
 }
 
+/**
+ * @param x
+ * @param y
+ */
 function calcPageFillRadius(x, y) {
   const l = Math.max(x - 0, cW - x);
   const h = Math.max(y - 0, cH - y);
   return Math.sqrt(Math.pow(l, 2) + Math.pow(h, 2));
 }
 
+/**
+ *
+ */
 function addClickListeners() {
   document.addEventListener('touchstart', handleEvent);
   document.addEventListener('mousedown', handleEvent);
 }
 
+/**
+ * @param e
+ */
 function handleEvent(e) {
   if (e.touches) {
     e.preventDefault();
@@ -62,6 +79,9 @@ function handleEvent(e) {
     r: targetR,
     duration: Math.max(targetR / 2, minCoverDuration),
     easing: 'easeOutQuart',
+    /**
+     *
+     */
     complete() {
       bgColor = pageFill.fill;
       removeAnimation(fillAnimation);
@@ -100,9 +120,15 @@ function handleEvent(e) {
   }
   const particlesAnimation = anime({
     targets: particles,
+    /**
+     * @param particle
+     */
     x(particle) {
       return particle.x + anime.random(rippleSize, -rippleSize);
     },
+    /**
+     * @param particle
+     */
     y(particle) {
       return particle.y + anime.random(rippleSize * 1.15, -rippleSize * 1.15);
     },
@@ -114,6 +140,10 @@ function handleEvent(e) {
   animations.push(fillAnimation, rippleAnimation, particlesAnimation);
 }
 
+/**
+ * @param a
+ * @param b
+ */
 function extend(a, b) {
   for (const key in b) {
     if (b.hasOwnProperty(key)) {
@@ -123,11 +153,17 @@ function extend(a, b) {
   return a;
 }
 
-var Circle = function(opts) {
+/**
+ * @param opts
+ */
+var Circle = function (opts) {
   extend(this, opts);
 };
 
-Circle.prototype.draw = function() {
+/**
+ *
+ */
+Circle.prototype.draw = function () {
   ctx.globalAlpha = this.opacity || 1;
   ctx.beginPath();
   ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
@@ -146,18 +182,24 @@ Circle.prototype.draw = function() {
 
 const animate = anime({
   duration: Infinity,
+  /**
+   *
+   */
   update() {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, cW, cH);
-    animations.forEach(function(anim) {
-      anim.animatables.forEach(function(animatable) {
+    animations.forEach((anim) => {
+      anim.animatables.forEach((animatable) => {
         animatable.target.draw();
       });
     });
   },
 });
 
-const resizeCanvas = function() {
+/**
+ *
+ */
+const resizeCanvas = function () {
   cW = window.innerWidth;
   cH = window.innerHeight;
   c.width = cW * devicePixelRatio;
@@ -180,11 +222,17 @@ const resizeCanvas = function() {
   handleInactiveUser();
 })();
 
+/**
+ *
+ */
 function handleInactiveUser() {
-  const inactive = setTimeout(function() {
+  const inactive = setTimeout(() => {
     fauxClick(cW / 2, cH / 2);
   }, 2000);
 
+  /**
+   *
+   */
   function clearInactiveTimeout() {
     clearTimeout(inactive);
     document.removeEventListener('mousedown', clearInactiveTimeout);
@@ -195,8 +243,11 @@ function handleInactiveUser() {
   document.addEventListener('touchstart', clearInactiveTimeout);
 }
 
+/**
+ *
+ */
 function startFauxClicking() {
-  setTimeout(function() {
+  setTimeout(() => {
     fauxClick(
       anime.random(cW * 0.2, cW * 0.8),
       anime.random(cH * 0.2, cH * 0.8),
@@ -205,6 +256,10 @@ function startFauxClicking() {
   }, anime.random(200, 900));
 }
 
+/**
+ * @param x
+ * @param y
+ */
 function fauxClick(x, y) {
   const fauxClick = new Event('mousedown');
   fauxClick.pageX = x;

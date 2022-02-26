@@ -143,3 +143,4 @@ transferHandlers.set('error', {
     return event;
   },
 });
+/* eslint-enable @typescript-eslint/no-explicit-any */

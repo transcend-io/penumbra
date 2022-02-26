@@ -10,14 +10,14 @@ import { PenumbraSupportLevel } from '../enums';
 
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
+import { logger } from 'src/logger';
 
 const view = self;
 
 let penumbra: PenumbraAPI;
 
-test('setup', async (t) => {
-  const onReady = async (event?: PenumbraReady) => {
-    // eslint-disable-next-line no-shadow
+test('setup', (t) => {
+  const onReady = (event?: PenumbraReady): void => {
     penumbra = ((event && event.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
     t.pass('setup finished');
@@ -31,7 +31,7 @@ test('setup', async (t) => {
   }
 });
 
-test('penumbra.supported() test', async (t) => {
+test('penumbra.supported() test', (t): void => {
   t.assert(
     penumbra.supported() >= PenumbraSupportLevel.size_limited,
     'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
@@ -41,9 +41,7 @@ test('penumbra.supported() test', async (t) => {
 
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
   if (!self.TextEncoder) {
-    console.warn(
-      'skipping test due to lack of browser support for TextEncoder',
-    );
+    logger.warn('skipping test due to lack of browser support for TextEncoder');
     t.pass('test skipped');
     t.end();
     return;
@@ -76,7 +74,7 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
 test('progress event test', async (t) => {
   let result;
   const progressEventName = 'penumbra-progress';
-  const fail = () => {
+  const fail = (): void => {
     result = false;
   };
   const initTimeout = timeout(fail, 60);
@@ -84,7 +82,7 @@ test('progress event test', async (t) => {
   let initFinished = false;
   let progressStarted = false;
   let lastPercent: number;
-  const onprogress = ({ detail: { percent } }: ProgressEmit) => {
+  const onprogress = ({ detail: { percent } }: ProgressEmit): void => {
     if (!Number.isNaN(percent)) {
       if (percent === 100) {
         // Resource is already loaded
@@ -238,12 +236,12 @@ test('penumbra.getTextOrURI(): including image in document', async (t) => {
   const result = await new Promise((resolve) => {
     // 5-second timeout for the image to load
     timeout(() => resolve(false), 5);
-    const onLoad = () => {
+    const onLoad = (): void => {
       testImage.removeEventListener('load', onLoad);
       testImage.remove();
       resolve(true);
     };
-    const onError = () => {
+    const onError = (): void => {
       testImage.removeEventListener('error', onError);
       testImage.remove();
       resolve(false);
@@ -259,8 +257,8 @@ test('penumbra.getTextOrURI(): including image in document', async (t) => {
   t.end();
 });
 
-test('penumbra.preconnect()', async (t) => {
-  const measurePreconnects = () =>
+test('penumbra.preconnect()', (t) => {
+  const measurePreconnects = (): number =>
     document.querySelectorAll('link[rel="preconnect"]').length;
   const start = measurePreconnects();
   const cleanup = penumbra.preconnect({
@@ -279,8 +277,8 @@ test('penumbra.preconnect()', async (t) => {
   t.end();
 });
 
-test('penumbra.preload()', async (t) => {
-  const measurePreloads = () =>
+test('penumbra.preload()', (t): void => {
+  const measurePreloads = (): number =>
     document.querySelectorAll(
       'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
     ).length;
@@ -325,7 +323,7 @@ test('penumbra.getBlob()', async (t) => {
 
 test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   if (!self.TextEncoder || !self.TextDecoder) {
-    console.warn(
+    logger.warn(
       'skipping test due to lack of browser support for TextEncoder/TextDecoder',
     );
     t.pass('test skipped');
@@ -361,7 +359,7 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
     /**
      * onProgress handler
      *
-     * @param event
+     * @param event - Event
      */
     onProgress(event) {
       progressEventFiredAndWorking = expectedProgressProps.every(
@@ -442,7 +440,7 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
   t.pass('zip saved');
   const zipBuffer = await writer.getBuffer();
   const zipHash = await hash('SHA-256', zipBuffer);
-  console.log('zip hash:', zipHash);
+  logger.log('zip hash:', zipHash);
   t.ok(zipHash, 'zip hash');
   t.ok(
     expectedReferenceHashes.includes(zipHash.toLowerCase()),
@@ -455,3 +453,4 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
 
   t.end();
 });
+/* eslint-enable max-lines */

@@ -22,9 +22,7 @@
       (() => {
         const scripts = document.createDocumentFragment();
         const penumbra = document.createElement('script');
-        const cacheBuster = Math.random()
-          .toString(10)
-          .slice(2);
+        const cacheBuster = Math.random().toString(10).slice(2);
 
         penumbra.async = true;
         penumbra.defer = true;

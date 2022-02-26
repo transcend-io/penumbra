@@ -14,8 +14,8 @@ export class PenumbraError extends Error {
   /**
    * Extend new Error
    *
-   * @param error
-   * @param id
+   * @param error - Error
+   * @param id - ID
    */
   constructor(error: string | Error, id: string | number) {
     if (typeof error === 'string') {
@@ -37,7 +37,11 @@ export class PenumbraError extends Error {
     this.name = 'PenumbraError';
   }
 
-  /** Error name */
+  /**
+   * Error name
+   *
+   * @returns Name
+   */
   get [Symbol.toStringTag](): string {
     return this.name;
   }

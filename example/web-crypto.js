@@ -1,7 +1,8 @@
 /* eslint-disable */
 /* eslint-disable require-jsdoc */
 
-const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*\/\S*\+json)\s*(?:$|;)/i;
+const TEXT_TYPES =
+  /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*\/\S*\+json)\s*(?:$|;)/i;
 
 /**
  * Determine if the file mimetype is known for displaying
@@ -9,10 +10,7 @@ const TEXT_TYPES = /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*
  * @returns 'probably', 'maybe', or '' depending on if mime type can be displayed
  */
 function isViewableText(mimetype) {
-  const type = mimetype
-    .split('/')[0]
-    .trim()
-    .toLowerCase();
+  const type = mimetype.split('/')[0].trim().toLowerCase();
   return type === 'text' || TEXT_TYPES.test(mimetype);
 }
 

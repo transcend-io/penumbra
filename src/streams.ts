@@ -11,13 +11,10 @@ export const NativeReadableStream = self.ReadableStream as any;
 const nativeReadableStreamProto = NativeReadableStream.prototype as any;
 export const fullReadableStreamSupport: boolean =
   nativeReadableStreamProto?.pipeTo && nativeReadableStreamProto?.pipeThrough;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ReadableStream = (fullReadableStreamSupport
-  ? self.ReadableStream
-  : ReadableStreamPonyfill) as typeof self.ReadableStream;
-export const ReadableStreamIsNative =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ReadableStream !== ReadableStreamPonyfill;
+export const ReadableStream = (
+  fullReadableStreamSupport ? self.ReadableStream : ReadableStreamPonyfill
+) as typeof self.ReadableStream;
+export const ReadableStreamIsNative = ReadableStream !== ReadableStreamPonyfill;
 
 export const WritableStream =
   (fullReadableStreamSupport && self.WritableStream) || WritableStreamPonyfill;

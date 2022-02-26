@@ -1,36 +1,41 @@
 # See http://pre-commit.com for more information
 # See http://pre-commit.com/hooks.html for more hooks
 repos:
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # Use the sha / tag you want to point at, this needs
+    # to stay in sync with the package.json version
+    rev: 'v2.3.2'
+    hooks:
+      - id: prettier
+        args: [--write, --list-different]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v1.3.0
+    rev: v2.5.0
     hooks:
       - id: check-merge-conflict
       - id: check-symlinks
       - id: check-case-conflict
       - id: check-executables-have-shebangs
+      - id: check-added-large-files
+        exclude: (yarn.lock|.yarn/|.pnp.cjs)
+      - id: check-json
+        exclude: (.vscode/|tsconfig.json)
       - id: detect-private-key
-        exclude: (ssl/)
       - id: detect-aws-credentials
         args: [--allow-missing-credentials]
       - id: check-yaml
         files: (yaml$|yml$)
+  - repo: git://github.com/thlorenz/doctoc
+    rev: v1.4.0
+    hooks:
+      - id: doctoc
+        exclude: (.github)
+        args: [--title, "\n## Table of Contents", --maxlevel, '5']
   - repo: local
     hooks:
-      - id: shellcheck-lint
-        name: Shellcheck
-        language: docker_image
-        # https://github.com/koalaman/shellcheck
-        entry: koalaman/shellcheck:v0.5.0
-        types: [shell]
       - id: eslint
-        name: ESLint
-        language: system
-        entry: ./node_modules/.bin/eslint
-        args: [--fix]
-        types: [file]
-        files: \.(js|jsx|ts|tsx)$
-      - id: prettier
-        name: Prettier
+        name: Eslint
+        description: 'Run static code linting'
+        entry: yarn lint --fix
         language: node
-        entry: ./node_modules/.bin/prettier
-        args: [--write]
+        files: \.[t]sx?$ # *.js, *.jsx, *.ts and *.tsx
+        types: [file]

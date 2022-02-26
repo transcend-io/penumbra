@@ -15,7 +15,7 @@ export function getWorkerID(): number | null {
 /**
  * Set worker ID
  *
- * @param id
+ * @param id - ID
  */
 export function setWorkerID(id: number | null): void {
   workerID = id;
