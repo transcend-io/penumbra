@@ -1,5 +1,5 @@
 const { join } = require('path');
-const webpackConfig = require('./webpack.prod.js');
+const webpackConfig = require('./webpack.dev.js');
 
 const src = join(__dirname, 'src');
 
@@ -9,7 +9,7 @@ module.exports = (config) => ({
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['tap'],
+  frameworks: ['tap', 'webpack'],
 
   customContextFile: 'penumbra-karma-context.html',
 
@@ -23,7 +23,7 @@ module.exports = (config) => ({
     },
     {
       pattern: 'src/index.ts',
-      included: false,
+      included: true,
       served: true,
       nocache: false,
     },
@@ -45,25 +45,7 @@ module.exports = (config) => ({
   },
 
   // webpack configuration
-  webpack: {
-    ...webpackConfig,
-    module: {
-      ...webpackConfig.module,
-      rules: [
-        ...webpackConfig.module.rules,
-        {
-          // Instrument sourcemaps for code coverage
-          test: /\.(js|ts)?$/,
-          include: [src],
-          use: {
-            loader: 'istanbul-instrumenter-loader',
-            options: { esModules: true },
-          },
-          enforce: 'post',
-        },
-      ],
-    },
-  },
+  webpack: webpackConfig,
 
   plugins: [
     'karma-tap',
