@@ -1,5 +1,3 @@
-/* tslint:disable completed-docs */
-
 // penumbra
 import {
   JobCompletionEmit,

@@ -386,3 +386,4 @@ export type ZipOptions = Partial<{
    */
   onComplete?(event: ZipCompletionEmit): void;
 }>;
+/* eslint-enable max-lines */

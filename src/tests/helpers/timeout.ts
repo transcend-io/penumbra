@@ -14,7 +14,6 @@ export type TimeoutManager = {
  * @returns Timeout cancellation helper
  */
 export default function timeout(
-  // tslint:disable-next-line: ban-types
   callback: Function,
   delay: number,
 ): TimeoutManager {

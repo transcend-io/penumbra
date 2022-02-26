@@ -1,0 +1,85 @@
+name: ci
+on: push
+
+env:
+  BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+  BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+
+jobs:
+  build-and-upload-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - name: Build the typescript code
+        run: yarn build
+      - uses: actions/upload-artifact@main
+        with:
+          name: build artifacts
+          path: build/
+
+  run-karma:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - run: yarn test:browserstack
+
+  run-depcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - run: yarn pnpify depcheck
+
+  run-pre-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 100 # need the history to do a changed files check below (source, origin)
+      - uses: actions/setup-python@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - uses: pre-commit/action@v2.0.2
+        with:
+          extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
+
+  build-to-npm:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs:
+      - run-karma
+      - run-depcheck
+      - build-and-upload-artifacts
+      - run-pre-commits
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - name: Configure NPM authentication
+        run: |
+          yarn config set npmAlwaysAuth true
+          yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
+      - name: Publish to yarn/npm
+        run: yarn npm publish
+
+  build-to-github-packages:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs:
+      - run-karma
+      - run-depcheck
+      - build-and-upload-artifacts
+      - run-pre-commits
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - name: Configure Github Packages authentication
+        run: |
+          yarn config set npmAlwaysAuth true
+          yarn config set npmRegistryServer https://npm.pkg.github.com
+          yarn config set npmPublishRegistry https://npm.pkg.github.com
+          yarn config set npmAuthToken ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to Github packages
+        run: yarn npm publish

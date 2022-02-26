@@ -23,7 +23,6 @@ export function getStringKeys<T extends {}>(o: T): StringKeys<T>[] {
  *
  *
  * @memberof module:utils
- *
  * @param o - The object to get the keys from
  * @returns The keys of the object preserving type
  */

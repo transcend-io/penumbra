@@ -1,5 +1,3 @@
-/* tslint:disable completed-docs */
-
 /**
  * Conflux types
  */
@@ -13,7 +11,9 @@ declare module '@transcend-io/conflux' {
 
     /** Write stream to filename in zip */
     write(params: {
+      /** Name */
       name: string;
+      /** Last modified */
       lastModified: Date;
       stream(): ReadableStream;
     }): void;

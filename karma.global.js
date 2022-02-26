@@ -46,7 +46,6 @@ module.exports = (config) => ({
 
   // webpack configuration
   webpack: {
-    // eslint-disable-next-line global-require
     ...webpackConfig,
     module: {
       ...webpackConfig.module,

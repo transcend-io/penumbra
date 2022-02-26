@@ -1,7 +1,12 @@
 import { toWebReadableStream } from 'web-streams-node';
 import { NativeReadableStream } from '../streams';
 
-/** Converts arrays into ReadableStreams  */
+/**
+ * Converts arrays into ReadableStreams
+ *
+ * @param input - Input
+ * @returns Stream
+ */
 const intoStream = (
   input:
     | ArrayBuffer

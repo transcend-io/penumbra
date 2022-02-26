@@ -1,5 +1,3 @@
-/* tslint:disable completed-docs */
-
 // external modules
 import { DecipherGCM } from 'crypto';
 import { createDecipheriv } from 'crypto-browserify';
@@ -18,13 +16,14 @@ import { emitJobCompletion, emitProgress, toBuff } from './utils';
 /**
  * Decrypts a readable stream
  *
- * @param rs - A readable stream of encrypted data
+ * @param stream - A readable stream of encrypted data
  * @param decipher - The crypto module's decipher
  * @param contentLength - The content length of the file, in bytes
  * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
  * @param key - Decryption key Buffer
  * @param iv - Decryption IV Buffer
  * @param authTag - Decryption authTag Buffer
+ * @param ignoreAuthTag - Whether to ignore it
  * @returns A readable stream of decrypted data
  */
 export function decryptStream(
@@ -42,9 +41,8 @@ export function decryptStream(
   // TransformStreams are supported
   if ('TransformStream' in self) {
     return stream.pipeThrough(
-      // eslint-disable-next-line no-undef
       new (TransformStream as typeof self.TransformStream)({
-        transform: async (chunk, controller) => {
+        transform: (chunk, controller) => {
           const bufferChunk = toBuffer(chunk);
 
           // Decrypt chunk and send it out
@@ -73,6 +71,8 @@ export function decryptStream(
   return new ReadableStream({
     /**
      * Controller
+     *
+     * @param controller - Controller
      */
     start(controller) {
       /**
@@ -113,13 +113,14 @@ export function decryptStream(
 /**
  * Decrypts a file and returns a ReadableStream
  *
+ * @param options - Options
  * @param file - The remote resource to download
+ * @param size - Size
  * @returns A readable stream of the deciphered file
  */
 export default function decrypt(
   options: PenumbraDecryptionInfo,
   file: PenumbraEncryptedFile,
-  // eslint-disable-next-line no-undef
   size: number,
 ): PenumbraFile {
   if (!options || !options.key || !options.iv || !options.authTag) {

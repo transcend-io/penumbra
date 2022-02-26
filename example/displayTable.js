@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable require-jsdoc */
+/* eslint-disable wrap-iife */
 
-// Prepopulate the table with the file metadata, before they've downloaded
+/**
+ * Pre-populate the table with the file metadata, before they've downloaded
+ */
 (function buildTable() {
   const table = document.getElementById('table');
   const headerIds = Array.from(document.getElementById('headers').children).map(
@@ -28,6 +29,9 @@
 })();
 
 // Insert file info into the table
+/**
+ * @param returnedFiles - Returned files
+ */
 window.insertIntoCell = function insertIntoCell(returnedFiles) {
   const headerIds = Array.from(document.getElementById('headers').children).map(
     (child) => child.id,
@@ -64,3 +68,4 @@ window.insertIntoCell = function insertIntoCell(returnedFiles) {
     });
   });
 };
+/* eslint-enable wrap-iife */
