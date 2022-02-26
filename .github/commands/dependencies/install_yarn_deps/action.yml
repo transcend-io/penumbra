@@ -17,9 +17,9 @@ runs:
           .yarn/unplugged
           .yarn/install-state.gz
           .pnp.cjs
-        key: ${{ runner.os }}-${{ runner.arch }}-yarn-v2-${{ hashFiles('**/yarn.lock', '**/package.json') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-yarn-v3-${{ hashFiles('**/yarn.lock', '**/package.json') }}
         restore-keys: |
-          ${{ runner.os }}-${{ runner.arch }}-yarn-v2-
+          ${{ runner.os }}-${{ runner.arch }}-yarn-v3-
     - run: yarn install --immutable
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       name: Install yarn deps
