@@ -49,6 +49,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
+      # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
       # - run-karma
       - run-depcheck
       - build-and-upload-artifacts
@@ -68,6 +69,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
+      # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
       # - run-karma
       - run-depcheck
       - build-and-upload-artifacts
