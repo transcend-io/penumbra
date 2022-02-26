@@ -1,7 +1,4 @@
-const { join } = require('path');
-const webpackConfig = require('./webpack.dev.js');
-
-const src = join(__dirname, 'src');
+const webpackConfig = require('./webpack.prod.js');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -9,7 +6,7 @@ module.exports = (config) => ({
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['tap', 'webpack'],
+  frameworks: ['tap'],
 
   customContextFile: 'penumbra-karma-context.html',
 
@@ -23,7 +20,7 @@ module.exports = (config) => ({
     },
     {
       pattern: 'src/index.ts',
-      included: true,
+      included: false,
       served: true,
       nocache: false,
     },

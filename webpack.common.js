@@ -18,10 +18,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
-    fallback: {
-      path: require.resolve('path-browserify'),
-      stream: require.resolve('stream-browserify'),
-    },
+    // TODO webpack 5
+    // fallback: {
+    //   path: require.resolve('path-browserify'),
+    //   stream: require.resolve('stream-browserify'),
+    // },
   },
   watch: false,
   module: {
