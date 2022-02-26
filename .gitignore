@@ -282,9 +282,6 @@ checks.json
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# NVM config file
-.nvmrc
-
 # Do not commit latest schema dump since it is always changing/only needed by test
 src/migrations/schemas/latest.dump
 *.hidden.dump
