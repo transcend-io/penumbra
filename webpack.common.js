@@ -8,9 +8,6 @@ const { join } = require('path');
 const { ProvidePlugin } = require('webpack');
 
 module.exports = {
-  // node: {
-  //   fs: 'empty',
-  // },
   entry: {
     main: join(__dirname, 'src', 'index.ts'),
     worker: join(__dirname, 'src', 'worker.penumbra.js'),

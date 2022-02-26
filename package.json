@@ -54,7 +54,6 @@
   "dependencies": {
     "@transcend-io/conflux": "^3.2.0",
     "@transcend-io/remote-web-streams": "1.0.5",
-    "@transcend-io/type-utils": "^1.0.4",
     "comlink": "^4.3.1",
     "core-js": "^3.21.1",
     "crypto-browserify": "^3.12.0",

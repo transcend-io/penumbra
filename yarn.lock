@@ -1799,7 +1799,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@transcend-io/conflux": ^3.2.0
     "@transcend-io/remote-web-streams": 1.0.5
-    "@transcend-io/type-utils": ^1.0.4
     "@types/mime-types": ^2.1.1
     "@types/node": ^17.0.21
     "@types/tape": ^4.13.2
@@ -1857,16 +1856,6 @@ __metadata:
   dependencies:
     web-streams-polyfill: ^3.0.0
   checksum: 2283d88e6f716b21533b59179c7edf927271ce75dc4350abf538bd48be4625c669a6b3bae974bf2a036380cca242561bd376c322b521dabedbe163cd31634690
-  languageName: node
-  linkType: hard
-
-"@transcend-io/type-utils@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@transcend-io/type-utils@npm:1.0.4"
-  dependencies:
-    fp-ts: ^2.11.5
-    io-ts: ^2.2.16
-  checksum: 2e73b1167912930c99487ee24f971a997628f0264c692489f7d1de8d21d4e155324f7af747fb8023758908a1582ce9bfe7e382015ad7791db561e8b7dfbd4ecc
   languageName: node
   linkType: hard
 
@@ -5048,13 +5037,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.11.5":
-  version: 2.11.8
-  resolution: "fp-ts@npm:2.11.8"
-  checksum: 481b824797ba59f3f5549810e8f6688b27554790d11a470ccdf4fc086a1cb4993ffb9060131b054abccca703f2776993e12f649865143e178e9b7c9e5b295ea7
-  languageName: node
-  linkType: hard
-
 "from@npm:~0":
   version: 0.1.7
   resolution: "from@npm:0.1.7"
@@ -5780,15 +5762,6 @@ __metadata:
   dependencies:
     loose-envify: ^1.0.0
   checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
-  languageName: node
-  linkType: hard
-
-"io-ts@npm:^2.2.16":
-  version: 2.2.16
-  resolution: "io-ts@npm:2.2.16"
-  peerDependencies:
-    fp-ts: ^2.5.0
-  checksum: 1b5855682e413cc92cfb5c51d0bdb24c99e407ab4e67821a53078f5d8dedbc387840c5b240cb19dd5d542bbdd2e2317ece17674a674f3de561ca0f00ae765bba
   languageName: node
   linkType: hard
 
