@@ -18,7 +18,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
-    // TODO webpack 5
+    // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
     // fallback: {
     //   path: require.resolve('path-browserify'),
     //   stream: require.resolve('stream-browserify'),
@@ -40,12 +40,14 @@ module.exports = {
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
   },
-  plugins: [
-    new ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
-  ],
+  // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
+  // plugins: [
+  // new ProvidePlugin({
+  //   Buffer: ['buffer', 'Buffer'],
+  //   process: 'process/browser',
+  // }),
+  // ],
+  // devtool: 'source-map',
+  devtool: '',
   target: 'web', // Make web variables accessible to webpack, e.g. window
-  devtool: 'source-map',
 };
