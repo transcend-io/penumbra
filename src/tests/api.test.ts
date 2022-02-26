@@ -10,7 +10,7 @@ import { PenumbraSupportLevel } from '../enums';
 
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
-import { logger } from 'src/logger';
+import { logger } from '../logger';
 
 const view = self;
 

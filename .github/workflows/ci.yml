@@ -14,12 +14,12 @@ jobs:
           name: build artifacts
           path: build/
 
-  run-mocha:
+  run-karma:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn test
+      - run: yarn test:browserstack
 
   run-depcheck:
     runs-on: ubuntu-latest
