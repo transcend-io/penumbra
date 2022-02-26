@@ -21,7 +21,7 @@
     "test:browserstack": "karma start karma.browserstack.js",
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
-    "build": "yarn clean && mkdir -p build && webpack --config webpack.prod.js && tsc && yarn build:markdown",
+    "build": "yarn clean && mkdir -p build && webpack --config webpack.prod.js && tsc",
     "build:example": "rimraf example/build && yarn build && mkdir -p demo/build && cp -a example/. build/ && cp -a build/. example/build/",
     "build:demo": "rimraf demo/build && yarn build && mkdir -p demo/build && cp -a demo/. build/ && cp -a build/. demo/build/",
     "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
@@ -94,8 +94,6 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-tap": "^4.2.0",
     "karma-webpack": "^4.0.2",
-    "markdown-toc": "^1.2.0",
-    "npm-check": "^5.9.2",
     "nyc": "^15.0.0",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
