@@ -1560,7 +1560,6 @@ __metadata:
     "@yarnpkg/pnpify": ^3.1.0-rc.2
     "@yarnpkg/sdks": ^2.5.0-rc.2
     babel-loader: ^8.0.6
-    check-deps: ^1.4.1
     codecov: ^3.6.5
     comlink: ^4.2.0
     core-js: ^3.6.4
@@ -3637,23 +3636,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"check-deps@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "check-deps@npm:1.4.1"
-  dependencies:
-    argv: 0.0.2
-    cli-table: ^0.3.1
-    colors: ^1.1.2
-    cross-spawn: ^2.1.4
-    object-assign: ^4.0.1
-    semver: ^5.0.1
-    through2: ^2.0.0
-  bin:
-    check-deps: ./bin/check-deps.js
-  checksum: 7e64b703857b931683b1aa5abcf7ce487449e8006bd282db47673125e5ab81aadea4464a04f6e195bdbca082124e8a62ef2aa14b056fbbc829cf17bdf1af4633
-  languageName: node
-  linkType: hard
-
 "chevrotain@npm:^9.1.0":
   version: 9.1.0
   resolution: "chevrotain@npm:9.1.0"
@@ -3834,15 +3816,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-table@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "cli-table@npm:0.3.1"
-  dependencies:
-    colors: 1.0.3
-  checksum: f40a49d9a47794a3aabaa57d4616145563ae85a73f540d64245d45365ac8157de998cc02e4dbec282ae373b6ef70a75e2d8a2f0d769ba9cbccd6f0745becb580
-  languageName: node
-  linkType: hard
-
 "cli-width@npm:^2.0.0":
   version: 2.2.0
   resolution: "cli-width@npm:2.2.0"
@@ -4004,14 +3977,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:1.0.3":
-  version: 1.0.3
-  resolution: "colors@npm:1.0.3"
-  checksum: 234e8d3ab7e4003851cdd6a1f02eaa16dabc502ee5f4dc576ad7959c64b7477b15bd21177bab4055a4c0a66aa3d919753958030445f87c39a253d73b7a3637f5
-  languageName: node
-  linkType: hard
-
-"colors@npm:^1.1.0, colors@npm:^1.1.2, colors@npm:^1.4.0":
+"colors@npm:^1.1.0, colors@npm:^1.4.0":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
   checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
@@ -4102,7 +4068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concat-stream@npm:^1.4.7, concat-stream@npm:^1.5.0, concat-stream@npm:^1.5.2":
+"concat-stream@npm:^1.5.0, concat-stream@npm:^1.5.2":
   version: 1.6.2
   resolution: "concat-stream@npm:1.6.2"
   dependencies:
@@ -4332,7 +4298,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn-async@npm:^2.1.1, cross-spawn-async@npm:^2.2.2":
+"cross-spawn-async@npm:^2.1.1":
   version: 2.2.5
   resolution: "cross-spawn-async@npm:2.2.5"
   dependencies:
@@ -4350,16 +4316,6 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
-  languageName: node
-  linkType: hard
-
-"cross-spawn@npm:^2.1.4":
-  version: 2.2.3
-  resolution: "cross-spawn@npm:2.2.3"
-  dependencies:
-    cross-spawn-async: ^2.2.2
-    spawn-sync: ^1.0.15
-  checksum: 0887c56dc67389a6eb2b71f6fad4f7e8ff88f9b4f1258e87f57f882d7fc847138386707a42e1bbab5d36ba9935ec45feb0616cd7fb1095e32be1d0ab6e8ae8b4
   languageName: node
   linkType: hard
 
@@ -9576,13 +9532,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"os-shim@npm:^0.1.2":
-  version: 0.1.3
-  resolution: "os-shim@npm:0.1.3"
-  checksum: 2172be6da7ec31b26d06556588779ae7e2f1a4d14df76820a06e38cedf3eb7fccdb151e928a4e2678da00630edd3c031fabea8c764e52dca9226e0aaf25c6869
-  languageName: node
-  linkType: hard
-
 "os-tmpdir@npm:~1.0.2":
   version: 1.0.2
   resolution: "os-tmpdir@npm:1.0.2"
@@ -11580,16 +11529,6 @@ __metadata:
   version: 1.4.8
   resolution: "sourcemap-codec@npm:1.4.8"
   checksum: b57981c05611afef31605732b598ccf65124a9fcb03b833532659ac4d29ac0f7bfacbc0d6c5a28a03e84c7510e7e556d758d0bb57786e214660016fb94279316
-  languageName: node
-  linkType: hard
-
-"spawn-sync@npm:^1.0.15":
-  version: 1.0.15
-  resolution: "spawn-sync@npm:1.0.15"
-  dependencies:
-    concat-stream: ^1.4.7
-    os-shim: ^0.1.2
-  checksum: a280ff895b2251ba7ea5ae3f12aa56e5775e15f17c4db75493dc39ac68dfa891a022a1643af120618f4669ae60a3d79967e5267ec4bc555605cf9f668d61ecc9
   languageName: node
   linkType: hard
 
