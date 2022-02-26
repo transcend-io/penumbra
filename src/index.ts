@@ -4,7 +4,7 @@
  *
  * @module penumbra
  * @author Transcend Inc. <https://transcend.io>
- * @license Apache 2.0
+ * @license Apache-2.0
  */
 
 // exports

@@ -5,11 +5,12 @@
 
 // external
 const { join } = require('path');
+const { ProvidePlugin } = require('webpack');
 
 module.exports = {
-  node: {
-    fs: 'empty',
-  },
+  // node: {
+  //   fs: 'empty',
+  // },
   entry: {
     main: join(__dirname, 'src', 'index.ts'),
     worker: join(__dirname, 'src', 'worker.penumbra.js'),
@@ -20,6 +21,10 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    fallback: {
+      path: require.resolve('path-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
   },
   watch: false,
   module: {
@@ -32,6 +37,12 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser',
+    }),
+  ],
   target: 'web', // Make web variables accessible to webpack, e.g. window
-  devtool: '',
+  devtool: 'source-map',
 };

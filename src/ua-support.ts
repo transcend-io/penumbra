@@ -7,6 +7,8 @@ let supportLevel: PenumbraSupportLevel = PenumbraSupportLevel.none;
 
 // Event/CustomEvent is non-instantiable, among many various other incompatibilities in IE11
 if (
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   self.dispatchEvent &&
   typeof self.CustomEvent === 'function' &&
   typeof self.Proxy === 'function' &&

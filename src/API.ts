@@ -174,7 +174,8 @@ function save(
   }
 
   // Single file
-  const file: PenumbraFile = 'stream' in files ? files : files[0];
+  const file: PenumbraFile =
+    'stream' in files ? (files as unknown as PenumbraFile) : files[0];
   const [
     filename,
     extension = file.mimetype ? mime.extension(file.mimetype) : '',
