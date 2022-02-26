@@ -87,7 +87,7 @@
     "eslint-plugin-jsdoc": "^37.9.4",
     "git-rev-sync": "^3.0.2",
     "http-server": "^14.1.0",
-    "karma": "^4.4.1",
+    "karma": "^6.3.16",
     "karma-browserstack-launcher": "^1.6.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.2.0",
