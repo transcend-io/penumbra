@@ -1,7 +1,4 @@
-const { join } = require('path');
 const webpackConfig = require('./webpack.prod.js');
-
-const src = join(__dirname, 'src');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -45,25 +42,7 @@ module.exports = (config) => ({
   },
 
   // webpack configuration
-  webpack: {
-    ...webpackConfig,
-    module: {
-      ...webpackConfig.module,
-      rules: [
-        ...webpackConfig.module.rules,
-        {
-          // Instrument sourcemaps for code coverage
-          test: /\.(js|ts)?$/,
-          include: [src],
-          use: {
-            loader: 'istanbul-instrumenter-loader',
-            options: { esModules: true },
-          },
-          enforce: 'post',
-        },
-      ],
-    },
-  },
+  webpack: webpackConfig,
 
   plugins: [
     'karma-tap',
@@ -97,5 +76,5 @@ module.exports = (config) => ({
 
   // Concurrency level
   // how many browser should be started simultaneous
-  concurrency: Infinity,
+  concurrency: 1,
 });

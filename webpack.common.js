@@ -5,11 +5,9 @@
 
 // external
 const { join } = require('path');
+const { ProvidePlugin } = require('webpack');
 
 module.exports = {
-  node: {
-    fs: 'empty',
-  },
   entry: {
     main: join(__dirname, 'src', 'index.ts'),
     worker: join(__dirname, 'src', 'worker.penumbra.js'),
@@ -20,6 +18,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
+    // fallback: {
+    //   path: require.resolve('path-browserify'),
+    //   stream: require.resolve('stream-browserify'),
+    // },
   },
   watch: false,
   module: {
@@ -32,6 +35,19 @@ module.exports = {
       },
     ],
   },
-  target: 'web', // Make web variables accessible to webpack, e.g. window
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
+  },
+  // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
+  // plugins: [
+  // new ProvidePlugin({
+  //   Buffer: ['buffer', 'Buffer'],
+  //   process: 'process/browser',
+  // }),
+  // ],
+  // devtool: 'source-map',
   devtool: '',
+  target: 'web', // Make web variables accessible to webpack, e.g. window
 };

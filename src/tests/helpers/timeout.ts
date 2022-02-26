@@ -1,10 +1,10 @@
 /**
  * Timer management options
  */
-export type TimeoutManager = {
+export interface TimeoutManager {
   /** Cancel timeout */
   clear: () => void;
-};
+}
 
 /**
  * Set and manage a timeout
@@ -14,7 +14,7 @@ export type TimeoutManager = {
  * @returns Timeout cancellation helper
  */
 export default function timeout(
-  callback: Function,
+  callback: () => void,
   delay: number,
 ): TimeoutManager {
   const timer = self.setTimeout(callback, delay * 1000);

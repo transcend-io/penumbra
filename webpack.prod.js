@@ -23,6 +23,8 @@ module.exports = merge(common, {
             ascii_only: true,
           },
         },
+        // webpack 5
+        // parallel: 2,
         parallel: true,
         cache: true,
         sourceMap: false,

@@ -1,21 +1,3 @@
-declare global {
-  interface Window {
-    /**
-     * `requestIdleCallback()`
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback
-     */
-    requestIdleCallback: (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      callback: (...args: any[]) => any,
-      options?: {
-        /** Callback timeout */
-        timeout?: number;
-      },
-    ) => number;
-  }
-}
-
 const {
   setTimeout,
   requestIdleCallback = (
@@ -33,7 +15,7 @@ const {
  *
  * @param ex - Error to throw
  */
-const throwOutside = (ex: Error | DOMException | DOMError): void => {
+const throwOutside = (ex: Error | DOMException): void => {
   requestIdleCallback(() => {
     throw ex;
   });

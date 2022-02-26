@@ -18,6 +18,7 @@ let penumbra: PenumbraAPI;
 
 test('setup', (t) => {
   const onReady = (event?: PenumbraReady): void => {
+    logger.log('penumbra ready fired!');
     penumbra = ((event && event.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
     t.pass('setup finished');
@@ -31,7 +32,7 @@ test('setup', (t) => {
   }
 });
 
-test('penumbra.supported() test', (t): void => {
+test('penumbra.supported() test', (t) => {
   t.assert(
     penumbra.supported() >= PenumbraSupportLevel.size_limited,
     'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
