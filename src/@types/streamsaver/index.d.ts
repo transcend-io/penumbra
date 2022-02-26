@@ -12,6 +12,10 @@ declare module 'streamsaver' {
     size?: number,
   ): WritableStream;
 
+  /** MITM URL */
+  // eslint-disable-next-line import/no-mutable-exports, vars-on-top, no-var
+  export var mitm: string;
+
   /** DOM context WritableStream constructor */
   type DOMContextWritableStream = globalThis.WritableStream;
 
