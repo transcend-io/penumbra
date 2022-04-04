@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "description": "Crypto streams for the browser.",
   "main": "build/main.penumbra.js",
   "types": "ts-build/src/index.d.ts",

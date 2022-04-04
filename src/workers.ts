@@ -13,6 +13,7 @@ import {
 } from './types';
 import { advancedStreamsSupported } from './ua-support';
 import { logger } from './logger';
+import { settings } from './settings';
 
 // ////// //
 // Config //
@@ -66,11 +67,6 @@ if (!scriptElement) {
 /**
  * Get the script throwing error if cannot be found
  */
-const script = scriptElement.dataset;
-
-/**
- * Get the script throwing error if cannot be found
- */
 const scriptUrl = new URL(scriptElement.src, location.href);
 
 /** For resolving URLs */
@@ -100,12 +96,12 @@ function resolve(url: string): URL {
  * @returns Worker location
  */
 export function getWorkerLocation(): WorkerLocation {
-  const config = JSON.parse(script.workers || '{}');
+  const config = JSON.parse(settings.workers || '{}');
   const options = {
     ...DEFAULT_WORKERS,
     /* Support either worker="penumbra-worker" (non-JSON)
      *             or workers='"{"penumbra": "...", "StreamSaver": "..."}"' */
-    penumbra: script.worker || DEFAULT_WORKERS.penumbra,
+    penumbra: settings.worker || DEFAULT_WORKERS.penumbra,
     ...(typeof config === 'object' ? config : {}),
   };
   const { base, penumbra, StreamSaver } = options;
@@ -131,7 +127,7 @@ function reDispatchEvent(event: Event): void {
 }
 
 // Set data-worker-limit to limit the maximum number of Penumbra workers
-const WORKER_LIMIT = +(script.workerLimit || 16);
+const WORKER_LIMIT = +(settings.workerLimit || 16);
 const { hardwareConcurrency } = navigator;
 // Get available processor threads
 const availConcurrency = hardwareConcurrency
@@ -291,7 +287,7 @@ export async function setWorkerLocation(
     await cleanup();
     return;
   }
-  script.workers = JSON.stringify(
+  settings.workers = JSON.stringify(
     typeof options === 'string'
       ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
       : { ...DEFAULT_WORKERS, ...options },
