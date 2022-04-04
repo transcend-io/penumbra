@@ -515,24 +515,19 @@ const onReady = async (
   const getTestColor = (passed) => (passed ? 'limegreen' : 'crimson');
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const [name, test] of tests) {
-    results.push(
-      // eslint-disable-next-line no-loop-func
-      test().then((passed) => {
-        failures += !passed;
-        logger.log(
-          `%c${
-            passed ? '✅ PASS' : '❌ FAIL'
-          } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
-          `font-size:larger;color:${getTestColor(passed)}`,
-          '',
-          'color:gray',
-          '',
-        );
-      }),
+  for await (const [name, test] of tests) {
+    const passed = await test();
+    failures += !passed;
+    logger.log(
+      `%c${
+        passed ? '✅ PASS' : '❌ FAIL'
+      } %c${name} (%creturned ${JSON.stringify(passed)}%c)`,
+      `font-size:larger;color:${getTestColor(passed)}`,
+      '',
+      'color:gray',
+      '',
     );
   }
-  await Promise.all(results);
   logger.log(
     `%c${
       failures
