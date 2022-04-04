@@ -24,7 +24,7 @@ repos:
         args: [--allow-missing-credentials]
       - id: check-yaml
         files: (yaml$|yml$)
-  - repo: git://github.com/thlorenz/doctoc
+  - repo: https://github.com/thlorenz/doctoc
     rev: v1.4.0
     hooks:
       - id: doctoc
