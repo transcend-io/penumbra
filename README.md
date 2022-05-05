@@ -47,11 +47,9 @@
   <br /><br />
   <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/transcend-io/conflux">conflux</a>.</i>
   <br /><br />
-<!--   <a href="https://travis-ci.com/transcend-io/penumbra"><img src="https://travis-ci.com/transcend-io/penumbra.svg?branch=master" alt="Build Status"></a> -->
 <!--   <a href="https://automate.browserstack.com/public-build/SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%"><img src='https://automate.browserstack.com/badge.svg?badge_key=SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%'/></a> -->
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra.svg?type=shield"/></a>
-  <a href="https://app.netlify.com/sites/penumbra-demo/deploys"><img src="https://api.netlify.com/api/v1/badges/533125dc-c7af-4442-af32-df7283c7322b/deploy-status" alt="Netlify Status"></a>
 </p>
 <br />
 
