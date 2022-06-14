@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
+import { AsyncParser, Transform, parseAsync }  from 'json2csv';
 import mime from 'mime-types';
 import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
@@ -9,6 +10,8 @@ import { Compression } from './enums';
 import { ReadableStream } from './streams';
 import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
+import {Readable} from "stream";
+import {read} from "fs";
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -68,6 +71,9 @@ export class PenumbraZipWriter extends EventTarget {
   /** Allow & auto-rename duplicate files sent to writer */
   private allowDuplicates: boolean;
 
+  /** Attempt to convert the incoming data into CSV. */
+  private transformToCsv: boolean;
+
   /** All written & pending file paths */
   private files = new Set<string>();
 
@@ -103,6 +109,7 @@ export class PenumbraZipWriter extends EventTarget {
       compressionLevel = Compression.Store,
       saveBuffer = false,
       allowDuplicates = true,
+      transformToCsv = false,
       onProgress,
       onComplete,
     } = options;
@@ -118,6 +125,7 @@ export class PenumbraZipWriter extends EventTarget {
       this.byteSize = size;
     }
     this.allowDuplicates = allowDuplicates;
+    this.transformToCsv = transformToCsv;
     this.controller = controller;
     const { signal } = controller;
     signal.addEventListener(
@@ -212,7 +220,7 @@ export class PenumbraZipWriter extends EventTarget {
             extension = mimetype ? mime.extension(mimetype) : '',
           ] = name
             .split(/(\.\w+\s*$)/) // split filename extension
-            .filter(Boolean); // filter empty matches
+            .filter((x) => Boolean(x)); // filter empty matches
           let filePath = `${filename}${extension}`;
 
           // Handle duplicate files
@@ -238,6 +246,7 @@ export class PenumbraZipWriter extends EventTarget {
           zip.files.add(filePath);
 
           const reader = stream.getReader();
+
           const writeComplete = new Promise<number>((resolve) => {
             const completionTrackerStream = new ReadableStream({
               /**
@@ -248,16 +257,22 @@ export class PenumbraZipWriter extends EventTarget {
               async start(controller) {
                 // eslint-disable-next-line no-constant-condition
                 while (true) {
-                  // eslint-disable-next-line no-await-in-loop
-                  const { done, value } = await reader.read();
+                  /* eslint-disable no-await-in-loop */
+                  const readOutput = await reader.read();
+                  const { done } = readOutput;
+                  let { value } = readOutput;
                   if (value) {
-                    const chunkSize = value.byteLength;
+if (zip.transformToCsv) {
+  value = await parseAsync(value);
+}
+                    const chunkSize = Buffer.byteLength(value);
                     writeSize += chunkSize;
                     if (zip.byteSize !== null) {
                       zip.bytesWritten += chunkSize;
                       emitZipProgress(zip, zip.bytesWritten, zip.byteSize);
                     }
                   }
+                  /* eslint-enable no-await-in-loop */
                   // When no more data needs to be consumed, break the reading
                   if (done) {
                     resolve(writeSize);

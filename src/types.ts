@@ -361,6 +361,8 @@ export interface ZipOptions
     compressionLevel: number;
     /** Store a copy of the resultant zip file in-memory for inspection & testing */
     saveBuffer: boolean;
+    /** Attempt to convert the incoming data into CSV. */
+    transformToCsv?: boolean;
     /**
      * Auto-registered `'progress'` event listener. This is equivalent to calling
      * `PenumbraZipWriter.addEventListener('progress', onProgress)`
