@@ -96,6 +96,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsdoc": "^37.9.7",
+    "fetch-mock": "^9.11.0",
     "git-rev-sync": "^3.0.2",
     "http-server": "^14.1.1",
     "karma": "^6.3.20",

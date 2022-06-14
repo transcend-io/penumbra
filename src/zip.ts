@@ -262,7 +262,9 @@ export class PenumbraZipWriter extends EventTarget {
                   if (value) {
                     // FIXME: Log error here when things fail.
                     if (zip.transformToCsv) {
-                      value = await parseAsync(value);
+                      const buf = Buffer.from(value);
+                      const transformed = await parseAsync(JSON.parse(buf.toString()));
+                      value = Buffer.from(transformed, 'utf-8');
                     }
                     const chunkSize = Buffer.byteLength(value);
                     writeSize += chunkSize;

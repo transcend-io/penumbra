@@ -11,6 +11,7 @@ import { PenumbraSupportLevel } from '../enums';
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
 import { logger } from '../logger';
+import fetchMock from 'fetch-mock';
 
 const view = self;
 
@@ -453,5 +454,77 @@ test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-r
   t.equals(size, expectedSize, `expected zip size (actual: ${size})`);
 
   t.end();
+});
+
+test('penumbra.saveZip({ transformToCsv: true }) attempts to convert incoming data to CSV', async (t) => {
+  if (!self.TextEncoder || !self.TextDecoder) {
+    logger.warn(
+      'skipping test due to lack of browser support for TextEncoder/TextDecoder',
+    );
+    t.pass('test skipped');
+    t.end();
+    return;
+  }
+  const te = new self.TextEncoder();
+  const td = new self.TextDecoder();
+
+  let completeEventFired = false;
+
+  const writer = penumbra.saveZip({
+    /** onComplete handler */
+    onComplete() {
+      completeEventFired = true;
+    },
+    allowDuplicates: true,
+    saveBuffer: true,
+    transformToCsv: true,
+  });
+
+  const mockUrl = 'https://trancsend.com/mock.json';
+  const mockFileId = 450;
+  fetchMock.mock({
+    method: 'GET',
+    url: mockUrl,
+    response: {
+      a: 1
+    },
+  });
+
+  // const encryptedFile = await fetch(mockUrl).then(({ body }) => encrypt(null, {
+  //   stream: body!, size: 7, id: mockFileId
+  // }, 7));
+
+  // FIXME: Try to get an encrypted stream in?
+  const stream = await fetch(mockUrl).then(({ body }) => body);
+
+  // const [one, two] = await encryptedFile.stream.tee();
+  //
+  // const reader = one.getReader();
+  // const output = await reader.read();
+  // const buffer = Buffer.from(output.value as never);
+  // const json = JSON.parse(buffer.toString());
+
+  await writer.write({
+    // ...encryptedFile,
+    stream: stream!,
+    // stream: two,
+    mimetype: 'application/json',
+    // lastModified: new Date(0),
+    path: 'test-mock.json'
+  });
+
+  await writer.close();
+
+  const size = await writer.getSize();
+  const files = await writer.getFiles();
+  const buf = await writer.getBuffer();
+  const decoded = td.decode(buf);
+
+  console.log(size, files, decoded);
+
+  t.ok(completeEventFired, 'zip complete event fired');
+  t.pass('zip saved');
+
+  fetchMock.restore();
 });
 /* eslint-enable max-lines */
