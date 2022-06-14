@@ -260,6 +260,7 @@ export class PenumbraZipWriter extends EventTarget {
                   const { done } = readOutput;
                   let { value } = readOutput;
                   if (value) {
+                    // FIXME: Log error here when things fail.
                     if (zip.transformToCsv) {
                       value = await parseAsync(value);
                     }
