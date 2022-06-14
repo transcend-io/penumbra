@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
-import { AsyncParser, Transform, parseAsync }  from 'json2csv';
+import { parseAsync }  from 'json2csv';
 import mime from 'mime-types';
 import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
@@ -10,8 +10,6 @@ import { Compression } from './enums';
 import { ReadableStream } from './streams';
 import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
-import {Readable} from "stream";
-import {read} from "fs";
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await allSettled<Promise<number>[]>(writes);
@@ -262,9 +260,9 @@ export class PenumbraZipWriter extends EventTarget {
                   const { done } = readOutput;
                   let { value } = readOutput;
                   if (value) {
-if (zip.transformToCsv) {
-  value = await parseAsync(value);
-}
+                    if (zip.transformToCsv) {
+                      value = await parseAsync(value);
+                    }
                     const chunkSize = Buffer.byteLength(value);
                     writeSize += chunkSize;
                     if (zip.byteSize !== null) {
