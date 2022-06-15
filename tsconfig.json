@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "incremental": true,
-    "target": "es2020",
+    "target": "esnext",
     "module": "commonjs",
     "lib": ["esnext", "dom", "es2020"],
     "allowJs": false,
@@ -11,10 +11,11 @@
     "sourceMap": true,
     "removeComments": false,
     "esModuleInterop": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
     "baseUrl": ".",
     "outDir": "ts-build",
-    "types": [],
-    "composite": true,
+    "types": ["node"],
+    "composite": false,
     "moduleResolution": "node",
     "strict": true,
     "typeRoots": [
