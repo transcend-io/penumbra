@@ -1452,22 +1452,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:^7.18.5":
-  version: 7.18.5
-  resolution: "@babel/plugin-transform-runtime@npm:7.18.5"
-  dependencies:
-    "@babel/helper-module-imports": ^7.16.7
-    "@babel/helper-plugin-utils": ^7.17.12
-    babel-plugin-polyfill-corejs2: ^0.3.0
-    babel-plugin-polyfill-corejs3: ^0.5.0
-    babel-plugin-polyfill-regenerator: ^0.3.0
-    semver: ^6.3.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 2a9d9ad0b6393639eeaf3ca3130f52f276f5c3f676f33e29d1b1db5d19308155a5068764e20999fe69331720e83407a400912332e3b4405fa19dfdc54721d00c
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-transform-shorthand-properties@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/plugin-transform-shorthand-properties@npm:7.16.7"
@@ -2049,12 +2033,10 @@ __metadata:
   dependencies:
     "@babel/core": ^7.18.2
     "@babel/plugin-proposal-class-properties": ^7.17.12
-    "@babel/plugin-transform-runtime": ^7.18.5
     "@babel/preset-env": ^7.18.2
     "@babel/preset-typescript": ^7.17.12
     "@transcend-io/conflux": ^3.2.2
     "@transcend-io/remote-web-streams": 1.0.5
-    "@types/babel__plugin-transform-runtime": ^7
     "@types/mime-types": ^2.1.1
     "@types/node": ^17.0.40
     "@types/tape": ^4.13.2
@@ -2111,13 +2093,6 @@ __metadata:
   dependencies:
     web-streams-polyfill: ^3.0.0
   checksum: 2283d88e6f716b21533b59179c7edf927271ce75dc4350abf538bd48be4625c669a6b3bae974bf2a036380cca242561bd376c322b521dabedbe163cd31634690
-  languageName: node
-  linkType: hard
-
-"@types/babel__plugin-transform-runtime@npm:^7":
-  version: 7.9.2
-  resolution: "@types/babel__plugin-transform-runtime@npm:7.9.2"
-  checksum: 0eb18bf14b478804d34f96d47b992e53043776b8679e0c110051985a22ec18497e6f2c6d20f5289876c6094ccac2d41fa2f716a150e7512cee0a5c2ae1cf79b3
   languageName: node
   linkType: hard
 
