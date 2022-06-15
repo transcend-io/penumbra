@@ -1,9 +1,10 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "5.3.0",
+  "version": "6.0.0",
   "description": "Crypto streams for the browser.",
-  "main": "dist/main.penumbra.js",
-  "types": "ts-build/src/index.d.ts",
+  "main": "dist/main/cjs/index.js",
+  "module": "dist/main/esm/index.js",
+  "types": "dist/main/types/index.d.ts",
   "directories": {
     "example": "example"
   },

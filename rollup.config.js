@@ -35,7 +35,7 @@ export default [
   main({
     plugins: [dts()],
     output: {
-      file: 'dist/main/types/penumbra.main.d.ts',
+      file: 'dist/main/types/index.d.ts',
       format: 'es',
     },
   }),
