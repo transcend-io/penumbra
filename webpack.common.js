@@ -14,7 +14,7 @@ module.exports = {
   },
   output: {
     filename: '[name].penumbra.js',
-    path: join(__dirname, 'build'),
+    path: join(__dirname, 'dist'),
   },
   resolve: {
     extensions: ['.ts', '.js'],

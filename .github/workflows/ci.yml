@@ -11,12 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - name: Build the typescript code
+      - name: Build
         run: yarn build
-      - uses: actions/upload-artifact@main
+      - uses: actions/upload-artifact@3
         with:
-          name: build artifacts
-          path: build/
+          name: build-artifact
+          path: |
+            dist/
+            ts-build/
 
   run-karma:
     runs-on: ubuntu-latest
@@ -58,6 +60,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
       - name: Configure NPM authentication
         run: |
           yarn config set npmAlwaysAuth true
@@ -78,6 +84,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
       - name: Configure Github Packages authentication
         run: |
           yarn config set npmAlwaysAuth true

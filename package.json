@@ -2,7 +2,7 @@
   "name": "@transcend-io/penumbra",
   "version": "5.2.3",
   "description": "Crypto streams for the browser.",
-  "main": "build/main.penumbra.js",
+  "main": "dist/main.penumbra.js",
   "types": "ts-build/src/index.d.ts",
   "directories": {
     "example": "example"
@@ -30,9 +30,9 @@
     "test:browserstack": "karma start karma.browserstack.js",
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
-    "build": "yarn clean && mkdir -p build && webpack --config webpack.prod.js && tsc",
-    "build:example": "rimraf example/build && yarn build && mkdir -p demo/build && cp -a example/. build/ && cp -a build/. example/build/",
-    "build:demo": "rimraf demo/build && yarn build && mkdir -p demo/build && cp -a demo/. build/ && cp -a build/. demo/build/",
+    "build": "yarn clean && mkdir -p dist && webpack --config webpack.prod.js && tsc",
+    "build:example": "rimraf example/build && yarn build && mkdir -p demo/build && cp -a example/. dist/ && cp -a build/. example/build/",
+    "build:demo": "rimraf demo/build && yarn build && mkdir -p demo/build && cp -a demo/. dist/ && cp -a dist/. demo/build/",
     "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
   },
   "repository": {
@@ -54,7 +54,7 @@
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
   "files": [
-    "build/**/*",
+    "dist/**/*",
     "ts-build/**/*",
     "src/**/*",
     "tsconfig.json"

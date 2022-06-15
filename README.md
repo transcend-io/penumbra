@@ -595,7 +595,7 @@ const PENUMBRA_DIRECTORY = path.join(
   __dirname,
   'node_modules',
   '@transcend-io/penumbra',
-  'build',
+  'dist',
 );
 
 module.exports = {
