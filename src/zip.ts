@@ -318,11 +318,11 @@ export class PenumbraZipWriter extends EventTarget {
    *
    * @returns Total observed zip size in bytes after close completes
    */
-  close(): Promise<number> {
-    const size = this.getSize();
+  async close(): Promise<number> {
+    const size = await this.getSize();
     if (!this.closed) {
-      this.writer.close();
       this.closed = true;
+      this.writer.close();
     }
     return size;
   }
