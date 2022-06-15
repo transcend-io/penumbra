@@ -31,7 +31,7 @@
     "####### Build #######": "",
     "clean": "rimraf build && rimraf coverage",
     "build": "yarn clean && mkdir -p dist && webpack --config webpack.prod.js && tsc",
-    "build:example": "rimraf example/build && yarn build && mkdir -p demo/build && cp -a example/. dist/ && cp -a build/. example/build/",
+    "build:example": "rimraf example/build && yarn build && mkdir -p example/build && cp -a example/. dist/ && cp -a build/. example/build/",
     "build:demo": "rimraf demo/build && yarn build && mkdir -p demo/build && cp -a demo/. dist/ && cp -a dist/. demo/build/",
     "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
   },
