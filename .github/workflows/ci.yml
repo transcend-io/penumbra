@@ -13,7 +13,7 @@ jobs:
       - uses: ./.github/commands/dependencies/install_yarn_deps
       - name: Build
         run: yarn build
-      - uses: actions/upload-artifact@3
+      - uses: actions/upload-artifact@v3
         with:
           name: build-artifact
           path: |
