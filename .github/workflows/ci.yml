@@ -46,7 +46,7 @@ jobs:
           extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
   build-to-npm:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
       # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
@@ -66,7 +66,7 @@ jobs:
         run: yarn npm publish
 
   build-to-github-packages:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
       # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
