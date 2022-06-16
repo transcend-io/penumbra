@@ -81,7 +81,7 @@ export class PenumbraZipWriter extends EventTarget {
   private completedWrites = 0;
 
   /** Total zip archive size */
-  private byteSize: number | null = 0;
+  public byteSize: number | null = 0;
 
   /** Current zip archive size */
   private bytesWritten = 0;
