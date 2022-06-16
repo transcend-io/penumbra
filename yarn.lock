@@ -2037,7 +2037,7 @@ __metadata:
     "@babel/preset-typescript": ^7.17.12
     "@transcend-io/conflux": ^3.2.2
     "@transcend-io/remote-web-streams": 1.0.5
-    "@types/mime-types": ^2.1.1
+    "@types/mime": ^2.0.3
     "@types/node": ^17.0.40
     "@types/tape": ^4.13.2
     "@typescript-eslint/eslint-plugin": ^5.27.1
@@ -2065,7 +2065,7 @@ __metadata:
     karma-sourcemap-loader: ^0.3.8
     karma-tap: ^4.2.0
     karma-webpack: ^4.0.2
-    mime-types: ^2.1.35
+    mime: ^3.0.0
     nyc: ^15.1.0
     prettier: ^2.6.2
     promise.allsettled: ^1.0.5
@@ -2073,12 +2073,12 @@ __metadata:
     rollup: ^2.75.6
     rollup-plugin-dts: ^4.2.2
     rollup-plugin-esbuild: ^4.9.1
+    rollup-plugin-web-worker-loader: ^1.6.1
     streamsaver: ^2.0.6
     tape: ^5.5.3
     terser-webpack-plugin: ^2.3.8
     typedarray-to-buffer: ^4.0.0
     typescript: ^4.7.3
-    web-streams-node: ^0.4.0
     web-streams-polyfill: ^3.2.1
     webpack: ^4.46.0
     webpack-cli: ^3.3.12
@@ -2173,10 +2173,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mime-types@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@types/mime-types@npm:2.1.1"
-  checksum: 106b5d556add46446a579ad25ff15d6b421851790d887edcad558c90c1e64b1defc72bfbaf4b08f208916e21d9cc45cdb951d77be51268b18221544cfe054a3c
+"@types/mime@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/mime@npm:2.0.3"
+  checksum: 1f4f144423e149f300438f7cdca9b308d7a18a944e63f5ddf262558208a22a64c8e79b6973d602d86928e19052b3256b492429951b34d037242bb1bdfddae388
   languageName: node
   linkType: hard
 
@@ -7104,13 +7104,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-stream@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "is-stream@npm:1.1.0"
-  checksum: 063c6bec9d5647aa6d42108d4c59723d2bd4ae42135a2d4db6eadbd49b7ea05b750fd69d279e5c7c45cf9da753ad2c00d8978be354d65aa9f6bb434969c6a2ae
-  languageName: node
-  linkType: hard
-
 "is-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "is-stream@npm:2.0.0"
@@ -8082,22 +8075,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-db@npm:1.52.0":
-  version: 1.52.0
-  resolution: "mime-db@npm:1.52.0"
-  checksum: 0d99a03585f8b39d68182803b12ac601d9c01abfa28ec56204fa330bc9f3d1c5e14beb049bafadb3dbdf646dfb94b87e24d4ec7b31b7279ef906a8ea9b6a513f
-  languageName: node
-  linkType: hard
-
-"mime-types@npm:^2.1.35":
-  version: 2.1.35
-  resolution: "mime-types@npm:2.1.35"
-  dependencies:
-    mime-db: 1.52.0
-  checksum: 89a5b7f1def9f3af5dad6496c5ed50191ae4331cc5389d7c521c8ad28d5fdad2d06fd81baf38fed813dc4e46bb55c8145bb0ff406330818c9cf712fb2e9b3836
-  languageName: node
-  linkType: hard
-
 "mime-types@npm:~2.1.24":
   version: 2.1.26
   resolution: "mime-types@npm:2.1.26"
@@ -8122,6 +8099,15 @@ __metadata:
   bin:
     mime: cli.js
   checksum: 1497ba7b9f6960694268a557eae24b743fd2923da46ec392b042469f4b901721ba0adcf8b0d3c2677839d0e243b209d76e5edcbd09cfdeffa2dfb6bb4df4b862
+  languageName: node
+  linkType: hard
+
+"mime@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "mime@npm:3.0.0"
+  bin:
+    mime: cli.js
+  checksum: f43f9b7bfa64534e6b05bd6062961681aeb406a5b53673b53b683f27fcc4e739989941836a355eef831f4478923651ecc739f4a5f6e20a76487b432bfd4db928
   languageName: node
   linkType: hard
 
@@ -9399,13 +9385,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream-node-to-web@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "readable-stream-node-to-web@npm:1.0.1"
-  checksum: 36cf32aa844c5de00a4bff22513583472aeeb39390bf9a2ae95ae87649e9fce85f0091a336abc71703290f0ddb7d332e78b8eb423a531a8902a6493954fa715b
-  languageName: node
-  linkType: hard
-
 "readable-stream@npm:1 || 2, readable-stream@npm:^2.0.0, readable-stream@npm:^2.0.1, readable-stream@npm:^2.0.2, readable-stream@npm:^2.1.5, readable-stream@npm:^2.2.2, readable-stream@npm:^2.3.3, readable-stream@npm:^2.3.6, readable-stream@npm:~2.3.6":
   version: 2.3.7
   resolution: "readable-stream@npm:2.3.7"
@@ -9924,6 +9903,15 @@ __metadata:
     esbuild: ">=0.10.1"
     rollup: ^1.20.0 || ^2.0.0
   checksum: 9b74a7ccff6e1487956c2f3f79e302e96b97036e445f2e56749decccda8733e49354fb1e01698420909fc0c817d535771bdbbb8beb046d961af3e08f005741d8
+  languageName: node
+  linkType: hard
+
+"rollup-plugin-web-worker-loader@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "rollup-plugin-web-worker-loader@npm:1.6.1"
+  peerDependencies:
+    rollup: ^1.9.2 || ^2.0.0
+  checksum: 1239c2657bfaea5d3c7a0df901cfc8016cc306dc0a9eb3945b0750e48aec45b0fa0f9e587164e94187e0a84a3fe842bf71697c76a475c66d5e36fbff97fd8730
   languageName: node
   linkType: hard
 
@@ -11471,17 +11459,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-streams-node@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "web-streams-node@npm:0.4.0"
-  dependencies:
-    is-stream: ^1.1.0
-    readable-stream-node-to-web: ^1.0.1
-    web-streams-ponyfill: ^1.4.1
-  checksum: 25ca7c864bdb49d5db487784872f8095953590b2f0ec8a6230a61eb80ae0d315105eeded87f6c3807982c905b8ef70ef53b155a8934841fdf6cb743e28a6331a
-  languageName: node
-  linkType: hard
-
 "web-streams-polyfill@npm:^3.0.0":
   version: 3.0.0
   resolution: "web-streams-polyfill@npm:3.0.0"
@@ -11500,13 +11477,6 @@ __metadata:
   version: 3.2.1
   resolution: "web-streams-polyfill@npm:3.2.1"
   checksum: b119c78574b6d65935e35098c2afdcd752b84268e18746606af149e3c424e15621b6f1ff0b42b2676dc012fc4f0d313f964b41a4b5031e525faa03997457da02
-  languageName: node
-  linkType: hard
-
-"web-streams-ponyfill@npm:^1.4.1":
-  version: 1.4.2
-  resolution: "web-streams-ponyfill@npm:1.4.2"
-  checksum: 4ffc1f3bf2276f2ca617f183c1f349d0747fff456dd26f3b67da64a2def24d3efd6c64b68c257457cd7dee4d56038b86db14413f6fcf9dab1b1735e31cccc5cc
   languageName: node
   linkType: hard
 

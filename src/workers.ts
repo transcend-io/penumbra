@@ -28,7 +28,7 @@ const DEFAULT_WORKERS = {
 };
 
 const SHOULD_LOG_EVENTS =
-  'process' in self && process.env.PENUMBRA_LOG_START === 'true';
+  typeof process !== 'undefined' && process.env.PENUMBRA_LOG_START === 'true';
 
 // //// //
 // Init //
@@ -149,8 +149,11 @@ let workerID = 0;
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
-  const worker = new Worker(url /* , { type: 'module' } */);
   const id = workerID++;
+  const worker = new Worker(url, {
+    // type: 'module', // waiting on Firefox
+    name: `penumbra-worker-${id}`,
+  });
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,

@@ -11,7 +11,6 @@ const main = (config) => ({
 
 const worker = (config) => ({
   ...config,
-  // TODO: convert to .ts
   input: 'src/worker.penumbra.js',
   external: (id) => !/^[./]/.test(id),
 });
@@ -21,13 +20,33 @@ export default [
     plugins: [esbuild()],
     output: [
       {
-        dir: 'dist/main/cjs/',
+        dir: 'dist/cjs/',
         format: 'cjs',
         sourcemap: true,
       },
       {
-        dir: 'dist/main/esm/',
+        dir: 'dist/esm/',
         format: 'es',
+        sourcemap: true,
+      },
+    ],
+  }),
+  worker({
+    plugins: [esbuild()],
+    output: [
+      {
+        file: 'dist/cjs/worker.penumbra.js',
+        format: 'cjs',
+        sourcemap: true,
+      },
+      {
+        file: 'dist/esm/worker.penumbra.js',
+        format: 'es',
+        sourcemap: true,
+      },
+      {
+        file: 'dist/umd/worker.penumbra.js',
+        format: 'umd',
         sourcemap: true,
       },
     ],
@@ -35,33 +54,21 @@ export default [
   main({
     plugins: [dts()],
     output: {
-      file: 'dist/main/types/index.d.ts',
+      file: 'dist/types/index.d.ts',
       format: 'es',
     },
   }),
-  worker({
+  {
+    input: 'src/index.ts',
     plugins: [esbuild()],
     output: [
       {
-        dir: 'dist/worker/cjs/',
-        format: 'cjs',
-        sourcemap: true,
-      },
-      {
-        dir: 'dist/worker/esm/',
-        format: 'es',
-        sourcemap: true,
+        file: 'dist/umd/index.js',
+        format: 'iife',
+        name: 'penumbra',
+        inlineDynamicImports: true,
       },
     ],
-  }),
-  /**
-   * TODO: convert worker to TypeScript
-   */
-  // worker({
-  //   plugins: [dts({ compilerOptions: { allowJs: true } })],
-  //   output: {
-  //     file: 'dist/worker/types/penumbra.worker.d.ts',
-  //     format: 'es',
-  //   },
-  // }),
+    sourcemap: true,
+  },
 ];
