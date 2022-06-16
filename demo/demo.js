@@ -55,8 +55,8 @@ const onReady = async (
           );
           return false;
         }
-        const cacheBuster = Math.random().toString(10).slice(2);
-        await penumbra.setWorkerLocation(`worker.penumbra.js?${cacheBuster}`);
+        // const cacheBuster = Math.random().toString(10).slice(2);
+        // await penumbra.setWorkerLocation(`worker.penumbra.js?${cacheBuster}`);
         const NYT = {
           url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
           filePrefix: 'NYT',

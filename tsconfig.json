@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "tsBuildInfoFile": "dist/.tsbuildinfo",
     "baseUrl": ".",
+    "outDir": "dist/types",
     // "types": ["node"],
     "composite": false,
     "moduleResolution": "node",
