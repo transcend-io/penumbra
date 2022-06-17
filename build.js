@@ -11,6 +11,13 @@ const sharedOptions = {
   entryPoints: ['./src/index.ts', './src/worker.penumbra.js'],
   sourcemap: true,
   bundle: true,
+};
+
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
+const browserOptions = {
+  platform: 'browser',
   plugins: [
     NodeGlobalsPolyfillPlugin({
       process: true,
@@ -27,12 +34,12 @@ const sharedOptions = {
  */
 const iifeOptions = {
   ...sharedOptions,
+  ...browserOptions,
   format: 'iife',
   minify: true,
-  outdir: './dist/iife/',
+  outdir: './dist/browser/iife/',
   globalName: 'penumbra',
 };
-
 build(iifeOptions).catch(() => process.exit(1));
 
 /**
@@ -40,8 +47,39 @@ build(iifeOptions).catch(() => process.exit(1));
  */
 const esmOptions = {
   ...sharedOptions,
+  ...browserOptions,
   format: 'esm',
-  outdir: './dist/esm/',
+  outdir: './dist/browser/esm/',
+};
+build(esmOptions).catch(() => process.exit(1));
+
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
+const nodeOptions = {
+  platform: 'node',
+  // target: 'esnext',
+  external: ['./node_modules/*'],
 };
 
-build(esmOptions).catch(() => process.exit(1));
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
+const nodeEsmOptions = {
+  ...sharedOptions,
+  ...nodeOptions,
+  format: 'esm',
+  outdir: './dist/node/esm/',
+};
+build(nodeEsmOptions).catch(() => process.exit(1));
+
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
+const nodeCjsOptions = {
+  ...sharedOptions,
+  ...nodeOptions,
+  format: 'cjs',
+  outdir: './dist/node/cjs/',
+};
+build(nodeCjsOptions).catch(() => process.exit(1));

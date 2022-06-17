@@ -2,11 +2,16 @@
   "name": "@transcend-io/penumbra",
   "version": "6.0.0",
   "description": "Crypto streams for the browser.",
-  "main": "dist/esm/index.js",
-  "module": "dist/esm/index.js",
-  "jsdelivr": "dist/iife/index.js",
-  "unpkg": "dist/iife/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "./dist/node/cjs/index.js",
+  "module": "./dist/node/esm/index.js",
+  "jsdelivr": "./dist/browser/iife/index.js",
+  "unpkg": "./dist/browser/iife/index.js",
+  "types": "./dist/types/index.d.ts",
+  "browser": {
+    "stream": "stream-browserify",
+    "./dist/node/cjs/index.js": "./dist/browser/iife/index.js",
+    "./dist/node/esm/index.js": "./dist/browser/esm/index.js"
+  },
   "directories": {
     "example": "example"
   },
@@ -33,13 +38,10 @@
     "test:browserstack": "karma start karma.browserstack.js",
     "####### Build #######": "",
     "clean": "rimraf dist && rimraf ts-build && rimraf coverage",
-    "build": "yarn build:dist && yarn build:types",
-    "build:dist": "node build.js",
+    "build": "yarn clean && yarn build:dist && yarn build:types",
+    "build:dist": "yarn node build.js",
     "build:types": "tsc --emitDeclarationOnly --declaration --project tsconfig.json",
     "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
-  },
-  "browser": {
-    "stream": "stream-browserify"
   },
   "repository": {
     "type": "git",
@@ -61,7 +63,6 @@
   },
   "files": [
     "dist/**/*",
-    "ts-build/**/*",
     "src/**/*",
     "tsconfig.json"
   ],
