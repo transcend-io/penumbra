@@ -81,7 +81,7 @@ export class PenumbraZipWriter extends EventTarget {
   private completedWrites = 0;
 
   /** Total zip archive size */
-  private byteSize: number | null = 0;
+  public byteSize: number | null = 0;
 
   /** Current zip archive size */
   private bytesWritten = 0;
@@ -318,8 +318,8 @@ export class PenumbraZipWriter extends EventTarget {
    *
    * @returns Total observed zip size in bytes after close completes
    */
-  close(): Promise<number> {
-    const size = this.getSize();
+  async close(): Promise<number> {
+    const size = await this.getSize();
     if (!this.closed) {
       this.writer.close();
       this.closed = true;
