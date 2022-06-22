@@ -13,32 +13,14 @@
     <div>
       <p>Open your console (Option+Command+I) to view test results.</p>
     </div>
-    <!--
-    <script src="demo.js" type="module" async defer></script>
-    <script src="main.penumbra.js" data-penumbra async defer></script>
-    -->
-    <script>
-      document.currentScript.remove();
-      (() => {
-        const scripts = document.createDocumentFragment();
-        const penumbra = document.createElement('script');
-        const cacheBuster = Math.random().toString(10).slice(2);
-
-        penumbra.async = true;
-        penumbra.defer = true;
-
-        const demo = penumbra.cloneNode();
-
-        penumbra.dataset.penumbra = '';
-        // ESM worker blocked by Firefox support
-        penumbra.dataset.worker = `/dist/cjs/worker.penumbra.js?${cacheBuster}`;
-        penumbra.src = `/dist/esm/index.js?${cacheBuster}`;
-        demo.src = `demo.js?${cacheBuster}`;
-
-        scripts.appendChild(demo);
-        scripts.appendChild(penumbra);
-        document.body.appendChild(scripts);
-      })();
+    <script type="module">
+      const cacheBuster = Math.random().toString(10).slice(2);
+      const { penumbra } = await import(`/dist/esm/index.js?${cacheBuster}`);
+      // ESM workers blocked by Firefox support
+      penumbra.setWorkerLocation(`/dist/cjs/worker.penumbra.js?${cacheBuster}`);
+      const demo = document.createElement('script');
+      demo.src = `demo.js?${cacheBuster}`;
+      document.body.appendChild(demo);
     </script>
   </body>
 </html>

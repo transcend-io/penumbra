@@ -34,7 +34,7 @@
     "start:demo:esm": "yarn build:dist && open http://localhost:8081/demo/esm.html && http-server --port 8081",
     "####### Testing #######": "",
     "test:interactive": "yarn start:demo",
-    "test:esm:interactive": "yarn start:demo:esm",
+    "test:interactive:esm": "yarn start:demo:esm",
     "test:local": "karma start karma.local.js",
     "test:local:rebuild": "yarn && karma start karma.local.js",
     "test:browserstack": "karma start karma.browserstack.js",
