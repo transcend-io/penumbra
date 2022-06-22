@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Penumbra Tests</title>
+    <meta charset="UTF-8" />
+    <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
+  </head>
+
+  <body>
+    <div id="app">
+      <h1>Penumbra Tests</h1>
+    </div>
+    <div>
+      <p>Open your console (Option+Command+I) to view test results.</p>
+    </div>
+    <!--
+    <script src="demo.js" type="module" async defer></script>
+    <script src="main.penumbra.js" data-penumbra async defer></script>
+    -->
+    <script>
+      document.currentScript.remove();
+      (() => {
+        const scripts = document.createDocumentFragment();
+        const penumbra = document.createElement('script');
+        const cacheBuster = Math.random().toString(10).slice(2);
+
+        penumbra.async = true;
+        penumbra.defer = true;
+
+        const demo = penumbra.cloneNode();
+
+        penumbra.dataset.penumbra = '';
+        // ESM worker blocked by Firefox support
+        penumbra.dataset.worker = `/dist/cjs/worker.penumbra.js?${cacheBuster}`;
+        penumbra.src = `/dist/esm/index.js?${cacheBuster}`;
+        demo.src = `demo.js?${cacheBuster}`;
+
+        scripts.appendChild(demo);
+        scripts.appendChild(penumbra);
+        document.body.appendChild(scripts);
+      })();
+    </script>
+  </body>
+</html>

@@ -32,15 +32,15 @@ const browserOptions = {
 /**
  * @type {import('esbuild').BuildOptions}
  */
-const iifeOptions = {
+const cjsOptions = {
   ...sharedOptions,
   ...browserOptions,
   format: 'iife',
   minify: true,
-  outdir: './dist/browser/iife/',
+  outdir: './dist/cjs/',
   globalName: 'penumbra',
 };
-build(iifeOptions).catch(() => process.exit(1));
+build(cjsOptions).catch(() => process.exit(1));
 
 /**
  * @type {import('esbuild').BuildOptions}
@@ -49,37 +49,6 @@ const esmOptions = {
   ...sharedOptions,
   ...browserOptions,
   format: 'esm',
-  outdir: './dist/browser/esm/',
+  outdir: './dist/esm/',
 };
 build(esmOptions).catch(() => process.exit(1));
-
-/**
- * @type {import('esbuild').BuildOptions}
- */
-const nodeOptions = {
-  platform: 'node',
-  // target: 'esnext',
-  external: ['./node_modules/*'],
-};
-
-/**
- * @type {import('esbuild').BuildOptions}
- */
-const nodeEsmOptions = {
-  ...sharedOptions,
-  ...nodeOptions,
-  format: 'esm',
-  outdir: './dist/node/esm/',
-};
-build(nodeEsmOptions).catch(() => process.exit(1));
-
-/**
- * @type {import('esbuild').BuildOptions}
- */
-const nodeCjsOptions = {
-  ...sharedOptions,
-  ...nodeOptions,
-  format: 'cjs',
-  outdir: './dist/node/cjs/',
-};
-build(nodeCjsOptions).catch(() => process.exit(1));

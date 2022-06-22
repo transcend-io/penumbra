@@ -30,8 +30,8 @@
         const demo = penumbra.cloneNode();
 
         penumbra.dataset.penumbra = '';
-        penumbra.dataset.worker = `/dist/browser/iife/worker.penumbra.js?${cacheBuster}`;
-        penumbra.src = `/dist/browser/iife/index.js?${cacheBuster}`;
+        penumbra.dataset.worker = `/dist/cjs/worker.penumbra.js?${cacheBuster}`;
+        penumbra.src = `/dist/cjs/index.js?${cacheBuster}`;
         demo.src = `demo.js?${cacheBuster}`;
 
         scripts.appendChild(demo);
