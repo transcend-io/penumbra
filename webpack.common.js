@@ -5,7 +5,7 @@
 
 // external
 const { join } = require('path');
-const { ProvidePlugin } = require('webpack');
+// const { ProvidePlugin } = require('webpack');
 
 module.exports = {
   entry: {

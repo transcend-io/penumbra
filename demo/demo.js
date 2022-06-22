@@ -2,7 +2,6 @@
 const view = self;
 
 const tests = [];
-const results = [];
 let failures = 0;
 const logger = console;
 

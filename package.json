@@ -8,9 +8,9 @@
   "unpkg": "./dist/browser/iife/index.js",
   "types": "./dist/types/index.d.ts",
   "browser": {
-    "stream": "stream-browserify",
     "./dist/node/cjs/index.js": "./dist/browser/iife/index.js",
-    "./dist/node/esm/index.js": "./dist/browser/esm/index.js"
+    "./dist/node/esm/index.js": "./dist/browser/esm/index.js",
+    "stream": "stream-browserify"
   },
   "directories": {
     "example": "example"

@@ -23,8 +23,7 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: 'worker.penumbra.js',
-  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
+  penumbra: '/worker.penumbra.js',
 };
 
 const SHOULD_LOG_EVENTS = process?.env?.PENUMBRA_LOG_START === 'true';
@@ -111,7 +110,6 @@ export function getWorkerLocation(): WorkerLocation {
   return {
     base: context,
     penumbra: new URL(penumbra, context),
-    StreamSaver: new URL(StreamSaver, context),
   };
 }
 
@@ -270,7 +268,6 @@ view.addEventListener('beforeunload', cleanup);
  * penumbra.setWorkerLocation({
  *   base: '/penumbra-workers/',
  *   penumbra: 'worker.penumbra.js',
- *   StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});

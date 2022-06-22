@@ -527,13 +527,12 @@ On Amazon S3, this means adding the following line to your bucket policy, inside
 
 ```ts
 // Set only the base URL by passing a string
-penumbra.setWorkerLocation('/penumbra-workers/');
+penumbra.setWorkerLocation('/penumbra-workers/worker.penumbra.js');
 
 // Set all worker URLs by passing a WorkerLocation object
 penumbra.setWorkerLocation({
   base: '/penumbra-workers/',
   penumbra: 'worker.penumbra.js',
-  StreamSaver: 'StreamSaver.js',
 });
 
 // Set a single worker's location
