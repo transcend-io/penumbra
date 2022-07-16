@@ -103,7 +103,7 @@ export function getWorkerLocation(): WorkerLocation {
     penumbra: settings.worker || DEFAULT_WORKERS.penumbra,
     ...(typeof config === 'object' ? config : {}),
   };
-  const { base, penumbra, StreamSaver } = options;
+  const { base, penumbra } = options;
 
   const context = resolve(base || scriptUrl);
 
