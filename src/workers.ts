@@ -23,7 +23,7 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: '/worker.penumbra.js',
+  penumbra: 'worker.penumbra.js',
 };
 
 const SHOULD_LOG_EVENTS = process?.env?.PENUMBRA_LOG_START === 'true';
