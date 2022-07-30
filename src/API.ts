@@ -581,9 +581,24 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   });
 }
 
+/**
+ * Convert HTML File object to a PenumbraFile
+ *
+ * @param file - File to import
+ * @returns PenumbraFile
+ */
+async function importFile(file: File): Promise<PenumbraFile> {
+  return {
+    stream: new Response(await file.arrayBuffer()).body as ReadableStream,
+    size: file.size,
+    mimetype: file.type,
+  };
+}
+
 const penumbra = {
   preconnect,
   preload,
+  importFile,
   get,
   encrypt,
   decrypt,

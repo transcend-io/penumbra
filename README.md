@@ -134,6 +134,35 @@ type RemoteResource = {
 };
 ```
 
+### PenumbraFile
+
+Encryption & decryption APIs work on PenumbraFile descriptors to that store file data and metadata.
+
+```ts
+/** Penumbra file composition */
+export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
+  /** Backing stream */
+  stream: ReadableStream;
+  /** File size (if backed by a ReadableStream) */
+  size?: number;
+  /** Optional ID for tracking encryption completion */
+  id?: number | string;
+  /** Last modified date */
+  lastModified?: Date;
+}
+```
+
+HTML File and FileList descriptors can be converted for use with penumbra APIs through `penumbra.importFile(files: File, path?: string)` and can be used to encrypt and decrypt files.
+
+```ts
+// Automatically encrypt & save files selected in a file selector
+const fileSelector = document.getElementById('file-selector');
+fileSelector.addEventListener('change', (event) => {
+  const file = penumbra.importFile(event.target.files[0]);
+  penumbra.encrypt(file).then(penumbra.save);
+});
+```
+
 ### .get
 
 Fetch and decrypt remote files.
@@ -346,7 +375,7 @@ await writer.close();
 
 ### .setWorkerLocation
 
-Configure the location of Penumbra's worker threads.
+Configure the location of Penumbra's worker threads. This should be called before any other Penumbra methods and is not currently reconfigurable post-initialization.
 
 ```ts
 penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
