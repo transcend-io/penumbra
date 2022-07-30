@@ -152,7 +152,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
 }
 ```
 
-HTML File and FileList descriptors can be converted for use with penumbra APIs through `penumbra.importFile(files: File, path?: string)` and can be used to encrypt and decrypt files.
+Native File objects can be converted for use with penumbra APIs through `penumbra.importFile(file: File, path?: string)` and can be used to encrypt and decrypt files.
 
 ```ts
 // Automatically encrypt & save files selected in a file selector
