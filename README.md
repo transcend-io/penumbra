@@ -158,7 +158,7 @@ HTML File and FileList descriptors can be converted for use with penumbra APIs t
 // Automatically encrypt & save files selected in a file selector
 const fileSelector = document.getElementById('file-selector');
 fileSelector.addEventListener('change', (event) => {
-  const file = penumbra.importFile(event.target.files[0]);
+  const file = await penumbra.importFile(event.target.files[0]);
   penumbra.encrypt(file).then(penumbra.save);
 });
 ```
