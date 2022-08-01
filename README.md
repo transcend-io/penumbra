@@ -10,6 +10,7 @@
       - [With Yarn/NPM](#with-yarnnpm)
       - [Vanilla JS](#vanilla-js)
     - [RemoteResource](#remoteresource)
+    - [PenumbraFile](#penumbrafile)
     - [.get](#get)
     - [.encrypt](#encrypt)
       - [.encrypt() examples:](#encrypt-examples)
