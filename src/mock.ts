@@ -9,6 +9,12 @@ const supported = (): PenumbraSupportLevel => -0;
 supported.levels = PenumbraSupportLevel;
 
 const MOCK_API: PenumbraAPI = {
+  importFile: async (file, path) => ({
+    stream: new Response(await file.arrayBuffer()).body as ReadableStream,
+    size: file.size,
+    mimetype: file.type,
+    path,
+  }),
   get: async () => [],
   save: () => new AbortController(),
   supported,
