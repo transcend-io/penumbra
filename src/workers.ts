@@ -172,7 +172,11 @@ const onWorkerInitQueue: (() => void)[] = [];
  * @returns Worker
  */
 function getFreeWorker(): PenumbraWorker {
-  // Poll for any available free workers
+  if (workers.length === 0) {
+    throw new Error('No Penumbra workers available.');
+  }
+
+  // Poll for any available free workers or create a new one
   const freeWorker = workers.find(({ busy }) => !busy);
 
   // return any free worker or a random one if all are busy
@@ -233,21 +237,11 @@ export async function getWorker(): Promise<PenumbraWorker> {
   }
   return getFreeWorker();
 }
-
-/**
- * Returns all active Penumbra Workers
- *
- * @returns Workers
- */
-function getActiveWorkers(): PenumbraWorker[] {
-  return workers;
-}
-
 /**
  * Terminate Penumbra worker and de-allocate their resources
  */
 function cleanup(): void {
-  getActiveWorkers().forEach((thread) => {
+  workers.forEach((thread) => {
     thread.worker.terminate();
   });
   workers.length = 0;
@@ -285,7 +279,6 @@ export async function setWorkerLocation(
   if (initialized) {
     logger.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();
-    return;
   }
   settings.workers = JSON.stringify(
     typeof options === 'string'
