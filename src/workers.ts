@@ -176,7 +176,7 @@ function getFreeWorker(): PenumbraWorker {
     throw new Error('No Penumbra workers available.');
   }
 
-  // Poll for any available free workers or create a new one
+  // Poll for any available free workers
   const freeWorker = workers.find(({ busy }) => !busy);
 
   // return any free worker or a random one if all are busy
