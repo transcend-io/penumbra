@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable require-jsdoc */
-
 // This is all of the Penumbra-relevant code:
 const onReady = async (
   { detail: { penumbra } } = {

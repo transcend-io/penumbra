@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Penumbra Tests</title>
+    <meta charset="UTF-8" />
+    <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
+  </head>
+
+  <body>
+    <div id="app">
+      <h1>Penumbra Tests</h1>
+    </div>
+    <div>
+      <p>Open your console (Option+Command+I) to view test results.</p>
+    </div>
+    <script type="module">
+      const cacheBuster = Math.random().toString(10).slice(2);
+      const { penumbra } = await import(`/dist/esm/index.js?${cacheBuster}`);
+      // ESM workers blocked by Firefox support
+      penumbra.setWorkerLocation(`/dist/cjs/worker.penumbra.js?${cacheBuster}`);
+      const demo = document.createElement('script');
+      demo.src = `demo.js?${cacheBuster}`;
+      document.body.appendChild(demo);
+    </script>
+  </body>
+</html>

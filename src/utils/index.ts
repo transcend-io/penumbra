@@ -8,6 +8,5 @@ export { default as getTextFromRS } from './getTextFromRS';
 export { default as toBuff } from './toBuff';
 export { default as blobCache } from './blobCache';
 export { default as isViewableText } from './isViewableText';
-export { default as intoStream } from './intoStream';
 export { default as isNumber } from './isNumber';
 export { default as throwOutside } from './throwOutside';

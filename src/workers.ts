@@ -24,10 +24,9 @@ import { settings } from './settings';
  */
 const DEFAULT_WORKERS = {
   penumbra: 'worker.penumbra.js',
-  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const SHOULD_LOG_EVENTS = process.env.PENUMBRA_LOG_START === 'true';
+const SHOULD_LOG_EVENTS = process?.env?.PENUMBRA_LOG_START === 'true';
 
 // //// //
 // Init //
@@ -104,14 +103,13 @@ export function getWorkerLocation(): WorkerLocation {
     penumbra: settings.worker || DEFAULT_WORKERS.penumbra,
     ...(typeof config === 'object' ? config : {}),
   };
-  const { base, penumbra, StreamSaver } = options;
+  const { base, penumbra } = options;
 
   const context = resolve(base || scriptUrl);
 
   return {
     base: context,
     penumbra: new URL(penumbra, context),
-    StreamSaver: new URL(StreamSaver, context),
   };
 }
 
@@ -148,8 +146,11 @@ let workerID = 0;
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
-  const worker = new Worker(url /* , { type: 'module' } */);
   const id = workerID++;
+  const worker = new Worker(url, {
+    // type: 'module', // waiting on Firefox
+    name: `penumbra-worker-${id}`,
+  });
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
@@ -267,7 +268,6 @@ view.addEventListener('beforeunload', cleanup);
  * penumbra.setWorkerLocation({
  *   base: '/penumbra-workers/',
  *   penumbra: 'worker.penumbra.js',
- *   StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
