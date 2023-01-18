@@ -1,5 +1,5 @@
 // Karma configuration
-// const { short } = require('git-rev-sync');
+const { short } = require('git-rev-sync');
 const getGlobalConfig = require('./karma.global');
 const packageJson = require('./package.json');
 
@@ -53,10 +53,8 @@ module.exports = (config) => {
       username: 'benjaminbrook3',
       project: 'Penumbra',
       video: false,
-      build: `Karma - penumbra@${packageJson.version}${
-        process.env.GITHUB_RUN_ID
-          ? ` - GitHub Run ID: ${process.env.GITHUB_RUN_ID}`
-          : ''
+      build: `penumbra@${packageJson.version} - ${short()} - ${
+        process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
       }`,
     },
 
