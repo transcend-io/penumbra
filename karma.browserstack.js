@@ -56,6 +56,8 @@ module.exports = (config) => {
       build: `penumbra@${packageJson.version} - ${short()} - ${
         process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
       }`,
+      // Required for `crypto.subtle` - (not needed by Conflux, but this is config is sync'd from Penumbra)
+      acceptSslCerts: true,
     },
 
     // define browsers

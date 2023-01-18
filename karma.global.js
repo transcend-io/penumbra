@@ -1,4 +1,5 @@
 const webpackConfig = require('./webpack.prod.js');
+const { readFileSync } = require('fs');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -56,6 +57,13 @@ module.exports = (config) => ({
   coverageReporter: {
     reporters: [{ type: 'lcov' }],
   },
+
+  // Create a secure context so `crypto.subtle` is defined
+  httpsServerOptions: {
+    key: readFileSync('public-testing-server.key', 'utf8'),
+    cert: readFileSync('public-testing-server.crt', 'utf8'),
+  },
+  protocol: 'https:',
 
   // web server port
   port: 9876,
