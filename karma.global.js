@@ -1,5 +1,5 @@
 const webpackConfig = require('./webpack.prod.js');
-const { readFileSync } = require('fs');
+const { serverCrt, serverKey } = require('./karma-certificate');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -60,8 +60,8 @@ module.exports = (config) => ({
 
   // Create a secure context so `crypto.subtle` is defined
   httpsServerOptions: {
-    key: readFileSync('public-testing-server.key', 'utf8'),
-    cert: readFileSync('public-testing-server.crt', 'utf8'),
+    key: Buffer.from(serverKey, 'base64').toString('utf-8'),
+    cert: Buffer.from(serverCrt, 'base64').toString('utf-8'),
   },
   protocol: 'https:',
 
