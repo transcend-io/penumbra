@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "5.3.2",
+  "version": "5.3.3",
   "description": "Crypto streams for the browser.",
   "main": "dist/main.penumbra.js",
   "types": "ts-build/src/index.d.ts",
@@ -113,5 +113,6 @@
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^5.8.0",
     "worker-plugin": "^5.0.1"
-  }
+  },
+  "packageManager": "yarn@3.3.1"
 }

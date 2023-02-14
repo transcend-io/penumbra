@@ -1,4 +1,5 @@
 const webpackConfig = require('./webpack.prod.js');
+// const { serverCrt, serverKey } = require('./karma-certificate');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -57,6 +58,14 @@ module.exports = (config) => ({
     reporters: [{ type: 'lcov' }],
   },
 
+  // TODO - https://github.com/transcend-io/penumbra/issues/249
+  // // Create a secure context so `crypto.subtle` is defined
+  // httpsServerOptions: {
+  //   key: Buffer.from(serverKey, 'base64').toString('utf-8'),
+  //   cert: Buffer.from(serverCrt, 'base64').toString('utf-8'),
+  // },
+  // protocol: 'https:',
+
   // web server port
   port: 9876,
 
@@ -65,7 +74,7 @@ module.exports = (config) => ({
 
   // level of logging
   // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-  logLevel: config.LOG_INFO,
+  logLevel: process.env.CI ? config.LOG_WARN : config.LOG_INFO,
 
   // enable / disable watching file and executing tests whenever any file changes
   autoWatch: false,
@@ -76,5 +85,5 @@ module.exports = (config) => ({
 
   // Concurrency level
   // how many browser should be started simultaneous
-  concurrency: 1,
+  concurrency: 5,
 });
