@@ -2052,6 +2052,8 @@ __metadata:
     karma-browserstack-launcher: ^1.6.0
     karma-chrome-launcher: ^3.1.1
     karma-coverage: ^2.2.0
+    karma-firefox-launcher: ^2.1.2
+    karma-safari-launcher: ^1.0.0
     karma-sourcemap-loader: ^0.3.8
     karma-tap: ^4.2.0
     karma-webpack: ^4.0.2
@@ -6714,6 +6716,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-docker@npm:^2.0.0":
+  version: 2.2.1
+  resolution: "is-docker@npm:2.2.1"
+  bin:
+    is-docker: cli.js
+  checksum: 3fef7ddbf0be25958e8991ad941901bf5922ab2753c46980b60b05c1bf9c9c2402d35e6dc32e4380b980ef5e1970a5d9d5e5aa2e02d77727c3b6b5e918474c56
+  languageName: node
+  linkType: hard
+
 "is-extendable@npm:^0.1.0, is-extendable@npm:^0.1.1":
   version: 0.1.1
   resolution: "is-extendable@npm:0.1.1"
@@ -6990,6 +7001,15 @@ __metadata:
   version: 1.1.0
   resolution: "is-wsl@npm:1.1.0"
   checksum: ea157d232351e68c92bd62fc541771096942fe72f69dff452dd26dcc31466258c570a3b04b8cda2e01cd2968255b02951b8670d08ea4ed76d6b1a646061ac4fe
+  languageName: node
+  linkType: hard
+
+"is-wsl@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "is-wsl@npm:2.2.0"
+  dependencies:
+    is-docker: ^2.0.0
+  checksum: 20849846ae414997d290b75e16868e5261e86ff5047f104027026fd61d8b5a9b0b3ade16239f35e1a067b3c7cc02f70183cb661010ed16f4b6c7c93dad1b19d8
   languageName: node
   linkType: hard
 
@@ -7397,6 +7417,25 @@ __metadata:
     istanbul-reports: ^3.0.5
     minimatch: ^3.0.4
   checksum: 79c9df27c2de956e3314077256e508befbb7bc797f77c1ec495fc3d905574047269bfd015ea2da644a9b188fde09da42a4186b466a1cce86db45026b566b8cf0
+  languageName: node
+  linkType: hard
+
+"karma-firefox-launcher@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "karma-firefox-launcher@npm:2.1.2"
+  dependencies:
+    is-wsl: ^2.2.0
+    which: ^2.0.1
+  checksum: bfd5b35b35949fee50d92def57b32ab9702926ac24c90036583b76beac33fe8100ec601c9e71087b861d6ca7b3d54e8d2f9b62fa1b5115c8b99512dd763cf2ad
+  languageName: node
+  linkType: hard
+
+"karma-safari-launcher@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "karma-safari-launcher@npm:1.0.0"
+  peerDependencies:
+    karma: ">=0.9"
+  checksum: 09de8a231035c147c22c4106137594e5285e21e5d9f56d12a25563975b410363997947a7e8b5fdbfa0b8ba6f4f120b08a8f2777a28212c410d99b2e30c2eecb8
   languageName: node
   linkType: hard
 

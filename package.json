@@ -100,6 +100,8 @@
     "karma-browserstack-launcher": "^1.6.0",
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-safari-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.8",
     "karma-tap": "^4.2.0",
     "karma-webpack": "^4.0.2",
