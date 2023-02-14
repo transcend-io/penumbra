@@ -52,7 +52,7 @@ module.exports = (config) => {
     browserStack: {
       username: 'benjaminbrook3',
       project: 'Penumbra',
-      video: false,
+      video: true,
       build: `penumbra@${packageJson.version} - ${short()} - ${
         process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
       }`,
