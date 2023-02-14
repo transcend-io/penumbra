@@ -1,5 +1,5 @@
 const webpackConfig = require('./webpack.prod.js');
-const { serverCrt, serverKey } = require('./karma-certificate');
+// const { serverCrt, serverKey } = require('./karma-certificate');
 
 module.exports = (config) => ({
   // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -58,12 +58,13 @@ module.exports = (config) => ({
     reporters: [{ type: 'lcov' }],
   },
 
-  // Create a secure context so `crypto.subtle` is defined
-  httpsServerOptions: {
-    key: Buffer.from(serverKey, 'base64').toString('utf-8'),
-    cert: Buffer.from(serverCrt, 'base64').toString('utf-8'),
-  },
-  protocol: 'https:',
+  // TODO - https://github.com/transcend-io/penumbra/issues/249
+  // // Create a secure context so `crypto.subtle` is defined
+  // httpsServerOptions: {
+  //   key: Buffer.from(serverKey, 'base64').toString('utf-8'),
+  //   cert: Buffer.from(serverCrt, 'base64').toString('utf-8'),
+  // },
+  // protocol: 'https:',
 
   // web server port
   port: 9876,
