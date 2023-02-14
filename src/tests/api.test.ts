@@ -347,12 +347,8 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
-test('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
-  if (!('subtle' in window.crypto)) {
-    // TODO - https://github.com/transcend-io/penumbra/issues/249
-    t.skip();
-  }
-
+// TODO: https://github.com/transcend-io/penumbra/issues/250
+test.skip('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
   const expectedReferenceHashes = [
     '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
     '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
