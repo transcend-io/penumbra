@@ -2027,7 +2027,6 @@ __metadata:
     "@babel/preset-typescript": ^7.17.12
     "@transcend-io/conflux": ^3.2.2
     "@transcend-io/remote-web-streams": 1.0.5
-    "@types/karma-firefox-launcher": ^2
     "@types/mime-types": ^2.1.1
     "@types/node": ^17.0.40
     "@types/tape": ^4.13.2
@@ -2151,25 +2150,6 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
-  languageName: node
-  linkType: hard
-
-"@types/karma-firefox-launcher@npm:^2":
-  version: 2.1.1
-  resolution: "@types/karma-firefox-launcher@npm:2.1.1"
-  dependencies:
-    "@types/karma": "*"
-  checksum: a08eb13438e43e636737bd622b11f1473296f9338b2b8d734be57d4007b510fa523110c7bee0940c13aa7062aa5a4cef9a7e101f2ca2d7697c3ee091756dfa5b
-  languageName: node
-  linkType: hard
-
-"@types/karma@npm:*":
-  version: 6.3.3
-  resolution: "@types/karma@npm:6.3.3"
-  dependencies:
-    "@types/node": "*"
-    log4js: ^6.4.1
-  checksum: 623d6c0575c26d9f0513ccadbfec1c563dd7826e1a2cd4e5b2f6fea26aac366627ac25336e26256efa726f57cc65c607715ae123a3cc903913309c9b8919dcad
   languageName: node
   linkType: hard
 

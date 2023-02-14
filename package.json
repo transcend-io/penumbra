@@ -78,7 +78,6 @@
     "@babel/plugin-proposal-class-properties": "^7.17.12",
     "@babel/preset-env": "^7.18.2",
     "@babel/preset-typescript": "^7.17.12",
-    "@types/karma-firefox-launcher": "^2",
     "@types/mime-types": "^2.1.1",
     "@types/node": "^17.0.40",
     "@types/tape": "^4.13.2",
