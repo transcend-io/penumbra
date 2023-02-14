@@ -22,13 +22,14 @@ module.exports = (config) => {
       os: 'OS X',
       os_version: 'Monterey',
     },
-    bs_firefox_pc: {
-      base: 'BrowserStack',
-      browser: 'Firefox',
-      browser_version: '102.0',
-      os: 'Windows',
-      os_version: '10',
-    },
+    // TODO: https://github.com/transcend-io/penumbra/issues/249
+    // bs_firefox_pc: {
+    //   base: 'BrowserStack',
+    //   browser: 'Firefox',
+    //   browser_version: '102.0',
+    //   os: 'Windows',
+    //   os_version: '10',
+    // },
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
