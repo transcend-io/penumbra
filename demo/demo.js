@@ -418,6 +418,7 @@ const onReady = async (
               },
             )),
           );
+
           writer.write(
             ...(await penumbra.get(
               {
