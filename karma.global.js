@@ -47,16 +47,11 @@ module.exports = (config) => ({
 
   plugins: [
     'karma-tap',
-    'karma-coverage',
     'karma-webpack',
     'karma-sourcemap-loader',
   ],
 
-  reporters: ['progress', 'coverage'],
-
-  coverageReporter: {
-    reporters: [{ type: 'lcov' }],
-  },
+  reporters: ['progress'],
 
   // TODO - https://github.com/transcend-io/penumbra/issues/249
   // // Create a secure context so `crypto.subtle` is defined
