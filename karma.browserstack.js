@@ -16,7 +16,7 @@ module.exports = (config) => {
       os_version: 'Sonoma',
       local: "false",
       networkLogs: "true",
-      seleniumVersion: "3.14.0",
+      seleniumVersion: "4.15.0",
     },
     bs_safari_mac: {
       base: 'BrowserStack',
@@ -26,7 +26,7 @@ module.exports = (config) => {
       os_version: 'Sonoma',
       local: 'false',
       networkLogs: "true",
-      seleniumVersion: "3.14.0",
+      seleniumVersion: "4.15.0",
     },
     // TODO: https://github.com/transcend-io/penumbra/issues/249
     // bs_firefox_pc: {
@@ -44,7 +44,7 @@ module.exports = (config) => {
       os_version: '11',
       local: 'false',
       networkLogs: "true",
-      seleniumVersion: "3.14.0",
+      seleniumVersion: "4.15.0",
     },
   };
 
