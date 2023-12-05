@@ -19,7 +19,8 @@ jobs:
   run-karma:
     # runs-on: ubuntu-32gb-memory-8-core
     runs-on: 
-      group: TestLargeInstances
+      # group: TestLargeInstances
+      labels: ubuntu-32gb-memory-8-core
     env:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
