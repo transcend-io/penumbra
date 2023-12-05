@@ -11,16 +11,22 @@ module.exports = (config) => {
     bs_chrome_mac: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '104.0',
+      browser_version: '118.0',
       os: 'OS X',
-      os_version: 'Big Sur',
+      os_version: 'Sonoma',
+      local: "false",
+      networkLogs: "true",
+      seleniumVersion: "3.14.0",
     },
     bs_safari_mac: {
       base: 'BrowserStack',
       browser: 'Safari',
-      browser_version: '15.6',
+      browser_version: '17.0',
       os: 'OS X',
-      os_version: 'Monterey',
+      os_version: 'Sonoma',
+      local: 'false',
+      networkLogs: "true",
+      seleniumVersion: "3.14.0",
     },
     // TODO: https://github.com/transcend-io/penumbra/issues/249
     // bs_firefox_pc: {
@@ -33,9 +39,12 @@ module.exports = (config) => {
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
-      browser_version: '108.0',
+      browser_version: '118.0',
       os: 'Windows',
       os_version: '11',
+      local: 'false',
+      networkLogs: "true",
+      seleniumVersion: "3.14.0",
     },
   };
 
@@ -54,9 +63,8 @@ module.exports = (config) => {
       username: 'benjaminbrook3',
       project: 'Penumbra',
       video: true,
-      build: `penumbra@${packageJson.version} - ${short()} - ${
-        process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
-      }`,
+      build: `penumbra@${packageJson.version} - ${short()} - ${process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
+        }`,
       // TODO - https://github.com/transcend-io/penumbra/issues/249
       // // A secure context must be used for `crypto.subtle` to be defined
       // acceptInsecureCerts: 'true',

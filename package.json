@@ -7,15 +7,6 @@
   "directories": {
     "example": "example"
   },
-  "resolutions": {
-    "follow-redirects": "1.14.8",
-    "ajv": "6.12.3",
-    "ansi-regex": "5.0.1",
-    "lodash": "4.17.21",
-    "glob-parent": "5.1.2",
-    "path-parse": "1.0.7",
-    "elliptic": "6.5.4"
-  },
   "scripts": {
     "prepare": "yarn build",
     "####### Linting #######": "",
