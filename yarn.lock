@@ -2233,7 +2233,7 @@ __metadata:
     eslint-plugin-jsdoc: ^46.9.0
     git-rev-sync: ^3.0.2
     http-server: ^14.1.1
-    karma: ^6.4.2
+    karma: ~6.3.20
     karma-browserstack-launcher: ^1.6.0
     karma-chrome-launcher: ^3.2.0
     karma-coverage: ^2.2.1
@@ -7968,9 +7968,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma@npm:^6.4.2":
-  version: 6.4.2
-  resolution: "karma@npm:6.4.2"
+"karma@npm:~6.3.20":
+  version: 6.3.20
+  resolution: "karma@npm:6.3.20"
   dependencies:
     "@colors/colors": 1.5.0
     body-parser: ^1.19.0
@@ -7998,7 +7998,7 @@ __metadata:
     yargs: ^16.1.1
   bin:
     karma: bin/karma
-  checksum: e493874729d87955f7c0f1f6c20b2e27184c82a3b33a14607538df9b049077b0263ecb398f5f0ebbba92325cb16f4f43a1461fa486d5a06eabbfdfb5f289f001
+  checksum: 7060afc367c49b2ce2e145f6555c428eadfd72bd68a5d4ae392ec51c8d1c0484706fdd52cfd06d69a811c25517fd5129689a69173be850814dc68c3b7eafa6c8
   languageName: node
   linkType: hard
 
