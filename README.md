@@ -41,7 +41,7 @@
 <p align="center">
   <img alt="Penumbra by Transcend" src="https://user-images.githubusercontent.com/7354176/61583246-43519500-aaea-11e9-82a2-e7470f3d4e00.png"/>
 </p>
-<h1 align="center">Penumbra</h1>
+<h1 align="center">Penumbra DO NOT MERGE</h1>
 <p align="center">
   <strong>Encrypt/decrypt anything in the browser using streams on background threads.</strong>
   <br /><br />
