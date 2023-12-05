@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn pnpify depcheck
+      - run: yarn depcheck
 
   run-pre-commits:
     runs-on: ubuntu-latest

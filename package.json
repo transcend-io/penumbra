@@ -19,7 +19,7 @@
   "scripts": {
     "prepare": "yarn build",
     "####### Linting #######": "",
-    "lint": "yarn pnpify eslint src --ext .ts",
+    "lint": "yarn eslint src --ext .ts",
     "####### Start #########": "",
     "start:example": "yarn build:example && http-server example/build/ --port 8080 -o",
     "start:demo": "yarn build:demo && http-server demo/build/ --port 8081 -o",
