@@ -49,13 +49,6 @@ module.exports = (config) => {
     browserDisconnectTimeout: 400000,
     browserNoActivityTimeout: 400000,
 
-    client: {
-      ...globalConfig.client,
-      mocha: {
-        timeout : 20000 // 20 seconds
-      }
-    },
-
     // global config of your BrowserStack account
     browserStack: {
       username: 'benjaminbrook3',

@@ -45,11 +45,7 @@ module.exports = (config) => ({
   // webpack configuration
   webpack: webpackConfig,
 
-  plugins: [
-    'karma-tap',
-    'karma-webpack',
-    'karma-sourcemap-loader',
-  ],
+  plugins: ['karma-tap', 'karma-webpack', 'karma-sourcemap-loader'],
 
   reporters: ['progress'],
 
