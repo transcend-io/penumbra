@@ -2192,7 +2192,7 @@ __metadata:
     "@transcend-io/conflux": ^4.1.0
     "@transcend-io/remote-web-streams": 1.0.5
     "@types/mime-types": ^2.1.1
-    "@types/node": ^17.0.40
+    "@types/node": ^20.9.0
     "@types/tape": ^4.13.2
     "@typescript-eslint/eslint-plugin": ^5.27.1
     "@typescript-eslint/parser": ^5.27.1
@@ -2233,9 +2233,9 @@ __metadata:
     typescript: ^4.7.3
     web-streams-node: ^0.4.0
     web-streams-polyfill: ^3.2.1
-    webpack: ^4.46.0
+    webpack: ^4.47.0
     webpack-cli: ^3.3.12
-    webpack-merge: ^5.8.0
+    webpack-merge: ^5.10.0
     worker-plugin: ^5.0.1
   languageName: unknown
   linkType: soft
@@ -2361,10 +2361,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.40":
-  version: 17.0.40
-  resolution: "@types/node@npm:17.0.40"
-  checksum: e3b2fe876672fbe4be84ce17773944eb2f5eaba50e2c6c0536bdf6d4972ed6488581580581f154183fdc8f2d56fa42a42e3d6e83b9b71ee25adea16a84765e92
+"@types/node@npm:^20.9.0":
+  version: 20.10.3
+  resolution: "@types/node@npm:20.10.3"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 34a329494f0ea239af05eeb6f00f396963725b3eb9a2f79c5e6a6d37e823f2ab85e1079c2ee56723a37d8b89e7bbe2bd050c97144e5bb06dab93fd1cace65c97
   languageName: node
   linkType: hard
 
@@ -5759,6 +5761,15 @@ __metadata:
     flatted: ^3.1.0
     rimraf: ^3.0.2
   checksum: 4fdd10ecbcbf7d520f9040dd1340eb5dfe951e6f0ecf2252edeec03ee68d989ec8b9a20f4434270e71bcfd57800dc09b3344fca3966b2eb8f613072c7d9a2365
+  languageName: node
+  linkType: hard
+
+"flat@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "flat@npm:5.0.2"
+  bin:
+    flat: cli.js
+  checksum: 12a1536ac746db74881316a181499a78ef953632ddd28050b7a3a43c62ef5462e3357c8c29d76072bb635f147f7a9a1f0c02efef6b4be28f8db62ceb3d5c7f5d
   languageName: node
   linkType: hard
 
@@ -10970,6 +10981,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 3192ef6f3fd5df652f2dc1cd782b49d6ff14dc98e5dced492aa8a8c65425227da5da6aafe22523c67f035a272c599bb89cfe803c1db6311e44bed3042fc25487
+  languageName: node
+  linkType: hard
+
 "unicode-canonical-property-names-ecmascript@npm:^1.0.4":
   version: 1.0.4
   resolution: "unicode-canonical-property-names-ecmascript@npm:1.0.4"
@@ -11324,13 +11342,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-merge@npm:^5.8.0":
-  version: 5.8.0
-  resolution: "webpack-merge@npm:5.8.0"
+"webpack-merge@npm:^5.10.0":
+  version: 5.10.0
+  resolution: "webpack-merge@npm:5.10.0"
   dependencies:
     clone-deep: ^4.0.1
+    flat: ^5.0.2
     wildcard: ^2.0.0
-  checksum: 88786ab91013f1bd2a683834ff381be81c245a4b0f63304a5103e90f6653f44dab496a0768287f8531761f8ad957d1f9f3ccb2cb55df0de1bd9ee343e079da26
+  checksum: 1fe8bf5309add7298e1ac72fb3f2090e1dfa80c48c7e79fa48aa60b5961332c7d0d61efa8851acb805e6b91a4584537a347bc106e05e9aec87fa4f7088c62f2f
   languageName: node
   linkType: hard
 
@@ -11344,9 +11363,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^4.46.0":
-  version: 4.46.0
-  resolution: "webpack@npm:4.46.0"
+"webpack@npm:^4.47.0":
+  version: 4.47.0
+  resolution: "webpack@npm:4.47.0"
   dependencies:
     "@webassemblyjs/ast": 1.9.0
     "@webassemblyjs/helper-module-context": 1.9.0
@@ -11378,7 +11397,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 013fa24c00d4261e16ebca60353fa6f848e417b5a44bdf28c16ebebd67fa61e960420bb314c8df05cfe2dad9b90efabcf38fd6875f2361922769a0384085ef1e
+  checksum: 65fbf8144cdcdb502ddbf8622a05ab54aa3910c6bce6f0f17fadddda535a2023096a1b61e25fb02448257665bdc3ac8d93b7d3c22aa46773a7842365019e1209
   languageName: node
   linkType: hard
 
