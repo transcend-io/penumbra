@@ -2213,7 +2213,7 @@ __metadata:
     "@transcend-io/conflux": ^4.0.3
     "@transcend-io/remote-web-streams": 1.0.5
     "@types/mime-types": ^2.1.4
-    "@types/node": ^17.0.45
+    "@types/node": ^20.9.0
     "@types/tape": ^4.13.4
     "@typescript-eslint/eslint-plugin": ^6.13.2
     "@typescript-eslint/parser": ^6.13.2
@@ -2389,10 +2389,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.45":
-  version: 17.0.45
-  resolution: "@types/node@npm:17.0.45"
-  checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
+"@types/node@npm:^20.9.0":
+  version: 20.10.3
+  resolution: "@types/node@npm:20.10.3"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 34a329494f0ea239af05eeb6f00f396963725b3eb9a2f79c5e6a6d37e823f2ab85e1079c2ee56723a37d8b89e7bbe2bd050c97144e5bb06dab93fd1cace65c97
   languageName: node
   linkType: hard
 
@@ -11451,6 +11453,13 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 3192ef6f3fd5df652f2dc1cd782b49d6ff14dc98e5dced492aa8a8c65425227da5da6aafe22523c67f035a272c599bb89cfe803c1db6311e44bed3042fc25487
   languageName: node
   linkType: hard
 
