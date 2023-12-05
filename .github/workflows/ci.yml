@@ -17,17 +17,19 @@ jobs:
             ts-build/
 
   run-karma:
-    # runs-on: ubuntu-32gb-memory-8-core
-    runs-on: 
-      # group: TestLargeInstances
-      labels: ubuntu-32gb-memory-8-core
+    runs-on: macos-12
     env:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    timeout-minutes: 10
+    timeout-minutes: 4
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/commands/dependencies/install_yarn_deps
+      # - uses: ./.github/commands/dependencies/install_yarn_deps
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.17.3'
+      - run: npm install -g "yarn@1.22.5"
+      - run: yarn
       - run: yarn test:browserstack
 
   run-depcheck:
