@@ -14,9 +14,9 @@ module.exports = (config) => {
       browser_version: '118.0',
       os: 'OS X',
       os_version: 'Sonoma',
-      local: "false",
-      networkLogs: "true",
-      seleniumVersion: "4.15.0",
+      local: 'false',
+      networkLogs: 'true',
+      seleniumVersion: '4.15.0',
     },
     bs_safari_mac: {
       base: 'BrowserStack',
@@ -25,8 +25,8 @@ module.exports = (config) => {
       os: 'OS X',
       os_version: 'Sonoma',
       local: 'false',
-      networkLogs: "true",
-      seleniumVersion: "4.15.0",
+      networkLogs: 'true',
+      seleniumVersion: '4.15.0',
     },
     // TODO: https://github.com/transcend-io/penumbra/issues/249
     // bs_firefox_pc: {
@@ -43,8 +43,8 @@ module.exports = (config) => {
       os: 'Windows',
       os_version: '11',
       local: 'false',
-      networkLogs: "true",
-      seleniumVersion: "4.15.0",
+      networkLogs: 'true',
+      seleniumVersion: '4.15.0',
     },
   };
 
@@ -63,8 +63,9 @@ module.exports = (config) => {
       username: 'benjaminbrook3',
       project: 'Penumbra',
       video: true,
-      build: `penumbra@${packageJson.version} - ${short()} - ${process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
-        }`,
+      build: `penumbra@${packageJson.version} - ${short()} - ${
+        process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
+      }`,
       // TODO - https://github.com/transcend-io/penumbra/issues/249
       // // A secure context must be used for `crypto.subtle` to be defined
       // acceptInsecureCerts: 'true',
