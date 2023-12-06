@@ -21,18 +21,18 @@ jobs:
     env:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn test:browserstack
+      - run: yarn karma start karma.browserstack.js
 
   run-depcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn pnpify depcheck
+      - run: yarn depcheck
 
   run-pre-commits:
     runs-on: ubuntu-latest
