@@ -1,1 +1,1 @@
-import './api.test.ts';
+import './api.test';
