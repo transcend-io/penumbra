@@ -5,7 +5,6 @@ let workerID: number | null = null;
 
 /**
  * Get worker ID (if available)
- *
  * @returns Worker ID (if available)
  */
 export function getWorkerID(): number | null {
@@ -14,7 +13,6 @@ export function getWorkerID(): number | null {
 
 /**
  * Set worker ID
- *
  * @param id - ID
  */
 export function setWorkerID(id: number | null): void {

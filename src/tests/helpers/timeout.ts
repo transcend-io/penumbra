@@ -8,7 +8,6 @@ export interface TimeoutManager {
 
 /**
  * Set and manage a timeout
- *
  * @param callback - Timeout callback
  * @param delay - Time in seconds to wait before calling the callback
  * @returns Timeout cancellation helper

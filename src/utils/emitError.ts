@@ -4,7 +4,6 @@ import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for errors and exceptions
- *
  * @param error - Error object to emit
  */
 export default function emitError(error: PenumbraError): void {

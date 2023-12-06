@@ -4,7 +4,6 @@ import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for zip writer file completion
- *
  * @param writer - PenumbraZipWriter instance
  */
 export default function emitZipCompletion(writer: PenumbraZipWriter): void {

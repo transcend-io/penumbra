@@ -15,7 +15,6 @@ import { emitJobCompletion, emitProgress, toBuff } from './utils';
 
 /**
  * Decrypts a readable stream
- *
  * @param stream - A readable stream of encrypted data
  * @param decipher - The crypto module's decipher
  * @param contentLength - The content length of the file, in bytes
@@ -71,7 +70,6 @@ export function decryptStream(
   return new ReadableStream({
     /**
      * Controller
-     *
      * @param controller - Controller
      */
     start(controller) {
@@ -112,7 +110,6 @@ export function decryptStream(
 
 /**
  * Decrypts a file and returns a ReadableStream
- *
  * @param options - Options
  * @param file - The remote resource to download
  * @param size - Size

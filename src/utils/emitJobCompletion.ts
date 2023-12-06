@@ -4,7 +4,6 @@ import { JobCompletionEmit, PenumbraDecryptionInfo } from '../types';
 
 /**
  * An event emitter for job completion
- *
  * @param id - Job ID
  * @param decryptionInfo - PenumbraDecryptionInfo
  * @param target - Target

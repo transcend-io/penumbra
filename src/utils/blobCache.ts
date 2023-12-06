@@ -12,7 +12,6 @@ export type BlobCacheManager = {
 const blobCache: BlobCacheManager = {
   /**
    * Get Blob cache (list of in-use object URLs)
-   *
    * @returns List of URLs
    */
   get(): URL[] {
@@ -22,7 +21,6 @@ const blobCache: BlobCacheManager = {
   },
   /**
    * Write to Blob cache
-   *
    * @param cache - Cache
    */
   set(cache: URL[] | string[]): void {

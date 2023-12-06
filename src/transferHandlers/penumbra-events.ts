@@ -8,7 +8,6 @@ import { getWorkerID } from '../worker-id';
 transferHandlers.set('penumbra-progress', {
   /**
    * Checks if object is a penumbra-progress event
-   *
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
@@ -19,7 +18,6 @@ transferHandlers.set('penumbra-progress', {
   },
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
-   *
    * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
@@ -28,7 +26,6 @@ transferHandlers.set('penumbra-progress', {
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
-   *
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
@@ -40,7 +37,6 @@ transferHandlers.set('penumbra-progress', {
 transferHandlers.set('penumbra-complete', {
   /**
    * Checks if object is a penumbra-complete event
-   *
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
@@ -51,7 +47,6 @@ transferHandlers.set('penumbra-complete', {
   },
   /**
    * Serialize penumbra-complete event down to just JobCompletion
-   *
    * @param object - Reference to the penumbra-complete PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
@@ -60,7 +55,6 @@ transferHandlers.set('penumbra-complete', {
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
-   *
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-complete PenumbraEvent
    */
@@ -74,7 +68,6 @@ transferHandlers.set('penumbra-complete', {
 transferHandlers.set('penumbra-error', {
   /**
    * Checks if object is a penumbra-error event
-   *
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
@@ -83,7 +76,6 @@ transferHandlers.set('penumbra-error', {
   },
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
-   *
    * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
@@ -92,7 +84,6 @@ transferHandlers.set('penumbra-error', {
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
-   *
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
@@ -104,7 +95,6 @@ transferHandlers.set('penumbra-error', {
 transferHandlers.set('error', {
   /**
    * Checks if object is an error event
-   *
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
@@ -113,7 +103,6 @@ transferHandlers.set('error', {
   },
   /**
    * Serialize penumbra-progress event down to just ProgressDetails
-   *
    * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
@@ -122,7 +111,6 @@ transferHandlers.set('error', {
   },
   /**
    * Re-create PenumbraEvent for re-dispatch in current context
-   *
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */

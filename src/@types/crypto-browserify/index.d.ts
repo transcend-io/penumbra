@@ -11,6 +11,11 @@ declare module 'crypto-browserify' {
 
   /**
    * Create cipher iv
+   * @param algorithm - Cipher algorithm
+   * @param key - Cipher key
+   * @param iv - Cipher iv
+   * @param options - Cipher options
+   * @returns Cipher
    */
   export function createCipheriv(
     algorithm: CipherGCMTypes,
@@ -21,6 +26,11 @@ declare module 'crypto-browserify' {
 
   /**
    * Create decipher iv
+   * @param algorithm - Cipher algorithm
+   * @param key - Cipher key
+   * @param iv - Cipher iv
+   * @param options - Cipher options
+   * @returns Decipher iv
    */
   export function createDecipheriv(
     algorithm: CipherGCMTypes,

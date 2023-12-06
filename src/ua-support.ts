@@ -23,7 +23,6 @@ if (
 
 /**
  * Get Penumbra user agent support level
- *
  * @returns Support level
  */
 export function supported(): PenumbraSupportLevel {

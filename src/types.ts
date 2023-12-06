@@ -202,7 +202,6 @@ export interface PenumbraWorkerAPI {
   setup: (id: number, eventListener: (event: Event) => void) => Promise<void>;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
-   *
    * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
    * @param resources - The remote resources to download
    * @returns A readable stream of the deciphered file
@@ -213,14 +212,12 @@ export interface PenumbraWorkerAPI {
   ) => Promise<ReadableStream[]>;
   /**
    * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
-   *
    * @param resources - The remote resources to download
    * @returns A readable stream of the deciphered file
    */
   getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
   /**
    * Streaming encryption of ReadableStreams
-   *
    * @param ids - Unique identifier for tracking encryption completion
    * @param sizes - Size of each file to encrypt (in bytes)
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
@@ -236,7 +233,6 @@ export interface PenumbraWorkerAPI {
   ) => Promise<PenumbraDecryptionInfoAsBuffer[]>;
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers
-   *
    * @param buffers - The file buffers to encrypt
    * @returns ArrayBuffer[] of the encrypted files
    */
@@ -246,7 +242,6 @@ export interface PenumbraWorkerAPI {
   ) => Promise<ArrayBuffer[]>;
   /**
    * Streaming decryption of ReadableStreams
-   *
    * @param ids - Unique identifier for tracking decryption completion
    * @param sizes - Size of each file to decrypt (in bytes)
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
@@ -262,7 +257,6 @@ export interface PenumbraWorkerAPI {
   ) => Promise<void>;
   /**
    * Buffered (non-streaming) encryption of ArrayBuffers
-   *
    * @param buffers - The file buffers to encrypt
    * @returns ArrayBuffer[] of the encrypted files
    */
@@ -273,7 +267,6 @@ export interface PenumbraWorkerAPI {
   /**
    * Creates a zip writer for saving PenumbraFiles which keeps
    * their path data in-tact.
-   *
    * @returns PenumbraZipWriter
    */
   saveZip: () => PenumbraZipWriter;

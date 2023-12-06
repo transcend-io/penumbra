@@ -18,7 +18,6 @@ import { logger } from './logger';
 
 /**
  * Encrypts a readable stream
- *
  * @param jobID - Job ID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
@@ -72,7 +71,6 @@ export function encryptStream(
   return new ReadableStream({
     /**
      * Controller
-     *
      * @param controller - Controller
      */
     start(controller) {
@@ -116,7 +114,6 @@ export function encryptStream(
 
 /**
  * Encrypt a buffer
- *
  * @returns Buffer
  */
 export function encryptBuffer(): ArrayBuffer {
@@ -130,7 +127,6 @@ const IV_RANDOMNESS = 12;
 
 /**
  * Encrypts a file and returns a ReadableStream
- *
  * @param options - Options
  * @param file - The remote resource to download
  * @param size - Size
