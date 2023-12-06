@@ -8,7 +8,6 @@ const TEXT_TYPES =
 
 /**
  * Determine if the file mimetype is known for displaying
- *
  * @param mimetype - Mimetype
  * @returns 'probably', 'maybe', or '' depending on if mime type can be displayed
  */

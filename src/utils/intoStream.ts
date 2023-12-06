@@ -3,7 +3,6 @@ import { NativeReadableStream } from '../streams';
 
 /**
  * Converts arrays into ReadableStreams
- *
  * @param input - Input
  * @returns Stream
  */

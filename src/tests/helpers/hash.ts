@@ -1,6 +1,5 @@
 /**
  * Get the cryptographic hash of an ArrayBuffer
- *
  * @param algorithm - Cryptographic hash digest algorithm
  * @param ab - ArrayBuffer to digest
  * @returns Hexadecimal hash digest string

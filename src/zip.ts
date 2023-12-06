@@ -43,7 +43,6 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
 
 /**
  * Save a zip containing files retrieved by Penumbra
- *
  * @example new PenumbraZipWriter(options)
  * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance
@@ -88,7 +87,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Penumbra zip writer constructor
-   *
    * @param options - ZipOptions
    * @returns PenumbraZipWriter class instance
    */
@@ -166,7 +164,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Get observed zip size after all pending writes are resolved
-   *
    * @returns The size of zip
    */
   getSize(): Promise<number> {
@@ -175,7 +172,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Add decrypted PenumbraFiles to zip
-   *
    * @param files - Decrypted PenumbraFile[] to add to zip
    * @returns Total observed size of write call in bytes
    */
@@ -242,7 +238,6 @@ export class PenumbraZipWriter extends EventTarget {
             const completionTrackerStream = new ReadableStream({
               /**
                * Start completion tracker-wrapped ReadableStream
-               *
                * @param controller - Controller
                */
               async start(controller) {
@@ -315,7 +310,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Enqueue closing of the Penumbra zip writer (after pending writes finish)
-   *
    * @returns Total observed zip size in bytes after close completes
    */
   async close(): Promise<number> {
@@ -336,7 +330,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Get buffered output (requires saveBuffer mode)
-   *
    * @returns buffer
    */
   getBuffer(): Promise<ArrayBuffer> {
@@ -355,7 +348,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /**
    * Get all written & pending file paths
-   *
    * @returns Files
    */
   getFiles(): string[] {

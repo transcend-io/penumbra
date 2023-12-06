@@ -36,7 +36,6 @@ const resolver = document.createElementNS(
 
 /**
  * Retrieve and decrypt files (batch job)
- *
  * @param resources - Resources
  * @returns Penumbra files
  */
@@ -95,7 +94,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  *
  * // Buffer all responses & read them as text
  * await Promise.all((await penumbra.get(resources)).map(({ stream }) =>
- *  new Response(stream).text()
+ * new Response(stream).text()
  * ));
  *
  * // Buffer a response & read as text
@@ -103,17 +102,16 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  *
  * // Example call with an included resource
  * await penumbra.get({
- *   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
- *   filePrefix: 'NYT',
- *   mimetype: 'text/plain',
- *   decryptionOptions: {
- *     key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
- *     iv: '6lNU+2vxJw6SFgse',
- *     authTag: 'gadZhS1QozjEmfmHLblzbg==',
- *   },
+ * url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+ * filePrefix: 'NYT',
+ * mimetype: 'text/plain',
+ * decryptionOptions: {
+ * key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+ * iv: '6lNU+2vxJw6SFgse',
+ * authTag: 'gadZhS1QozjEmfmHLblzbg==',
+ * },
  * });
  * ```
- *
  * @param resources - Resources to fetch
  * @returns Penumbra files
  */
@@ -130,7 +128,6 @@ const MAX_ALLOWED_SIZE_MAIN_THREAD = 32 * 1024 * 1024; // 32 MiB
 
 /**
  * Save a zip containing files retrieved by Penumbra
- *
  * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance
  */
@@ -140,7 +137,6 @@ function saveZip(options?: ZipOptions): PenumbraZipWriter {
 
 /**
  * Save files retrieved by Penumbra
- *
  * @param files - Files to save
  * @param fileName - The name of the file to save to
  * @param controller - Controller
@@ -197,7 +193,6 @@ function save(
 
 /**
  * Load files retrieved by Penumbra into memory as a Blob
- *
  * @param files - Files to load
  * @param type - Mimetype
  * @returns A blob of the data
@@ -267,7 +262,6 @@ const trackJobCompletion = (
  * ```ts
  * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
  * ```
- *
  * @param file - File to get info for
  * @returns Decryption info
  */
@@ -284,7 +278,6 @@ export function getDecryptionInfo(
 
 /**
  * Encrypt files (batch job)
- *
  * @param options - Options
  * @param files - Files to operate on
  * @returns Encrypted files
@@ -334,7 +327,6 @@ async function encryptJob(
        * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
-       *
        * @param thread - Thread
        */
       (thread) => {
@@ -408,11 +400,10 @@ async function encryptJob(
  * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
- *   console.log('encryption started');
- *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * console.log('encryption started');
+ * data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  * ```
- *
  * @param options - Options
  * @param files - Files
  * @returns Encrypted files
@@ -428,7 +419,6 @@ export function encrypt(
 
 /**
  * Decrypt files encrypted by penumbra.encrypt() (batch job)
- *
  * @param options - Options
  * @param files - Files
  * @returns Penumbra files
@@ -539,11 +529,10 @@ async function decryptJob(
  * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
- *   console.log('encryption started');
- *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * console.log('encryption started');
+ * data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  * ```
- *
  * @param options - Options
  * @param files - Files
  * @returns Files
@@ -559,7 +548,6 @@ export function decrypt(
 
 /**
  * Get file text (if content is viewable) or URI (if content is not viewable)
- *
  * @param files - A list of files to get the text of
  * @returns A list with the text itself or a URI encoding the file if applicable
  */

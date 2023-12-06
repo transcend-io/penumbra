@@ -13,7 +13,6 @@ export class PenumbraError extends Error {
 
   /**
    * Extend new Error
-   *
    * @param error - Error
    * @param id - ID
    */
@@ -39,7 +38,6 @@ export class PenumbraError extends Error {
 
   /**
    * Error name
-   *
    * @returns Name
    */
   get [Symbol.toStringTag](): string {

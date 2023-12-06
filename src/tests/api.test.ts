@@ -360,7 +360,6 @@ test.skip('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and a
   const writer = penumbra.saveZip({
     /**
      * onProgress handler
-     *
      * @param event - Event
      */
     onProgress(event) {

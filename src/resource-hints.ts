@@ -14,15 +14,13 @@ export type CleanupResourceHints = () => void;
 
 /**
  * No-op function generator
- *
  * @returns Function
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+
 const nooper = (): CleanupResourceHints => (): void => {};
 
 /**
  * A helper function that creates a set resource hints
- *
  * @param urls - The urls to add the resource hint to
  * @param rel - Type of link rel that is being being hinted
  * @param fetch - Request resource as a cross-origin fetch
@@ -55,7 +53,6 @@ export function createResourceHintHelper(
  * Initialize and open connections to origins that
  * will soon be requested to speed up connection setup.
  * This should speed up HTTP/2 connections, but not HTTP/1.1.
- *
  * @param resources - Origins of the files to pre-connect to
  * @returns A function removing the links that were appended to the DOM
  */
@@ -67,7 +64,6 @@ export function preconnect(...resources: RemoteResource[]): () => void {
 
 /**
  * Connect to and start loading URLs before they are needed.
- *
  * @param resources - Resources to load
  * @returns A function that removes the link tags that were appended to the DOM
  */

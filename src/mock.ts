@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function,require-await */
+/* eslint-disable require-await */
 
 // local
 import { PenumbraAPI } from './types';
@@ -41,4 +41,4 @@ const MOCK_API: PenumbraAPI = {
 
 export default MOCK_API;
 
-/* eslint-enable @typescript-eslint/no-empty-function,require-await */
+/* eslint-enable require-await */

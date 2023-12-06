@@ -4,6 +4,9 @@
 declare module 'streamsaver' {
   /**
    * Create a write stream
+   * @param filename - Filename
+   * @param size - Size
+   * @returns WritableStream
    */
   export function createWriteStream(
     filename: string,

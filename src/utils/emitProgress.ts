@@ -4,7 +4,6 @@ import { PenumbraEvent } from '../event';
 
 /**
  * An event emitter for the decryption progress
- *
  * @param type - type
  * @param totalBytesRead - the number of bytes read so far
  * @param contentLength - the total number of bytes to read

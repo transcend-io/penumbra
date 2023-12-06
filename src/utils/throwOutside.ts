@@ -12,7 +12,6 @@ const {
 
 /**
  * Helper for throwing errors without interrupting our code
- *
  * @param ex - Error to throw
  */
 const throwOutside = (ex: Error | DOMException): void => {

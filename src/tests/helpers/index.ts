@@ -1,8 +1,7 @@
 /**
  *
- * ## Test Utility Functions
- * Global test utility functions
- *
+ *## Test Utility Functions
+ *Global test utility functions
  * @module test/utility
  */
 

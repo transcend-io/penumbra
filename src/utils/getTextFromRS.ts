@@ -1,6 +1,5 @@
 /**
  * Reads a stream to completion and returns the underlying text
- *
  * @param rs - A readable stream of decrypted bytes
  * @returns The decrypted text
  */

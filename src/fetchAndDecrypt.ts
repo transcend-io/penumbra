@@ -10,7 +10,6 @@ import emitError from './utils/emitError';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
- *
  * @param resource - The remote resource to download
  * @returns A readable stream of the deciphered file
  */

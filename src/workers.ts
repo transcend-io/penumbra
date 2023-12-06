@@ -77,7 +77,6 @@ const resolver = document.createElementNS(
 
 /**
  * Resolve a potentially relative URL into an absolute URL
- *
  * @param url - URL
  * @returns Url resolved
  */
@@ -92,7 +91,6 @@ function resolve(url: string): URL {
 
 /**
  * Gets worker location configuration
- *
  * @returns Worker location
  */
 export function getWorkerLocation(): WorkerLocation {
@@ -117,7 +115,6 @@ export function getWorkerLocation(): WorkerLocation {
 
 /**
  * Re-dispatch events
- *
  * @param event - Event
  */
 function reDispatchEvent(event: Event): void {
@@ -141,7 +138,6 @@ let workerID = 0;
 
 /**
  * Instantiate a Penumbra Worker
- *
  * @param url - URL
  * @returns Worker
  */
@@ -168,7 +164,6 @@ const onWorkerInitQueue: (() => void)[] = [];
 
 /**
  * Get any free worker thread
- *
  * @returns Worker
  */
 function getFreeWorker(): PenumbraWorker {
@@ -187,7 +182,6 @@ function getFreeWorker(): PenumbraWorker {
 
 /**
  * Wait for workers to initialize
- *
  * @returns Worker
  */
 function waitForInit(): Promise<PenumbraWorker> {
@@ -221,7 +215,6 @@ export async function initWorkers(): Promise<void> {
 
 /**
  * Get and initialize the Penumbra Worker thread
- *
  * @returns The list of active worker threads
  */
 export async function getWorker(): Promise<PenumbraWorker> {
@@ -236,7 +229,6 @@ export async function getWorker(): Promise<PenumbraWorker> {
 
 /**
  * Returns all active Penumbra Workers
- *
  * @returns Workers
  */
 function getActiveWorkers(): PenumbraWorker[] {
@@ -265,14 +257,13 @@ view.addEventListener('beforeunload', cleanup);
  * penumbra.setWorkerLocation('/penumbra-workers/worker.penumbra.js')
  * // Set all worker URLs by passing a WorkerLocation object
  * penumbra.setWorkerLocation({
- *   base: '/penumbra-workers/',
- *   penumbra: 'worker.penumbra.js',
- *   StreamSaver: 'StreamSaver.js',
+ * base: '/penumbra-workers/',
+ * penumbra: 'worker.penumbra.js',
+ * StreamSaver: 'StreamSaver.js',
  * });
  * // Set a single worker's location
  * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
  * ```
- *
  * @param options - Worker location options
  */
 export async function setWorkerLocation(
@@ -297,7 +288,6 @@ export async function setWorkerLocation(
 
 /**
  * Set worker busy state based on current progress events
- *
  * @param options - Options
  */
 const trackWorkerBusyState = ({
