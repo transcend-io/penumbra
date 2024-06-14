@@ -28,14 +28,13 @@ module.exports = (config) => {
       networkLogs: 'true',
       seleniumVersion: '4.15.0',
     },
-    // TODO: https://github.com/transcend-io/penumbra/issues/249
-    // bs_firefox_pc: {
-    //   base: 'BrowserStack',
-    //   browser: 'Firefox',
-    //   browser_version: '102.0',
-    //   os: 'Windows',
-    //   os_version: '10',
-    // },
+    bs_firefox_pc: {
+      base: 'BrowserStack',
+      browser: 'Firefox',
+      browser_version: '102.0',
+      os: 'Windows',
+      os_version: '10',
+    },
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
@@ -66,10 +65,9 @@ module.exports = (config) => {
       build: `penumbra@${packageJson.version} - ${short()} - ${
         process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
       }`,
-      // TODO - https://github.com/transcend-io/penumbra/issues/249
-      // // A secure context must be used for `crypto.subtle` to be defined
-      // acceptInsecureCerts: 'true',
-      // acceptSslCerts: 'true',
+      // A secure context must be used for `crypto.subtle` to be defined
+      acceptInsecureCerts: 'true',
+      acceptSslCerts: 'true',
     },
 
     // define browsers
