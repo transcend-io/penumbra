@@ -51,6 +51,10 @@
     "tsconfig.json"
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
+  "resolutions": {
+    "elliptic@npm:^6.5.5": "6.5.7",
+    "elliptic@npm:^6.5.3": "6.5.7"
+  },
   "dependencies": {
     "@transcend-io/conflux": "^4.1.0",
     "@transcend-io/remote-web-streams": "1.0.5",
