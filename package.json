@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "5.4.3",
+  "version": "5.4.4",
   "description": "Crypto streams for the browser.",
   "main": "dist/main.penumbra.js",
   "types": "ts-build/src/index.d.ts",
@@ -74,7 +74,7 @@
     "@types/tape": "^5.6.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "@yarnpkg/sdks": "^3.1.0",
+    "@yarnpkg/sdks": "^3.2.0",
     "babel-loader": "^8.2.5",
     "buffer": "^6.0.3",
     "depcheck": "^1.4.7",
@@ -105,5 +105,5 @@
     "webpack-merge": "^5.10.0",
     "worker-plugin": "^5.0.1"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.5.3"
 }
