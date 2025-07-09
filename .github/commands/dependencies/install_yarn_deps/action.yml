@@ -4,12 +4,12 @@ runs:
   using: 'composite'
   steps:
     # Install Yarn v2 dependencies
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v4.2.0
       with:
         node-version: '20.9.0'
     - run: npm install -g "yarn@1.22.5"
       shell: bash
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4.2.0
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: |
