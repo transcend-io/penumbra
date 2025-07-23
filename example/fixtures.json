@@ -1,1 +1,102 @@
-[]
+[
+  {
+    "url": "/files/encrypted/file_example_CSV_5000.csv.enc",
+    "filePrefix": "file_example_CSV_5000",
+    "mimetype": "text/csv",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "DeRl+oBgIT3gXGmTJWwwXQ=="
+    }
+  },
+  {
+    "url": "/files/encrypted/file_example_JSON_1kb.json.enc",
+    "filePrefix": "file_example_JSON_1kb",
+    "mimetype": "application/json",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "3a+3tgvYL/qDX1SMOq8Yuw=="
+    }
+  },
+  {
+    "url": "/files/encrypted/file_example_MOV_480_700kB.mov.enc",
+    "filePrefix": "file_example_MOV_480_700kB",
+    "mimetype": "video/quicktime",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "jz9ouSZNOVjnT5OoTDuPag=="
+    }
+  },
+  {
+    "url": "/files/encrypted/file_example_MP3_700KB.mp3.enc",
+    "filePrefix": "file_example_MP3_700KB",
+    "mimetype": "audio/mpeg",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "mCAKTHXWDaLIfpaPXAV9NA=="
+    }
+  },
+  {
+    "url": "/files/encrypted/file_example_XML_24kb.xml.enc",
+    "filePrefix": "file_example_XML_24kb",
+    "mimetype": "application/xml",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "vKprgUZ1hiq2Xpco6/TsjA=="
+    }
+  },
+  {
+    "url": "/files/encrypted/test.html.enc",
+    "filePrefix": "test",
+    "mimetype": "text/html",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "9LtInITJsmGcRLYfv4NWlw=="
+    }
+  },
+  {
+    "url": "/files/encrypted/zip_10MB.zip.enc",
+    "filePrefix": "zip_10MB",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "QLzcys9L9KsBHinmC7enFw=="
+    }
+  },
+  {
+    "url": "/files/encrypted/zip_2MB.zip.enc",
+    "filePrefix": "zip_2MB",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "fN6MIYdSG66u3jqSETBpDA=="
+    }
+  },
+  {
+    "url": "/files/encrypted/zip_5MB.zip.enc",
+    "filePrefix": "zip_5MB",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "3GvQUwgoj3cVScEq+IiQ8A=="
+    }
+  },
+  {
+    "url": "/files/encrypted/zip_9MB.zip.enc",
+    "filePrefix": "zip_9MB",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "8dI8u5u18FLqsRy/1Uf5zw=="
+    }
+  }
+]
