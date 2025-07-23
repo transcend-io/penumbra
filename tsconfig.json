@@ -25,6 +25,6 @@
       "src/@types/crypto-browserify/index.d.ts"
     ]
   },
-  "include": ["src/**/*", "!src/tests"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

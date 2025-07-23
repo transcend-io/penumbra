@@ -26,7 +26,7 @@ module.exports = (config) => ({
       nocache: false,
     },
     {
-      pattern: 'src/tests/index.test.ts',
+      pattern: 'tests/index.test.ts',
       included: true,
       served: true,
       nocache: false,
