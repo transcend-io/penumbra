@@ -4,6 +4,7 @@ body {
 }
 
 video,
+audio,
 img {
   width: 90%;
   margin: 0 auto;
@@ -15,26 +16,46 @@ button {
   margin: 20px auto;
 }
 
-p,
 h1,
-h3 {
+h2 {
   text-align: center;
   max-width: 800px;
   display: block;
   margin: 50px auto;
 }
 
+p {
+  max-width: 600px;
+  display: block;
+  margin: 20px auto;
+}
+
+table {
+  margin: 0 auto;
+}
+
 table,
 th,
 td {
+  padding: 5px;
   border: 1px solid #eeeeee;
   border-collapse: collapse;
 }
 
-td {
-  padding: 5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+td div {
+  min-height: 4em;
+  overflow: scroll;
+  max-height: 250px;
+  max-width: 350px;
+  font-family: monospace;
+  text-align: left;
+  text-indent: 0px;
+  text-wrap: nowrap;
+  white-space: pre;
+}
+
+td div p {
+  margin-top: 0;
 }
 
 canvas {

@@ -3,7 +3,17 @@
 /**
  * Pre-populate the table with the file metadata, before they've downloaded
  */
-(function buildTable() {
+(async function buildTable() {
+  // Wait for files to be loaded
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (window.files.length > 0) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 50);
+  });
+
   const table = document.getElementById('table');
   const headerIds = Array.from(document.getElementById('headers').children).map(
     (child) => child.id,
@@ -14,13 +24,15 @@
 
     headerIds.forEach((headerId) => {
       const cell = document.createElement('td');
-      cell.id = `${i}-${headerId}`;
-      // Key-specific handlers
+      const div = document.createElement('div');
+      div.id = `${i}-${headerId}`;
+      // Fill some table metadata based on the file metadata (the rest is filled by Penumbra's response)
       if (headerId === 'decryptionOptions') {
-        cell.innerText = !!file[headerId];
-      } else {
-        cell.innerText = file[headerId] || '';
+        div.innerText = !!file[headerId];
+      } else if (headerId === 'url') {
+        div.innerText = file[headerId] || '';
       }
+      cell.appendChild(div);
       row.appendChild(cell);
     });
 
@@ -56,15 +68,29 @@ window.insertIntoCell = function insertIntoCell(returnedFiles) {
           media = document.createElement('video');
           media.autoplay = true;
           media.muted = true;
+          media.loop = true;
+          media.controls = true;
+        } else if (elementType === 'audio') {
+          media = document.createElement('audio');
+          media.controls = true;
         }
-
-        media.src = value;
-
-        cell.appendChild(media);
+        if (media) {
+          media.src = value;
+          cell.appendChild(media);
+        } else {
+          const p = document.createElement('p');
+          p.innerText = '<cannot display content>';
+          const a = document.createElement('a');
+          a.href = value;
+          a.innerText = 'Download it instead';
+          cell.appendChild(p);
+          cell.appendChild(a);
+        }
 
         return;
       }
-      cell.innerText = value.slice(0, 99);
+
+      cell.innerText = value;
     });
   });
 };
