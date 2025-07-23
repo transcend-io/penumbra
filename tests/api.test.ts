@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import '../src/index'; // Import global declarations
 import test from 'tape';
 import {
   PenumbraAPI,
@@ -17,9 +18,10 @@ const view = self;
 let penumbra: PenumbraAPI;
 
 test('setup', (t) => {
-  const onReady = (event?: PenumbraReady): void => {
+  const onReady = (event?: Event): void => {
+    const penumbraReady = event as PenumbraReady | undefined;
     logger.log('penumbra ready fired!');
-    penumbra = ((event && event.detail.penumbra) ||
+    penumbra = ((penumbraReady && penumbraReady.detail.penumbra) ||
       view.penumbra) as PenumbraAPI;
     t.pass('setup finished');
     t.end();
@@ -83,7 +85,10 @@ test('progress event test', async (t) => {
   let initFinished = false;
   let progressStarted = false;
   let lastPercent: number;
-  const onprogress = ({ detail: { percent } }: ProgressEmit): void => {
+  const onprogress: EventListener = (event: Event): void => {
+    const {
+      detail: { percent },
+    } = event as ProgressEmit;
     if (!Number.isNaN(percent)) {
       if (percent === 100) {
         // Resource is already loaded
