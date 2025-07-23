@@ -60,7 +60,10 @@ async function main(): Promise<void> {
     });
   }
 
-  await writeFile('example/fixtures.json', JSON.stringify(fixtures, null, 2));
+  await writeFile(
+    path.join(thisDirname, 'files/fixtures.json'),
+    JSON.stringify(fixtures, null, 2),
+  );
   console.debug('Done!');
 }
 
