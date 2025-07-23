@@ -5,12 +5,12 @@ import {
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
-} from '../types';
-import { PenumbraSupportLevel } from '../enums';
+} from '../src/types';
+import { PenumbraSupportLevel } from '../src/enums';
 
 import { hash, timeout } from './helpers';
 import { TimeoutManager } from './helpers/timeout';
-import { logger } from '../logger';
+import { logger } from '../src/logger';
 
 const view = self;
 

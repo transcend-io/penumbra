@@ -40,6 +40,7 @@ module.exports = (config) => ({
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {
     'src/**': ['webpack', 'sourcemap'],
+    'tests/**': ['webpack', 'sourcemap'],
   },
 
   // webpack configuration
