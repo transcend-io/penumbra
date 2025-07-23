@@ -74,7 +74,6 @@
     "@types/tape": "^5.6.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "@yarnpkg/sdks": "^3.2.0",
     "babel-loader": "^8.2.5",
     "buffer": "^6.0.3",
     "depcheck": "^1.4.7",
