@@ -13,17 +13,10 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "outDir": "ts-build",
-    "types": [],
     "composite": true,
     "moduleResolution": "node",
     "strict": true,
-    "typeRoots": [
-      "src/@types/worker-loader/index.d.ts",
-      "src/@types/streamsaver/index.d.ts",
-      "src/@types/conflux/index.d.ts",
-      "src/@types/typedarray-to-buffer/index.d.ts",
-      "src/@types/crypto-browserify/index.d.ts"
-    ]
+    "typeRoots": ["node_modules/@types", "src/@types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
