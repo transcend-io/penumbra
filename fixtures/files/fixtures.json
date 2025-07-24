@@ -1,5 +1,16 @@
 [
   {
+    "url": "/files/encrypted/big.zip.enc",
+    "filePrefix": "big",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "pzc0I+7lEAtlI+/PimojZw=="
+    },
+    "unencryptedChecksum": "b9528046ceaf6007167fa0569b24a4a9dc14cb70f876667f63c314d166d304b4"
+  },
+  {
     "url": "/files/encrypted/file_example_CSV_5000.csv.enc",
     "filePrefix": "file_example_CSV_5000",
     "mimetype": "text/csv",

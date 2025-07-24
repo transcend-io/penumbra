@@ -10,8 +10,6 @@ import mime from 'mime-types';
 import type { RemoteResource } from '../src/types';
 import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants';
 
-const thisDirname = __dirname;
-
 /**
  * A fixture is a remote resource with a checksum of the unencrypted file
  */
@@ -19,6 +17,26 @@ export interface Fixture extends RemoteResource {
   /** The checksum of the unencrypted file */
   unencryptedChecksum: string;
 }
+
+const thisDirname = __dirname;
+
+/**
+ * Fixtures which are not local, but hosted at https://fixtures-for-conflux-and-penumbra.s3.us-east-1.amazonaws.com
+ */
+const REMOTE_FIXTURES: Fixture[] = [
+  {
+    url: '/files/encrypted/big.zip.enc',
+    filePrefix: 'big',
+    mimetype: 'application/zip',
+    decryptionOptions: {
+      key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+      iv: '6lNU+2vxJw6SFgse',
+      authTag: 'pzc0I+7lEAtlI+/PimojZw==',
+    },
+    unencryptedChecksum:
+      'b9528046ceaf6007167fa0569b24a4a9dc14cb70f876667f63c314d166d304b4',
+  },
+];
 
 /**
  * Rebuild the files.js file to use the local server.
@@ -84,6 +102,9 @@ async function main(): Promise<void> {
       unencryptedChecksum,
     });
   }
+
+  // Add remote fixtures
+  fixtures.push(...REMOTE_FIXTURES);
 
   await writeFile(
     path.join(thisDirname, 'files/fixtures.json'),

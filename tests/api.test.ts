@@ -14,6 +14,7 @@ import { TimeoutManager } from './helpers/timeout';
 import { logger } from '../src/logger';
 import fixtures from '../fixtures/files/fixtures.json';
 import type { Fixture } from '../fixtures/rebuild-fixtures';
+import { KARMA_FIXTURES_URL, REMOTE_FIXTURES_URL } from '../fixtures/constants';
 
 /** Extend global Window */
 declare global {
@@ -27,9 +28,13 @@ declare global {
 /**
  * Get a fixture by file prefix
  * @param filePrefix - The file prefix (filename without extension) of the fixture to get
+ * @param remote - Whether to use the fixture on S3, rather than the local server (default: false)
  * @returns A remote resource and a checksum of the unencrypted file
  */
-function getFixture(filePrefix: string): {
+function getFixture(
+  filePrefix: string,
+  remote = false,
+): {
   /** The remote resource */
   remoteResource: RemoteResource;
   /** A checksum of the unencrypted file */
@@ -45,7 +50,9 @@ function getFixture(filePrefix: string): {
   return {
     remoteResource: {
       ...remoteResource,
-      url: `/base/fixtures${remoteResource.url}`,
+      url: remote
+        ? `${REMOTE_FIXTURES_URL}${remoteResource.url}`
+        : `${KARMA_FIXTURES_URL}${remoteResource.url}`,
     },
     unencryptedChecksum,
   };
@@ -95,6 +102,20 @@ test('penumbra.get() test - 1kb', async (t) => {
 
 test('penumbra.get() test - 10MB', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
+
+  const [file] = await penumbra.get(remoteResource);
+  const response = new Response(file.stream);
+  const decryptedChecksum = await hash('SHA-256', await response.arrayBuffer());
+
+  t.equal(decryptedChecksum, unencryptedChecksum);
+  t.end();
+});
+
+test('penumbra.get() test - 1kb from S3', async (t) => {
+  const { remoteResource, unencryptedChecksum } = getFixture(
+    'file_example_JSON_1kb',
+    true,
+  );
 
   const [file] = await penumbra.get(remoteResource);
   const response = new Response(file.stream);
@@ -273,46 +294,30 @@ test('penumbra.getTextOrURI(): including image in document', async (t) => {
 });
 
 test('penumbra.preconnect()', (t) => {
+  const { remoteResource } = getFixture('htmlfile', true);
   const measurePreconnects = (): number =>
     document.querySelectorAll('link[rel="preconnect"]').length;
   const start = measurePreconnects();
-  const cleanup = penumbra.preconnect({
-    url: 'https://fixtures-for-conflux-and-penumbra.s3.us-east-1.amazonaws.com/big.zip',
-    filePrefix: 'big',
-    mimetype: 'application/zip',
-    decryptionOptions: {
-      key: 'doesntmatter',
-      iv: 'doesntmatter',
-      authTag: 'doesntmatter',
-    },
-  });
+  const cleanup = penumbra.preconnect(remoteResource);
   const after = measurePreconnects();
   cleanup();
-  t.assert(start < after);
+  t.assert(start < after, 'preconnects');
   t.end();
 });
 
-// test('penumbra.preload()', (t): void => {
-//   const measurePreloads = (): number =>
-//     document.querySelectorAll(
-//       'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
-//     ).length;
-//   const start = measurePreloads();
-//   const cleanup = penumbra.preload({
-//     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-//     filePrefix: 'NYT',
-//     mimetype: 'text/plain',
-//     decryptionOptions: {
-//       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//       iv: '6lNU+2vxJw6SFgse',
-//       authTag: 'gadZhS1QozjEmfmHLblzbg==',
-//     },
-//   });
-//   const after = measurePreloads();
-//   cleanup();
-//   t.assert(start < after);
-//   t.end();
-// });
+test('penumbra.preload()', (t): void => {
+  const { remoteResource } = getFixture('htmlfile', true);
+  const measurePreloads = (): number =>
+    document.querySelectorAll(
+      'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
+    ).length;
+  const start = measurePreloads();
+  const cleanup = penumbra.preload(remoteResource);
+  const after = measurePreloads();
+  cleanup();
+  t.assert(start < after, 'preloads');
+  t.end();
+});
 
 // test('penumbra.getBlob()', async (t) => {
 //   const blob = await penumbra.getBlob(
