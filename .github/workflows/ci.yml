@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn karma start karma.browserstack.js
+      - run: yarn test:browserstack
 
   run-depcheck:
     runs-on: ubuntu-latest
