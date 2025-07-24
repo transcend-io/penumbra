@@ -1,7 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('./types').PenumbraWorkerAPI} PenumbraWorkerAPI
+ */
+
 /**
  * Penumbra Worker
  * Fetch and decrypt files in the browser using whatwg streams and web workers.
- *
  * @author Transcend Inc. <https://transcend.io>
  * @license Apache-2.0
  */
@@ -28,11 +32,11 @@ if (self.document) {
 
 /**
  * Penumbra Worker class
+ * @implements {PenumbraWorkerAPI}
  */
 class PenumbraWorker {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
-   *
    * @param writablePorts - Remote Web Stream writable ports
    * @param resources - The remote resource to download
    */
@@ -67,7 +71,6 @@ class PenumbraWorker {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted),
    * fully buffers the response, and returns ArrayBuffer[]
-   *
    * @param resources - The remote resource to download
    * @returns ArrayBuffer[] of the deciphered files
    */
@@ -90,7 +93,6 @@ class PenumbraWorker {
 
   /**
    * Streaming decryption of ReadableStreams
-   *
    * @param options - Options
    * @param ids - IDs for tracking decryption completion
    * @param sizes - Sizes
@@ -132,7 +134,6 @@ class PenumbraWorker {
 
   /**
    * Streaming encryption of ReadableStreams
-   *
    * @param options - Options
    * @param ids - IDs for tracking encryption completion
    * @param sizes - Sizes
@@ -182,7 +183,6 @@ class PenumbraWorker {
 
   /**
    * Forward events to main thread
-   *
    * @param id - ID
    * @param handler - handler
    */

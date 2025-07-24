@@ -127,5 +127,6 @@
     "webm",
     "yarnpkg",
     "zh"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

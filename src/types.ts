@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 
 // local
+import type { Remote } from 'comlink';
 import penumbra from './API';
 import { PenumbraSupportLevel } from './enums';
 import { PenumbraError } from './error';
@@ -294,6 +295,13 @@ export interface WorkerLocation {
 export interface WorkerLocationOptions extends Partial<WorkerLocation> {}
 
 /**
+ * A remote with a type of PenumbraWorkerAPI
+ */
+export type PenumbraWorkerComlinkInterface = Remote<
+  new () => PenumbraWorkerAPI
+>;
+
+/**
  * An individual Penumbra Worker's interfaces
  */
 export interface PenumbraWorker {
@@ -302,8 +310,7 @@ export interface PenumbraWorker {
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  comlink: any;
+  comlink: PenumbraWorkerComlinkInterface;
   /** Busy status (currently processing jobs) */
   busy: boolean;
 }
@@ -315,8 +322,7 @@ export interface PenumbraServiceWorker {
   /** PenumbraWorker's Worker interface */
   worker: ServiceWorker;
   /** PenumbraWorker's Comlink interface */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  comlink: any;
+  comlink: PenumbraWorkerComlinkInterface;
 }
 
 /** The penumbra workers themselves */

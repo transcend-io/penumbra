@@ -4,7 +4,7 @@
 import { proxy, wrap } from 'comlink';
 
 // local
-import {
+import type {
   PenumbraWorker,
   PenumbraWorkerAPI,
   WorkerLocation,
@@ -149,11 +149,12 @@ export async function createPenumbraWorker(
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
-    comlink: wrap(worker),
+    // eslint-disable-next-line no-spaced-func, func-call-spacing
+    comlink: wrap<new () => PenumbraWorkerAPI>(worker),
     busy: false,
   };
   const Link = penumbraWorker.comlink;
-  const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
+  const setup = new Link().then(async (thread) => {
     await thread.setup(id, proxy(reDispatchEvent));
   });
   await setup;

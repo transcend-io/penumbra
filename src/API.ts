@@ -10,7 +10,7 @@ import { streamSaver } from './streamsaver';
 import { ReadableStream } from './streams';
 
 // Local
-import {
+import type {
   JobCompletionEmit,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
@@ -18,7 +18,6 @@ import {
   PenumbraFile,
   PenumbraFileWithID,
   PenumbraTextOrURI,
-  PenumbraWorkerAPI,
   RemoteResource,
   ZipOptions,
 } from './types';
@@ -60,7 +59,7 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
+    new DecryptionChannel().then((thread) => {
       thread.get(transfer(writablePorts, writablePorts), resources);
     });
     return readables as PenumbraFile[];
@@ -94,23 +93,22 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  *
  * // Buffer all responses & read them as text
  * await Promise.all((await penumbra.get(resources)).map(({ stream }) =>
- * new Response(stream).text()
+ *   new Response(stream).text()
  * ));
  *
  * // Buffer a response & read as text
  * await new Response((await penumbra.get(resource))[0].stream).text();
  *
  * // Example call with an included resource
- * await penumbra.get({
- * url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
- * filePrefix: 'NYT',
- * mimetype: 'text/plain',
- * decryptionOptions: {
- * key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
- * iv: '6lNU+2vxJw6SFgse',
- * authTag: 'gadZhS1QozjEmfmHLblzbg==',
- * },
- * });
+ * await penumbra.get([{
+ *   url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+ *   filePrefix: 'NYT',
+ *   mimetype: 'text/plain',
+ *   decryptionOptions: {
+ *   key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
+ *   iv: '6lNU+2vxJw6SFgse',
+ *   authTag: 'gadZhS1QozjEmfmHLblzbg==',
+ * }]);
  * ```
  * @param resources - Resources to fetch
  * @returns Penumbra files
@@ -322,7 +320,7 @@ async function encryptJob(
     );
 
     // enter worker thread and grab the metadata
-    await (new EncryptionChannel() as Promise<PenumbraWorkerAPI>).then(
+    await new EncryptionChannel().then(
       /**
        * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
        * from the worker thread and starts reading the input stream from
@@ -457,7 +455,7 @@ async function decryptJob(
       ({ writablePort }) => writablePort,
     );
     // enter worker thread
-    await new DecryptionChannel().then((thread: PenumbraWorkerAPI) => {
+    await new DecryptionChannel().then((thread) => {
       /**
        * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
