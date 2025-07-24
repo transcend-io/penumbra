@@ -42,10 +42,9 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
+
   if (advancedStreamsSupported) {
-    // WritableStream constructor supported
-    const worker = await getWorker();
-    const DecryptionChannel = worker.comlink;
+    // Create remote readable streams
     const remoteStreams = resources.map(() => new RemoteReadableStream());
     const readables = remoteStreams.map((stream, i) => {
       const { url } = resources[i];
@@ -59,12 +58,16 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       };
     });
     const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
-    new DecryptionChannel().then((thread) => {
-      thread.get(transfer(writablePorts, writablePorts), resources);
-    });
+
+    // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
+    const worker = await getWorker();
+    const RemoteAPI = worker.comlink;
+    const remote = await new RemoteAPI();
+    await remote.get(transfer(writablePorts, writablePorts), resources);
     return readables as PenumbraFile[];
   }
 
+  // Legacy browser fallback
   const { fetchAndDecrypt } = await import('./crypto');
   /**
    * Fetch remote files from URLs, decipher them (if encrypted),
@@ -75,9 +78,10 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
       if (!('url' in resource)) {
         throw new Error('penumbra.get(): RemoteResource missing URL');
       }
+      const stream = await fetchAndDecrypt(resource);
       return {
         ...resource,
-        stream: await fetchAndDecrypt(resource),
+        stream,
       } as PenumbraFile;
     }),
   );
@@ -303,11 +307,8 @@ async function encryptJob(
     }
   });
 
-  // We stream the encryption if supported by the browser
   if (advancedStreamsSupported) {
     // WritableStream constructor supported
-    const worker = await getWorker();
-    const EncryptionChannel = worker.comlink;
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
 
@@ -319,31 +320,25 @@ async function encryptJob(
       ({ writablePort }) => writablePort,
     );
 
-    // enter worker thread and grab the metadata
-    await new EncryptionChannel().then(
-      /**
-       * PenumbraWorkerAPI.encrypt calls require('./encrypt').encrypt()
-       * from the worker thread and starts reading the input stream from
-       * [remoteWritableStream.writable]
-       * @param thread - Thread
-       */
-      (thread) => {
-        thread.encrypt(
-          options,
-          ids,
-          sizes,
-          transfer(readablePorts, readablePorts),
-          transfer(writablePorts, writablePorts),
-        );
-      },
+    // Enter worker thread and kick off the encryption
+    const worker = await getWorker();
+    const RemoteAPI = worker.comlink;
+    const remote = await new RemoteAPI();
+    remote.encrypt(
+      options,
+      ids,
+      sizes,
+      transfer(readablePorts, readablePorts),
+      transfer(writablePorts, writablePorts),
     );
 
-    // encryption jobs submitted and still processing
+    // encryption jobs submitted and still processing. TODO: audit if pipeTo is intentionally not awaited, then update comment
     remoteWritableStreams.forEach((remoteWritableStream, i) => {
+      // Pipe user input file stream to the worker thread
       files[i].stream.pipeTo(remoteWritableStream.writable);
     });
 
-    // construct output files with corresponding remote readable streams
+    // Construct output files with corresponding remote readable streams
     const readables = remoteReadableStreams.map(
       (stream, i): PenumbraEncryptedFile => ({
         ...files[i],
@@ -356,10 +351,7 @@ async function encryptJob(
     return readables;
   }
 
-  // throw new Error(
-  //   "Your browser doesn't support streaming encryption. Buffered encryption is not yet supported.",
-  // );
-
+  // Legacy browser fallback
   const filesWithIds = files as PenumbraFileWithID[];
 
   let totalSize = 0;
@@ -398,8 +390,8 @@ async function encryptJob(
  * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
- * console.log('encryption started');
- * data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ *   console.log('encryption started');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  * ```
  * @param options - Options
@@ -428,10 +420,10 @@ async function decryptJob(
   if (files.length === 0) {
     throw new Error('penumbra.decrypt() called without arguments');
   }
+
   if (advancedStreamsSupported) {
-    // WritableStream constructor supported
     const worker = await getWorker();
-    const DecryptionChannel = worker.comlink;
+    const RemoteAPI = worker.comlink;
     const remoteReadableStreams = files.map(() => new RemoteReadableStream());
     const remoteWritableStreams = files.map(() => new RemoteWritableStream());
     const ids: number[] = [];
@@ -455,13 +447,13 @@ async function decryptJob(
       ({ writablePort }) => writablePort,
     );
     // enter worker thread
-    await new DecryptionChannel().then((thread) => {
+    await new RemoteAPI().then((remote) => {
       /**
        * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
        * from the worker thread and starts reading the input stream from
        * [remoteWritableStream.writable]
        */
-      thread.decrypt(
+      remote.decrypt(
         options,
         ids,
         sizes,
@@ -485,6 +477,7 @@ async function decryptJob(
     return readables;
   }
 
+  // Legacy browser fallback
   files.forEach(({ size = 0 }) => {
     if (size > MAX_ALLOWED_SIZE_MAIN_THREAD) {
       logger.error("Your browser doesn't support streaming decryption.");
@@ -527,8 +520,8 @@ async function decryptJob(
  * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
  * let data = [];
  * file.then(async ([encrypted]) => {
- * console.log('encryption started');
- * data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ *   console.log('encryption started');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
  * });
  * ```
  * @param options - Options

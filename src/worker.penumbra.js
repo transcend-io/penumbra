@@ -32,6 +32,8 @@ import encrypt from './encrypt';
 import decrypt from './decrypt';
 import { setWorkerID } from './worker-id';
 import { logger } from './logger';
+import emitError from './utils/emitError';
+import { PenumbraError } from './error';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -47,7 +49,7 @@ class PenumbraWorker {
    * @param writablePorts - Remote Web Stream writable ports
    * @param resources - The remote resource to download
    */
-  get(writablePorts, resources) {
+  async get(writablePorts, resources) {
     const writableCount = writablePorts.length;
     const resourceCount = resources.length;
     if (writableCount !== resourceCount) {
@@ -62,17 +64,43 @@ class PenumbraWorker {
         }Truncating to common subset (${writablePorts.length}).`,
       );
     }
-    resources.forEach((resource, i) => {
-      if (!('url' in resource)) {
-        throw new Error(
-          'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
+
+    try {
+      // Await successful fetch response (but do not await the pipeTo). i.e., await server reply, but not the whole body
+      const results = await Promise.allSettled(
+        resources.map(async (resource, i) => {
+          if (!('url' in resource)) {
+            throw new Error(
+              'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
+            );
+          }
+          const remoteStream = fromWritablePort(writablePorts[i]);
+          const localStream = await fetchAndDecrypt(resource);
+          localStream.pipeTo(remoteStream);
+        }),
+      );
+
+      // Emit an error for each failed fetch
+      const errors = [];
+      results.forEach((result, i) => {
+        if (result.status === 'rejected') {
+          const err = new PenumbraError(result.reason, resources[i].url);
+          emitError(err);
+          errors.push(err);
+        }
+      });
+      if (errors.length > 0) {
+        throw new PenumbraError(
+          `${errors.length} file${errors.length === 1 ? '' : 's'} failed to fetch and decrypt:
+${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
+          'get',
         );
       }
-      const remoteStream = fromWritablePort(writablePorts[i]);
-      fetchAndDecrypt(resource).then((localStream) => {
-        localStream.pipeTo(remoteStream);
-      });
-    });
+    } catch (error) {
+      emitError(error);
+      logger.error(error);
+      throw error;
+    }
   }
 
   // /**

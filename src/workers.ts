@@ -153,11 +153,9 @@ export async function createPenumbraWorker(
     comlink: wrap<new () => PenumbraWorkerAPI>(worker),
     busy: false,
   };
-  const Link = penumbraWorker.comlink;
-  const setup = new Link().then(async (thread) => {
-    await thread.setup(id, proxy(reDispatchEvent));
-  });
-  await setup;
+  const RemoteAPI = penumbraWorker.comlink;
+  const remote = await new RemoteAPI();
+  await remote.setup(id, proxy(reDispatchEvent));
   return penumbraWorker;
 }
 

@@ -202,7 +202,10 @@ export interface PenumbraWorkerAPI {
    * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
    * @param resources - The remote resources to download
    */
-  get: (writablePorts: MessagePort[], resources: RemoteResource[]) => void;
+  get: (
+    writablePorts: MessagePort[],
+    resources: RemoteResource[],
+  ) => Promise<void>;
   // /**
   //  * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
   //  * @param resources - The remote resources to download
