@@ -331,30 +331,22 @@ test('penumbra.getBlob()', async (t) => {
   t.end();
 });
 
-// test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
-//   if (!self.TextEncoder || !self.TextDecoder) {
-//     logger.warn(
-//       'skipping test due to lack of browser support for TextEncoder/TextDecoder',
-//     );
-//     t.pass('test skipped');
-//     t.end();
-//     return;
-//   }
-//   const te = new self.TextEncoder();
-//   const td = new self.TextDecoder();
-//   const input = 'test';
-//   const buffer = te.encode(input);
-//   const { byteLength: size } = buffer;
-//   const stream = new Response(buffer).body;
-//   const options = null;
-//   const file = { stream, size } as unknown as PenumbraFile;
-//   const [encrypted] = await penumbra.encrypt(options, file);
-//   const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
-//   const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
-//   const decryptedData = await new Response(decrypted.stream).arrayBuffer();
-//   t.equal(td.decode(decryptedData), input);
-//   t.end();
-// });
+test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
+  const te = new self.TextEncoder();
+  const td = new self.TextDecoder();
+  const input = 'test';
+  const buffer = te.encode(input);
+  const { byteLength: size } = buffer;
+  const stream = new Response(buffer).body;
+  const options = null;
+  const file = { stream, size } as unknown as PenumbraFile;
+  const [encrypted] = await penumbra.encrypt(options, file);
+  const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
+  const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
+  const decryptedData = await new Response(decrypted.stream).arrayBuffer();
+  t.equal(td.decode(decryptedData), input, 'encrypt() & decrypt()');
+  t.end();
+});
 
 // // TODO: https://github.com/transcend-io/penumbra/issues/250
 // test.skip('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
