@@ -81,7 +81,9 @@ test('penumbra.supported() test', (t) => {
 });
 
 test('penumbra.get() test', async (t) => {
-  const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
+  const { remoteResource, unencryptedChecksum } = getFixture(
+    'file_example_JSON_1kb',
+  );
 
   const [file] = await penumbra.get(remoteResource);
   const response = new Response(file.stream);
@@ -92,7 +94,7 @@ test('penumbra.get() test', async (t) => {
 });
 
 test('penumbra.get() test2', async (t) => {
-  const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
+  const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
 
   const [file] = await penumbra.get(remoteResource);
   const response = new Response(file.stream);
@@ -102,7 +104,7 @@ test('penumbra.get() test2', async (t) => {
   t.end();
 });
 
-test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
+test('penumbra.getTextOrURI() with text test', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
 
   const [file] = await penumbra.get(remoteResource);
@@ -117,119 +119,104 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
   t.end();
 });
 
-// test('progress event test', async (t) => {
-//   let result;
-//   const progressEventName = 'penumbra-progress';
-//   const fail = (): void => {
-//     result = false;
-//   };
-//   const initTimeout = timeout(fail, 60);
-//   let stallTimeout: TimeoutManager;
-//   let initFinished = false;
-//   let progressStarted = false;
-//   let lastPercent: number;
-//   const onprogress: EventListener = (event: Event): void => {
-//     const {
-//       detail: { percent },
-//     } = event as ProgressEmit;
-//     if (!Number.isNaN(percent)) {
-//       if (percent === 100) {
-//         // Resource is already loaded
-//         if (initFinished) {
-//           stallTimeout.clear();
-//         } else {
-//           initTimeout.clear();
-//         }
-//         view.removeEventListener(progressEventName, onprogress);
-//         result = true;
-//         return;
-//       }
-//       if (!initFinished) {
-//         initTimeout.clear();
-//         stallTimeout = timeout(fail, 10);
-//         initFinished = true;
-//         lastPercent = percent;
-//       } else if (!progressStarted) {
-//         if (percent > lastPercent) {
-//           stallTimeout.clear();
-//           progressStarted = true;
-//         }
-//       }
-//       if (progressStarted && percent > 25) {
-//         view.removeEventListener(progressEventName, onprogress);
-//         result = true;
-//       }
-//     }
-//     lastPercent = percent;
-//   };
-//   view.addEventListener(progressEventName, onprogress);
+test('progress event test', async (t) => {
+  let result;
+  const progressEventName = 'penumbra-progress';
+  const fail = (): void => {
+    result = false;
+  };
+  const initTimeout = timeout(fail, 60);
+  let stallTimeout: TimeoutManager;
+  let initFinished = false;
+  let progressStarted = false;
+  let lastPercent: number | null | undefined;
+  const onprogress: EventListener = (event: Event): void => {
+    const {
+      detail: { percent },
+    } = event as ProgressEmit;
+    if (percent === null) {
+      lastPercent = percent;
+      view.removeEventListener(progressEventName, onprogress);
+      return;
+    }
+    if (!Number.isNaN(percent)) {
+      if (percent === 100) {
+        // Resource is already loaded
+        if (initFinished) {
+          stallTimeout.clear();
+        } else {
+          initTimeout.clear();
+        }
+        view.removeEventListener(progressEventName, onprogress);
+        result = true;
+        return;
+      }
+      if (!initFinished) {
+        initTimeout.clear();
+        stallTimeout = timeout(fail, 10);
+        initFinished = true;
+        lastPercent = percent;
+      } else if (!progressStarted) {
+        if (percent > (lastPercent ?? 0)) {
+          stallTimeout.clear();
+          progressStarted = true;
+        }
+      }
+      if (progressStarted && percent > 25) {
+        view.removeEventListener(progressEventName, onprogress);
+        result = true;
+      }
+    }
+    lastPercent = percent;
+  };
+  view.addEventListener(progressEventName, onprogress);
 
-//   const { remoteResource } = getFixture('zip_10MB');
-//   const [{ stream }] = await penumbra.get(remoteResource);
-//   await new Response(stream).arrayBuffer();
+  const { remoteResource } = getFixture('zip_10MB');
+  const [{ stream }] = await penumbra.get(remoteResource);
+  await new Response(stream).arrayBuffer();
 
-//   t.ok(result);
-//   t.end();
-// });
+  if (lastPercent === null) {
+    t.skip(
+      'Skipping test due to `null` percent: No content-length header was provided.',
+    );
+    return;
+  }
 
-// test('penumbra.get() with multiple resources', async (t) => {
-//   const resources = await penumbra.get(
-//     {
-//       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-//       filePrefix: 'NYT',
-//       mimetype: 'text/plain',
-//       decryptionOptions: {
-//         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//         iv: '6lNU+2vxJw6SFgse',
-//         authTag: 'gadZhS1QozjEmfmHLblzbg==',
-//       },
-//     },
-//     {
-//       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-//       filePrefix: 'tortoise',
-//       mimetype: 'image/jpeg',
-//       decryptionOptions: {
-//         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//         iv: '6lNU+2vxJw6SFgse',
-//         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-//       },
-//     },
-//   );
-//   const hashes = await Promise.all(
-//     resources.map(async ({ stream }) =>
-//       hash('SHA-256', await new Response(stream).arrayBuffer()),
-//     ),
-//   );
-//   const referenceHash1 =
-//     '4933a43366fdda7371f02bb2a7e21b38f23db88a474b9abf9e33309cd15594d5';
-//   const referenceHash2 =
-//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+  t.ok(result, 'progress event fired');
+  t.end();
+});
 
-//   t.equal(hashes[0], referenceHash1);
-//   t.equal(hashes[1], referenceHash2);
-//   t.end();
-// });
+test('penumbra.get() with multiple resources', async (t) => {
+  const {
+    remoteResource: remoteResource1,
+    unencryptedChecksum: unencryptedChecksum1,
+  } = getFixture('htmlfile');
+  const {
+    remoteResource: remoteResource2,
+    unencryptedChecksum: unencryptedChecksum2,
+  } = getFixture('file_example_MOV_480_700kB');
 
-// test('penumbra.get() images (as ReadableStream)', async (t) => {
-//   const [{ stream }] = await penumbra.get({
-//     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-//     filePrefix: 'tortoise',
-//     mimetype: 'image/jpeg',
-//     decryptionOptions: {
-//       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//       iv: '6lNU+2vxJw6SFgse',
-//       authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-//     },
-//   });
+  const files = await penumbra.get(remoteResource1, remoteResource2);
+  const [decryptedChecksum1, decryptedChecksum2] = await Promise.all(
+    files.map(async (file) => {
+      const response = new Response(file.stream);
+      const arrayBuffer = await response.arrayBuffer();
+      return hash('SHA-256', arrayBuffer);
+    }),
+  );
 
-//   const imageBytes = await new Response(stream).arrayBuffer();
-//   const imageHash = await hash('SHA-256', imageBytes);
-//   const referenceHash =
-//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-
-//   t.equal(imageHash, referenceHash);
-//   t.end();
-// });
+  t.equal(
+    decryptedChecksum1,
+    unencryptedChecksum1,
+    `${remoteResource1.filePrefix} checksum`,
+  );
+  t.equal(
+    decryptedChecksum2,
+    unencryptedChecksum2,
+    `${remoteResource2.filePrefix} checksum`,
+  );
+  t.end();
+});
 
 // test('penumbra.getTextOrURI(): images (as URL)', async (t) => {
 //   const { type, data: url } = await penumbra.getTextOrURI(
@@ -244,6 +231,11 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
 //       },
 //     }),
 //   )[0];
+//   const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
+//   const imageHash = await hash('SHA-256', imageBytes);
+//   const referenceHash =
+//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+
 //   let isURL;
 //   try {
 //     new URL(url, location.href); // eslint-disable-line no-new
@@ -251,11 +243,6 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
 //   } catch (ex) {
 //     isURL = false;
 //   }
-//   const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
-//   const imageHash = await hash('SHA-256', imageBytes);
-//   const referenceHash =
-//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-
 //   t.true(isURL);
 //   t.equal(imageHash, referenceHash);
 //   t.end();

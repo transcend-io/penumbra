@@ -31,7 +31,7 @@ import { PenumbraError } from './error';
 export function decryptStream(
   stream: ReadableStream,
   decipher: DecipherGCM,
-  contentLength: number,
+  contentLength: number | null,
   id: string | number,
   key: Buffer,
   iv: Buffer,

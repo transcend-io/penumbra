@@ -13,12 +13,14 @@ import { PenumbraEvent } from '../event';
 export default function emitProgress(
   type: PenumbraEventType,
   totalBytesRead: number,
-  contentLength: number,
+  contentLength: number | null,
   id: string | number,
   target: EventTarget = self,
 ): void {
   // Calculate the progress remaining
-  const percent = Math.round((totalBytesRead / contentLength) * 100);
+  const percent = contentLength
+    ? Math.round((totalBytesRead / contentLength) * 100)
+    : null;
 
   const emitContent: Pick<ProgressEmit, 'detail'> = {
     detail: {

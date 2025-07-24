@@ -102,11 +102,11 @@ export interface ProgressDetails {
   /** Event type */
   type: PenumbraEventType;
   /** Percentage completed */
-  percent: number;
+  percent: number | null;
   /** Total bytes read */
   totalBytesRead: number;
   /** Total number of bytes to read */
-  contentLength: number;
+  contentLength: number | null;
 }
 
 /**
