@@ -238,8 +238,6 @@ function getActiveWorkers(): PenumbraWorker[] {
  * Terminate Penumbra worker and de-allocate their resources
  */
 function cleanup(): void {
-  // FIXME: This is getting fired in between tests and removing the workers
-  console.warn('firing cleanup!!!!!');
   getActiveWorkers().forEach((thread) => {
     thread.worker.terminate();
   });

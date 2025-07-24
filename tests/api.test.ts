@@ -81,6 +81,17 @@ test('penumbra.supported() test', (t) => {
 });
 
 test('penumbra.get() test', async (t) => {
+  const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
+
+  const [file] = await penumbra.get(remoteResource);
+  const response = new Response(file.stream);
+  const decryptedChecksum = await hash('SHA-256', await response.arrayBuffer());
+
+  t.equal(decryptedChecksum, unencryptedChecksum);
+  t.end();
+});
+
+test('penumbra.get() test2', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
 
   const [file] = await penumbra.get(remoteResource);
