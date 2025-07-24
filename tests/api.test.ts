@@ -72,13 +72,18 @@ test('penumbra.supported() test', (t) => {
   t.end();
 });
 
+test('penumbra.get() test', async (t) => {
+  const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
+
+  const [file] = await penumbra.get(remoteResource);
+  const response = new Response(file.stream);
+  const decryptedChecksum = await hash('SHA-256', await response.arrayBuffer());
+
+  t.equal(decryptedChecksum, unencryptedChecksum);
+  t.end();
+});
+
 test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
-  if (!self.TextEncoder) {
-    logger.warn('skipping test due to lack of browser support for TextEncoder');
-    t.pass('test skipped');
-    t.end();
-    return;
-  }
   const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
 
   const [file] = await penumbra.get(remoteResource);
@@ -139,16 +144,9 @@ test('penumbra.get() and penumbra.getTextOrURI() test', async (t) => {
 //     lastPercent = percent;
 //   };
 //   view.addEventListener(progressEventName, onprogress);
-//   const [{ stream }] = await penumbra.get({
-//     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/k.webm.enc',
-//     filePrefix: 'k',
-//     mimetype: 'video/webm',
-//     decryptionOptions: {
-//       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//       iv: '6lNU+2vxJw6SFgse',
-//       authTag: 'K3MVZrK2/6+n8/p/74mXkQ==',
-//     },
-//   });
+
+//   const { remoteResource } = getFixture('zip_10MB');
+//   const [{ stream }] = await penumbra.get(remoteResource);
 //   await new Response(stream).arrayBuffer();
 
 //   t.ok(result);
