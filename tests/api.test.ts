@@ -35,7 +35,10 @@ function getFixture(filePrefix: string): {
   }
   const { unencryptedChecksum, ...remoteResource } = fixture;
   return {
-    remoteResource,
+    remoteResource: {
+      ...remoteResource,
+      url: `/base/fixtures${remoteResource.url}`,
+    },
     unencryptedChecksum,
   };
 }

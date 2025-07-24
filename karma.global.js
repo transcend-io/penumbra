@@ -31,6 +31,12 @@ module.exports = (config) => ({
       served: true,
       nocache: false,
     },
+    {
+      pattern: 'fixtures/files/encrypted/*',
+      included: false,
+      served: true,
+      nocache: false,
+    },
   ],
 
   // list of files / patterns to exclude
