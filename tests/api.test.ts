@@ -348,6 +348,53 @@ test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
   t.end();
 });
 
+test('penumbra.saveZip()', async (t) => {
+  const { remoteResource: remoteResource1 } = getFixture(
+    'file_example_JPG_500kB',
+  );
+  const { remoteResource: remoteResource2 } = getFixture('htmlfile');
+  const { remoteResource: remoteResource3 } = getFixture(
+    'file_example_CSV_5000',
+  );
+  const { remoteResource: remoteResource4 } = getFixture(
+    'file_example_JSON_1kb',
+  );
+
+  let progressEventFiredAndWorking = false;
+  let completeEventFired = false;
+  const expectedProgressProps = ['percent', 'written', 'size'];
+  const writer = penumbra.saveZip({
+    /**
+     * onProgress handler
+     * @param event - Event
+     */
+    onProgress(event) {
+      progressEventFiredAndWorking = expectedProgressProps.every(
+        (prop) => prop in event.detail,
+      );
+    },
+    /** onComplete handler */
+    onComplete() {
+      completeEventFired = true;
+    },
+    allowDuplicates: true,
+    saveBuffer: true,
+  });
+
+  writer.write(...(await penumbra.get(remoteResource1, remoteResource2)));
+  writer.write(...(await penumbra.get(remoteResource3, remoteResource4)));
+  await writer.close();
+  t.ok(
+    progressEventFiredAndWorking,
+    'zip progress event fired & emitted expected properties',
+  );
+  t.ok(completeEventFired, 'zip complete event fired');
+  t.pass('zip saved');
+
+  // This is a rewrite version of the test below, but this implementation should have checksum tests on the expected zip
+  // TODO: https://github.com/transcend-io/penumbra/issues/250
+});
+
 // TODO: https://github.com/transcend-io/penumbra/issues/250
 test.skip('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', async (t) => {
   const expectedReferenceHashes = [
