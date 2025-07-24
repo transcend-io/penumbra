@@ -319,27 +319,17 @@ test('penumbra.preload()', (t): void => {
   t.end();
 });
 
-// test('penumbra.getBlob()', async (t) => {
-//   const blob = await penumbra.getBlob(
-//     await penumbra.get({
-//       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-//       filePrefix: 'test/tortoise.jpg',
-//       mimetype: 'image/jpeg',
-//       decryptionOptions: {
-//         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//         iv: '6lNU+2vxJw6SFgse',
-//         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-//       },
-//     }),
-//   );
-//   const imageBytes = await new Response(blob).arrayBuffer();
-//   const imageHash = await hash('SHA-256', imageBytes);
-//   const referenceHash =
-//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
+test('penumbra.getBlob()', async (t) => {
+  const { remoteResource, unencryptedChecksum } = getFixture(
+    'file_example_JPG_500kB',
+  );
+  const blob = await penumbra.getBlob(await penumbra.get(remoteResource));
+  const imageBytes = await new Response(blob).arrayBuffer();
+  const imageHash = await hash('SHA-256', imageBytes);
 
-//   t.equal(imageHash, referenceHash);
-//   t.end();
-// });
+  t.equal(imageHash, unencryptedChecksum, 'getBlob() checksum');
+  t.end();
+});
 
 // test('penumbra.encrypt() & penumbra.decrypt()', async (t) => {
 //   if (!self.TextEncoder || !self.TextDecoder) {
