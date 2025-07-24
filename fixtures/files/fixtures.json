@@ -11,6 +11,17 @@
     "unencryptedChecksum": "1b3583796b56fe56fcf36cb854e42cffcb115476b3d797d54c90a105fd160c72"
   },
   {
+    "url": "/files/encrypted/file_example_JPG_500kB.jpg.enc",
+    "filePrefix": "file_example_JPG_500kB",
+    "mimetype": "image/jpeg",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "fo4LmWCZMNlvCsmp/nj6Cg=="
+    },
+    "unencryptedChecksum": "838e346997ab5f2dd6745e9e536de6f9cd68965088354597f2fba016ad40ab2c"
+  },
+  {
     "url": "/files/encrypted/file_example_JSON_1kb.json.enc",
     "filePrefix": "file_example_JSON_1kb",
     "mimetype": "application/json",

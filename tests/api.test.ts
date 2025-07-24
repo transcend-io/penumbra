@@ -241,63 +241,56 @@ test('penumbra.get() with multiple resources', async (t) => {
   t.end();
 });
 
-// test('penumbra.getTextOrURI(): including image in document', async (t) => {
-//   const { data: url } = await penumbra.getTextOrURI(
-//     await penumbra.get({
-//       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-//       filePrefix: 'tortoise',
-//       mimetype: 'image/jpeg',
-//       decryptionOptions: {
-//         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//         iv: '6lNU+2vxJw6SFgse',
-//         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-//       },
-//     }),
-//   )[0];
-//   const testImage = new Image();
-//   const result = await new Promise((resolve) => {
-//     // 5-second timeout for the image to load
-//     timeout(() => resolve(false), 5);
-//     const onLoad = (): void => {
-//       testImage.removeEventListener('load', onLoad);
-//       testImage.remove();
-//       resolve(true);
-//     };
-//     const onError = (): void => {
-//       testImage.removeEventListener('error', onError);
-//       testImage.remove();
-//       resolve(false);
-//     };
-//     testImage.addEventListener('load', onLoad);
-//     testImage.addEventListener('error', onError);
-//     testImage.src = url;
-//     // testImage.style.visibility = 'hidden';
-//     // document.body.appendChild(testImage);
-//   });
+test('penumbra.getTextOrURI(): including image in document', async (t) => {
+  const { remoteResource } = getFixture('file_example_JPG_500kB');
 
-//   t.ok(result);
-//   t.end();
-// });
+  const [file] = await penumbra.get(remoteResource);
+  const { data: url } = await penumbra.getTextOrURI([file])[0];
 
-// test('penumbra.preconnect()', (t) => {
-//   const measurePreconnects = (): number =>
-//     document.querySelectorAll('link[rel="preconnect"]').length;
-//   const start = measurePreconnects();
-//   const cleanup = penumbra.preconnect({
-//     url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-//     filePrefix: 'NYT',
-//     mimetype: 'text/plain',
-//     decryptionOptions: {
-//       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//       iv: '6lNU+2vxJw6SFgse',
-//       authTag: 'gadZhS1QozjEmfmHLblzbg==',
-//     },
-//   });
-//   const after = measurePreconnects();
-//   cleanup();
-//   t.assert(start < after);
-//   t.end();
-// });
+  const testImage = new Image();
+  const result = await new Promise((resolve) => {
+    // 5-second timeout for the image to load
+    timeout(() => resolve(false), 5);
+    const onLoad = (): void => {
+      testImage.removeEventListener('load', onLoad);
+      testImage.remove();
+      resolve(true);
+    };
+    const onError = (): void => {
+      testImage.removeEventListener('error', onError);
+      testImage.remove();
+      resolve(false);
+    };
+    testImage.addEventListener('load', onLoad);
+    testImage.addEventListener('error', onError);
+    testImage.src = url;
+    testImage.style.visibility = 'hidden';
+    document.body.appendChild(testImage);
+  });
+
+  t.ok(result);
+  t.end();
+});
+
+test('penumbra.preconnect()', (t) => {
+  const measurePreconnects = (): number =>
+    document.querySelectorAll('link[rel="preconnect"]').length;
+  const start = measurePreconnects();
+  const cleanup = penumbra.preconnect({
+    url: 'https://fixtures-for-conflux-and-penumbra.s3.us-east-1.amazonaws.com/big.zip',
+    filePrefix: 'big',
+    mimetype: 'application/zip',
+    decryptionOptions: {
+      key: 'doesntmatter',
+      iv: 'doesntmatter',
+      authTag: 'doesntmatter',
+    },
+  });
+  const after = measurePreconnects();
+  cleanup();
+  t.assert(start < after);
+  t.end();
+});
 
 // test('penumbra.preload()', (t): void => {
 //   const measurePreloads = (): number =>
