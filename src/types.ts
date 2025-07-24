@@ -3,9 +3,7 @@
 // local
 import type { Remote } from 'comlink';
 import penumbra from './API';
-import { PenumbraSupportLevel } from './enums';
 import { PenumbraError } from './error';
-import { PenumbraZipWriter } from './zip';
 
 export { PenumbraZipWriter } from './zip';
 
@@ -194,29 +192,23 @@ export type PenumbraAPI = typeof penumbra;
  * Penumbra Worker API
  */
 export interface PenumbraWorkerAPI {
-  /** Worker ID */
-  id: number;
   /**
    * Initializes Penumbra worker progress event forwarding
    * to the main thread
    */
-  setup: (id: number, eventListener: (event: Event) => void) => Promise<void>;
+  setup: (id: number, eventListener: (event: Event) => void) => void;
   /**
    * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
    * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
    * @param resources - The remote resources to download
-   * @returns A readable stream of the deciphered file
    */
-  get: (
-    writablePorts: MessagePort[],
-    resources: RemoteResource[],
-  ) => Promise<ReadableStream[]>;
-  /**
-   * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
-   * @param resources - The remote resources to download
-   * @returns A readable stream of the deciphered file
-   */
-  getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
+  get: (writablePorts: MessagePort[], resources: RemoteResource[]) => void;
+  // /**
+  //  * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
+  //  * @param resources - The remote resources to download
+  //  * @returns A readable stream of the deciphered file
+  //  */
+  // getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
   /**
    * Streaming encryption of ReadableStreams
    * @param ids - Unique identifier for tracking encryption completion
@@ -231,16 +223,16 @@ export interface PenumbraWorkerAPI {
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) => Promise<PenumbraDecryptionInfoAsBuffer[]>;
-  /**
-   * Buffered (non-streaming) encryption of ArrayBuffers
-   * @param buffers - The file buffers to encrypt
-   * @returns ArrayBuffer[] of the encrypted files
-   */
-  encryptBuffers: (
-    options: PenumbraEncryptionOptions | null,
-    files: PenumbraFile[],
-  ) => Promise<ArrayBuffer[]>;
+  ) => void;
+  // /**
+  //  * Buffered (non-streaming) encryption of ArrayBuffers
+  //  * @param buffers - The file buffers to encrypt
+  //  * @returns ArrayBuffer[] of the encrypted files
+  //  */
+  // encryptBuffers: (
+  //   options: PenumbraEncryptionOptions | null,
+  //   files: PenumbraFile[],
+  // ) => Promise<ArrayBuffer[]>;
   /**
    * Streaming decryption of ReadableStreams
    * @param ids - Unique identifier for tracking decryption completion
@@ -255,26 +247,26 @@ export interface PenumbraWorkerAPI {
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) => Promise<void>;
-  /**
-   * Buffered (non-streaming) encryption of ArrayBuffers
-   * @param buffers - The file buffers to encrypt
-   * @returns ArrayBuffer[] of the encrypted files
-   */
-  decryptBuffers: (
-    options: PenumbraDecryptionInfo,
-    files: PenumbraFile[],
-  ) => Promise<ArrayBuffer[]>;
-  /**
-   * Creates a zip writer for saving PenumbraFiles which keeps
-   * their path data in-tact.
-   * @returns PenumbraZipWriter
-   */
-  saveZip: () => PenumbraZipWriter;
-  /**
-   * Query Penumbra's level of support for the current browser.
-   */
-  supported: () => PenumbraSupportLevel;
+  ) => void;
+  // /**
+  //  * Buffered (non-streaming) encryption of ArrayBuffers
+  //  * @param buffers - The file buffers to encrypt
+  //  * @returns ArrayBuffer[] of the encrypted files
+  //  */
+  // decryptBuffers: (
+  //   options: PenumbraDecryptionInfo,
+  //   files: PenumbraFile[],
+  // ) => Promise<ArrayBuffer[]>;
+  // /**
+  //  * Creates a zip writer for saving PenumbraFiles which keeps
+  //  * their path data in-tact.
+  //  * @returns PenumbraZipWriter
+  //  */
+  // saveZip: () => PenumbraZipWriter;
+  // /**
+  //  * Query Penumbra's level of support for the current browser.
+  //  */
+  // supported: () => PenumbraSupportLevel;
 }
 
 /**

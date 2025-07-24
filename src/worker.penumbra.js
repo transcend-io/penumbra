@@ -1,6 +1,13 @@
 // @ts-check
 /**
  * @typedef {import('./types').PenumbraWorkerAPI} PenumbraWorkerAPI
+ * @typedef {import('./types').RemoteResource} RemoteResource
+ * @typedef {import('./types').PenumbraEncryptionOptions} PenumbraEncryptionOptions
+ * @typedef {import('./types').PenumbraDecryptionInfo} PenumbraDecryptionInfo
+ * @typedef {import('./types').PenumbraFile} PenumbraFile
+ * @typedef {import('./types').PenumbraDecryptionInfoAsBuffer} PenumbraDecryptionInfoAsBuffer
+ * @typedef {import('./zip').PenumbraZipWriter} PenumbraZipWriter
+ * @typedef {import('./enums').PenumbraSupportLevel} PenumbraSupportLevel
  */
 
 /**
@@ -11,7 +18,7 @@
  */
 
 /* eslint-disable class-methods-use-this */
-import { transfer, expose } from 'comlink';
+import { expose } from 'comlink';
 import {
   fromWritablePort,
   fromReadablePort,
@@ -68,28 +75,28 @@ class PenumbraWorker {
     });
   }
 
-  /**
-   * Fetches remote files from URLs, deciphers them (if encrypted),
-   * fully buffers the response, and returns ArrayBuffer[]
-   * @param resources - The remote resource to download
-   * @returns ArrayBuffer[] of the deciphered files
-   */
-  getBuffers(resources) {
-    return Promise.all(
-      resources.map((resource) => {
-        if (!('url' in resource)) {
-          throw new Error(
-            'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
-          );
-        }
-        return fetchAndDecrypt(resource).then((stream) =>
-          new Response(stream)
-            .arrayBuffer()
-            .then((buffer) => transfer(buffer, buffer)),
-        );
-      }),
-    );
-  }
+  // /**
+  //  * Fetches remote files from URLs, deciphers them (if encrypted),
+  //  * fully buffers the response, and returns ArrayBuffer[]
+  //  * @param resources - The remote resources to download
+  //  * @returns ArrayBuffer[] of the deciphered files
+  //  */
+  // getBuffers(resources) {
+  //   return Promise.all(
+  //     resources.map((resource) => {
+  //       if (!('url' in resource)) {
+  //         throw new Error(
+  //           'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
+  //         );
+  //       }
+  //       return fetchAndDecrypt(resource).then((stream) =>
+  //         new Response(stream)
+  //           .arrayBuffer()
+  //           .then((buffer) => transfer(buffer, [buffer])),
+  //       );
+  //     }),
+  //   );
+  // }
 
   /**
    * Streaming decryption of ReadableStreams
@@ -173,13 +180,12 @@ class PenumbraWorker {
     });
   }
 
-  /**
-   * Buffered (non-streaming) encryption of ArrayBuffers
-   *
-   */
-  encryptBuffers() {
-    //
-  }
+  // /**
+  //  * Buffered (non-streaming) encryption of ArrayBuffers
+  //  */
+  // encryptBuffers() {
+  //   //
+  // }
 
   /**
    * Forward events to main thread
