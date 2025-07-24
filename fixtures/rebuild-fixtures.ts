@@ -2,7 +2,7 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { readdir, writeFile, mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
-import { createCipheriv } from 'node:crypto';
+import { createCipheriv, createHash } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
 
 import mime from 'mime-types';
@@ -13,10 +13,18 @@ import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants';
 const thisDirname = __dirname;
 
 /**
+ * A fixture is a remote resource with a checksum of the unencrypted file
+ */
+export interface Fixture extends RemoteResource {
+  /** The checksum of the unencrypted file */
+  unencryptedChecksum: string;
+}
+
+/**
  * Rebuild the files.js file to use the local server.
  */
 async function main(): Promise<void> {
-  const fixtures: RemoteResource[] = [];
+  const fixtures: Fixture[] = [];
   const dir = await readdir(path.join(thisDirname, '/files/unencrypted'));
 
   // Clear out encrypted folder
@@ -48,6 +56,22 @@ async function main(): Promise<void> {
     );
     await pipeline(content, cipher, writeStream);
 
+    // Create a checksum of the unencrypted file
+    const unencryptedChecksum = await new Promise<string>((resolve, reject) => {
+      const content = createReadStream(
+        path.join(thisDirname, '/files/unencrypted', file),
+      );
+      const hash = createHash('sha256');
+      content.on('data', (chunk) => {
+        hash.update(chunk);
+      });
+      content.on('end', () => {
+        const unencryptedChecksum = hash.digest('hex');
+        resolve(unencryptedChecksum);
+      });
+      content.on('error', reject);
+    });
+
     fixtures.push({
       url: encryptedFilePathname,
       filePrefix,
@@ -57,6 +81,7 @@ async function main(): Promise<void> {
         iv: TEST_ENCRYPTION_IV,
         authTag: cipher.getAuthTag().toString('base64'),
       },
+      unencryptedChecksum,
     });
   }
 
