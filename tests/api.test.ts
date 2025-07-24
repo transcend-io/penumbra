@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import '../src/index'; // Import global declarations
 import test from 'tape';
 import {
   PenumbraAPI,
@@ -15,6 +14,15 @@ import { TimeoutManager } from './helpers/timeout';
 import { logger } from '../src/logger';
 import fixtures from '../fixtures/files/fixtures.json';
 import type { Fixture } from '../fixtures/rebuild-fixtures';
+
+/** Extend global Window */
+declare global {
+  /** Extend self */
+  interface Window {
+    /** self.penumbra interface */
+    penumbra?: PenumbraAPI;
+  }
+}
 
 /**
  * Get a fixture by file prefix
