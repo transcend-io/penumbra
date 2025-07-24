@@ -80,7 +80,7 @@ test('penumbra.supported() test', (t) => {
   t.end();
 });
 
-test('penumbra.get() test', async (t) => {
+test('penumbra.get() test - 1kb', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture(
     'file_example_JSON_1kb',
   );
@@ -93,7 +93,7 @@ test('penumbra.get() test', async (t) => {
   t.end();
 });
 
-test('penumbra.get() test2', async (t) => {
+test('penumbra.get() test - 10MB', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
 
   const [file] = await penumbra.get(remoteResource);
@@ -104,7 +104,7 @@ test('penumbra.get() test2', async (t) => {
   t.end();
 });
 
-test('penumbra.getTextOrURI() with text test', async (t) => {
+test('penumbra.getTextOrURI(): text', async (t) => {
   const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
 
   const [file] = await penumbra.get(remoteResource);
@@ -116,6 +116,29 @@ test('penumbra.getTextOrURI() with text test', async (t) => {
 
   t.equal(type, 'text');
   t.equal(decryptedChecksum, unencryptedChecksum);
+  t.end();
+});
+
+test('penumbra.getTextOrURI(): media (as URL)', async (t) => {
+  const { remoteResource, unencryptedChecksum } = getFixture(
+    'file_example_MOV_480_700kB',
+  );
+
+  const [file] = await penumbra.get(remoteResource);
+  const { type, data: blobUrl } = await penumbra.getTextOrURI([file])[0];
+
+  const mediaBytes = await fetch(blobUrl).then((r) => r.arrayBuffer());
+  const mediaChecksum = await hash('SHA-256', mediaBytes);
+
+  let isURL;
+  try {
+    new URL(blobUrl, location.href); // eslint-disable-line no-new
+    isURL = type === 'uri';
+  } catch (ex) {
+    isURL = false;
+  }
+  t.true(isURL, 'is url');
+  t.equal(mediaChecksum, unencryptedChecksum, 'checksum');
   t.end();
 });
 
@@ -217,36 +240,6 @@ test('penumbra.get() with multiple resources', async (t) => {
   );
   t.end();
 });
-
-// test('penumbra.getTextOrURI(): images (as URL)', async (t) => {
-//   const { type, data: url } = await penumbra.getTextOrURI(
-//     await penumbra.get({
-//       url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-//       filePrefix: 'tortoise',
-//       mimetype: 'image/jpeg',
-//       decryptionOptions: {
-//         key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-//         iv: '6lNU+2vxJw6SFgse',
-//         authTag: 'ELry8dZ3djg8BRB+7TyXZA==',
-//       },
-//     }),
-//   )[0];
-//   const imageBytes = await fetch(url).then((r) => r.arrayBuffer());
-//   const imageHash = await hash('SHA-256', imageBytes);
-//   const referenceHash =
-//     '1d9b02f0f26815e2e5c594ff2d15cb8a7f7b6a24b6d14355ffc2f13443ba6b95';
-
-//   let isURL;
-//   try {
-//     new URL(url, location.href); // eslint-disable-line no-new
-//     isURL = type === 'uri';
-//   } catch (ex) {
-//     isURL = false;
-//   }
-//   t.true(isURL);
-//   t.equal(imageHash, referenceHash);
-//   t.end();
-// });
 
 // test('penumbra.getTextOrURI(): including image in document', async (t) => {
 //   const { data: url } = await penumbra.getTextOrURI(
@@ -482,4 +475,4 @@ test('penumbra.get() with multiple resources', async (t) => {
 
 //   t.end();
 // });
-// /* eslint-enable max-lines */
+/* eslint-enable max-lines */
