@@ -21,10 +21,6 @@ module.exports = (config) => {
     // browsers: ['Chrome', 'Firefox', 'Safari'],
     browsers: ['Chrome'],
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
-
     plugins: [
       ...globalConfig.plugins,
       'karma-chrome-launcher',

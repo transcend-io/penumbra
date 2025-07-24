@@ -18,7 +18,7 @@
     "test:interactive": "yarn start:demo",
     "test:local": "karma start karma.local.js",
     "test:local:debug": "karma start karma.local.js --log-level debug",
-    "test:browserstack": "karma start karma.browserstack.js",
+    "test:browserstack": "karma start karma.browserstack.js --log-level debug",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
     "####### Build #######": "",
     "clean": "rm -rf dist && rm -rf ts-build && rm -rf coverage",
