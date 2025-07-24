@@ -292,7 +292,12 @@ export async function setWorkerLocation(
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
 }: ProgressEmit): void => {
-  if (typeof worker === 'number' && totalBytesRead >= contentLength) {
+  if (
+    typeof worker === 'number' &&
+    // TODO: Switch to a more robust check whether we're streaming which doesn't require contentLength being known
+    contentLength !== null &&
+    totalBytesRead >= contentLength
+  ) {
     workers[worker].busy = false;
   }
 };
