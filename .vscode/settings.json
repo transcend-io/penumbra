@@ -29,9 +29,9 @@
     "**/tsconfig.tsbuildinfo": true,
     "**/build": true,
     "**/builds": true,
-    "**/.yarn": true,
     "**/.caches": true,
-    "**/.pnp.*": true
+    "node_modules": true,
+    "pnpm-lock.yaml": true
   },
   "editor.codeActionsOnSave": {
     "source.fixAll": "always"
@@ -125,7 +125,6 @@
     "typedarray",
     "unencrypted",
     "webm",
-    "yarnpkg",
     "zh"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"

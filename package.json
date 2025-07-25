@@ -8,24 +8,24 @@
     "example": "example"
   },
   "scripts": {
-    "prepare": "yarn build",
+    "prepare": "pnpm run build",
     "####### Linting #######": "",
-    "lint": "yarn eslint src --ext .ts",
+    "lint": "pnpm exec eslint src --ext .ts",
     "####### Start #########": "",
-    "start:example": "yarn build:example && http-server example/build/ --port 8080 -o -c-1",
-    "start:demo": "yarn build:demo && http-server demo/build/ --port 8081 -o",
+    "start:example": "pnpm run build:example && http-server example/build/ --port 8080 -o -c-1",
+    "start:demo": "pnpm run build:demo && http-server demo/build/ --port 8081 -o",
     "####### Testing #######": "",
-    "test:interactive": "yarn start:demo",
+    "test:interactive": "pnpm run start:demo",
     "test:local": "karma start karma.local.js",
     "test:local:debug": "karma start karma.local.js --log-level debug",
     "test:browserstack": "karma start karma.browserstack.js --log-level debug",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
     "####### Build #######": "",
     "clean": "rm -rf dist && rm -rf ts-build && rm -rf coverage",
-    "build": "yarn clean && mkdir -p dist && webpack --config webpack.prod.js && tsc",
-    "build:example": "rm -rf example/build && yarn build && mkdir -p example/build && cp example/*.* example/build/ && cp -a dist/. example/build/ && cp -a fixtures/files/. example/build/files/",
-    "build:demo": "rm -rf demo/build && yarn build && mkdir -p demo/build && cp demo/*.* demo/build/ && cp -a dist/. demo/build/",
-    "webpack:watch": "yarn clean && webpack --config webpack.dev.js --watch"
+    "build": "pnpm run clean && mkdir -p dist && webpack --config webpack.prod.js && tsc",
+    "build:example": "rm -rf example/build && pnpm run build && mkdir -p example/build && cp example/*.* example/build/ && cp -a dist/. example/build/ && cp -a fixtures/files/. example/build/files/",
+    "build:demo": "rm -rf demo/build && pnpm run build && mkdir -p demo/build && cp demo/*.* demo/build/ && cp -a dist/. demo/build/",
+    "webpack:watch": "pnpm run clean && webpack --config webpack.dev.js --watch"
   },
   "repository": {
     "type": "git",
@@ -106,5 +106,5 @@
     "webpack-merge": "^5.10.0",
     "worker-plugin": "^5.0.1"
   },
-  "packageManager": "yarn@4.5.3"
+  "packageManager": "pnpm@10.13.1+sha256.0f9ed48d808996ae007835fb5c4641cf9a300def2eddc9e957d9bbe4768c5f28"
 }

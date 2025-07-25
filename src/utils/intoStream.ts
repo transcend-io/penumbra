@@ -14,13 +14,23 @@ const intoStream = (
     | NodeJS.ReadableStream
     | NodeJS.TypedArray
     | Buffer,
-): ReadableStream =>
-  input instanceof NativeReadableStream ||
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (input as any)?.constructor?.name === 'ReadableStream'
-    ? (input as ReadableStream)
-    : input instanceof ArrayBuffer || ArrayBuffer.isView(input)
-    ? new Response(input).body
-    : toWebReadableStream(input);
+): ReadableStream => {
+  if (
+    input instanceof NativeReadableStream ||
+    input?.constructor?.name === 'ReadableStream'
+  ) {
+    return input as ReadableStream;
+  }
+
+  if (input instanceof ArrayBuffer || ArrayBuffer.isView(input)) {
+    const response = new Response(input);
+    if (response.body === null) {
+      throw new TypeError('Response.body is null');
+    }
+    return response.body;
+  }
+
+  return toWebReadableStream(input);
+};
 
 export default intoStream;

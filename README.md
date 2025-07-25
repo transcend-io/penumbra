@@ -77,12 +77,9 @@
 
 ### Importing Penumbra
 
-#### With Yarn/NPM
+#### With NPM
 
 ```sh
-yarn add @transcend-io/penumbra
-
-# or
 npm install --save @transcend-io/penumbra
 ```
 
@@ -615,14 +612,14 @@ module.exports = {
 
 ```bash
 # setup
-yarn
-yarn build
+pnpm install
+pnpm build
 
 # run tests
-yarn test:local
+pnpm test:local
 
 # run tests in the browser console
-yarn test:interactive
+pnpm test:interactive
 ```
 
 ## License

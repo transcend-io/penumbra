@@ -6,9 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_yarn_deps
+      - uses: ./.github/commands/dependencies/install_deps
       - name: Build
-        run: yarn build
+        run: pnpm run build
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
@@ -24,15 +24,15 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn test:browserstack
+      - uses: ./.github/commands/dependencies/install_deps
+      - run: pnpm run test:browserstack
 
   run-depcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_yarn_deps
-      - run: yarn depcheck
+      - uses: ./.github/commands/dependencies/install_deps
+      - run: pnpm run depcheck
 
   run-pre-commits:
     runs-on: ubuntu-latest
@@ -40,9 +40,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 100 # need the history to do a changed files check below (source, origin)
-      - uses: actions/setup-python@v2
-      - uses: ./.github/commands/dependencies/install_yarn_deps
-      - uses: pre-commit/action@v3.0.1
+      - uses: actions/setup-python@v4
+      - uses: ./.github/commands/dependencies/install_deps
+      - uses: pre-commit/action@v3.0.0
         with:
           extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
@@ -50,48 +50,37 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
-      # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
-      # - run-karma
+      - run-karma
       - run-depcheck
       - build-and-upload-artifacts
       - run-pre-commits
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_yarn_deps
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifact
-      - name: Configure NPM authentication
+      - uses: ./.github/commands/dependencies/install_deps
+      - name: Configure npm authentication
         run: |
-          yarn config set npmAlwaysAuth true
-          yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
-      - name: Publish to yarn/npm
-        run: yarn npm publish
+          pnpm config set always-auth true
+          pnpm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
+      - name: Publish to npm
+        run: pnpm publish
 
   build-to-github-packages:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
-      # TODO: https://github.com/transcend-io/penumbra/issues/209 - fix flakiness
-      # - run-karma
+      - run-karma
       - run-depcheck
       - build-and-upload-artifacts
       - run-pre-commits
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_yarn_deps
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifact
-      - name: Configure Github Packages authentication
+      - uses: ./.github/commands/dependencies/install_deps
+      - name: Configure GitHub Packages authentication
         run: |
-          yarn config set npmAlwaysAuth true
-          yarn config set npmRegistryServer https://npm.pkg.github.com
-          yarn config set npmPublishRegistry https://npm.pkg.github.com
-          yarn config set npmAuthToken ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish to Github packages
-        run: yarn npm publish
+          pnpm config set always-auth true
+          pnpm config set registry https://npm.pkg.github.com
+          pnpm config set //npm.pkg.github.com/:_authToken "${{ secrets.GITHUB_TOKEN }}"
+      - name: Publish to GitHub Packages
+        run: pnpm publish
