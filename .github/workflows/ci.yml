@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/commands/dependencies/install_deps
-      - run: pnpm run depcheck
+      - run: pnpm exec depcheck
 
   run-pre-commits:
     runs-on: ubuntu-latest
