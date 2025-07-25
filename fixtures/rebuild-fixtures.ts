@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax,no-await-in-loop,no-console */
 import { createReadStream, createWriteStream } from 'node:fs';
-import { readdir, writeFile, mkdir, rm } from 'node:fs/promises';
+import { readdir, writeFile, mkdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { createCipheriv, createHash } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
@@ -74,6 +74,11 @@ async function main(): Promise<void> {
     );
     await pipeline(content, cipher, writeStream);
 
+    // Get the file size of the encrypted file
+    const encryptedFilePath = path.join(thisDirname, encryptedFilePathname);
+    const encryptedFileStats = await stat(encryptedFilePath);
+    const encryptedFileSize = encryptedFileStats.size;
+
     // Create a checksum of the unencrypted file
     const unencryptedChecksum = await new Promise<string>((resolve, reject) => {
       const content = createReadStream(
@@ -94,6 +99,7 @@ async function main(): Promise<void> {
       url: encryptedFilePathname,
       filePrefix,
       mimetype: mime.lookup(file) || undefined,
+      size: encryptedFileSize,
       decryptionOptions: {
         key: TEST_ENCRYPTION_KEY,
         iv: TEST_ENCRYPTION_IV,
