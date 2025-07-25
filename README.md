@@ -1,13 +1,11 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-## Table of Contents
-
 - [Penumbra](#penumbra)
   - [Compatibility](#compatibility)
   - [Usage](#usage)
     - [Importing Penumbra](#importing-penumbra)
-      - [With Yarn/NPM](#with-yarnnpm)
+      - [With NPM](#with-npm)
       - [Vanilla JS](#vanilla-js)
     - [RemoteResource](#remoteresource)
     - [.get](#get)
