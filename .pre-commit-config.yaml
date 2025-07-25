@@ -16,7 +16,7 @@ repos:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-added-large-files
-        exclude: (yarn.lock|.yarn/|.pnp.cjs)
+        exclude: (node_modules/|pnpm-lock.yaml)
       - id: check-json
         exclude: (.vscode/|tsconfig.json)
       - id: detect-private-key
@@ -35,7 +35,7 @@ repos:
       - id: eslint
         name: Eslint
         description: 'Run static code linting'
-        entry: yarn lint --fix
+        entry: pnpm run lint --fix
         language: node
         files: \.[t]sx?$ # *.js, *.jsx, *.ts and *.tsx
         types: [file]

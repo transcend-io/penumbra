@@ -1,19 +1,9 @@
 [
   {
-    "url": "/files/encrypted/big.zip.enc",
-    "filePrefix": "big",
-    "mimetype": "application/zip",
-    "decryptionOptions": {
-      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
-      "iv": "6lNU+2vxJw6SFgse",
-      "authTag": "pzc0I+7lEAtlI+/PimojZw=="
-    },
-    "unencryptedChecksum": "b9528046ceaf6007167fa0569b24a4a9dc14cb70f876667f63c314d166d304b4"
-  },
-  {
     "url": "/files/encrypted/file_example_CSV_5000.csv.enc",
     "filePrefix": "file_example_CSV_5000",
     "mimetype": "text/csv",
+    "size": 284042,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -25,6 +15,7 @@
     "url": "/files/encrypted/file_example_JPG_500kB.jpg.enc",
     "filePrefix": "file_example_JPG_500kB",
     "mimetype": "image/jpeg",
+    "size": 555181,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -36,6 +27,7 @@
     "url": "/files/encrypted/file_example_JSON_1kb.json.enc",
     "filePrefix": "file_example_JSON_1kb",
     "mimetype": "application/json",
+    "size": 20471,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -47,6 +39,7 @@
     "url": "/files/encrypted/file_example_MOV_480_700kB.mov.enc",
     "filePrefix": "file_example_MOV_480_700kB",
     "mimetype": "video/quicktime",
+    "size": 709764,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -58,6 +51,7 @@
     "url": "/files/encrypted/file_example_MP3_700KB.mp3.enc",
     "filePrefix": "file_example_MP3_700KB",
     "mimetype": "audio/mpeg",
+    "size": 733645,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -69,6 +63,7 @@
     "url": "/files/encrypted/file_example_XML_24kb.xml.enc",
     "filePrefix": "file_example_XML_24kb",
     "mimetype": "application/xml",
+    "size": 23972,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -80,6 +75,7 @@
     "url": "/files/encrypted/htmlfile.html.enc",
     "filePrefix": "htmlfile",
     "mimetype": "text/html",
+    "size": 186940,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -91,6 +87,7 @@
     "url": "/files/encrypted/zip_10MB.zip.enc",
     "filePrefix": "zip_10MB",
     "mimetype": "application/zip",
+    "size": 10679630,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -102,6 +99,7 @@
     "url": "/files/encrypted/zip_2MB.zip.enc",
     "filePrefix": "zip_2MB",
     "mimetype": "application/zip",
+    "size": 2036861,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -113,6 +111,7 @@
     "url": "/files/encrypted/zip_5MB.zip.enc",
     "filePrefix": "zip_5MB",
     "mimetype": "application/zip",
+    "size": 5452018,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
@@ -124,11 +123,23 @@
     "url": "/files/encrypted/zip_9MB.zip.enc",
     "filePrefix": "zip_9MB",
     "mimetype": "application/zip",
+    "size": 9663802,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",
       "authTag": "8dI8u5u18FLqsRy/1Uf5zw=="
     },
     "unencryptedChecksum": "df107229d29cbf18d5bd0c924de80bd22694e597acd869d9026e7b178d8a5a0e"
+  },
+  {
+    "url": "/files/encrypted/big.zip.enc",
+    "filePrefix": "big",
+    "mimetype": "application/zip",
+    "decryptionOptions": {
+      "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
+      "iv": "6lNU+2vxJw6SFgse",
+      "authTag": "pzc0I+7lEAtlI+/PimojZw=="
+    },
+    "unencryptedChecksum": "b9528046ceaf6007167fa0569b24a4a9dc14cb70f876667f63c314d166d304b4"
   }
 ]

@@ -11,22 +11,20 @@ module.exports = (config) => {
     bs_chrome_mac: {
       base: 'BrowserStack',
       browser: 'Chrome',
-      browser_version: '118.0',
+      browser_version: '135.0',
       os: 'OS X',
       os_version: 'Sonoma',
       local: 'false',
       networkLogs: 'true',
-      seleniumVersion: '4.15.0',
     },
     bs_safari_mac: {
       base: 'BrowserStack',
       browser: 'Safari',
-      browser_version: '17.0',
+      browser_version: '17.3',
       os: 'OS X',
       os_version: 'Sonoma',
       local: 'false',
       networkLogs: 'true',
-      seleniumVersion: '4.15.0',
     },
     // TODO: https://github.com/transcend-io/penumbra/issues/249
     // bs_firefox_pc: {
@@ -39,12 +37,11 @@ module.exports = (config) => {
     bs_edge_pc: {
       base: 'BrowserStack',
       browser: 'Edge',
-      browser_version: '118.0',
+      browser_version: '135.0',
       os: 'Windows',
       os_version: '11',
       local: 'false',
       networkLogs: 'true',
-      seleniumVersion: '4.15.0',
     },
   };
 
@@ -53,16 +50,10 @@ module.exports = (config) => {
   config.set({
     ...globalConfig,
 
-    captureTimeout: 400000,
-    browserDisconnectTolerance: 3,
-    browserDisconnectTimeout: 400000,
-    browserNoActivityTimeout: 400000,
-
     // global config of your BrowserStack account
     browserStack: {
       username: 'benjaminbrook3',
       project: 'Penumbra',
-      video: true,
       build: `penumbra@${packageJson.version} - ${short()} - ${
         process.env.GITHUB_RUN_ID ? `CI: ${process.env.GITHUB_RUN_ID}` : 'Local'
       }`,

@@ -1,0 +1,35 @@
+name: Install pnpm Dependencies
+description: Installs pnpm Dependencies
+runs:
+  using: 'composite'
+  steps:
+    # Install pnpm dependencies (see https://github.com/pnpm/action-setup?tab=readme-ov-file#use-cache-to-reduce-installation-time)
+    - uses: pnpm/action-setup@v4
+      name: Install pnpm
+      with:
+        run_install: false
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        cache: 'pnpm'
+        node-version-file: '.nvmrc'
+        registry-url: https://registry.npmjs.org
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - uses: actions/cache@v4
+      name: Setup pnpm cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm install
+      shell: bash
+# Note: You don't need to run pnpm store prune at the end; post-action has already taken care of that.

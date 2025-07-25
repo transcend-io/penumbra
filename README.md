@@ -1,13 +1,11 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-## Table of Contents
-
 - [Penumbra](#penumbra)
   - [Compatibility](#compatibility)
   - [Usage](#usage)
     - [Importing Penumbra](#importing-penumbra)
-      - [With Yarn/NPM](#with-yarnnpm)
+      - [With NPM](#with-npm)
       - [Vanilla JS](#vanilla-js)
     - [RemoteResource](#remoteresource)
     - [.get](#get)
@@ -77,12 +75,9 @@
 
 ### Importing Penumbra
 
-#### With Yarn/NPM
+#### With NPM
 
 ```sh
-yarn add @transcend-io/penumbra
-
-# or
 npm install --save @transcend-io/penumbra
 ```
 
@@ -615,14 +610,14 @@ module.exports = {
 
 ```bash
 # setup
-yarn
-yarn build
+pnpm install
+pnpm build
 
 # run tests
-yarn test:local
+pnpm test:local
 
 # run tests in the browser console
-yarn test:interactive
+pnpm test:interactive
 ```
 
 ## License

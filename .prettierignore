@@ -4,9 +4,8 @@
 LICENSE
 .prettierignore
 .airtaprc
-yarn.lock
 .gitignore
 .editorconfig
 .browserslistrc
-.yarn
 fixtures/files
+pnpm-lock.yaml
