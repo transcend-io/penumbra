@@ -8,7 +8,6 @@
     "example": "example"
   },
   "scripts": {
-    "prepare": "pnpm run build",
     "####### Linting #######": "",
     "lint": "pnpm exec eslint src --ext .ts",
     "####### Start #########": "",
