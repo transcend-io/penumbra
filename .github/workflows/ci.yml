@@ -27,7 +27,7 @@ jobs:
       - uses: nick-fields/retry@v3
         id: retry
         with:
-          timeout_seconds: 120
+          timeout_seconds: 240
           max_attempts: 3
           command: pnpm run test:browserstack
 
