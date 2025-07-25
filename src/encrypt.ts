@@ -15,6 +15,8 @@ import {
 // utils
 import { emitProgress, toBuff, emitJobCompletion } from './utils';
 import { logger } from './logger';
+import { PenumbraError } from './error';
+import emitError from './utils/emitError';
 
 /**
  * Encrypts a readable stream
@@ -51,16 +53,15 @@ export function encryptStream(
           // Emit a progress update
           totalBytesRead += bufferChunk.length;
           emitProgress('encrypt', totalBytesRead, contentLength, jobID);
-
-          if (totalBytesRead >= contentLength) {
-            cipher.final();
-            const authTag = cipher.getAuthTag();
-            emitJobCompletion(jobID, {
-              key,
-              iv,
-              authTag,
-            });
+        },
+        flush: (controller) => {
+          // Finalize encryption when stream is done
+          const final = cipher.final();
+          if (final.length > 0) {
+            controller.enqueue(final);
           }
+          const authTag = cipher.getAuthTag();
+          emitJobCompletion(jobID, { key, iv, authTag });
         },
       }),
     );
@@ -108,6 +109,20 @@ export function encryptStream(
         });
       }
       push();
+    },
+    /**
+     * On cancel of the encryption stream, throw an error
+     * @param reason - The reason for the cancellation
+     */
+    async cancel(reason) {
+      const err = new PenumbraError(
+        `Encryption stream was cancelled: ${reason}`,
+        jobID,
+      );
+      logger.error(err);
+      await reader.cancel(err);
+      emitError(err);
+      throw err;
     },
   });
 }

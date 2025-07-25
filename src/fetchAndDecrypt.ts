@@ -61,7 +61,7 @@ export default function fetchAndDecrypt({
         return decryptStream(
           response.body,
           decipher,
-          Number(response.headers.get('Content-Length') || 0),
+          Number(response.headers.get('Content-Length')) || null,
           url,
           bufferKey,
           bufferIv,

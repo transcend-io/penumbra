@@ -12,6 +12,9 @@ import {
   PenumbraFile,
 } from './types';
 import { emitJobCompletion, emitProgress, toBuff } from './utils';
+import emitError from './utils/emitError';
+import { logger } from './logger';
+import { PenumbraError } from './error';
 
 /**
  * Decrypts a readable stream
@@ -28,7 +31,7 @@ import { emitJobCompletion, emitProgress, toBuff } from './utils';
 export function decryptStream(
   stream: ReadableStream,
   decipher: DecipherGCM,
-  contentLength: number,
+  contentLength: number | null,
   id: string | number,
   key: Buffer,
   iv: Buffer,
@@ -51,14 +54,16 @@ export function decryptStream(
           // Emit a progress update
           totalBytesRead += bufferChunk.length;
           emitProgress('decrypt', totalBytesRead, contentLength, id);
-
-          // Auth tag from response trailer
-          if (totalBytesRead >= contentLength) {
-            if (!ignoreAuthTag) {
-              decipher.final();
+        },
+        flush: (controller) => {
+          // Finalize decryption when stream is done
+          if (!ignoreAuthTag) {
+            const final = decipher.final();
+            if (final.length > 0) {
+              controller.enqueue(final);
             }
-            emitJobCompletion(id, { key, iv, authTag });
           }
+          emitJobCompletion(id, { key, iv, authTag });
         },
       }),
     );
@@ -104,6 +109,20 @@ export function decryptStream(
         });
       }
       push();
+    },
+    /**
+     * On cancel of the decryption stream, throw an error
+     * @param reason - The reason for the cancellation
+     */
+    async cancel(reason) {
+      const err = new PenumbraError(
+        `Decryption stream was cancelled: ${reason}`,
+        id,
+      );
+      logger.error(err);
+      await reader.cancel(err);
+      emitError(err);
+      throw err;
     },
   });
 }

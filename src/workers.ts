@@ -4,7 +4,7 @@
 import { proxy, wrap } from 'comlink';
 
 // local
-import {
+import type {
   PenumbraWorker,
   PenumbraWorkerAPI,
   WorkerLocation,
@@ -149,14 +149,13 @@ export async function createPenumbraWorker(
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
-    comlink: wrap(worker),
+    // eslint-disable-next-line no-spaced-func, func-call-spacing
+    comlink: wrap<new () => PenumbraWorkerAPI>(worker),
     busy: false,
   };
-  const Link = penumbraWorker.comlink;
-  const setup = new Link().then(async (thread: PenumbraWorkerAPI) => {
-    await thread.setup(id, proxy(reDispatchEvent));
-  });
-  await setup;
+  const RemoteAPI = penumbraWorker.comlink;
+  const remote = await new RemoteAPI();
+  await remote.setup(id, proxy(reDispatchEvent));
   return penumbraWorker;
 }
 
@@ -293,7 +292,12 @@ export async function setWorkerLocation(
 const trackWorkerBusyState = ({
   detail: { worker, totalBytesRead, contentLength },
 }: ProgressEmit): void => {
-  if (typeof worker === 'number' && totalBytesRead >= contentLength) {
+  if (
+    typeof worker === 'number' &&
+    // TODO: Switch to a more robust check whether we're streaming which doesn't require contentLength being known
+    contentLength !== null &&
+    totalBytesRead >= contentLength
+  ) {
     workers[worker].busy = false;
   }
 };

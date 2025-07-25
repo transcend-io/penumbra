@@ -1,12 +1,9 @@
-/* eslint-disable */
-/* eslint-disable require-jsdoc */
-
 const TEXT_TYPES =
   /^\s*(?:text\/\S*|application\/(?:xml|json)|\S*\/\S*\+xml|\S*\/\S*\+json)\s*(?:$|;)/i;
 
 /**
  * Determine if the file mimetype is known for displaying
- *
+ * @param mimetype - The mimetype of the file
  * @returns 'probably', 'maybe', or '' depending on if mime type can be displayed
  */
 function isViewableText(mimetype) {
@@ -19,8 +16,18 @@ const enc = new TextDecoder('utf-8');
 
 // Decryption logic
 const onReady = async () => {
+  // Wait for files to be loaded
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (window.files.length > 0) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 50);
+  });
+
   const promises = window.files.map(async (file) => {
-    const { url, filePrefix, mimetype, decryptionOptions } = file;
+    const { url, mimetype, decryptionOptions } = file;
 
     // Fetch the encrypted file from S3
     const response = await fetch(url);
@@ -78,6 +85,7 @@ const onReady = async () => {
   try {
     window.insertIntoCell(promises);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err);
   }
 };

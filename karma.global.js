@@ -26,8 +26,14 @@ module.exports = (config) => ({
       nocache: false,
     },
     {
-      pattern: 'src/tests/index.test.ts',
+      pattern: 'tests/index.test.ts',
       included: true,
+      served: true,
+      nocache: false,
+    },
+    {
+      pattern: 'fixtures/files/encrypted/*',
+      included: false,
       served: true,
       nocache: false,
     },
@@ -40,6 +46,7 @@ module.exports = (config) => ({
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {
     'src/**': ['webpack', 'sourcemap'],
+    'tests/**': ['webpack', 'sourcemap'],
   },
 
   // webpack configuration
