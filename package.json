@@ -2,8 +2,19 @@
   "name": "@transcend-io/penumbra",
   "version": "6.0.0",
   "description": "Crypto streams for the browser.",
-  "main": "dist/main.penumbra.js",
-  "types": "ts-build/src/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.js",
+      "require": "./dist/main.cjs"
+    },
+    "./worker": {
+      "types": "./dist/worker.d.ts",
+      "import": "./dist/worker.js",
+      "require": "./dist/worker.cjs"
+    }
+  },
   "directories": {
     "example": "example"
   },
@@ -11,8 +22,7 @@
     "####### Linting #######": "",
     "lint": "pnpm exec eslint src --ext .ts",
     "####### Start #########": "",
-    "start:example": "pnpm run build:example && http-server example/build/ --port 8080 -o -c-1",
-    "start:demo": "pnpm run build:demo && http-server demo/build/ --port 8081 -o",
+    "start:example": "http-server . --port 8080 -o -c-1",
     "####### Testing #######": "",
     "test:interactive": "pnpm run start:demo",
     "test:local": "karma start karma.local.js",
@@ -20,11 +30,8 @@
     "test:browserstack": "karma start karma.browserstack.js --log-level debug",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
     "####### Build #######": "",
-    "clean": "rm -rf dist && rm -rf ts-build && rm -rf coverage",
-    "build": "pnpm run clean && mkdir -p dist && webpack --config webpack.prod.js && tsc",
-    "build:example": "rm -rf example/build && pnpm run build && mkdir -p example/build && cp example/*.* example/build/ && cp -a dist/. example/build/ && cp -a fixtures/files/. example/build/files/",
-    "build:demo": "rm -rf demo/build && pnpm run build && mkdir -p demo/build && cp demo/*.* demo/build/ && cp -a dist/. demo/build/",
-    "webpack:watch": "pnpm run clean && webpack --config webpack.dev.js --watch"
+    "build": "vite build",
+    "build:demo": "rm -rf demo/build && pnpm run build && mkdir -p demo/build && cp demo/*.* demo/build/ && cp -a dist/. demo/build/"
   },
   "repository": {
     "type": "git",
@@ -45,10 +52,8 @@
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
   "files": [
-    "dist/**/*",
-    "ts-build/**/*",
-    "src/**/*",
-    "tsconfig.json"
+    "dist",
+    "src"
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
@@ -65,16 +70,11 @@
     "web-streams-polyfill": "^3.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.5",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "^7.23.5",
-    "@babel/preset-typescript": "^7.23.3",
     "@types/mime-types": "^2.1.4",
     "@types/node": "^20.10.3",
     "@types/tape": "^5.6.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "babel-loader": "^8.2.5",
     "buffer": "^6.0.3",
     "depcheck": "^1.4.7",
     "eslint": "^8.55.0",
@@ -100,10 +100,9 @@
     "terser-webpack-plugin": "^2.3.8",
     "tsx": "^4.20.3",
     "typescript": "^5.3.2",
-    "webpack": "^4.47.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-merge": "^5.10.0",
-    "worker-plugin": "^5.0.1"
+    "unplugin-dts": "1.0.0-beta.4",
+    "vite": "^7.0.6",
+    "webpack": "^4.47.0"
   },
   "packageManager": "pnpm@10.13.1+sha256.0f9ed48d808996ae007835fb5c4641cf9a300def2eddc9e957d9bbe4768c5f28"
 }
