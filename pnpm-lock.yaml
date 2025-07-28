@@ -23,9 +23,9 @@ importers:
       crypto-browserify:
         specifier: ^3.12.0
         version: 3.12.1
-      mime-types:
-        specifier: ^2.1.35
-        version: 2.1.35
+      mime:
+        specifier: ^4.0.7
+        version: 4.0.7
       promise.allsettled:
         specifier: ^1.0.7
         version: 1.0.7
@@ -2678,6 +2678,11 @@ packages:
   mime@2.6.0:
     resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
     engines: {node: '>=4.0.0'}
+    hasBin: true
+
+  mime@4.0.7:
+    resolution: {integrity: sha512-2OfDPL+e03E0LrXaGYOtTFIYhiuzep94NSsuhrNULq+stylcJedcHdzHtz0atMUuGwJfFYs0YL5xeC/Ca2x0eQ==}
+    engines: {node: '>=16'}
     hasBin: true
 
   minimalistic-assert@1.0.1:
@@ -7044,6 +7049,8 @@ snapshots:
   mime@1.6.0: {}
 
   mime@2.6.0: {}
+
+  mime@4.0.7: {}
 
   minimalistic-assert@1.0.1: {}
 

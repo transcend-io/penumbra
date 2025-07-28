@@ -5,7 +5,7 @@ import {
   RemoteReadableStream,
   RemoteWritableStream,
 } from '@transcend-io/remote-web-streams';
-import mime from 'mime-types';
+import mime from 'mime';
 import { streamSaver } from './streamsaver';
 import { ReadableStream } from './streams';
 
@@ -176,7 +176,7 @@ function save(
     'stream' in files ? (files as unknown as PenumbraFile) : files[0];
   const [
     filename,
-    extension = file.mimetype ? mime.extension(file.mimetype) : '',
+    extension = file.mimetype ? mime.getExtension(file.mimetype) : '',
   ] = (fileName || file.filePrefix || DEFAULT_FILENAME)
     .split(/(\.\w+\s*$)/) // split filename extension
     .filter(Boolean); // filter empty matches
