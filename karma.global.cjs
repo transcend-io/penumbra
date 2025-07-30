@@ -1,4 +1,3 @@
-const webpackConfig = require('./webpack.prod.js');
 // const { serverCrt, serverKey } = require('./karma-certificate');
 
 module.exports = (config) => ({
@@ -7,7 +6,7 @@ module.exports = (config) => ({
 
   // frameworks to use
   // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-  frameworks: ['tap'],
+  frameworks: ['vite', 'tap', 'karma-typescript'],
 
   customContextFile: 'penumbra-karma-context.html',
 
@@ -15,29 +14,38 @@ module.exports = (config) => ({
   files: [
     {
       pattern: 'src/worker.penumbra.js',
+      type: 'module',
       included: false,
       served: true,
       nocache: false,
     },
     {
       pattern: 'src/index.ts',
+      type: 'module',
       included: false,
       served: true,
       nocache: false,
     },
     {
       pattern: 'tests/index.test.ts',
+      type: 'module',
       included: true,
       served: true,
       nocache: false,
     },
     {
       pattern: 'fixtures/files/encrypted/*',
+      type: 'module',
       included: false,
       served: true,
       nocache: false,
     },
   ],
+
+  vite: {
+    autoInit: true,
+    config: {},
+  },
 
   // list of files / patterns to exclude
   exclude: [],
@@ -45,21 +53,21 @@ module.exports = (config) => ({
   // preprocess matching files before serving them to the browser
   // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
   preprocessors: {
-    'src/**': ['webpack', 'sourcemap'],
-    'tests/**': ['webpack', 'sourcemap'],
+    'src/**.ts': ['karma-typescript', 'sourcemap'],
+    'src/**.ts': ['karma-typescript', 'sourcemap'],
+    'tests/**.js': ['sourcemap'],
+    'tests/**.js': ['sourcemap'],
   },
-
-  // webpack configuration
-  webpack: webpackConfig,
 
   plugins: [
     'karma-tap',
     'karma-coverage',
-    'karma-webpack',
+    'karma-vite',
+    'karma-typescript',
     'karma-sourcemap-loader',
   ],
 
-  reporters: ['progress', 'coverage'],
+  reporters: ['progress', 'coverage', 'karma-typescript'],
 
   coverageReporter: {
     reporters: [{ type: 'lcov' }],

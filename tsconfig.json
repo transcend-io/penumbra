@@ -4,7 +4,7 @@
     "rootDir": ".",
     "incremental": true,
     "target": "es2020",
-    "module": "commonjs",
+    "module": "ESNext",
     "lib": ["esnext", "dom", "es2020"],
     "allowJs": false,
     "declaration": true,
@@ -15,7 +15,7 @@
     "baseUrl": ".",
     "outDir": "ts-build",
     "composite": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "typeRoots": ["node_modules/@types", "src/@types"]
   },

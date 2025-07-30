@@ -1,6 +1,6 @@
 // Karma configuration
 const { short } = require('git-rev-sync');
-const getGlobalConfig = require('./karma.global');
+const getGlobalConfig = require('./karma.global.cjs');
 const packageJson = require('./package.json');
 
 module.exports = (config) => {
