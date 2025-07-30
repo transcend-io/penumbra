@@ -63,7 +63,11 @@ function makeReadableStream(encoded = false): ReadableStream<Uint8Array> {
 }
 
 // Benchmark
-const bench = new Bench({ name: 'simple benchmark', time: 100, iterations: 1 });
+const bench = new Bench({
+  name: 'simple benchmark',
+  time: 100,
+  iterations: 10,
+});
 bench
   .add('aes_gcm_stream_wasm', async () => {
     // Streams
