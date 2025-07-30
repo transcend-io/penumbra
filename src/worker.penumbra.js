@@ -35,7 +35,7 @@ import { logger } from './logger';
 import emitError from './utils/emitError';
 import { PenumbraError } from './error';
 
-if (self.document) {
+if (self.document && !self.isTest) {
   throw new Error('Worker thread should not be included in document');
 }
 

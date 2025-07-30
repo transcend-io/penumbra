@@ -4,11 +4,22 @@ import {
   createEncryptStream,
   createDecryptStream,
 } from '@bencmbrook/aes_gcm_stream';
+import type { PenumbraAPI } from '../src/types';
 
 globalThis.process = { env: { PENUMBRA_LOG_START: 'true' } } as any;
-
+globalThis.isTest = true;
+const scripts = document.createDocumentFragment();
+const penumbraNode = document.createElement('script');
+penumbraNode.async = true;
+penumbraNode.defer = true;
+penumbraNode.dataset.penumbra = '';
+penumbraNode.dataset.worker = 'dist/worker.penumbra.js';
+scripts.appendChild(penumbraNode);
+document.body.appendChild(scripts);
 // @ts-ignore
-const penumbra = await import('../dist/main.penumbra.js');
+await import('../dist/main.penumbra.js');
+const penumbra = globalThis.penumbra as PenumbraAPI;
+console.log(penumbra);
 
 // Initialize penumbra if it's not already initialized
 if (!penumbra) {
@@ -36,13 +47,13 @@ const cryptoKey = await crypto.subtle.importKey(
 const NUM_CHUNKS = 1;
 const CHUNK_SIZE = 1024;
 
-function makeReadableStream(): ReadableStream<Uint8Array> {
+function makeReadableStream(encoded = false): ReadableStream<Uint8Array> {
   return new ReadableStream({
     start(controller) {
       for (let index = 0; index < NUM_CHUNKS; index++) {
         const chunk = new Uint8Array(CHUNK_SIZE);
         for (let index = 0; index < chunk.length; index++) {
-          chunk[index] = Math.floor(Math.random() * 256);
+          chunk[index] = Math.floor(Math.random() * 1);
         }
         controller.enqueue(chunk);
       }
@@ -52,7 +63,7 @@ function makeReadableStream(): ReadableStream<Uint8Array> {
 }
 
 // Benchmark
-const bench = new Bench({ name: 'simple benchmark', time: 100 });
+const bench = new Bench({ name: 'simple benchmark', time: 100, iterations: 1 });
 bench
   .add('aes_gcm_stream_wasm', async () => {
     // Streams
@@ -89,7 +100,22 @@ bench
         );
       }
     },
-  );
+  )
+  .add('penumbra', async () => {
+    const readableStream = makeReadableStream();
+    const keyString = new TextDecoder().decode(key);
+    const keyBase64 = btoa(keyString);
+
+    const encrypted = await penumbra.encrypt(
+      { key: keyBase64 },
+      {
+        stream: readableStream,
+        size: CHUNK_SIZE * NUM_CHUNKS,
+      },
+    );
+    const decryptionInfo = await penumbra.getDecryptionInfo(encrypted[0]);
+    await penumbra.decrypt(decryptionInfo, encrypted[0]);
+  });
 
 await bench.run();
 console.log(globalThis.penumbra);

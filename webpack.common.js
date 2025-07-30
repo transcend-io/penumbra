@@ -24,6 +24,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     fallback: {
+      // uffer: require.resolve('buffer/'),
       stream: require.resolve('stream-browserify'),
       path: require.resolve('path-browserify'),
       vm: require.resolve('vm-browserify'),
@@ -51,6 +52,12 @@ module.exports = {
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
   },
+  plugins: [
+    new ProvidePlugin({
+      process: 'process/browser.js',
+      Buffer: ['buffer', 'Buffer'],
+    }),
+  ],
   // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
   // plugins: [
   // new ProvidePlugin({
