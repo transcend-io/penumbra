@@ -15,9 +15,20 @@ module.exports = {
   output: {
     filename: '[name].penumbra.js',
     path: join(__dirname, 'dist'),
+
+    module: true,
+  },
+  experiments: {
+    outputModule: true,
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      path: require.resolve('path-browserify'),
+      vm: require.resolve('vm-browserify'),
+      process: require.resolve('process'),
+    },
     // TODO: https://github.com/transcend-io/penumbra/issues/155 - webpack 5
     // fallback: {
     //   path: require.resolve('path-browserify'),
@@ -48,6 +59,6 @@ module.exports = {
   // }),
   // ],
   // devtool: 'source-map',
-  devtool: '',
+  // devtool: '',
   target: 'web', // Make web variables accessible to webpack, e.g. window
 };
