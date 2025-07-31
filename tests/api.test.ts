@@ -5,8 +5,8 @@ import {
   PenumbraFile,
   PenumbraReady,
   ProgressEmit,
-  type RemoteResource,
 } from '../src/types';
+import type { RemoteResource } from '../src/types';
 import { PenumbraSupportLevel } from '../src/enums';
 
 import { hash, timeout } from './helpers';

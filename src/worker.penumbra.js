@@ -91,7 +91,9 @@ class PenumbraWorker {
       });
       if (errors.length > 0) {
         throw new PenumbraError(
-          `${errors.length} file${errors.length === 1 ? '' : 's'} failed to fetch and decrypt:
+          `${errors.length} file${
+            errors.length === 1 ? '' : 's'
+          } failed to fetch and decrypt:
 ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
           'get',
         );
