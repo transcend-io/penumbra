@@ -54,7 +54,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
-      - run-karma
       - run-depcheck
       - build-and-upload-artifacts
       - run-pre-commits
@@ -73,7 +72,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
-      - run-karma
       - run-depcheck
       - build-and-upload-artifacts
       - run-pre-commits
