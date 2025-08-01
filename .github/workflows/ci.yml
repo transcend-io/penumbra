@@ -50,24 +50,6 @@ jobs:
         with:
           extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
-  check-uplad:
-    runs-on: ubuntu-latest
-    needs:
-      - run-depcheck
-      - build-and-upload-artifacts
-      - run-pre-commits
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_deps
-      - name: Download Build 
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifact
-      - name: Show 
-        run:
-          ls -R
-
   build-to-npm:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
