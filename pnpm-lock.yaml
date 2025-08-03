@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  streamsaver:
+    hash: 6bc4a1db6a5e2780604bd747a5bfd0d2b03dfbb860ad27df5ed9957c21457627
+    path: patches/streamsaver.patch
+
 importers:
 
   .:
@@ -25,7 +30,7 @@ importers:
         version: 4.0.7
       streamsaver:
         specifier: ^2.0.6
-        version: 2.0.6
+        version: 2.0.6(patch_hash=6bc4a1db6a5e2780604bd747a5bfd0d2b03dfbb860ad27df5ed9957c21457627)
     devDependencies:
       '@esm-bundle/chai':
         specifier: 4.3.4-fix.0
@@ -9640,7 +9645,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  streamsaver@2.0.6: {}
+  streamsaver@2.0.6(patch_hash=6bc4a1db6a5e2780604bd747a5bfd0d2b03dfbb860ad27df5ed9957c21457627): {}
 
   streamx@2.22.1:
     dependencies:

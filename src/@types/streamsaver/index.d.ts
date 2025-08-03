@@ -1,7 +1,7 @@
 /**
  * StreamSaver types
  */
-declare module 'streamsaver' {
+declare module 'streamsaver/StreamSaver.js' {
   /**
    * Create a write stream
    * @param filename - Filename

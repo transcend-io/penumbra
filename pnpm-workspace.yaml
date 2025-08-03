@@ -2,3 +2,6 @@ onlyBuiltDependencies:
   - esbuild
   - fsevents
   - unrs-resolver
+
+patchedDependencies:
+  streamsaver: patches/streamsaver.patch
