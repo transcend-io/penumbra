@@ -7,16 +7,8 @@ import { pipeline } from 'node:stream/promises';
 
 import mime from 'mime';
 
-import type { RemoteResource } from '../src/types';
 import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants';
-
-/**
- * A fixture is a remote resource with a checksum of the unencrypted file
- */
-export interface Fixture extends RemoteResource {
-  /** The checksum of the unencrypted file */
-  unencryptedChecksum: string;
-}
+import type { Fixture } from './types';
 
 const thisDirname = import.meta.dirname;
 

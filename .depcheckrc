@@ -1,2 +1,2 @@
-ignores: ["core-js", "babel-loader", "@babel/core", "@babel/plugin-proposal-class-properties", "@babel/preset-env", "@babel/preset-typescript", "depcheck", "karma-browserstack-launcher", "karma-chrome-launcher", "karma-firefox-launcher", "karma-safari-launcher", "karma-coverage", "karma-sourcemap-loader", "karma-tap", "karma-webpack", "nyc", "prettier", "webpack-cli", "worker-plugin", "buffer", "process"]
+ignores: ["depcheck", "karma-browserstack-launcher", "karma-chrome-launcher", "karma-firefox-launcher", "karma-safari-launcher", "karma-coverage", "karma-sourcemap-loader", "karma-tap", "karma-webpack", "nyc", "prettier", "webpack-cli", "worker-plugin", "process"]
 skip-missing: true

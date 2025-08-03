@@ -1,6 +1,4 @@
 onlyBuiltDependencies:
-  - core-js
-  - core-js-pure
   - esbuild
   - fsevents
   - unrs-resolver
