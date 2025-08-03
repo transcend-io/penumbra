@@ -64,7 +64,6 @@
     "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.4.1",
     "mime": "^4.0.7",
-    "promise.allsettled": "^1.0.7",
     "streamsaver": "^2.0.6"
   },
   "devDependencies": {

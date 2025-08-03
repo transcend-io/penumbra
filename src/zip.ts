@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
 import { streamSaver } from './streamsaver';
@@ -10,7 +9,7 @@ import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
-  const results = await allSettled<Promise<number>[]>(writes);
+  const results = await Promise.allSettled<Promise<number>[]>(writes);
   const sum = (
     results.filter(
       ({ status }) => status === 'fulfilled',
