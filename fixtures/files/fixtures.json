@@ -135,6 +135,7 @@
     "url": "/files/encrypted/big.zip.enc",
     "filePrefix": "big",
     "mimetype": "application/zip",
+    "size": 827287584,
     "decryptionOptions": {
       "key": "vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=",
       "iv": "6lNU+2vxJw6SFgse",

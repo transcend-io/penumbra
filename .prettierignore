@@ -8,4 +8,5 @@ LICENSE
 .editorconfig
 .browserslistrc
 fixtures/files
+example/files.js
 pnpm-lock.yaml

@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "exports": {
@@ -58,16 +58,14 @@
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "@transcend-io/conflux": "^4.1.0",
+    "@transcend-io/encrypt-web-streams": "^1.0.1",
     "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.4.1",
     "core-js": "^3.34.0",
-    "crypto-browserify": "^3.12.0",
     "mime": "^4.0.7",
+    "mime-types": "^2.1.35",
     "promise.allsettled": "^1.0.7",
-    "streamsaver": "^2.0.6",
-    "typedarray-to-buffer": "^4.0.0",
-    "web-streams-node": "^0.4.0",
-    "web-streams-polyfill": "^3.2.1"
+    "streamsaver": "^2.0.6"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.4",

@@ -12,7 +12,7 @@ export { PenumbraZipWriter } from './zip';
  */
 export interface PenumbraEncryptionOptions {
   /** Encryption key */
-  key: string | Buffer;
+  key: string | Uint8Array;
 }
 
 /**
@@ -20,9 +20,9 @@ export interface PenumbraEncryptionOptions {
  */
 export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
   /** Initialization vector */
-  iv: string | Buffer;
+  iv: string | Uint8Array;
   /** Authentication tag (for AES GCM) */
-  authTag: string | Buffer;
+  authTag: string | Uint8Array;
 }
 
 /**
