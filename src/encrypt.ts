@@ -87,7 +87,7 @@ export default function encrypt(
   // eslint-disable-next-line no-param-reassign
   size = file.size || size;
 
-  // Convert to Buffers
+  // Convert to Uint8Array
   const key = parseBase64OrUint8Array(options.key);
   const iv = (options as PenumbraDecryptionInfo).iv
     ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)

@@ -147,11 +147,11 @@ Encrypt files.
 penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): Promise<PenumbraEncryptedFile[]>
 
 /**
- * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
+ * penumbra.encrypt() encryption options config (Uint8Array or base64-encoded string)
  */
 type PenumbraEncryptionOptions = {
   /** Encryption key */
-  key: string | Buffer;
+  key: string | Uint8Array;
 };
 ```
 

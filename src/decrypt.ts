@@ -19,9 +19,9 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @param decipher - The crypto module's decipher
  * @param contentLength - The content length of the file, in bytes
  * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
- * @param key - Decryption key Buffer
- * @param iv - Decryption IV Buffer
- * @param authTag - Decryption authTag Buffer
+ * @param key - Decryption key Uint8Array
+ * @param iv - Decryption IV Uint8Array
+ * @param authTag - Decryption authTag Uint8Array
  * @returns A readable stream of decrypted data
  */
 export function decryptStream(
@@ -71,7 +71,7 @@ export default function decrypt(
   // eslint-disable-next-line no-param-reassign
   size = file.size || size;
 
-  // Convert to Buffers
+  // Convert to Uint8Array
   const key = parseBase64OrUint8Array(options.key);
   const iv = parseBase64OrUint8Array(options.iv);
   const authTag = parseBase64OrUint8Array(options.authTag);

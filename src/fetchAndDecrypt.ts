@@ -47,8 +47,7 @@ export default function fetchAndDecrypt({
         // Else we need to decrypt the blob
         const { iv, authTag, key } = decryptionOptions;
 
-        // Convert to buffers
-        // Convert to Buffers
+        // Convert to Uint8Array
         const bufferKey = parseBase64OrUint8Array(key);
         // Grab from header if possible
         const bufferIv = parseBase64OrUint8Array(

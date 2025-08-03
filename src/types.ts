@@ -26,12 +26,12 @@ export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
 }
 
 /**
- * Buffers only plz
+ * Only allow Uint8Array for iv
  */
-export interface PenumbraDecryptionInfoAsBuffer
+export interface PenumbraDecryptionInfoAsUint8Array
   extends Omit<PenumbraDecryptionInfo, 'iv'> {
-  /** Iv is a buffer */
-  iv: Buffer;
+  /** iv is a Uint8Array */
+  iv: Uint8Array;
 }
 
 /**

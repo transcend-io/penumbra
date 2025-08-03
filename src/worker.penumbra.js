@@ -5,7 +5,7 @@
  * @typedef {import('./types').PenumbraEncryptionOptions} PenumbraEncryptionOptions
  * @typedef {import('./types').PenumbraDecryptionInfo} PenumbraDecryptionInfo
  * @typedef {import('./types').PenumbraFile} PenumbraFile
- * @typedef {import('./types').PenumbraDecryptionInfoAsBuffer} PenumbraDecryptionInfoAsBuffer
+ * @typedef {import('./types').PenumbraDecryptionInfoAsUint8Array} PenumbraDecryptionInfoAsUint8Array
  * @typedef {import('./zip').PenumbraZipWriter} PenumbraZipWriter
  * @typedef {import('./enums').PenumbraSupportLevel} PenumbraSupportLevel
  */
