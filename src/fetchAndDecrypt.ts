@@ -1,12 +1,13 @@
 // external modules
-import { createDecipheriv } from 'crypto-browserify';
+import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // local
 import { RemoteResource } from './types';
 import { decryptStream } from './decrypt';
 import { PenumbraError } from './error';
-import { toBuff } from './utils';
+
 import emitError from './utils/emitError';
+import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
@@ -17,7 +18,6 @@ export default function fetchAndDecrypt({
   url,
   decryptionOptions,
   requestInit,
-  ignoreAuthTag,
 }: RemoteResource): Promise<ReadableStream> {
   return (
     fetch(url, requestInit)
@@ -48,14 +48,18 @@ export default function fetchAndDecrypt({
         const { iv, authTag, key } = decryptionOptions;
 
         // Convert to buffers
-        const bufferKey = toBuff(key);
+        // Convert to Buffers
+        const bufferKey = parseBase64OrUint8Array(key);
         // Grab from header if possible
-        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
-        const bufferAuthTag = toBuff(authTag);
+        const bufferIv = parseBase64OrUint8Array(
+          response.headers.get('x-penumbra-iv') || iv,
+        );
+        const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
         // Construct the decipher
-        const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
-        decipher.setAuthTag(bufferAuthTag);
+        const decipher = createDecryptionStream(bufferKey, bufferIv, {
+          authTag: bufferAuthTag,
+        });
 
         // Decrypt the stream
         return decryptStream(
@@ -66,7 +70,6 @@ export default function fetchAndDecrypt({
           bufferKey,
           bufferIv,
           bufferAuthTag,
-          ignoreAuthTag,
         );
       })
   );
