@@ -53,6 +53,7 @@
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "@transcend-io/conflux": "^4.1.0",
+    "@transcend-io/encrypt-web-streams": "^1.0.1",
     "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.4.1",
     "core-js": "^3.34.0",

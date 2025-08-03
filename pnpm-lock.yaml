@@ -11,6 +11,9 @@ importers:
       '@transcend-io/conflux':
         specifier: ^4.1.0
         version: 4.1.2
+      '@transcend-io/encrypt-web-streams':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@transcend-io/remote-web-streams':
         specifier: 1.0.5
         version: 1.0.5
@@ -949,6 +952,9 @@ packages:
 
   '@transcend-io/conflux@4.1.2':
     resolution: {integrity: sha512-xQeDoAaq7sBwN4ultvwLoR9MYx20tkL7NJpjFv80zQMJOPdovI4nMCSyWzsHFgf3k7HowxFciWx5TWMqqrLrZw==}
+
+  '@transcend-io/encrypt-web-streams@1.0.1':
+    resolution: {integrity: sha512-7TiueqEeS21wtcWTM5o5gR6825METBZ00Pqbezp15ffGfEdio9aP9CxrAeYPSCtWhkH/MmIY9jNqiBtiKqlnZQ==}
 
   '@transcend-io/remote-web-streams@1.0.5':
     resolution: {integrity: sha512-Ff/TsLZiOVKHH+0Gvx6nUn/KKHjY5o0uf9PWqxpEBL4yfVczIIFUDqiGEOKP9aN09Z+34q64yyZ7o3vk0mVH0Q==}
@@ -5372,6 +5378,8 @@ snapshots:
       jsbi: 4.3.2
       pako: 2.1.0
       web-streams-polyfill: 3.3.3
+
+  '@transcend-io/encrypt-web-streams@1.0.1': {}
 
   '@transcend-io/remote-web-streams@1.0.5':
     dependencies:
