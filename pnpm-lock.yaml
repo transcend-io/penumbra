@@ -26,9 +26,6 @@ importers:
       mime:
         specifier: ^4.0.7
         version: 4.0.7
-      mime-types:
-        specifier: ^2.1.35
-        version: 2.1.35
       promise.allsettled:
         specifier: ^1.0.7
         version: 1.0.7
@@ -36,9 +33,6 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
     devDependencies:
-      '@types/mime-types':
-        specifier: ^2.1.4
-        version: 2.1.4
       '@types/node':
         specifier: ^20.10.3
         version: 20.19.9
@@ -605,9 +599,6 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
-
-  '@types/mime-types@2.1.4':
-    resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
 
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
@@ -4478,8 +4469,6 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
-
-  '@types/mime-types@2.1.4': {}
 
   '@types/minimatch@3.0.5': {}
 
