@@ -7,7 +7,6 @@ import {
 } from '@transcend-io/remote-web-streams';
 import mime from 'mime-types';
 import { streamSaver } from './streamsaver';
-import { ReadableStream } from './streams';
 
 // Local
 import type {

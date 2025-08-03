@@ -23,9 +23,6 @@ importers:
       core-js:
         specifier: ^3.34.0
         version: 3.44.0
-      crypto-browserify:
-        specifier: ^3.12.0
-        version: 3.12.1
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -35,15 +32,6 @@ importers:
       streamsaver:
         specifier: ^2.0.6
         version: 2.0.6
-      typedarray-to-buffer:
-        specifier: ^4.0.0
-        version: 4.0.0
-      web-streams-node:
-        specifier: ^0.4.0
-        version: 0.4.0
-      web-streams-polyfill:
-        specifier: ^3.2.1
-        version: 3.3.3
     devDependencies:
       '@babel/core':
         specifier: ^7.23.5
@@ -2763,10 +2751,6 @@ packages:
     resolution: {integrity: sha512-ISWac8drv4ZGfwKl5slpHG9OwPNty4jOWPRIhBpxOoD+hqITiwuipOQ2bNthAzwA3B4fIjO4Nln74N0S9byq8A==}
     engines: {node: '>= 0.4'}
 
-  is-stream@1.1.0:
-    resolution: {integrity: sha512-uQPm8kcs47jx38atAcWTVxyltQYoPT68y9aWYdV6yWXSyW8mzSat0TL6CiWdZeCdF3KrAvpVtnHbTv4RN+rqdQ==}
-    engines: {node: '>=0.10.0'}
-
   is-stream@2.0.1:
     resolution: {integrity: sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==}
     engines: {node: '>=8'}
@@ -3553,9 +3537,6 @@ packages:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
 
-  readable-stream-node-to-web@1.0.1:
-    resolution: {integrity: sha512-OGzi2VKLa8H259kAx7BIwuRrXHGcxeHj4RdASSgEGBP9Q2wowdPvBc65upF4Q9O05qWgKqBw1+9PiLTtObl7uQ==}
-
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
 
@@ -4163,9 +4144,6 @@ packages:
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
 
-  typedarray-to-buffer@4.0.0:
-    resolution: {integrity: sha512-6dOYeZfS3O9RtRD1caom0sMxgK59b27+IwoNy8RDPsmslSGOyU+mpTamlaIW7aNKi90ZQZ9DFaZL3YRoiSCULQ==}
-
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
@@ -4300,15 +4278,9 @@ packages:
   watchpack@1.7.5:
     resolution: {integrity: sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==}
 
-  web-streams-node@0.4.0:
-    resolution: {integrity: sha512-u+PBQs8DFaBrN/bxCLFn21tO/ZP7EM3qA4FGzppoUCcZ5CaMbKOsN8uOp27ylVEsfrxcR2tsF6gWHI5M8bN73w==}
-
   web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
-
-  web-streams-ponyfill@1.4.2:
-    resolution: {integrity: sha512-LCHW+fE2UBJ2vjhqJujqmoxh1ytEDEr0dPO3CabMdMDJPKmsaxzS90V1Ar6LtNE5VHLqxR4YMEj1i4lzMAccIA==}
 
   webpack-cli@3.3.12:
     resolution: {integrity: sha512-NVWBaz9k839ZH/sinurM+HcDvJOTXwSjYp1ku+5XKeOC03z8v5QitnK/x+lAxGXFyhdayoIf/GOpv85z3/xPag==}
@@ -7687,8 +7659,6 @@ snapshots:
     dependencies:
       call-bound: 1.0.4
 
-  is-stream@1.1.0: {}
-
   is-stream@2.0.1: {}
 
   is-string@1.1.1:
@@ -8599,8 +8569,6 @@ snapshots:
       iconv-lite: 0.4.24
       unpipe: 1.0.0
 
-  readable-stream-node-to-web@1.0.1: {}
-
   readable-stream@2.3.8:
     dependencies:
       core-util-is: 1.0.3
@@ -9345,8 +9313,6 @@ snapshots:
     dependencies:
       is-typedarray: 1.0.0
 
-  typedarray-to-buffer@4.0.0: {}
-
   typedarray@0.0.6: {}
 
   typescript@5.8.3: {}
@@ -9490,15 +9456,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  web-streams-node@0.4.0:
-    dependencies:
-      is-stream: 1.1.0
-      readable-stream-node-to-web: 1.0.1
-      web-streams-ponyfill: 1.4.2
-
   web-streams-polyfill@3.3.3: {}
-
-  web-streams-ponyfill@1.4.2: {}
 
   webpack-cli@3.3.12(webpack@4.47.0):
     dependencies:

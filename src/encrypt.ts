@@ -5,7 +5,6 @@ import {
 } from '@transcend-io/encrypt-web-streams';
 
 // local
-import { TransformStream } from './streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,

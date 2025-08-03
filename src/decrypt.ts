@@ -1,5 +1,8 @@
 // external modules
-import { TransformStream } from './streams';
+import {
+  createDecryptionStream,
+  type DecryptionStream,
+} from '@transcend-io/encrypt-web-streams';
 
 // utils
 import {
@@ -8,10 +11,6 @@ import {
   PenumbraFile,
 } from './types';
 import { emitJobCompletion, emitProgress } from './utils';
-import {
-  createDecryptionStream,
-  type DecryptionStream,
-} from '@transcend-io/encrypt-web-streams';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**

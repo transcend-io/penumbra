@@ -57,13 +57,9 @@
     "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.4.1",
     "core-js": "^3.34.0",
-    "crypto-browserify": "^3.12.0",
     "mime-types": "^2.1.35",
     "promise.allsettled": "^1.0.7",
-    "streamsaver": "^2.0.6",
-    "typedarray-to-buffer": "^4.0.0",
-    "web-streams-node": "^0.4.0",
-    "web-streams-polyfill": "^3.2.1"
+    "streamsaver": "^2.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.23.5",

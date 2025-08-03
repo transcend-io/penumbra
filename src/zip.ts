@@ -6,7 +6,6 @@ import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
-import { ReadableStream } from './streams';
 import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
 
