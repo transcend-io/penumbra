@@ -9,8 +9,8 @@ const TIMEOUT_MS = 10 * 60 * 1000;
  * @type {Record<string, string>}
  */
 const environment = {
-  /** @type {'include' | 'skip' | 'only'} */
-  FF_BIG_FIXTURES: 'skip',
+  /** @type {'true' | 'false'} */
+  PENUMBRA_LOG_START: 'true',
 };
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */

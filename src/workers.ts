@@ -27,7 +27,16 @@ const DEFAULT_WORKERS = {
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const SHOULD_LOG_EVENTS = process.env.PENUMBRA_LOG_START === 'true';
+// TODO clean this up
+declare global {
+  interface Window {
+    environment: {
+      PENUMBRA_LOG_START?: 'true' | 'false' | undefined;
+    };
+  }
+}
+
+const SHOULD_LOG_EVENTS = self?.environment?.PENUMBRA_LOG_START === 'true';
 
 // //// //
 // Init //

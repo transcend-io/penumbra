@@ -1,2 +1,2 @@
-ignores: ["depcheck", "karma-browserstack-launcher", "karma-chrome-launcher", "karma-firefox-launcher", "karma-safari-launcher", "karma-coverage", "karma-sourcemap-loader", "karma-tap", "karma-webpack", "nyc", "prettier", "webpack-cli", "worker-plugin", "process"]
+ignores: ["depcheck", "karma-browserstack-launcher", "karma-chrome-launcher", "karma-firefox-launcher", "karma-safari-launcher", "karma-coverage", "karma-sourcemap-loader", "karma-tap", "karma-webpack", "nyc", "prettier", "webpack-cli", "worker-plugin"]
 skip-missing: true
