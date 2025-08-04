@@ -18,7 +18,7 @@ import { emitProgress, emitJobCompletion } from './utils';
 import { logger } from './logger';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
-await init();
+// await init();
 
 /**
  * Encrypts a readable stream

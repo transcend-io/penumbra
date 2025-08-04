@@ -23,6 +23,7 @@ import {
   fromWritablePort,
   fromReadablePort,
 } from '@transcend-io/remote-web-streams';
+import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
@@ -222,7 +223,9 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param id - ID
    * @param handler - handler
    */
-  setup(id, handler) {
+  async setup(id, handler) {
+    // Initialize the Wasm from the encrypt-web-streams library
+    await init();
     setWorkerID(id);
     onPenumbraEvent.handler = handler;
   }

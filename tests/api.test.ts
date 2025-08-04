@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { assert } from '@esm-bundle/chai';
 
 import type {
@@ -11,12 +10,16 @@ import type {
 
 import { PenumbraSupportLevel } from '../src/enums';
 import { logger } from '../src/logger';
+import { penumbra as initialPenumbra } from '../src/index';
 
 import { hash, timeout } from './helpers';
 import type { TimeoutManager } from './helpers/timeout';
 
 import type { Fixture } from '../fixtures/types';
-import { KARMA_FIXTURES_URL, REMOTE_FIXTURES_URL } from '../fixtures/constants';
+import {
+  FIXTURES_SERVER_URL,
+  REMOTE_FIXTURES_URL,
+} from '../fixtures/constants';
 
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
 
@@ -58,7 +61,7 @@ function getFixture(
       ...remoteResource,
       url: remote
         ? `${REMOTE_FIXTURES_URL}${remoteResource.url}`
-        : `${KARMA_FIXTURES_URL}${remoteResource.url}`,
+        : `${FIXTURES_SERVER_URL}/fixtures${remoteResource.url}`,
     },
     unencryptedChecksum,
   };
@@ -66,27 +69,24 @@ function getFixture(
 
 const view = self;
 
-describe('Penumbra API', () => {
-  let penumbra: PenumbraAPI;
+describe('Penumbra API', async () => {
+  let penumbra: PenumbraAPI = initialPenumbra;
 
-  before(
-    () =>
-      new Promise<void>((resolve) => {
-        const onReady = (event?: Event): void => {
-          const penumbraReady = event as PenumbraReady | undefined;
-          logger.log('penumbra ready fired!');
-          penumbra = ((penumbraReady && penumbraReady.detail.penumbra) ||
-            view.penumbra) as PenumbraAPI;
-          resolve();
-        };
+  await new Promise<void>((resolve) => {
+    const onReady = (event?: Event): void => {
+      const penumbraReady = event as PenumbraReady | undefined;
+      logger.log('penumbra ready fired!');
+      penumbra = ((penumbraReady && penumbraReady.detail.penumbra) ||
+        view.penumbra) as PenumbraAPI;
+      resolve();
+    };
 
-        if (!view.penumbra) {
-          view.addEventListener('penumbra-ready', onReady, { once: true });
-        } else {
-          onReady();
-        }
-      }),
-  );
+    if (!view.penumbra) {
+      view.addEventListener('penumbra-ready', onReady, { once: true });
+    } else {
+      onReady();
+    }
+  });
 
   it('should support at least size-limited', () => {
     assert.isAtLeast(
