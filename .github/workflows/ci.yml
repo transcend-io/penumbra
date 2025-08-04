@@ -62,7 +62,7 @@ jobs:
           command: |
             pnpm run test
           # The least flakey browser to test on
-          on_retry_command: |
+          new_command_on_retry: |
             pnpm run test:chromium
 
   publish:
