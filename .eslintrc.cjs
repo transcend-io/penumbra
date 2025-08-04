@@ -83,7 +83,6 @@ module.exports = {
 
     /**
      * We prefer to use types instead of interfaces
-     *
      * @see https://www.notion.so/transcend/Use-Type-instead-of-Interface-b3868d0885724b6894647018323a57b2
      */
     '@typescript-eslint/prefer-interface': 0,
@@ -104,7 +103,6 @@ module.exports = {
 
     /**
      * We use a custom pre-commit for import orders
-     *
      * @see pre_commit_hooks/ordered_imports.js
      */
     'import/order': 0,
@@ -150,14 +148,12 @@ module.exports = {
 
     /**
      * Type signatures should be combined if possible:
-     *
      * @see https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/unified-signatures.md
      */
     '@typescript-eslint/unified-signatures': ['error'],
 
     /**
      * Group overrides next to each other
-     *
      * @see https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/adjacent-overload-signatures.md
      */
     '@typescript-eslint/adjacent-overload-signatures': ['error'],
@@ -165,7 +161,6 @@ module.exports = {
     /**
      * Explicitly specify return types to functions. This improves type safety
      * and also allows compiler to optimize
-     *
      * @see https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/explicit-function-return-type.md
      * @see https://www.notion.so/transcend/4ef10ad243b746d9b2a84f8bb4a1b01a?v=8eb2ce8c21d54b43a916e7f93a563950&p=36b3bd33e054443084d2759537e6423b
      */

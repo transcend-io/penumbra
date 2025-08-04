@@ -1,12 +1,10 @@
-// external modules
-import { createDecipheriv } from 'crypto-browserify';
-
 // local
 import { RemoteResource } from './types';
 import { decryptStream } from './decrypt';
 import { PenumbraError } from './error';
-import { toBuff } from './utils';
+
 import emitError from './utils/emitError';
+import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
@@ -17,7 +15,8 @@ export default function fetchAndDecrypt({
   url,
   decryptionOptions,
   requestInit,
-  ignoreAuthTag,
+  // Dangerously bypass authTag validation. Only use this for testing purposes.
+  ignoreAuthTag = false,
 }: RemoteResource): Promise<ReadableStream> {
   return (
     fetch(url, requestInit)
@@ -47,20 +46,17 @@ export default function fetchAndDecrypt({
         // Else we need to decrypt the blob
         const { iv, authTag, key } = decryptionOptions;
 
-        // Convert to buffers
-        const bufferKey = toBuff(key);
+        // Convert to Uint8Array
+        const bufferKey = parseBase64OrUint8Array(key);
         // Grab from header if possible
-        const bufferIv = toBuff(response.headers.get('x-penumbra-iv') || iv);
-        const bufferAuthTag = toBuff(authTag);
-
-        // Construct the decipher
-        const decipher = createDecipheriv('aes-256-gcm', bufferKey, bufferIv);
-        decipher.setAuthTag(bufferAuthTag);
+        const bufferIv = parseBase64OrUint8Array(
+          response.headers.get('x-penumbra-iv') || iv,
+        );
+        const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
         // Decrypt the stream
         return decryptStream(
           response.body,
-          decipher,
           Number(response.headers.get('Content-Length')) || null,
           url,
           bufferKey,

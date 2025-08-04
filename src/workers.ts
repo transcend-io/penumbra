@@ -11,7 +11,6 @@ import type {
   WorkerLocationOptions,
   ProgressEmit,
 } from './types';
-import { advancedStreamsSupported } from './ua-support';
 import { logger } from './logger';
 import { settings } from './settings';
 
@@ -23,11 +22,22 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: 'worker.penumbra.js',
+  penumbra: import.meta.resolve('./worker.penumbra.ts'),
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
-const SHOULD_LOG_EVENTS = process.env.PENUMBRA_LOG_START === 'true';
+// TODO clean this up
+declare global {
+  interface Window {
+    /** Environment variables */
+    environment: {
+      /** Whether to log events on startup */
+      PENUMBRA_LOG_START?: 'true' | 'false' | undefined;
+    };
+  }
+}
+
+const SHOULD_LOG_EVENTS = self?.environment?.PENUMBRA_LOG_START === 'true';
 
 // //// //
 // Init //
@@ -144,7 +154,7 @@ let workerID = 0;
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
-  const worker = new Worker(url /* , { type: 'module' } */);
+  const worker = new Worker(url, { type: 'module' });
   const id = workerID++;
   const penumbraWorker: PenumbraWorker = {
     worker,
@@ -268,10 +278,6 @@ view.addEventListener('beforeunload', cleanup);
 export async function setWorkerLocation(
   options: WorkerLocationOptions | string,
 ): Promise<void> {
-  // Workers require WritableStream & TransformStream
-  if (!advancedStreamsSupported) {
-    return;
-  }
   if (initialized) {
     logger.warn('Penumbra Workers are already active. Reinitializing...');
     await cleanup();

@@ -1,139 +1,56 @@
 // external modules
-import { createCipheriv } from 'crypto-browserify';
+import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // local
-import { CipherGCM } from 'crypto';
-import toBuffer from 'typedarray-to-buffer';
-import { TransformStream } from './streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFileWithID,
+  JobID,
 } from './types';
 
 // utils
-import { emitProgress, toBuff, emitJobCompletion } from './utils';
+import { emitProgress, emitJobCompletion } from './utils';
 import { logger } from './logger';
-import { PenumbraError } from './error';
-import emitError from './utils/emitError';
+import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
  * Encrypts a readable stream
- * @param jobID - Job ID
- * @param rs - A readable stream of encrypted data
- * @param cipher - The crypto module's cipher
+ * @param id - Job ID
+ * @param readableStream - A readable stream of encrypted data
  * @param contentLength - The content length of the file, in bytes
- * @param key - Decryption key Buffer
- * @param iv - Decryption IV Buffer
- * @returns A readable stream of decrypted data
+ * @param key - Encryption key Buffer
+ * @param iv - Encryption IV Buffer
+ * @returns A readable stream of encrypted data
  */
 export function encryptStream(
-  jobID: number,
-  rs: ReadableStream,
-  cipher: CipherGCM,
+  id: JobID<number>,
+  readableStream: ReadableStream,
   contentLength: number,
-  key: Buffer,
-  iv: Buffer,
+  key: Uint8Array,
+  iv: Uint8Array,
 ): ReadableStream {
-  const stream: ReadableStream = rs;
   let totalBytesRead = 0;
 
-  // TransformStreams are supported
-  if ('TransformStream' in self) {
-    return stream.pipeThrough(
-      new (TransformStream as typeof self.TransformStream)({
-        transform: (chunk, controller) => {
-          const bufferChunk = toBuffer(chunk);
-
-          // Encrypt chunk and send it out
-          const encryptedChunk = cipher.update(bufferChunk);
-          controller.enqueue(encryptedChunk);
-
-          // Emit a progress update
-          totalBytesRead += bufferChunk.length;
-          emitProgress('encrypt', totalBytesRead, contentLength, jobID);
-        },
-        flush: (controller) => {
-          // Finalize encryption when stream is done
-          const final = cipher.final();
-          if (final.length > 0) {
-            controller.enqueue(final);
-          }
-          const authTag = cipher.getAuthTag();
-          emitJobCompletion(jobID, { key, iv, authTag });
-        },
-      }),
-    );
-  }
-
-  // TransformStream not supported, revert to ReadableStream
-  const reader = stream.getReader();
-  return new ReadableStream({
-    /**
-     * Controller
-     * @param controller - Controller
-     */
-    start(controller) {
-      /**
-       * Push on
-       */
-      function push(): void {
-        reader.read().then(({ done, value }) => {
-          if (done) {
-            controller.close();
-            return;
-          }
-
-          const chunk = toBuffer(value);
-
-          // Encrypt chunk
-          const encryptedChunk = cipher.update(chunk);
-
-          controller.enqueue(encryptedChunk);
-          push();
-
-          // Emit a progress update
-          totalBytesRead += chunk.length;
-          emitProgress('encrypt', totalBytesRead, contentLength, jobID);
-
-          if (totalBytesRead >= contentLength) {
-            cipher.final();
-            const authTag = cipher.getAuthTag();
-            emitJobCompletion(jobID, {
-              key,
-              iv,
-              authTag,
-            });
-          }
-        });
-      }
-      push();
-    },
-    /**
-     * On cancel of the encryption stream, throw an error
-     * @param reason - The reason for the cancellation
-     */
-    async cancel(reason) {
-      const err = new PenumbraError(
-        `Encryption stream was cancelled: ${reason}`,
-        jobID,
-      );
-      logger.error(err);
-      await reader.cancel(err);
-      emitError(err);
-      throw err;
-    },
+  // Construct the encryption stream
+  const encryptionStream = createEncryptionStream(key, iv, {
+    detachAuthTag: true,
   });
-}
 
-/**
- * Encrypt a buffer
- * @returns Buffer
- */
-export function encryptBuffer(): ArrayBuffer {
-  logger.error('penumbra encryptBuffer() is not yet implemented');
-  return new ArrayBuffer(10);
+  return readableStream.pipeThrough(encryptionStream).pipeThrough(
+    new TransformStream<Uint8Array, Uint8Array>({
+      transform: (chunk, controller) => {
+        controller.enqueue(chunk);
+        totalBytesRead += chunk.length;
+        emitProgress('encrypt', totalBytesRead, contentLength, id);
+      },
+      flush: () => {
+        const authTag = encryptionStream.getAuthTag();
+        emitJobCompletion(id, { key, iv, authTag });
+      },
+    }),
+  );
 }
 
 const GENERATED_KEY_RANDOMNESS = 256;
@@ -145,7 +62,7 @@ const IV_RANDOMNESS = 12;
  * @param options - Options
  * @param file - The remote resource to download
  * @param size - Size
- * @returns A readable stream of the deciphered file
+ * @returns A readable stream of the encrypted file
  */
 export default function encrypt(
   options: PenumbraEncryptionOptions | null,
@@ -160,9 +77,7 @@ export default function encrypt(
     // eslint-disable-next-line no-param-reassign
     options = {
       ...options,
-      key: toBuffer(
-        crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
-      ),
+      key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
     };
   }
 
@@ -170,20 +85,16 @@ export default function encrypt(
   // eslint-disable-next-line no-param-reassign
   size = file.size || size;
 
-  // Convert to Buffers
-  const key = toBuff(options.key);
-  const iv = toBuff(
-    (options as PenumbraDecryptionInfo).iv
-      ? toBuff((options as PenumbraDecryptionInfo).iv)
-      : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS)),
-  );
+  // Convert to Uint8Array
+  const key = parseBase64OrUint8Array(options.key);
+  const iv = (options as PenumbraDecryptionInfo).iv
+    ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
+    : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
 
-  // Construct the decipher
-  const cipher = createCipheriv('aes-256-gcm', key, iv);
   // Encrypt the stream
   return {
     ...file,
     id,
-    stream: encryptStream(id, file.stream, cipher, size, key, iv),
+    stream: encryptStream(id, file.stream, size, key, iv),
   };
 }

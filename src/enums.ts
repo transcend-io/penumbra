@@ -14,10 +14,6 @@ export enum Compression {
 export enum PenumbraSupportLevel {
   /** Old browser where Penumbra does not work at all */
   none = -0,
-  /** Modern browser where Penumbra is not yet supported */
-  possible = 0,
-  /** Modern browser where file size limit is low */
-  size_limited = 1,
   /** Modern browser with full support */
   full = 2,
 }

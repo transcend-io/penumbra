@@ -1,7 +1,7 @@
 import { PenumbraSupportLevel } from './enums';
 
 /** Whether WritableStream and TransformStream are natively supported */
-export const advancedStreamsSupported =
+const advancedStreamsSupported =
   'WritableStream' in self && 'TransformStream' in self;
 let supportLevel: PenumbraSupportLevel = PenumbraSupportLevel.none;
 
@@ -14,11 +14,10 @@ if (
   typeof self.Proxy === 'function' &&
   typeof self.Promise === 'function' &&
   typeof self.Response === 'function' &&
-  typeof self.fetch === 'function'
+  typeof self.fetch === 'function' &&
+  advancedStreamsSupported
 ) {
-  supportLevel = advancedStreamsSupported
-    ? PenumbraSupportLevel.full
-    : PenumbraSupportLevel.size_limited;
+  supportLevel = PenumbraSupportLevel.full;
 }
 
 /**

@@ -1,14 +1,10 @@
-// @ts-check
-/**
- * @typedef {import('./types').PenumbraWorkerAPI} PenumbraWorkerAPI
- * @typedef {import('./types').RemoteResource} RemoteResource
- * @typedef {import('./types').PenumbraEncryptionOptions} PenumbraEncryptionOptions
- * @typedef {import('./types').PenumbraDecryptionInfo} PenumbraDecryptionInfo
- * @typedef {import('./types').PenumbraFile} PenumbraFile
- * @typedef {import('./types').PenumbraDecryptionInfoAsBuffer} PenumbraDecryptionInfoAsBuffer
- * @typedef {import('./zip').PenumbraZipWriter} PenumbraZipWriter
- * @typedef {import('./enums').PenumbraSupportLevel} PenumbraSupportLevel
- */
+import type {
+  PenumbraWorkerAPI,
+  RemoteResource,
+  PenumbraEncryptionOptions,
+  PenumbraDecryptionInfo,
+  JobID,
+} from './types';
 
 /**
  * Penumbra Worker
@@ -19,10 +15,8 @@
 
 /* eslint-disable class-methods-use-this */
 import { expose } from 'comlink';
-import {
-  fromWritablePort,
-  fromReadablePort,
-} from '@transcend-io/remote-web-streams';
+import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
+import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
@@ -41,15 +35,17 @@ if (self.document) {
 
 /**
  * Penumbra Worker class
- * @implements {PenumbraWorkerAPI}
  */
-class PenumbraWorker {
+class PenumbraWorker implements PenumbraWorkerAPI {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    * @param writablePorts - Remote Web Stream writable ports
    * @param resources - The remote resource to download
    */
-  async get(writablePorts, resources) {
+  async get(
+    writablePorts: MessagePort[],
+    resources: RemoteResource[],
+  ): Promise<void> {
     const writableCount = writablePorts.length;
     const resourceCount = resources.length;
     if (writableCount !== resourceCount) {
@@ -81,7 +77,7 @@ class PenumbraWorker {
       );
 
       // Emit an error for each failed fetch
-      const errors = [];
+      const errors: PenumbraError[] = [];
       results.forEach((result, i) => {
         if (result.status === 'rejected') {
           const err = new PenumbraError(result.reason, resources[i].url);
@@ -98,35 +94,22 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
           'get',
         );
       }
-    } catch (error) {
-      emitError(error);
+    } catch (error: unknown) {
+      if (error instanceof PenumbraError) {
+        emitError(error);
+        logger.error(error);
+        throw error;
+      }
+      emitError(
+        new PenumbraError(
+          error instanceof Error ? error : new Error(String(error)),
+          'get',
+        ),
+      );
       logger.error(error);
       throw error;
     }
   }
-
-  // /**
-  //  * Fetches remote files from URLs, deciphers them (if encrypted),
-  //  * fully buffers the response, and returns ArrayBuffer[]
-  //  * @param resources - The remote resources to download
-  //  * @returns ArrayBuffer[] of the deciphered files
-  //  */
-  // getBuffers(resources) {
-  //   return Promise.all(
-  //     resources.map((resource) => {
-  //       if (!('url' in resource)) {
-  //         throw new Error(
-  //           'PenumbraDecryptionWorker.getBuffers(): RemoteResource missing URL',
-  //         );
-  //       }
-  //       return fetchAndDecrypt(resource).then((stream) =>
-  //         new Response(stream)
-  //           .arrayBuffer()
-  //           .then((buffer) => transfer(buffer, [buffer])),
-  //       );
-  //     }),
-  //   );
-  // }
 
   /**
    * Streaming decryption of ReadableStreams
@@ -136,7 +119,13 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
    * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
    */
-  decrypt(options, ids, sizes, readablePorts, writablePorts) {
+  decrypt(
+    options: PenumbraDecryptionInfo,
+    ids: JobID<number>[],
+    sizes: number[],
+    readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
+  ): void {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -177,7 +166,13 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    */
-  encrypt(options, ids, sizes, readablePorts, writablePorts) {
+  encrypt(
+    options: PenumbraEncryptionOptions | null,
+    ids: JobID<number>[],
+    sizes: number[],
+    readablePorts: MessagePort[],
+    writablePorts: MessagePort[],
+  ): void {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -210,19 +205,14 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
     });
   }
 
-  // /**
-  //  * Buffered (non-streaming) encryption of ArrayBuffers
-  //  */
-  // encryptBuffers() {
-  //   //
-  // }
-
   /**
    * Forward events to main thread
-   * @param id - ID
+   * @param id - Worker ID
    * @param handler - handler
    */
-  setup(id, handler) {
+  async setup(id: number, handler: (event: Event) => void): Promise<void> {
+    // Initialize the Wasm from the encrypt-web-streams library
+    await init();
     setWorkerID(id);
     onPenumbraEvent.handler = handler;
   }

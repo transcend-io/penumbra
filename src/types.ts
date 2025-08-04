@@ -8,11 +8,18 @@ import { PenumbraError } from './error';
 export { PenumbraZipWriter } from './zip';
 
 /**
+ * Job ID type
+ * @param T - The type of the job ID
+ * TODO: Brand this, make it only a number. Do the same for WorkerID (already number)
+ */
+export type JobID<T extends string | number = string | number> = T;
+
+/**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
  */
 export interface PenumbraEncryptionOptions {
   /** Encryption key */
-  key: string | Buffer;
+  key: string | Uint8Array;
 }
 
 /**
@@ -20,18 +27,18 @@ export interface PenumbraEncryptionOptions {
  */
 export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
   /** Initialization vector */
-  iv: string | Buffer;
+  iv: string | Uint8Array;
   /** Authentication tag (for AES GCM) */
-  authTag: string | Buffer;
+  authTag: string | Uint8Array;
 }
 
 /**
- * Buffers only plz
+ * Only allow Uint8Array for iv
  */
-export interface PenumbraDecryptionInfoAsBuffer
+export interface PenumbraDecryptionInfoAsUint8Array
   extends Omit<PenumbraDecryptionInfo, 'iv'> {
-  /** Iv is a buffer */
-  iv: Buffer;
+  /** iv is a Uint8Array */
+  iv: Uint8Array;
 }
 
 /**
@@ -55,10 +62,8 @@ export interface RemoteResource {
   /** Expected file size */
   size?: number;
   /**
-   * Disable calling .final() to validate the authTag.
-   *
-   * This is useful when providing x-penumbra-iv which is used
-   * when the iv is not known
+   * Dangerously bypass authTag validation. Only use this for testing purposes.
+   * @default false
    */
   ignoreAuthTag?: boolean;
 }
@@ -70,7 +75,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
   /** File size (if backed by a ReadableStream) */
   size?: number;
   /** Optional ID for tracking encryption completion */
-  id?: number | string;
+  id?: JobID;
   /** Last modified date */
   lastModified?: Date;
 }
@@ -78,7 +83,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
 /** Penumbra file that is currently being encrypted */
 export interface PenumbraFileWithID extends PenumbraFile {
   /** ID for tracking encryption completion */
-  id: number;
+  id: JobID<number>;
 }
 
 /** penumbra file (internal) */
@@ -96,7 +101,7 @@ export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
  */
 export interface ProgressDetails {
   /** The job ID # or URL being downloaded from for decryption */
-  id: string | number;
+  id: JobID;
   /** The ID of the worker thread that is processing this job */
   worker?: number | null;
   /** Event type */
@@ -156,7 +161,7 @@ export interface JobCompletion {
   /** Worker ID */
   worker?: number | null;
   /** Job ID */
-  id: string | number;
+  id: JobID;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
 }
@@ -222,7 +227,7 @@ export interface PenumbraWorkerAPI {
    */
   encrypt: (
     options: PenumbraEncryptionOptions | null,
-    ids: number[],
+    ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
@@ -246,7 +251,7 @@ export interface PenumbraWorkerAPI {
    */
   decrypt: (
     options: PenumbraDecryptionInfo,
-    ids: number[],
+    ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
@@ -280,7 +285,7 @@ export interface WorkerLocation {
   base: URL;
   /** The location of the Penumbra Worker script */
   penumbra: URL;
-  /** The location of the StreamSaver ServiceWorker script */
+  /** The location of the StreamSaver ServiceWorker script - TODO: is this in use? */
   StreamSaver: URL;
 }
 
@@ -361,7 +366,7 @@ export interface ZipOptions
      */
     onProgress?(event: ZipProgressEmit): void;
     /**
-     * Auto-registered `'write-complete'` event listener. This is equivalent to calling
+     * Auto-registered `'complete'` event listener. This is equivalent to calling
      * `PenumbraZipWriter.addEventListener('complete', onComplete)`
      */
     onComplete?(event: ZipCompletionEmit): void;

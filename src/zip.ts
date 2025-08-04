@@ -1,17 +1,15 @@
 /* eslint-disable max-lines */
-import allSettled from 'promise.allsettled';
 import { Writer } from '@transcend-io/conflux';
-import mime from 'mime-types';
+import mime from 'mime';
 import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
 import { Compression } from './enums';
-import { ReadableStream } from './streams';
 import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
-  const results = await allSettled<Promise<number>[]>(writes);
+  const results = await Promise.allSettled<Promise<number>[]>(writes);
   const sum = (
     results.filter(
       ({ status }) => status === 'fulfilled',
@@ -205,7 +203,7 @@ export class PenumbraZipWriter extends EventTarget {
           }
           const [
             filename,
-            extension = mimetype ? mime.extension(mimetype) : '',
+            extension = mimetype ? mime.getExtension(mimetype) : '',
           ] = name
             .split(/(\.\w+\s*$)/) // split filename extension
             .filter(Boolean); // filter empty matches

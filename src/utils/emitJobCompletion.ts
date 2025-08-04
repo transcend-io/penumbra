@@ -1,6 +1,10 @@
 // penumbra
 import { PenumbraEvent } from '../event';
-import { JobCompletionEmit, PenumbraDecryptionInfo } from '../types';
+import {
+  JobCompletionEmit,
+  PenumbraDecryptionInfo,
+  type JobID,
+} from '../types';
 
 /**
  * An event emitter for job completion
@@ -9,7 +13,7 @@ import { JobCompletionEmit, PenumbraDecryptionInfo } from '../types';
  * @param target - Target
  */
 export default function emitJobCompletion(
-  id: string | number,
+  id: JobID,
   decryptionInfo: PenumbraDecryptionInfo,
   target: EventTarget = self,
 ): void {
