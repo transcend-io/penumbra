@@ -242,7 +242,7 @@ const decryptionConfigs = new Map<string | number, PenumbraDecryptionInfo>();
 const trackJobCompletion = (
   searchForID: string | number,
 ): Promise<PenumbraDecryptionInfo> =>
-  new Promise((complete) => {
+  new Promise((resolve) => {
     const listener = ({
       type,
       detail: { id, decryptionInfo },
@@ -251,7 +251,7 @@ const trackJobCompletion = (
       if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (self.removeEventListener as any)(type, listener);
-        complete(decryptionInfo);
+        resolve(decryptionInfo);
       }
     };
     self.addEventListener('penumbra-complete', listener);

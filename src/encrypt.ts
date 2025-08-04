@@ -32,26 +32,27 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  */
 export function encryptStream(
   jobID: number,
-  rs: ReadableStream,
-  cipher: EncryptionStream,
+  readableStream: ReadableStream,
   contentLength: number,
   key: Uint8Array,
   iv: Uint8Array,
 ): ReadableStream {
-  const stream: ReadableStream = rs;
   let totalBytesRead = 0;
 
-  return stream.pipeThrough(
+  // Construct the encryption stream
+  const encryptionStream = createEncryptionStream(key, iv, {
+    detachAuthTag: true,
+  });
+
+  return readableStream.pipeThrough(encryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
-
-        // Emit a progress update
         totalBytesRead += chunk.length;
         emitProgress('encrypt', totalBytesRead, contentLength, jobID);
       },
       flush: () => {
-        const authTag = cipher.getAuthTag();
+        const authTag = encryptionStream.getAuthTag();
         emitJobCompletion(jobID, { key, iv, authTag });
       },
     }),
@@ -96,15 +97,10 @@ export default function encrypt(
     ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
     : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
 
-  // Construct the decipher
-  const cipher = createEncryptionStream(key, iv, {
-    detachAuthTag: true,
-  });
-
   // Encrypt the stream
   return {
     ...file,
     id,
-    stream: encryptStream(id, file.stream, cipher, size, key, iv),
+    stream: encryptStream(id, file.stream, size, key, iv),
   };
 }

@@ -28,8 +28,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @returns A readable stream of decrypted data
  */
 export function decryptStream(
-  stream: ReadableStream,
-  decipher: DecryptionStream,
+  readableStream: ReadableStream,
   contentLength: number | null,
   id: string | number,
   key: Uint8Array,
@@ -38,7 +37,10 @@ export function decryptStream(
 ): ReadableStream {
   let totalBytesRead = 0;
 
-  return stream.pipeThrough(decipher).pipeThrough(
+  // Construct the decryption stream
+  const decryptionStream = createDecryptionStream(key, iv, { authTag });
+
+  return readableStream.pipeThrough(decryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
@@ -79,13 +81,10 @@ export default function decrypt(
   const iv = parseBase64OrUint8Array(options.iv);
   const authTag = parseBase64OrUint8Array(options.authTag);
 
-  // Construct the decipher
-  const decipher = createDecryptionStream(key, iv, { authTag });
-
   // Encrypt the stream
   return {
     ...file,
     id,
-    stream: decryptStream(file.stream, decipher, size, id, key, iv, authTag),
+    stream: decryptStream(file.stream, size, id, key, iv, authTag),
   };
 }

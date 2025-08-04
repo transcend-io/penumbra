@@ -60,15 +60,9 @@ export default function fetchAndDecrypt({
         );
         const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
-        // Construct the decipher
-        const decipher = createDecryptionStream(bufferKey, bufferIv, {
-          authTag: bufferAuthTag,
-        });
-
         // Decrypt the stream
         return decryptStream(
           response.body,
-          decipher,
           Number(response.headers.get('Content-Length')) || null,
           url,
           bufferKey,
