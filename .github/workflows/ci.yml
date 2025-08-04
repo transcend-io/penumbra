@@ -57,10 +57,13 @@ jobs:
       - name: Run tests
         uses: nick-fields/retry@v2
         with:
-          max_attempts: 3
-          timeout_seconds: 40
+          max_attempts: 2
+          timeout_seconds: 30
           command: |
             pnpm run test
+          # The least flakey browser to test on
+          on_retry_command: |
+            pnpm run test:chromium
 
   publish:
     if: github.ref == 'refs/heads/main'

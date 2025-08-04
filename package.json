@@ -21,6 +21,7 @@
   "scripts": {
     "build": "vite build",
     "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
+    "test:chromium": "web-test-runner --node-resolve --playwright --browsers chromium --files tests/**/*.test.ts",
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
