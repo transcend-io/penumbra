@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "7.0.0-alpha.1",
+  "version": "7.0.0",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "exports": {
