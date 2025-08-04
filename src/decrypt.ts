@@ -19,6 +19,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @param key - Decryption key Uint8Array
  * @param iv - Decryption IV Uint8Array
  * @param authTag - Decryption authTag Uint8Array
+ * @param ignoreAuthTag - Dangerously bypass authTag validation. Only use this for testing purposes.
  * @returns A readable stream of decrypted data
  */
 export function decryptStream(
@@ -28,11 +29,15 @@ export function decryptStream(
   key: Uint8Array,
   iv: Uint8Array,
   authTag: Uint8Array,
+  ignoreAuthTag?: boolean,
 ): ReadableStream {
   let totalBytesRead = 0;
 
   // Construct the decryption stream
-  const decryptionStream = createDecryptionStream(key, iv, { authTag });
+  const decryptionStream = createDecryptionStream(key, iv, {
+    authTag,
+    __dangerouslyIgnoreAuthTag: ignoreAuthTag,
+  });
 
   return readableStream.pipeThrough(decryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
@@ -79,6 +84,14 @@ export default function decrypt(
   return {
     ...file,
     id,
-    stream: decryptStream(file.stream, size, id, key, iv, authTag),
+    stream: decryptStream(
+      file.stream,
+      size,
+      id,
+      key,
+      iv,
+      authTag,
+      file.ignoreAuthTag,
+    ),
   };
 }

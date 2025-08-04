@@ -15,6 +15,8 @@ export default function fetchAndDecrypt({
   url,
   decryptionOptions,
   requestInit,
+  // Dangerously bypass authTag validation. Only use this for testing purposes.
+  ignoreAuthTag = false,
 }: RemoteResource): Promise<ReadableStream> {
   return (
     fetch(url, requestInit)
@@ -60,6 +62,7 @@ export default function fetchAndDecrypt({
           bufferKey,
           bufferIv,
           bufferAuthTag,
+          ignoreAuthTag,
         );
       })
   );

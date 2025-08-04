@@ -17,6 +17,7 @@ import {
 } from '../fixtures/constants';
 
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
+import bufferEntireStream from './helpers/bufferEntireStream';
 
 const fixtures = fixturesJson as Fixture[];
 
@@ -392,4 +393,33 @@ describe('Penumbra API', () => {
     // TODO: https://github.com/transcend-io/penumbra/issues/250
   });
 });
+
+describe('Error handling', () => {
+  it('.get() should fail with an invalid authTag', async () => {
+    const { remoteResource } = getFixture('file_example_JSON_1kb');
+    remoteResource.decryptionOptions!.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
+    try {
+      const [file] = await penumbra.get(remoteResource);
+      await bufferEntireStream(file.stream);
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      assert.match(error.message, /Failed to finalize decryption stream/);
+    }
+  });
+
+  it('.get() should succeed when authTag is dangerously ignored', async () => {
+    const { remoteResource, unencryptedChecksum } = getFixture(
+      'file_example_JSON_1kb',
+    );
+    remoteResource.decryptionOptions!.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
+    remoteResource.ignoreAuthTag = true;
+
+    const [file] = await penumbra.get(remoteResource);
+    const buffer = await bufferEntireStream(file.stream);
+    const decryptedChecksum = await hash('SHA-256', buffer);
+
+    assert.equal(decryptedChecksum, unencryptedChecksum);
+  });
+});
+
 /* eslint-enable max-lines */

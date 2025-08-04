@@ -61,6 +61,11 @@ export interface RemoteResource {
   lastModified?: Date;
   /** Expected file size */
   size?: number;
+  /**
+   * Dangerously bypass authTag validation. Only use this for testing purposes.
+   * @default false
+   */
+  ignoreAuthTag?: boolean;
 }
 
 /** Penumbra file composition */
