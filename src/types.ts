@@ -61,13 +61,6 @@ export interface RemoteResource {
   lastModified?: Date;
   /** Expected file size */
   size?: number;
-  /**
-   * Disable calling .final() to validate the authTag.
-   *
-   * This is useful when providing x-penumbra-iv which is used
-   * when the iv is not known
-   */
-  ignoreAuthTag?: boolean;
 }
 
 /** Penumbra file composition */
@@ -368,7 +361,7 @@ export interface ZipOptions
      */
     onProgress?(event: ZipProgressEmit): void;
     /**
-     * Auto-registered `'write-complete'` event listener. This is equivalent to calling
+     * Auto-registered `'complete'` event listener. This is equivalent to calling
      * `PenumbraZipWriter.addEventListener('complete', onComplete)`
      */
     onComplete?(event: ZipCompletionEmit): void;

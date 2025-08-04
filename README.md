@@ -296,7 +296,7 @@ Example:
 const files = [
   {
     url: 'https://s3-us-west-2.amazonaws.com/your-bucket/tortoise.jpg.enc',
-    name: 'tortoise.jpg',
+    filePrefix: 'tortoise.jpg',
     mimetype: 'image/jpeg',
     decryptionOptions: {
       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
@@ -383,7 +383,7 @@ penumbra
 
 ```js
 penumbra
-  .get([
+  .get(
     {
       url: 'https://s3-us-west-2.amazonaws.com/your-bucket/africa.topo.json.enc',
       filePrefix: 'africa',
@@ -409,8 +409,8 @@ penumbra
       filePrefix: 'tortoise',
       mimetype: 'image/jpeg',
     },
-  ])
-  .then((files) => penumbra.save({ data: files, fileName: 'example' }));
+  )
+  .then((files) => penumbra.save(files, 'example'));
 
 // saves example.zip file to disk
 ```
@@ -515,9 +515,6 @@ Everything Penumbra uses is widely supported by modern browsers, but depending o
 - `CustomEvent`
 - `Proxy`
 - `BigInt` (if using `penumbra.saveZip`)
-- `Promise`
-- `Response`
-- `fetch`
 
 ## Contributing
 
