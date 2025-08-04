@@ -15,7 +15,6 @@ import type {
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFile,
-  PenumbraFileWithID,
   PenumbraTextOrURI,
   RemoteResource,
   ZipOptions,
@@ -23,9 +22,8 @@ import type {
 import { PenumbraZipWriter } from './zip';
 import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
-import { advancedStreamsSupported, supported } from './ua-support';
+import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
-import { logger } from './logger';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -42,49 +40,27 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
     throw new Error('penumbra.get() called without arguments');
   }
 
-  if (advancedStreamsSupported) {
-    // Create remote readable streams
-    const remoteStreams = resources.map(() => new RemoteReadableStream());
-    const readables = remoteStreams.map((stream, i) => {
-      const { url } = resources[i];
-      resolver.href = url;
-      const path = resolver.pathname; // derive path from URL
-      return {
-        path,
-        // derived path is overridden if PenumbraFile contains path
-        ...resources[i],
-        stream: stream.readable,
-      };
-    });
-    const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+  // Create remote readable streams
+  const remoteStreams = resources.map(() => new RemoteReadableStream());
+  const readables = remoteStreams.map((stream, i) => {
+    const { url } = resources[i];
+    resolver.href = url;
+    const path = resolver.pathname; // derive path from URL
+    return {
+      path,
+      // derived path is overridden if PenumbraFile contains path
+      ...resources[i],
+      stream: stream.readable,
+    };
+  });
+  const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
 
-    // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
-    const worker = await getWorker();
-    const RemoteAPI = worker.comlink;
-    const remote = await new RemoteAPI();
-    await remote.get(transfer(writablePorts, writablePorts), resources);
-    return readables as PenumbraFile[];
-  }
-
-  // Legacy browser fallback
-  const { fetchAndDecrypt } = await import('./crypto');
-  /**
-   * Fetch remote files from URLs, decipher them (if encrypted),
-   * fully buffer the response, and return ArrayBuffer[]
-   */
-  const decryptedFiles: PenumbraFile[] = await Promise.all(
-    resources.map(async (resource) => {
-      if (!('url' in resource)) {
-        throw new Error('penumbra.get(): RemoteResource missing URL');
-      }
-      const stream = await fetchAndDecrypt(resource);
-      return {
-        ...resource,
-        stream,
-      } as PenumbraFile;
-    }),
-  );
-  return decryptedFiles;
+  // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
+  const worker = await getWorker();
+  const RemoteAPI = worker.comlink;
+  const remote = await new RemoteAPI();
+  await remote.get(transfer(writablePorts, writablePorts), resources);
+  return readables as PenumbraFile[];
 }
 
 /**
@@ -306,75 +282,47 @@ async function encryptJob(
     }
   });
 
-  if (advancedStreamsSupported) {
-    // WritableStream constructor supported
-    const remoteReadableStreams = files.map(() => new RemoteReadableStream());
-    const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+  // WritableStream constructor supported
+  const remoteReadableStreams = files.map(() => new RemoteReadableStream());
+  const remoteWritableStreams = files.map(() => new RemoteWritableStream());
 
-    // extract ports from remote readable/writable streams for Comlink.transfer
-    const readablePorts = remoteWritableStreams.map(
-      ({ readablePort }) => readablePort,
-    );
-    const writablePorts = remoteReadableStreams.map(
-      ({ writablePort }) => writablePort,
-    );
+  // extract ports from remote readable/writable streams for Comlink.transfer
+  const readablePorts = remoteWritableStreams.map(
+    ({ readablePort }) => readablePort,
+  );
+  const writablePorts = remoteReadableStreams.map(
+    ({ writablePort }) => writablePort,
+  );
 
-    // Enter worker thread and kick off the encryption
-    const worker = await getWorker();
-    const RemoteAPI = worker.comlink;
-    const remote = await new RemoteAPI();
-    remote.encrypt(
-      options,
-      ids,
-      sizes,
-      transfer(readablePorts, readablePorts),
-      transfer(writablePorts, writablePorts),
-    );
+  // Enter worker thread and kick off the encryption
+  const worker = await getWorker();
+  const RemoteAPI = worker.comlink;
+  const remote = await new RemoteAPI();
+  remote.encrypt(
+    options,
+    ids,
+    sizes,
+    transfer(readablePorts, readablePorts),
+    transfer(writablePorts, writablePorts),
+  );
 
-    // encryption jobs submitted and still processing. TODO: audit if pipeTo is intentionally not awaited, then update comment
-    remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      // Pipe user input file stream to the worker thread
-      files[i].stream.pipeTo(remoteWritableStream.writable);
-    });
-
-    // Construct output files with corresponding remote readable streams
-    const readables = remoteReadableStreams.map(
-      (stream, i): PenumbraEncryptedFile => ({
-        ...files[i],
-        // iv: metadata[i].iv,
-        stream: stream.readable,
-        size: sizes[i],
-        id: ids[i],
-      }),
-    );
-    return readables;
-  }
-
-  // Legacy browser fallback
-  const filesWithIds = files as PenumbraFileWithID[];
-
-  let totalSize = 0;
-  filesWithIds.forEach(({ size = 0 }) => {
-    totalSize += size;
-    if (totalSize > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      logger.error("Your browser doesn't support streaming encryption.");
-      throw new Error(
-        'penumbra.encrypt(): File is too large to encrypt without writable streams',
-      );
-    }
+  // encryption jobs submitted and still processing. TODO: audit if pipeTo is intentionally not awaited, then update comment
+  remoteWritableStreams.forEach((remoteWritableStream, i) => {
+    // Pipe user input file stream to the worker thread
+    files[i].stream.pipeTo(remoteWritableStream.writable);
   });
-  const { encrypt: encryptFile } = await import('./crypto');
-  const encryptedFiles = await Promise.all(
-    filesWithIds.map((file): PenumbraEncryptedFile => {
-      const { stream } = encryptFile(options, file, file.size as number);
-      return {
-        ...file,
-        ...options,
-        stream,
-      };
+
+  // Construct output files with corresponding remote readable streams
+  const readables = remoteReadableStreams.map(
+    (stream, i): PenumbraEncryptedFile => ({
+      ...files[i],
+      // iv: metadata[i].iv,
+      stream: stream.readable,
+      size: sizes[i],
+      id: ids[i],
     }),
   );
-  return encryptedFiles;
+  return readables;
 }
 
 /**
@@ -420,89 +368,59 @@ async function decryptJob(
     throw new Error('penumbra.decrypt() called without arguments');
   }
 
-  if (advancedStreamsSupported) {
-    const worker = await getWorker();
-    const RemoteAPI = worker.comlink;
-    const remoteReadableStreams = files.map(() => new RemoteReadableStream());
-    const remoteWritableStreams = files.map(() => new RemoteWritableStream());
-    const ids: number[] = [];
-    const sizes: number[] = [];
-    // collect file sizes and assign job IDs for completion tracking
-    files.forEach((file) => {
-      // eslint-disable-next-line no-plusplus, no-param-reassign
-      ids.push((file.id = file.id || jobID++));
-      const { size } = file;
-      if (size) {
-        sizes.push(size);
-      } else {
-        throw new Error('penumbra.decrypt(): Unable to determine file size');
-      }
-    });
-    // extract ports from remote readable/writable streams for Comlink.transfer
-    const readablePorts = remoteWritableStreams.map(
-      ({ readablePort }) => readablePort,
-    );
-    const writablePorts = remoteReadableStreams.map(
-      ({ writablePort }) => writablePort,
-    );
-    // enter worker thread
-    await new RemoteAPI().then((remote) => {
-      /**
-       * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
-       * from the worker thread and starts reading the input stream from
-       * [remoteWritableStream.writable]
-       */
-      remote.decrypt(
-        options,
-        ids,
-        sizes,
-        transfer(readablePorts, readablePorts),
-        transfer(writablePorts, writablePorts),
-      );
-    });
-    // decryption jobs submitted and still processing
-    remoteWritableStreams.forEach((remoteWritableStream, i) => {
-      files[i].stream.pipeTo(remoteWritableStream.writable);
-    });
-    // construct output files with corresponding remote readable streams
-    const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
-      (stream, i): PenumbraEncryptedFile => ({
-        ...files[i],
-        size: sizes[i],
-        id: ids[i],
-        stream: stream.readable,
-      }),
-    );
-    return readables;
-  }
-
-  // Legacy browser fallback
-  files.forEach(({ size = 0 }) => {
-    if (size > MAX_ALLOWED_SIZE_MAIN_THREAD) {
-      logger.error("Your browser doesn't support streaming decryption.");
-      throw new Error(
-        'penumbra.decrypt(): File is too large to decrypt without writable streams',
-      );
+  const worker = await getWorker();
+  const RemoteAPI = worker.comlink;
+  const remoteReadableStreams = files.map(() => new RemoteReadableStream());
+  const remoteWritableStreams = files.map(() => new RemoteWritableStream());
+  const ids: number[] = [];
+  const sizes: number[] = [];
+  // collect file sizes and assign job IDs for completion tracking
+  files.forEach((file) => {
+    // eslint-disable-next-line no-plusplus, no-param-reassign
+    ids.push((file.id = file.id || jobID++));
+    const { size } = file;
+    if (size) {
+      sizes.push(size);
+    } else {
+      throw new Error('penumbra.decrypt(): Unable to determine file size');
     }
   });
-
-  // Buffered worker solution:
-  // let decryptedFiles: PenumbraFile[] = await new DecryptionChannel().then(
-  //   async (thread: PenumbraWorkerAPI) => {
-  //     const buffers = await thread.getBuffers(options, files);
-  //     decryptedFiles = buffers.map((stream, i) => ({
-  //       stream,
-  //       ...files[i],
-  //     }));
-  //     return decryptedFiles;
-  //   },
-  // );
-
-  const { decrypt: decryptFile } = await import('./crypto');
-  const decryptedFiles: PenumbraFile[] = files.map((file) =>
-    decryptFile(options, file, file.size as number),
+  // extract ports from remote readable/writable streams for Comlink.transfer
+  const readablePorts = remoteWritableStreams.map(
+    ({ readablePort }) => readablePort,
   );
-  return decryptedFiles;
+  const writablePorts = remoteReadableStreams.map(
+    ({ writablePort }) => writablePort,
+  );
+  // enter worker thread
+  await new RemoteAPI().then((remote) => {
+    /**
+     * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
+     * from the worker thread and starts reading the input stream from
+     * [remoteWritableStream.writable]
+     */
+    remote.decrypt(
+      options,
+      ids,
+      sizes,
+      transfer(readablePorts, readablePorts),
+      transfer(writablePorts, writablePorts),
+    );
+  });
+  // decryption jobs submitted and still processing
+  remoteWritableStreams.forEach((remoteWritableStream, i) => {
+    files[i].stream.pipeTo(remoteWritableStream.writable);
+  });
+  // construct output files with corresponding remote readable streams
+  const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+    (stream, i): PenumbraEncryptedFile => ({
+      ...files[i],
+      size: sizes[i],
+      id: ids[i],
+      stream: stream.readable,
+    }),
+  );
+  return readables;
 }
 
 /**
