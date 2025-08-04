@@ -1,12 +1,7 @@
 /* eslint-disable max-lines */
 import { assert } from '@esm-bundle/chai';
 
-import type {
-  PenumbraAPI,
-  PenumbraFile,
-  ProgressEmit,
-  RemoteResource,
-} from '../src/types';
+import type { PenumbraFile, ProgressEmit, RemoteResource } from '../src/types';
 
 import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
@@ -24,15 +19,6 @@ import {
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
 
 const fixtures = fixturesJson as Fixture[];
-
-/** Extend global Window */
-declare global {
-  /** Extend self */
-  interface Window {
-    /** self.penumbra interface */
-    penumbra?: PenumbraAPI;
-  }
-}
 
 /**
  * Get a fixture by file prefix
@@ -158,7 +144,7 @@ describe('Penumbra API', () => {
     assert.equal(mediaChecksum, unencryptedChecksum, 'checksum');
   });
 
-  it('should fire progress events', async function () {
+  it('should fire progress events', async function testProgressEvents() {
     this.timeout(70000); // 60s for init, 10s for stall
     let lastPercent: number | null | undefined;
 

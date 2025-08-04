@@ -13,7 +13,7 @@
     "removeComments": false,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "outDir": "ts-build",
+    "noEmit": true,
     "composite": true,
     "moduleResolution": "bundler",
     "strict": true,

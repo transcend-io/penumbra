@@ -19,19 +19,16 @@
     "example": "example"
   },
   "scripts": {
-    "####### Linting #######": "",
-    "lint": "pnpm exec eslint src --ext .ts",
+    "build": "vite build",
+    "lint": "pnpm run \"/^lint:.*/\"",
+    "lint:prettier": "prettier --check . --log-level warn",
+    "lint:eslint": "eslint .",
+    "lint:types": "tsc --noEmit",
     "format": "prettier --write .",
-    "####### Start #########": "",
-    "start:example": "http-server . --port 8080 -o -c-1",
-    "####### Testing #######": "",
     "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
     "test:test": "web-test-runner --node-resolve --playwright --browsers webkit --files tests/**/*.test.ts",
     "test:interactive": "pnpm run start:demo",
-    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
-    "####### Build #######": "",
-    "build": "vite build",
-    "build:demo": "rm -rf demo/build && pnpm run build && mkdir -p demo/build && cp demo/*.* demo/build/ && cp -a dist/. demo/build/"
+    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
   },
   "repository": {
     "type": "git",
