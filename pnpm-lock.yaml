@@ -17,8 +17,8 @@ importers:
         specifier: 5.0.0-alpha.0
         version: 5.0.0-alpha.0
       '@transcend-io/encrypt-web-streams':
-        specifier: 1.0.3-alpha.0
-        version: 1.0.3-alpha.0
+        specifier: 1.0.3
+        version: 1.0.3
       comlink:
         specifier: ^4.4.1
         version: 4.4.2
@@ -502,8 +502,8 @@ packages:
   '@transcend-io/conflux@5.0.0-alpha.0':
     resolution: {integrity: sha512-Q6efvIxaAlNW+t4N+pqbdiC5eiRiRNw66qHDTliEbViByePs6SfNoVeyaOLyLf0Qi0X3xHa+etmZEh4RXgArZQ==}
 
-  '@transcend-io/encrypt-web-streams@1.0.3-alpha.0':
-    resolution: {integrity: sha512-gH5+hxawbOLORSq7Jl2a/RxyeRZ/sZOj1fP6pwaQrH/z9kgjc103uvZaG6zMn2Ud7R+zCh6aJoSO+ANQmGkEvA==}
+  '@transcend-io/encrypt-web-streams@1.0.3':
+    resolution: {integrity: sha512-qVBJeG/ys9YY1TsKNowWeJx6ftIzVEKHmtRhrFRy0gdC31lfUrYnA8oeS7tNi6H8l3fpJmNgYj5+3su2OxN2wA==}
 
   '@tybys/wasm-util@0.10.0':
     resolution: {integrity: sha512-VyyPYFlOMNylG45GoAe0xDoLwWuowvf92F9kySqzYh8vmYm7D2u4iUJKa1tOUpS70Ku13ASrOkS4ScXFsTaCNQ==}
@@ -4247,7 +4247,7 @@ snapshots:
     dependencies:
       pako: 2.1.0
 
-  '@transcend-io/encrypt-web-streams@1.0.3-alpha.0': {}
+  '@transcend-io/encrypt-web-streams@1.0.3': {}
 
   '@tybys/wasm-util@0.10.0':
     dependencies:
