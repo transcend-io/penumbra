@@ -10,6 +10,7 @@ import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraFile,
+  JobID,
 } from './types';
 import { emitJobCompletion, emitProgress } from './utils';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
@@ -30,7 +31,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 export function decryptStream(
   readableStream: ReadableStream,
   contentLength: number | null,
-  id: string | number,
+  id: JobID,
   key: Uint8Array,
   iv: Uint8Array,
   authTag: Uint8Array,

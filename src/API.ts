@@ -11,6 +11,7 @@ import { streamSaver } from './streamsaver';
 // Local
 import type {
   JobCompletionEmit,
+  JobID,
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
@@ -213,10 +214,10 @@ function getBlob(
 }
 
 let jobID = 0;
-const decryptionConfigs = new Map<string | number, PenumbraDecryptionInfo>();
+const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (
-  searchForID: string | number,
+  searchForID: JobID,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((resolve) => {
     const listener = ({
@@ -269,7 +270,7 @@ async function encryptJob(
   }
 
   // collect file sizes and assign job IDs for completion tracking
-  const ids: number[] = [];
+  const ids: JobID<number>[] = [];
   const sizes: number[] = [];
   files.forEach((file) => {
     // eslint-disable-next-line no-plusplus, no-param-reassign
@@ -372,7 +373,7 @@ async function decryptJob(
   const RemoteAPI = worker.comlink;
   const remoteReadableStreams = files.map(() => new RemoteReadableStream());
   const remoteWritableStreams = files.map(() => new RemoteWritableStream());
-  const ids: number[] = [];
+  const ids: JobID<number>[] = [];
   const sizes: number[] = [];
   // collect file sizes and assign job IDs for completion tracking
   files.forEach((file) => {

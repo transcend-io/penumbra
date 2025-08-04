@@ -1,5 +1,5 @@
 // penumbra
-import { PenumbraEventType, ProgressEmit } from '../types';
+import { PenumbraEventType, ProgressEmit, type JobID } from '../types';
 import { PenumbraEvent } from '../event';
 
 /**
@@ -14,7 +14,7 @@ export default function emitProgress(
   type: PenumbraEventType,
   totalBytesRead: number,
   contentLength: number | null,
-  id: string | number,
+  id: JobID,
   target: EventTarget = self,
 ): void {
   // Calculate the progress remaining

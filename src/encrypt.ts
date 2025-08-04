@@ -11,6 +11,7 @@ import {
   PenumbraEncryptedFile,
   PenumbraEncryptionOptions,
   PenumbraFileWithID,
+  JobID,
 } from './types';
 
 // utils
@@ -22,7 +23,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
  * Encrypts a readable stream
- * @param jobID - Job ID
+ * @param id - Job ID
  * @param rs - A readable stream of encrypted data
  * @param cipher - The crypto module's cipher
  * @param contentLength - The content length of the file, in bytes
@@ -31,7 +32,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @returns A readable stream of decrypted data
  */
 export function encryptStream(
-  jobID: number,
+  id: JobID<number>,
   readableStream: ReadableStream,
   contentLength: number,
   key: Uint8Array,
@@ -49,11 +50,11 @@ export function encryptStream(
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
         totalBytesRead += chunk.length;
-        emitProgress('encrypt', totalBytesRead, contentLength, jobID);
+        emitProgress('encrypt', totalBytesRead, contentLength, id);
       },
       flush: () => {
         const authTag = encryptionStream.getAuthTag();
-        emitJobCompletion(jobID, { key, iv, authTag });
+        emitJobCompletion(id, { key, iv, authTag });
       },
     }),
   );

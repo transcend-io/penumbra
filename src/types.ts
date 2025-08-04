@@ -7,6 +7,9 @@ import { PenumbraError } from './error';
 
 export { PenumbraZipWriter } from './zip';
 
+// TODO: Brand and make just a number or just a string
+export type JobID<T extends string | number = string | number> = T;
+
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
  */
@@ -70,7 +73,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
   /** File size (if backed by a ReadableStream) */
   size?: number;
   /** Optional ID for tracking encryption completion */
-  id?: number | string;
+  id?: JobID;
   /** Last modified date */
   lastModified?: Date;
 }
@@ -78,7 +81,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
 /** Penumbra file that is currently being encrypted */
 export interface PenumbraFileWithID extends PenumbraFile {
   /** ID for tracking encryption completion */
-  id: number;
+  id: JobID<number>;
 }
 
 /** penumbra file (internal) */
@@ -96,7 +99,7 @@ export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
  */
 export interface ProgressDetails {
   /** The job ID # or URL being downloaded from for decryption */
-  id: string | number;
+  id: JobID;
   /** The ID of the worker thread that is processing this job */
   worker?: number | null;
   /** Event type */
@@ -156,7 +159,7 @@ export interface JobCompletion {
   /** Worker ID */
   worker?: number | null;
   /** Job ID */
-  id: string | number;
+  id: JobID;
   /** Decryption config info */
   decryptionInfo: PenumbraDecryptionInfo;
 }
@@ -222,7 +225,7 @@ export interface PenumbraWorkerAPI {
    */
   encrypt: (
     options: PenumbraEncryptionOptions | null,
-    ids: number[],
+    ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
@@ -246,7 +249,7 @@ export interface PenumbraWorkerAPI {
    */
   decrypt: (
     options: PenumbraDecryptionInfo,
-    ids: number[],
+    ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],

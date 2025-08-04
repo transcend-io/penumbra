@@ -1,9 +1,10 @@
+import type { JobID } from './types';
 import { getWorkerID } from './worker-id';
 
 /** Penumbra error class */
 export class PenumbraError extends Error {
   /** The download URL or job ID throwing an error */
-  public id: string | number;
+  public id: JobID;
 
   /** The worker ID associated with this error */
   public worker: number | null;
@@ -16,7 +17,7 @@ export class PenumbraError extends Error {
    * @param error - Error
    * @param id - ID
    */
-  constructor(error: string | Error, id: string | number) {
+  constructor(error: string | Error, id: JobID) {
     if (typeof error === 'string') {
       super(error);
       this.message = error;
