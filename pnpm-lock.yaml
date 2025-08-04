@@ -28,6 +28,9 @@ importers:
       mime:
         specifier: ^4.0.7
         version: 4.0.7
+      remote-web-streams:
+        specifier: ^0.2.0
+        version: 0.2.0
       streamsaver:
         specifier: ^2.0.6
         version: 2.0.6(patch_hash=6bc4a1db6a5e2780604bd747a5bfd0d2b03dfbb860ad27df5ed9957c21457627)
@@ -3114,6 +3117,10 @@ packages:
   regexp.prototype.flags@1.5.4:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
+
+  remote-web-streams@0.2.0:
+    resolution: {integrity: sha512-kEfrvf0LKaHYyLfKYSQGw/jTl1CXQ/+ci+fTg49XEmjHJgCoBiHE9TJLSTjqhkzqllO3KDaJf/7Zb8ZIHX9Opg==}
+    engines: {node: '>= 18'}
 
   remove-trailing-separator@1.1.0:
     resolution: {integrity: sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw==}
@@ -7672,6 +7679,8 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       set-function-name: 2.0.2
+
+  remote-web-streams@0.2.0: {}
 
   remove-trailing-separator@1.1.0:
     optional: true

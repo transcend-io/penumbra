@@ -15,10 +15,7 @@ import type {
 
 /* eslint-disable class-methods-use-this */
 import { expose } from 'comlink';
-import {
-  fromWritablePort,
-  fromReadablePort,
-} from '@transcend-io/remote-web-streams';
+import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 import { init } from '@transcend-io/encrypt-web-streams';
 
 // local

@@ -1,10 +1,7 @@
 /* eslint-disable max-lines */
 // Remote
 import { transfer } from 'comlink';
-import {
-  RemoteReadableStream,
-  RemoteWritableStream,
-} from '@transcend-io/remote-web-streams';
+import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import mime from 'mime';
 import { streamSaver } from './streamsaver';
 

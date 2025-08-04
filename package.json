@@ -56,9 +56,9 @@
   "dependencies": {
     "@transcend-io/conflux": "5.0.0-alpha.0",
     "@transcend-io/encrypt-web-streams": "^1.0.1",
-    "@transcend-io/remote-web-streams": "1.0.5",
     "comlink": "^4.4.1",
     "mime": "^4.0.7",
+    "remote-web-streams": "^0.2.0",
     "streamsaver": "^2.0.6"
   },
   "devDependencies": {
