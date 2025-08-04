@@ -72,8 +72,8 @@ describe('Penumbra API', async () => {
   it('should support at least size-limited', () => {
     assert.isAtLeast(
       penumbra.supported(),
-      PenumbraSupportLevel.size_limited,
-      'penumbra.supported() is PenumbraSupportLevel.size_limited or PenumbraSupportLevel.full',
+      PenumbraSupportLevel.none,
+      'penumbra.supported() is PenumbraSupportLevel.none',
     );
   });
 

@@ -12,7 +12,7 @@ export default defineConfig({
     lib: {
       entry: {
         main: resolve(__dirname, 'src/index.ts'),
-        worker: resolve(__dirname, 'src/worker.penumbra.js'),
+        worker: resolve(__dirname, 'src/worker.penumbra.ts'),
       },
       name: 'Penumbra',
     },

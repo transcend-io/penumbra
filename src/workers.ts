@@ -22,7 +22,7 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: import.meta.resolve('./worker.penumbra.js'),
+  penumbra: import.meta.resolve('./worker.penumbra.ts'),
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
