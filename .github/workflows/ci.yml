@@ -11,22 +11,22 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Publint
-        run: pnpm dlx publint
-
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: |
             dist/
 
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 100 # need the history to do a changed files check below (source, origin)    
       - uses: ./.github/commands/dependencies/install_deps
+
+      - name: Run lint
+        run: pnpm run lint
 
       - name: Format
         run: pnpm run format
@@ -42,6 +42,16 @@ jobs:
         with:
           extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
+      - name: Publint
+        run: pnpm dlx publint
+
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/commands/dependencies/install_deps
+
       - name: Install Playwright browsers
         run: pnpm dlx playwright install --with-deps
 
@@ -55,8 +65,9 @@ jobs:
       contents: read
       packages: write
     needs:
-      - test
       - build
+      - lint
+      - test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
