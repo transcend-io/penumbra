@@ -7,7 +7,11 @@ import { PenumbraError } from './error';
 
 export { PenumbraZipWriter } from './zip';
 
-// TODO: Brand and make just a number or just a string
+/**
+ * Job ID type
+ * @param T - The type of the job ID
+ * TODO: Brand this, make it only a number. Do the same for WorkerID (already number)
+ */
 export type JobID<T extends string | number = string | number> = T;
 
 /**

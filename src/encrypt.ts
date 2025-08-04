@@ -1,9 +1,5 @@
 // external modules
-import {
-  init,
-  createEncryptionStream,
-  type EncryptionStream,
-} from '@transcend-io/encrypt-web-streams';
+import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // local
 import {
@@ -19,17 +15,14 @@ import { emitProgress, emitJobCompletion } from './utils';
 import { logger } from './logger';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
-// await init();
-
 /**
  * Encrypts a readable stream
  * @param id - Job ID
- * @param rs - A readable stream of encrypted data
- * @param cipher - The crypto module's cipher
+ * @param readableStream - A readable stream of encrypted data
  * @param contentLength - The content length of the file, in bytes
- * @param key - Decryption key Buffer
- * @param iv - Decryption IV Buffer
- * @returns A readable stream of decrypted data
+ * @param key - Encryption key Buffer
+ * @param iv - Encryption IV Buffer
+ * @returns A readable stream of encrypted data
  */
 export function encryptStream(
   id: JobID<number>,
@@ -69,7 +62,7 @@ const IV_RANDOMNESS = 12;
  * @param options - Options
  * @param file - The remote resource to download
  * @param size - Size
- * @returns A readable stream of the deciphered file
+ * @returns A readable stream of the encrypted file
  */
 export default function encrypt(
   options: PenumbraEncryptionOptions | null,

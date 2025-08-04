@@ -1,9 +1,3 @@
-// external modules
-import {
-  createDecryptionStream,
-  init,
-} from '@transcend-io/encrypt-web-streams';
-
 // local
 import { RemoteResource } from './types';
 import { decryptStream } from './decrypt';
@@ -11,8 +5,6 @@ import { PenumbraError } from './error';
 
 import emitError from './utils/emitError';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
-
-// await init();
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream

@@ -29,7 +29,9 @@ const DEFAULT_WORKERS = {
 // TODO clean this up
 declare global {
   interface Window {
+    /** Environment variables */
     environment: {
+      /** Whether to log events on startup */
       PENUMBRA_LOG_START?: 'true' | 'false' | undefined;
     };
   }

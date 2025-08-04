@@ -1,9 +1,5 @@
 // external modules
-import {
-  init,
-  createDecryptionStream,
-  type DecryptionStream,
-} from '@transcend-io/encrypt-web-streams';
+import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // utils
 import {
@@ -15,12 +11,9 @@ import {
 import { emitJobCompletion, emitProgress } from './utils';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
-// await init();
-
 /**
  * Decrypts a readable stream
- * @param stream - A readable stream of encrypted data
- * @param decipher - The crypto module's decipher
+ * @param readableStream - A readable stream of encrypted data
  * @param contentLength - The content length of the file, in bytes
  * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
  * @param key - Decryption key Uint8Array

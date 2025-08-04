@@ -45,7 +45,10 @@ class PenumbraWorker implements PenumbraWorkerAPI {
    * @param writablePorts - Remote Web Stream writable ports
    * @param resources - The remote resource to download
    */
-  async get(writablePorts: MessagePort[], resources: RemoteResource[]) {
+  async get(
+    writablePorts: MessagePort[],
+    resources: RemoteResource[],
+  ): Promise<void> {
     const writableCount = writablePorts.length;
     const resourceCount = resources.length;
     if (writableCount !== resourceCount) {
@@ -125,7 +128,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) {
+  ): void {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -172,7 +175,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ) {
+  ): void {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
@@ -210,7 +213,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param id - Worker ID
    * @param handler - handler
    */
-  async setup(id: number, handler: (event: Event) => void) {
+  async setup(id: number, handler: (event: Event) => void): Promise<void> {
     // Initialize the Wasm from the encrypt-web-streams library
     await init();
     setWorkerID(id);

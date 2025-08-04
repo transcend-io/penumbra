@@ -101,8 +101,6 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
 
 const DEFAULT_FILENAME = 'download';
 const DEFAULT_MIME_TYPE = 'application/octet-stream';
-/** Maximum allowed resource size for encrypt/decrypt on the main thread */
-const MAX_ALLOWED_SIZE_MAIN_THREAD = 32 * 1024 * 1024; // 32 MiB
 
 /**
  * Save a zip containing files retrieved by Penumbra
