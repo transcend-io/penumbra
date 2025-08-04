@@ -17,11 +17,8 @@ importers:
         specifier: 5.0.0-alpha.0
         version: 5.0.0-alpha.0
       '@transcend-io/encrypt-web-streams':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@transcend-io/remote-web-streams':
-        specifier: 1.0.5
-        version: 1.0.5
+        specifier: ^1.0.2
+        version: 1.0.2
       comlink:
         specifier: ^4.4.1
         version: 4.4.2
@@ -505,11 +502,8 @@ packages:
   '@transcend-io/conflux@5.0.0-alpha.0':
     resolution: {integrity: sha512-Q6efvIxaAlNW+t4N+pqbdiC5eiRiRNw66qHDTliEbViByePs6SfNoVeyaOLyLf0Qi0X3xHa+etmZEh4RXgArZQ==}
 
-  '@transcend-io/encrypt-web-streams@1.0.1':
-    resolution: {integrity: sha512-7TiueqEeS21wtcWTM5o5gR6825METBZ00Pqbezp15ffGfEdio9aP9CxrAeYPSCtWhkH/MmIY9jNqiBtiKqlnZQ==}
-
-  '@transcend-io/remote-web-streams@1.0.5':
-    resolution: {integrity: sha512-Ff/TsLZiOVKHH+0Gvx6nUn/KKHjY5o0uf9PWqxpEBL4yfVczIIFUDqiGEOKP9aN09Z+34q64yyZ7o3vk0mVH0Q==}
+  '@transcend-io/encrypt-web-streams@1.0.2':
+    resolution: {integrity: sha512-pgh9+hNJDJZHbpe0T1qCszxZdA6rtIbuuqGZw9Bf/8zTkuWm02KK/mcjgvLlnjChVGal6qq969KU8MNE4mTshA==}
 
   '@tybys/wasm-util@0.10.0':
     resolution: {integrity: sha512-VyyPYFlOMNylG45GoAe0xDoLwWuowvf92F9kySqzYh8vmYm7D2u4iUJKa1tOUpS70Ku13ASrOkS4ScXFsTaCNQ==}
@@ -3783,10 +3777,6 @@ packages:
   watchpack@1.7.5:
     resolution: {integrity: sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==}
 
-  web-streams-polyfill@3.3.3:
-    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
-    engines: {node: '>= 8'}
-
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
@@ -4257,11 +4247,7 @@ snapshots:
     dependencies:
       pako: 2.1.0
 
-  '@transcend-io/encrypt-web-streams@1.0.1': {}
-
-  '@transcend-io/remote-web-streams@1.0.5':
-    dependencies:
-      web-streams-polyfill: 3.3.3
+  '@transcend-io/encrypt-web-streams@1.0.2': {}
 
   '@tybys/wasm-util@0.10.0':
     dependencies:
@@ -8478,8 +8464,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
     optional: true
-
-  web-streams-polyfill@3.3.3: {}
 
   webidl-conversions@7.0.0: {}
 

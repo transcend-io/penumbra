@@ -35,10 +35,10 @@ export default {
   },
   testsFinishTimeout: TIMEOUT_MS,
   concurrentBrowsers: 3,
-  // coverage: true,
-  // coverageConfig: {
-  //   include: ['src/**/*.ts'],
-  //   report: true,
-  //   reportDir: 'coverage',
-  // },
+  coverage: true,
+  coverageConfig: {
+    include: ['src/**/*.ts'],
+    report: true,
+    reportDir: 'coverage',
+  },
 };

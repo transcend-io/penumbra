@@ -20,14 +20,12 @@
   },
   "scripts": {
     "build": "vite build",
+    "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
     "lint:types": "tsc --noEmit",
     "format": "prettier --write .",
-    "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
-    "test:test": "web-test-runner --node-resolve --playwright --browsers webkit --files tests/**/*.test.ts",
-    "test:interactive": "pnpm run start:demo",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
   },
   "repository": {
@@ -55,7 +53,7 @@
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
     "@transcend-io/conflux": "5.0.0-alpha.0",
-    "@transcend-io/encrypt-web-streams": "^1.0.1",
+    "@transcend-io/encrypt-web-streams": "^1.0.2",
     "comlink": "^4.4.1",
     "mime": "^4.0.7",
     "remote-web-streams": "^0.2.0",
