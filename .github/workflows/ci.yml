@@ -11,12 +11,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Format
-        run: pnpm run format
-
-      - name: Ensure no changed files
-        run: git diff --exit-code
-
       - name: Publint
         run: pnpm dlx publint
 
@@ -30,32 +24,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100 # need the history to do a changed files check below (source, origin)    
       - uses: ./.github/commands/dependencies/install_deps
+
+      - name: Format
+        run: pnpm run format
+
+      - name: Ensure no changed files
+        run: git diff --exit-code
+
+      - name: Run depcheck
+        run: pnpm exec depcheck
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
       - name: Install Playwright browsers
         run: pnpm dlx playwright install --with-deps
 
       - name: Run tests
         run: pnpm run test
-
-  depcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/commands/dependencies/install_deps
-      - run: pnpm exec depcheck
-
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 100 # need the history to do a changed files check below (source, origin)
-      - uses: actions/setup-python@v4
-      - uses: ./.github/commands/dependencies/install_deps
-      - uses: pre-commit/action@v3.0.0
-        with:
-          extra_args: --source ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --origin ${{ github.event.pull_request.head.sha || 'HEAD' }}
 
   publish:
     if: github.ref == 'refs/heads/main'
@@ -65,9 +56,7 @@ jobs:
       packages: write
     needs:
       - test
-      - depcheck
       - build
-      - pre-commit
     steps:
       - name: Checkout
         uses: actions/checkout@v4
