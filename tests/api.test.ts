@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { assert } from '@esm-bundle/chai';
 
 import type {
@@ -68,7 +69,7 @@ function getFixture(
 
 const view = self;
 
-describe('Penumbra API', async () => {
+describe('Penumbra API', () => {
   it('should support at least size-limited', () => {
     assert.isAtLeast(
       penumbra.supported(),
@@ -405,3 +406,4 @@ describe('Penumbra API', async () => {
     // TODO: https://github.com/transcend-io/penumbra/issues/250
   });
 });
+/* eslint-enable max-lines */
