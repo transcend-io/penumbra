@@ -247,13 +247,16 @@ function handleInactiveUser() {
  *
  */
 function startFauxClicking() {
-  setTimeout(() => {
-    fauxClick(
-      anime.random(cW * 0.2, cW * 0.8),
-      anime.random(cH * 0.2, cH * 0.8),
-    );
-    startFauxClicking();
-  }, anime.random(200, 900));
+  setTimeout(
+    () => {
+      fauxClick(
+        anime.random(cW * 0.2, cW * 0.8),
+        anime.random(cH * 0.2, cH * 0.8),
+      );
+      startFauxClicking();
+    },
+    anime.random(200, 900),
+  );
 }
 
 /**

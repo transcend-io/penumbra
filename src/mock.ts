@@ -35,7 +35,7 @@ const MOCK_API: PenumbraAPI = {
       writer: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       controller: new AbortController(),
       aborted: false,
-    } as any as PenumbraZipWriter), // eslint-disable-line @typescript-eslint/no-explicit-any
+    }) as any as PenumbraZipWriter, // eslint-disable-line @typescript-eslint/no-explicit-any
   setWorkerLocation: async () => undefined,
 };
 
