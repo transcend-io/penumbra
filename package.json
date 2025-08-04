@@ -25,7 +25,7 @@
     "start:example": "http-server . --port 8080 -o -c-1",
     "####### Testing #######": "",
     "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
-    "test:boop": "web-test-runner --node-resolve --playwright --browsers chromium --files tests/boop.test.ts",
+    "test:test": "web-test-runner --node-resolve --playwright --browsers chromium --files tests/**/*.test.ts",
     "test:interactive": "pnpm run start:demo",
     "test:local": "karma start karma.local.cjs",
     "test:local:debug": "karma start karma.local.cjs --log-level debug",

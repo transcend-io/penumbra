@@ -23,7 +23,7 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: 'worker.penumbra.js',
+  penumbra: import.meta.resolve('./worker.penumbra.js'),
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
 
@@ -153,7 +153,7 @@ let workerID = 0;
 export async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
-  const worker = new Worker(url /* , { type: 'module' } */);
+  const worker = new Worker(url, { type: 'module' });
   const id = workerID++;
   const penumbraWorker: PenumbraWorker = {
     worker,

@@ -1,5 +1,6 @@
 // external modules
 import {
+  init,
   createEncryptionStream,
   type EncryptionStream,
 } from '@transcend-io/encrypt-web-streams';
@@ -16,6 +17,8 @@ import {
 import { emitProgress, emitJobCompletion } from './utils';
 import { logger } from './logger';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
+
+await init();
 
 /**
  * Encrypts a readable stream

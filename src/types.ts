@@ -280,7 +280,7 @@ export interface WorkerLocation {
   base: URL;
   /** The location of the Penumbra Worker script */
   penumbra: URL;
-  /** The location of the StreamSaver ServiceWorker script */
+  /** The location of the StreamSaver ServiceWorker script - TODO: is this in use? */
   StreamSaver: URL;
 }
 
