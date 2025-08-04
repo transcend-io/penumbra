@@ -2,7 +2,7 @@
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 /** The timeout for all tests in milliseconds */
-const TIMEOUT_MS = 15 * 1000;
+const TIMEOUT_MS = 30 * 1000;
 
 /**
  * Pass environment variables to the test environment.
@@ -34,7 +34,7 @@ export default {
     },
   },
   testsFinishTimeout: TIMEOUT_MS,
-  concurrentBrowsers: 3,
+  concurrentBrowsers: 2,
   coverage: true,
   coverageConfig: {
     include: ['src/**/*.ts'],

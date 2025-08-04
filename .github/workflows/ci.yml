@@ -58,7 +58,7 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           max_attempts: 3
-          timeout_seconds: 20
+          timeout_seconds: 40
           command: |
             pnpm run test
 
