@@ -3,14 +3,13 @@ import { assert } from '@esm-bundle/chai';
 import type {
   PenumbraAPI,
   PenumbraFile,
-  PenumbraReady,
   ProgressEmit,
   RemoteResource,
 } from '../src/types';
 
+import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
 import { logger } from '../src/logger';
-import { penumbra as initialPenumbra } from '../src/index';
 
 import { hash, timeout } from './helpers';
 import type { TimeoutManager } from './helpers/timeout';
@@ -70,24 +69,6 @@ function getFixture(
 const view = self;
 
 describe('Penumbra API', async () => {
-  let penumbra: PenumbraAPI = initialPenumbra;
-
-  await new Promise<void>((resolve) => {
-    const onReady = (event?: Event): void => {
-      const penumbraReady = event as PenumbraReady | undefined;
-      logger.log('penumbra ready fired!');
-      penumbra = ((penumbraReady && penumbraReady.detail.penumbra) ||
-        view.penumbra) as PenumbraAPI;
-      resolve();
-    };
-
-    if (!view.penumbra) {
-      view.addEventListener('penumbra-ready', onReady, { once: true });
-    } else {
-      onReady();
-    }
-  });
-
   it('should support at least size-limited', () => {
     assert.isAtLeast(
       penumbra.supported(),
@@ -423,115 +404,4 @@ describe('Penumbra API', async () => {
     // This is a rewrite version of the test below, but this implementation should have checksum tests on the expected zip
     // TODO: https://github.com/transcend-io/penumbra/issues/250
   });
-
-  // TODO: https://github.com/transcend-io/penumbra/issues/250
-  describe.skip('penumbra.saveZip({ saveBuffer: true }) - getBuffer(), getSize() and auto-renaming', () => {
-    it('should handle saving to buffer, getting size and auto-renaming', async () => {
-      const expectedReferenceHashes = [
-        '318e197f7df584c339ec6d06490eb9cb3cdbb41c218809690d39d70d79dff48f',
-        '6cbf553053fcfe8b6c5e17313ef4383fcef4bc0cf3df48c904ed5e7b05af04a6',
-        '7559c3628a54a498b715edbbb9a0f16fc65e94eaaf185b41e91f6bddf1a8e02e',
-      ];
-      let progressEventFiredAndWorking = false;
-      let completeEventFired = false;
-      const expectedProgressProps = ['percent', 'written', 'size'];
-      const writer = penumbra.saveZip({
-        /**
-         * When the progress event is fired
-         * @param event - The progress event
-         */
-        onProgress(event) {
-          progressEventFiredAndWorking = expectedProgressProps.every(
-            (prop) => prop in event.detail,
-          );
-        },
-        /**
-         * When the zip is complete
-         */
-        onComplete() {
-          completeEventFired = true;
-        },
-        allowDuplicates: true,
-        saveBuffer: true,
-      });
-      writer.write(
-        ...(await penumbra.get(
-          {
-            size: 874,
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-            path: 'test/NYT.txt',
-            mimetype: 'text/plain',
-            decryptionOptions: {
-              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-              iv: '6lNU+2vxJw6SFgse',
-              authTag: 'gadZhS1QozjEmfmHLblzbg==',
-            },
-            // for hash consistency
-            lastModified: new Date(0),
-          },
-          {
-            size: 874,
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-            path: 'test/NYT.txt',
-            mimetype: 'text/plain',
-            decryptionOptions: {
-              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-              iv: '6lNU+2vxJw6SFgse',
-              authTag: 'gadZhS1QozjEmfmHLblzbg==',
-            },
-            // for hash consistency
-            lastModified: new Date(0),
-          },
-        )),
-      );
-      writer.write(
-        ...(await penumbra.get(
-          {
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-            path: 'test/NYT.txt',
-            mimetype: 'text/plain',
-            decryptionOptions: {
-              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-              iv: '6lNU+2vxJw6SFgse',
-              authTag: 'gadZhS1QozjEmfmHLblzbg==',
-            },
-            // for hash consistency
-            lastModified: new Date(0),
-          },
-          {
-            url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
-            path: 'test/NYT.txt',
-            mimetype: 'text/plain',
-            decryptionOptions: {
-              key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
-              iv: '6lNU+2vxJw6SFgse',
-              authTag: 'gadZhS1QozjEmfmHLblzbg==',
-            },
-            // for hash consistency
-            lastModified: new Date(0),
-          },
-        )),
-      );
-      await writer.close();
-      assert.isTrue(
-        progressEventFiredAndWorking,
-        'zip progress event fired & emitted expected properties',
-      );
-      assert.isTrue(completeEventFired, 'zip complete event fired');
-      const zipBuffer = await writer.getBuffer();
-      const zipHash = await hash('SHA-256', zipBuffer);
-      logger.log('zip hash:', zipHash);
-      assert.equal(zipHash, 'zip hash');
-      assert.include(
-        expectedReferenceHashes,
-        zipHash.toLowerCase(),
-        `expected zip hash (actual: ${zipHash})`,
-      );
-
-      const size = await writer.getSize();
-      const expectedSize = 3496;
-      assert.equal(size, expectedSize, `expected zip size (actual: ${size})`);
-    });
-  });
 });
-/* eslint-enable max-lines */
