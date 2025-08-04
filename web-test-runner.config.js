@@ -2,7 +2,7 @@
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 /** The timeout for all tests in milliseconds */
-const TIMEOUT_MS = 30 * 1000;
+const TIMEOUT_MS = 10 * 1000;
 
 /**
  * Pass environment variables to the test environment.

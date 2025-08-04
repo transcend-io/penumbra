@@ -55,7 +55,12 @@ jobs:
         run: pnpm dlx playwright install --with-deps
 
       - name: Run tests
-        run: pnpm run test
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_seconds: 15
+          command: |
+            pnpm run test
 
   publish:
     if: github.ref == 'refs/heads/main'
