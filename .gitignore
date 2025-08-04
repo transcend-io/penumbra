@@ -15,6 +15,7 @@ fixtures/files/**/*big*
 build
 dist
 ts-build/
+tsconfig.tsbuildinfo
 .expo/
 stats.json
 schema.json

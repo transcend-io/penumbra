@@ -1,11 +1,11 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
     "rootDir": ".",
     "incremental": true,
     "target": "es2020",
     "module": "ESNext",
     "lib": ["esnext", "dom", "es2020"],
+    "types": [],
     "allowJs": false,
     "declaration": true,
     "declarationMap": true,
