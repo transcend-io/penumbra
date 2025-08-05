@@ -4,6 +4,7 @@
 import { PenumbraAPI } from './types';
 import { PenumbraSupportLevel } from './enums';
 import { PenumbraZipWriter } from './zip';
+import { asJobID } from './job-id';
 
 const supported = (): PenumbraSupportLevel => -0;
 supported.levels = PenumbraSupportLevel;
@@ -17,11 +18,11 @@ const MOCK_API: PenumbraAPI = {
   encrypt: async () => ({
     stream: new Response(new Blob()).body!,
     size: 0,
-    id: 2,
+    id: asJobID('49e74657-f3b7-4777-994c-5f769a9828c5'),
   }),
   decrypt: async () => ({
     stream: new Response(new Blob()).body!,
-    id: 1,
+    id: asJobID('55889332-22e6-420c-91e8-7cc2a6b9106e'),
   }),
   getDecryptionInfo: async () => ({
     key: 'test',

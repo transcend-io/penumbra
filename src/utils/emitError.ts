@@ -7,10 +7,7 @@ import { PenumbraEvent } from '../event';
  * @param error - Error object to emit
  * @param jobID - Job ID
  */
-export default function emitError(
-  error: unknown,
-  jobID: JobID<string | number> = 'NA',
-): void {
+export default function emitError(error: unknown, jobID: JobID): void {
   const detail: PenumbraError =
     error instanceof PenumbraError
       ? error

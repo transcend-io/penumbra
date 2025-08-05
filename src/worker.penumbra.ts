@@ -32,14 +32,16 @@ class PenumbraWorker {
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    * @param writablePort - Remote Web Stream writable port
    * @param resource - The remote resource to download
+   * @param jobID - Job ID for tracking job completion
    */
   async get(
     writablePort: MessagePort,
     resource: RemoteResource,
+    jobID: JobID,
   ): Promise<void> {
     try {
       const remoteStream = fromWritablePort(writablePort);
-      const localStream = await fetchAndDecrypt(resource);
+      const localStream = await fetchAndDecrypt(jobID, resource);
 
       /**
        * This is intentionally not awaited because it does not complete until the entire stream has finished.
@@ -49,13 +51,13 @@ class PenumbraWorker {
        * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
        */
       localStream.pipeTo(remoteStream).catch((error) => {
-        emitError(error, resource.url);
+        emitError(error, jobID);
       });
     } catch (error: unknown) {
       /**
        * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
        */
-      emitError(error, resource.url);
+      emitError(error, jobID);
       throw error;
     }
   }
@@ -65,7 +67,7 @@ class PenumbraWorker {
    * @param key - Decryption key
    * @param iv - Decryption IV
    * @param authTag - Decryption authTag
-   * @param id - ID for tracking decryption completion
+   * @param jobID - Job ID for tracking decryption completion
    * @param size - File size in bytes
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
@@ -74,7 +76,7 @@ class PenumbraWorker {
     key: Uint8Array,
     iv: Uint8Array,
     authTag: Uint8Array,
-    id: JobID<number>,
+    jobID: JobID,
     size: number,
     readablePort: MessagePort,
     writablePort: MessagePort,
@@ -87,7 +89,7 @@ class PenumbraWorker {
 
       // Start the decryption stream with an event emitter
       const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
-        id,
+        jobID,
         remoteReadableStream,
         size,
         key,
@@ -105,13 +107,13 @@ class PenumbraWorker {
       decryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
         .catch((error) => {
-          emitError(error, id);
+          emitError(error, jobID);
         });
     } catch (error) {
       /**
        * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
        */
-      emitError(error, id);
+      emitError(error, jobID);
       throw error;
     }
   }
@@ -120,7 +122,7 @@ class PenumbraWorker {
    * Streaming encryption of ReadableStreams
    * @param key - Encryption key
    * @param iv - Encryption IV
-   * @param id - ID for tracking encryption completion
+   * @param jobID - ID for tracking encryption completion
    * @param size - File size in bytes
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
@@ -128,7 +130,7 @@ class PenumbraWorker {
   encrypt(
     key: Uint8Array,
     iv: Uint8Array,
-    id: JobID<number>,
+    jobID: JobID,
     size: number,
     readablePort: MessagePort,
     writablePort: MessagePort,
@@ -142,7 +144,7 @@ class PenumbraWorker {
 
       // Start the encryption stream with an event emitter
       const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
-        id,
+        jobID,
         remoteReadableStream,
         size,
         key,
@@ -159,26 +161,29 @@ class PenumbraWorker {
       encryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
         .catch((error) => {
-          emitError(error, id);
+          emitError(error, jobID);
         });
     } catch (error) {
       /**
        * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
        */
-      emitError(error, id);
+      emitError(error, jobID);
       throw error;
     }
   }
 
   /**
    * Forward events to main thread
-   * @param id - Worker ID
+   * @param workerID - Worker ID
    * @param handler - handler
    */
-  async setup(id: number, handler: (event: Event) => void): Promise<void> {
+  async setup(
+    workerID: number,
+    handler: (event: Event) => void,
+  ): Promise<void> {
     // Initialize the Wasm from the encrypt-web-streams library
     await init();
-    setWorkerID(id);
+    setWorkerID(workerID);
     onPenumbraEvent.handler = handler;
   }
 }

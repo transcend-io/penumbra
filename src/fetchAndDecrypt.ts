@@ -1,38 +1,36 @@
 // local
-import { RemoteResource } from './types';
+import type { RemoteResource, JobID } from './types';
 import { startDecryptionStreamWithEmitter } from './decrypt';
-import { PenumbraError } from './error';
 
-import { emitError, parseBase64OrUint8Array } from './utils';
+import { parseBase64OrUint8Array } from './utils';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
+ * @param jobID - Job ID
  * @param resource - The remote resource to download
  * @returns A readable stream of the deciphered file
  */
-export default async function fetchAndDecrypt({
-  url,
-  decryptionOptions,
-  requestInit,
-  /** Dangerously bypass authTag validation. Only use this for testing purposes. */
-  ignoreAuthTag = false,
-}: RemoteResource): Promise<ReadableStream> {
+export default async function fetchAndDecrypt(
+  jobID: JobID,
+  {
+    url,
+    decryptionOptions,
+    requestInit,
+    /** Dangerously bypass authTag validation. Only use this for testing purposes. */
+    ignoreAuthTag = false,
+  }: RemoteResource,
+): Promise<ReadableStream> {
   const response = await fetch(url, requestInit);
 
   if (response.status >= 400) {
-    const err = new PenumbraError(
+    throw new Error(
       `Received invalid status code: ${response.status} -- ${response.body}`,
-      url,
     );
-    emitError(err);
-    throw err;
   }
 
   // Throw an error if we have no body to parse
   if (!response.body) {
-    const err = new PenumbraError('Response body is empty!', url);
-    emitError(err);
-    throw err;
+    throw new Error('Response body is empty!');
   }
 
   // If the file is unencrypted, simply return the readable stream
@@ -53,7 +51,7 @@ export default async function fetchAndDecrypt({
 
   // Decrypt the stream
   return startDecryptionStreamWithEmitter(
-    url, // TODO: job id instead? split url onto separate object?
+    jobID,
     response.body,
     Number(response.headers.get('Content-Length')) || null,
     bufferKey,

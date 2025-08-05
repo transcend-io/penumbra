@@ -17,7 +17,7 @@ import { emitJobCompletion, emitProgress } from './utils';
  * @returns A readable stream of decrypted data
  */
 export function startDecryptionStreamWithEmitter(
-  id: JobID<string | number>, // TODO: JobID<number>, split URL into separate object?
+  id: JobID,
   readableStream: ReadableStream,
   contentLength: number | null,
   key: Uint8Array,

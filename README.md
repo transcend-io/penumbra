@@ -88,7 +88,7 @@ type RemoteResource = {
   /** The name of the underlying file without the extension */
   filePrefix?: string;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: PenumbraDecryptionInfo;
+  decryptionOptions?: PenumbraDecryptionOptions;
   /** Relative file path (needed for zipping) */
   path?: string;
   /** Fetch options */
@@ -170,7 +170,7 @@ console.log('decrypted text:', decryptedText);
 Get decryption info for a file, including the iv, authTag, and key. This may only be called on files that have finished being encrypted.
 
 ```ts
-penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionInfo>
+penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionOptions>
 ```
 
 ### .decrypt
@@ -178,7 +178,7 @@ penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionInfo>
 Decrypt files.
 
 ```ts
-penumbra.decrypt(options: PenumbraDecryptionInfo, ...files: PenumbraEncryptedFile[]): Promise<PenumbraFile[]>
+penumbra.decrypt(options: PenumbraDecryptionOptions, ...files: PenumbraEncryptedFile[]): Promise<PenumbraFile[]>
 ```
 
 ```ts

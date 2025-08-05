@@ -9,11 +9,10 @@ import { streamSaver } from './streamsaver';
 import type {
   JobCompletionEmit,
   JobID,
-  PenumbraDecryptionInfo,
-  PenumbraEncryptedFile,
+  PenumbraDecryptionOptions,
+  PenumbraFileWithID,
   PenumbraEncryptionOptions,
   PenumbraFile,
-  PenumbraFileWithID,
   PenumbraTextOrURI,
   RemoteResource,
   ZipOptions,
@@ -30,18 +29,18 @@ import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 import { createChunkSizeTransformStream } from './createChunkSizeTransformStream';
 import { logger } from './logger';
+import { generateJobID } from './job-id';
 
 /** Size (and entropy of) generated AES-256 key (in bits) */
 const GENERATED_KEY_RANDOMNESS = 256;
 /** Size (and entropy of) generated initialization vector (in bits) */
 const IV_RANDOMNESS = 12;
 
-let jobIDCounter = 0;
-const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
+const decryptionConfigs = new Map<JobID, PenumbraDecryptionOptions>();
 
 const trackJobCompletion = (
   searchForID: JobID,
-): Promise<PenumbraDecryptionInfo> =>
+): Promise<PenumbraDecryptionOptions> =>
   new Promise((resolve) => {
     const listener = ({
       type,
@@ -82,11 +81,14 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFile> {
 
   const { writablePort } = remoteStream;
 
+  // Generate an ID for this job run
+  const jobID = generateJobID();
+
   // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
   const worker = await getWorker();
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
-  await remote.get(transfer(writablePort, [writablePort]), resource);
+  await remote.get(transfer(writablePort, [writablePort]), resource, jobID);
   return readable;
 }
 
@@ -263,20 +265,22 @@ function getBlob(
  * Get the decryption config for an encrypted file
  *
  * ```ts
- * penumbra.getDecryptionInfo(file: PenumbraEncryptedFile): Promise<PenumbraDecryptionInfo>
+ * penumbra.getDecryptionInfo(file: PenumbraFileWithID): Promise<PenumbraDecryptionOptions>
  * ```
  * @param file - File to get info for
  * @returns Decryption info
  */
 export function getDecryptionInfo(
-  file: PenumbraEncryptedFile,
-): Promise<PenumbraDecryptionInfo> {
+  file: PenumbraFileWithID,
+): Promise<PenumbraDecryptionOptions> {
   const { id } = file;
   if (!decryptionConfigs.has(id)) {
     // decryption config not yet received. waiting for event with promise
     return trackJobCompletion(id);
   }
-  return Promise.resolve(decryptionConfigs.get(id) as PenumbraDecryptionInfo);
+  return Promise.resolve(
+    decryptionConfigs.get(id) as PenumbraDecryptionOptions,
+  );
 }
 
 /**
@@ -302,7 +306,7 @@ export function getDecryptionInfo(
 export async function encrypt(
   options: PenumbraEncryptionOptions | null,
   file: PenumbraFile,
-): Promise<PenumbraEncryptedFile> {
+): Promise<PenumbraFileWithID> {
   // Ensure a file is passed
   if (!file) {
     throw new Error('penumbra.encrypt() called without arguments');
@@ -330,8 +334,8 @@ export async function encrypt(
     rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
   }
 
-  // eslint-disable-next-line no-plusplus
-  const jobID: JobID<number> = jobIDCounter++;
+  // Generate an ID for this job run
+  const jobID = generateJobID();
 
   // Set up remote streams
   const { writable, readablePort } = new RemoteWritableStream();
@@ -403,8 +407,8 @@ export async function encrypt(
  * @returns File
  */
 export async function decrypt(
-  options: PenumbraDecryptionInfo,
-  file: PenumbraEncryptedFile,
+  options: PenumbraDecryptionOptions,
+  file: PenumbraFileWithID,
 ): Promise<PenumbraFileWithID> {
   // Ensure a file is passed
   if (!file) {
@@ -417,8 +421,8 @@ export async function decrypt(
     throw new Error('penumbra.decrypt(): missing decryption options');
   }
 
-  // eslint-disable-next-line no-plusplus
-  const jobID: JobID<number> = jobIDCounter++;
+  // Generate an ID for this job run
+  const jobID = generateJobID();
 
   // Set up remote streams
   const { writable, readablePort } = new RemoteWritableStream();

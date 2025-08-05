@@ -17,7 +17,7 @@ import { emitProgress, emitJobCompletion } from './utils';
  * @returns A readable stream of encrypted data
  */
 export function startEncryptionStreamWithEmitter(
-  id: JobID<number>,
+  id: JobID,
   readableStream: ReadableStream,
   contentLength: number,
   key: Uint8Array,

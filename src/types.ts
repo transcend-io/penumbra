@@ -4,14 +4,10 @@ import type { Penumbra as PenumbraAPI } from './API';
 import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
 import type { PenumbraError } from './error';
 
-export { PenumbraZipWriter } from './zip';
+import type { JobID } from './job-id';
 
-/**
- * Job ID type
- * @param T - The type of the job ID
- * TODO: Brand this, make it only a number. Do the same for WorkerID (already number)
- */
-export type JobID<T extends string | number = string | number> = T;
+export { PenumbraZipWriter } from './zip';
+export type { JobID };
 
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
@@ -26,27 +22,20 @@ export interface PenumbraEncryptionOptions {
 /**
  * Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt()
  */
-export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
+export interface PenumbraDecryptionOptions extends PenumbraEncryptionOptions {
   /** Authentication tag (for AES GCM), either Uint8Array or base64-encoded string */
   authTag: Uint8Array | string;
 }
 
-/**
- * A file to download from a remote resource, that is optionally encrypted
- */
-export interface RemoteResource {
-  /** The URL to fetch the encrypted or unencrypted file from */
-  url: string;
+interface Resource {
   /** The mimetype of the resulting file */
   mimetype?: string;
   /** The name of the underlying file without the extension */
   filePrefix?: string;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: PenumbraDecryptionInfo;
+  decryptionOptions?: PenumbraDecryptionOptions;
   /** Relative file path (needed for zipping) */
   path?: string;
-  /** Fetch options */
-  requestInit?: RequestInit;
   /** Last modified date */
   lastModified?: Date;
   /** Expected file size */
@@ -58,8 +47,18 @@ export interface RemoteResource {
   ignoreAuthTag?: boolean;
 }
 
+/**
+ * A file to download from a remote resource, that is optionally encrypted
+ */
+export interface RemoteResource extends Resource {
+  /** The URL to fetch the encrypted or unencrypted file from */
+  url: string;
+  /** Fetch options */
+  requestInit?: RequestInit;
+}
+
 /** Penumbra file composition */
-export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
+export interface PenumbraFile extends Resource {
   /** Backing stream */
   stream: ReadableStream;
   /** File size (if backed by a ReadableStream) */
@@ -71,16 +70,7 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
 /** Penumbra file that is currently being encrypted */
 export interface PenumbraFileWithID extends PenumbraFile {
   /** ID for tracking encryption completion */
-  id: JobID<number>;
-}
-
-/** penumbra file (internal) */
-export interface PenumbraEncryptedFile
-  extends Omit<PenumbraFileWithID, 'stream' | 'size'> {
-  /** Encrypted output stream */
-  stream: ReadableStream;
-  /** File size */ // TODO this should just be on the file object?
-  size: number;
+  id: JobID;
 }
 
 /** Penumbra event types */
@@ -153,7 +143,7 @@ export interface JobCompletion {
   /** Job ID */
   id: JobID;
   /** Decryption config info */
-  decryptionInfo: PenumbraDecryptionInfo;
+  decryptionInfo: PenumbraDecryptionOptions;
 }
 
 /**
