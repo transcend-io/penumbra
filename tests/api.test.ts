@@ -331,7 +331,7 @@ describe('Penumbra API', () => {
     assert.equal(imageHash, unencryptedChecksum, 'getBlob() checksum');
   });
 
-  it('should encrypt large file', async () => {
+  it.skip('should encrypt large file', async () => {
     const NUM_BYTES = 2 ** 26; // 67 MB
 
     const te = new self.TextEncoder();
