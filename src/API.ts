@@ -183,12 +183,24 @@ async function save(
   // Single file
   const file: PenumbraFile =
     'stream' in files ? (files as unknown as PenumbraFile) : files[0];
-  const [
-    filename,
-    extension = file.mimetype ? mime.getExtension(file.mimetype) : '',
-  ] = (fileName || file.filePrefix || DEFAULT_FILENAME)
+
+  // Split filename and extension
+  const [filename, extensionCandidateFromFilename] = (
+    fileName ||
+    file.filePrefix ||
+    DEFAULT_FILENAME
+  )
     .split(/(\.\w+\s*$)/) // split filename extension
-    .filter(Boolean); // filter empty matches
+    .filter(Boolean) as [string, string | undefined]; // filter empty matches
+
+  // Get extension from mimetype
+  const extensionCandidateFromMime =
+    file.mimetype && mime.getExtension(file.mimetype);
+
+  const extension =
+    extensionCandidateFromFilename?.slice(1) ??
+    extensionCandidateFromMime ??
+    '';
 
   const singleFileName = `${filename}.${extension}`;
 

@@ -12,6 +12,11 @@ import {
 import { Compression } from './enums';
 import { logger } from './logger';
 
+/**
+ * Sum the total size of all writes
+ * @param writes - Array of promises that resolve to a number
+ * @returns The total size of all writes
+ */
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
   const results = await Promise.allSettled<Promise<number>[]>(writes);
   const sum = (
@@ -32,8 +37,7 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
     }
     // Throw AggregateError to console
     throwOutside(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      new (self as any).AggregateError(
+      new AggregateError(
         errors,
         `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
       ),
@@ -211,23 +215,32 @@ export class PenumbraZipWriter extends EventTarget {
               'PenumbraZipWriter.write(): Unable to determine filename',
             );
           }
-          const [
-            filename,
-            extension = mimetype ? mime.getExtension(mimetype) : '',
-          ] = name
+
+          // Split filename and extension
+          const [filename, extensionCandidateFromFilename] = name
             .split(/(\.\w+\s*$)/) // split filename extension
-            .filter(Boolean); // filter empty matches
-          let filePath = `${filename}${extension}`;
+            .filter(Boolean) as [string, string | undefined]; // filter empty matches
+
+          // Get extension from mimetype
+          const extensionCandidateFromMime =
+            mimetype && mime.getExtension(mimetype);
+
+          const extension =
+            extensionCandidateFromFilename?.slice(1) ??
+            extensionCandidateFromMime ??
+            '';
+
+          let filePath = `${filename}.${extension}`;
 
           // Handle duplicate files
           if (zip.files.has(filePath)) {
             const dupe = filePath;
             // This code picks a filename when auto-renaming conflicting files.
-            // If {filename}{extension} exists it will create {filename} (1){extension}, etc.
+            // If {filename}.{extension} exists it will create {filename} (1).{extension}, etc.
             let i = 0;
             // eslint-disable-next-line no-plusplus
-            while (zip.files.has(`${filename} (${++i})${extension}`));
-            filePath = `${filename} (${i})${extension}`;
+            while (zip.files.has(`${filename} (${++i}).${extension}`));
+            filePath = `${filename} (${i}).${extension}`;
             const warning = `penumbra.saveZip(): Duplicate file ${JSON.stringify(
               dupe,
             )}`;
