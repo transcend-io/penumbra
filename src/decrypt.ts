@@ -7,9 +7,9 @@ import { emitJobCompletion, emitProgress } from './utils';
 
 /**
  * Starts a decryption stream with an event emitter
+ * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
  * @param readableStream - A readable stream of encrypted data
  * @param contentLength - The content length of the file, in bytes
- * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
  * @param key - Decryption key Uint8Array
  * @param iv - Decryption IV Uint8Array
  * @param authTag - Decryption authTag Uint8Array
@@ -17,9 +17,9 @@ import { emitJobCompletion, emitProgress } from './utils';
  * @returns A readable stream of decrypted data
  */
 export function startDecryptionStreamWithEmitter(
+  id: JobID<string | number>, // TODO: JobID<number>, split URL into separate object?
   readableStream: ReadableStream,
   contentLength: number | null,
-  id: JobID,
   key: Uint8Array,
   iv: Uint8Array,
   authTag: Uint8Array,

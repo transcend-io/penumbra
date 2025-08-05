@@ -56,9 +56,9 @@ export default function fetchAndDecrypt({
 
         // Decrypt the stream
         return startDecryptionStreamWithEmitter(
+          url, // TODO: job id instead? split url onto separate object?
           response.body,
           Number(response.headers.get('Content-Length')) || null,
-          url,
           bufferKey,
           bufferIv,
           bufferAuthTag,

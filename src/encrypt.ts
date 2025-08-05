@@ -8,9 +8,9 @@ import type { JobID } from './types';
 import { emitProgress, emitJobCompletion } from './utils';
 
 /**
- * Encrypts a readable stream
+ * Encrypts a readable stream with an event emitter
  * @param id - Job ID
- * @param readableStream - A readable stream of encrypted data
+ * @param readableStream - A readable stream of plaintext data
  * @param contentLength - The content length of the file, in bytes
  * @param key - Encryption key Buffer
  * @param iv - Encryption IV Buffer

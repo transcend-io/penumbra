@@ -1,9 +1,4 @@
-import type {
-  RemoteResource,
-  PenumbraEncryptionOptions,
-  PenumbraDecryptionInfo,
-  JobID,
-} from './types';
+import type { RemoteResource, JobID } from './types';
 
 /**
  * Penumbra Worker
@@ -27,7 +22,6 @@ import { setWorkerID } from './worker-id';
 import { logger } from './logger';
 import emitError from './utils/emitError';
 import { PenumbraError } from './error';
-import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -113,58 +107,53 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
 
   /**
    * Streaming decryption of ReadableStreams
-   * @param options - Options
+   * @param key - Decryption key
+   * @param iv - Decryption IV
+   * @param authTag - Decryption authTag
    * @param id - ID for tracking decryption completion
    * @param size - File size in bytes
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
   async decrypt(
-    options: PenumbraDecryptionInfo,
+    key: Uint8Array,
+    iv: Uint8Array,
+    authTag: Uint8Array,
     id: JobID<number>,
-    size: number, // TODO this should just be on the file object
+    size: number,
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): Promise<void> {
     // Stream of encrypted bytes flowing from main thread
-    const stream = fromReadablePort(readablePort);
+    const remoteReadableStream = fromReadablePort(readablePort);
     // The destination to send encrypted bytes to the main thread
-    const writable = fromWritablePort(writablePort);
-
-    // TODO move to main thread
-    if (!options || !options.key || !options.iv || !options.authTag) {
-      throw new Error('penumbra.decrypt(): missing decryption options');
-    }
-
-    // Convert to Uint8Array
-    const key = parseBase64OrUint8Array(options.key);
-    const iv = parseBase64OrUint8Array(options.iv);
-    const authTag = parseBase64OrUint8Array(options.authTag);
-    // TODO move above to main thread
+    const remoteWritableStream = fromWritablePort(writablePort);
 
     // Start the decryption stream with an event emitter
     const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
-      stream,
-      size,
       id,
+      remoteReadableStream,
+      size,
       key,
       iv,
       authTag,
     );
 
-    await decryptionStreamWithEmitter.pipeTo(writable);
+    await decryptionStreamWithEmitter.pipeTo(remoteWritableStream);
   }
 
   /**
    * Streaming encryption of ReadableStreams
-   * @param options - Options
+   * @param key - Encryption key
+   * @param iv - Encryption IV
    * @param id - ID for tracking encryption completion
    * @param size - File size in bytes
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
   async encrypt(
-    options: PenumbraEncryptionOptions | null,
+    key: Uint8Array,
+    iv: Uint8Array,
     id: JobID<number>,
     size: number, // TODO this should just be on the file object
     readablePort: MessagePort,
@@ -172,36 +161,11 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
   ): Promise<void> {
     // Stream of plaintext bytes flowing from main thread
     const remoteReadableStream = fromReadablePort(readablePort);
+
     // The destination to send encrypted bytes to the main thread
     const remoteWritableStream = fromWritablePort(writablePort);
 
-    // TODO: move to main thread
-    // Encryption constants
-    const GENERATED_KEY_RANDOMNESS = 256;
-    // Minimum IV randomness set by NIST
-    const IV_RANDOMNESS = 12;
-
-    // Generate a key if one is not provided
-    if (!options || !options.key) {
-      logger.debug(
-        `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
-      );
-      // eslint-disable-next-line no-param-reassign
-      options = {
-        ...options,
-        key: crypto.getRandomValues(
-          new Uint8Array(GENERATED_KEY_RANDOMNESS / 8),
-        ),
-      };
-    }
-
-    // Convert to Uint8Array
-    const key = parseBase64OrUint8Array(options.key);
-    const iv = (options as PenumbraDecryptionInfo).iv
-      ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
-      : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
-    // TODO: move above to main thread
-
+    // Start the encryption stream with an event emitter
     const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
       id,
       remoteReadableStream,

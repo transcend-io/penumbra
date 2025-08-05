@@ -25,6 +25,7 @@ import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 import { createChunkSizeTransformStream } from './createChunkSizeTransformStream';
 import { logger } from './logger';
+import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -301,9 +302,33 @@ export async function encrypt(
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
 
+  // Encryption constants
+  const GENERATED_KEY_RANDOMNESS = 256;
+  // Minimum IV randomness set by NIST
+  const IV_RANDOMNESS = 12;
+
+  // Generate a key if one is not provided
+  if (!options || !options.key) {
+    logger.debug(
+      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+    );
+    // eslint-disable-next-line no-param-reassign
+    options = {
+      ...options,
+      key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
+    };
+  }
+
+  // Convert to Uint8Array
+  const key = parseBase64OrUint8Array(options.key);
+  const iv = (options as PenumbraDecryptionInfo).iv
+    ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
+    : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
+
   // Set up encryption job, but don't await
   const encryptionPromise = remote.encrypt(
-    options,
+    key,
+    iv,
     jobID,
     file.size,
     transfer(readablePort, [readablePort]),
@@ -362,6 +387,9 @@ export async function decrypt(
   if (!file.size) {
     throw new Error('penumbra.decrypt(): Unable to determine file size');
   }
+  if (!options || !options.key || !options.iv || !options.authTag) {
+    throw new Error('penumbra.decrypt(): missing decryption options');
+  }
 
   // eslint-disable-next-line no-plusplus
   const jobID: JobID<number> = jobIDCounter++;
@@ -383,9 +411,16 @@ export async function decrypt(
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
 
+  // Convert to Uint8Array
+  const key = parseBase64OrUint8Array(options.key);
+  const iv = parseBase64OrUint8Array(options.iv);
+  const authTag = parseBase64OrUint8Array(options.authTag);
+
   // Set up decryption job, but don't await
   const decryptionPromise = remote.decrypt(
-    options,
+    key,
+    iv,
+    authTag,
     jobID,
     file.size,
     transfer(readablePort, [readablePort]),
