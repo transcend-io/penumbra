@@ -66,7 +66,7 @@ const resolver = document.createElementNS(
  * @param resource - Resource
  * @returns Penumbra files
  */
-async function getJob(resource: RemoteResource): Promise<PenumbraFile> {
+async function getJob(resource: RemoteResource): Promise<PenumbraFileWithID> {
   // Create remote readable streams
   const remoteStream = new RemoteReadableStream();
 
@@ -89,7 +89,7 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFile> {
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
   await remote.get(transfer(writablePort, [writablePort]), resource, jobID);
-  return readable;
+  return { ...readable, id: jobID };
 }
 
 /**
@@ -121,7 +121,9 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFile> {
  * @param resources - Resources to fetch
  * @returns Penumbra files
  */
-export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
+export function get(
+  ...resources: RemoteResource[]
+): Promise<PenumbraFileWithID[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
