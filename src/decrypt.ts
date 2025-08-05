@@ -25,13 +25,13 @@ export function startDecryptionStreamWithEmitter(
   authTag: Uint8Array,
   ignoreAuthTag?: boolean,
 ): ReadableStream {
-  let totalBytesRead = 0;
-
   // Construct the decryption stream
   const decryptionStream = createDecryptionStream(key, iv, {
     authTag,
     __dangerouslyIgnoreAuthTag: ignoreAuthTag,
   });
+
+  let totalBytesRead = 0;
 
   return readableStream.pipeThrough(decryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({

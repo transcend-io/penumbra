@@ -2,18 +2,10 @@
 import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // local
-import {
-  PenumbraDecryptionInfo,
-  PenumbraEncryptedFile,
-  PenumbraEncryptionOptions,
-  PenumbraFileWithID,
-  JobID,
-} from './types';
+import type { JobID } from './types';
 
 // utils
 import { emitProgress, emitJobCompletion } from './utils';
-import { logger } from './logger';
-import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
  * Encrypts a readable stream
@@ -24,19 +16,19 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @param iv - Encryption IV Buffer
  * @returns A readable stream of encrypted data
  */
-function startEncryptionStreamWithEmitter(
+export function startEncryptionStreamWithEmitter(
   id: JobID<number>,
   readableStream: ReadableStream,
   contentLength: number,
   key: Uint8Array,
   iv: Uint8Array,
 ): ReadableStream {
-  let totalBytesRead = 0;
-
   // Construct the encryption stream
   const encryptionStream = createEncryptionStream(key, iv, {
     detachAuthTag: true,
   });
+
+  let totalBytesRead = 0;
 
   return readableStream.pipeThrough(encryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
@@ -51,51 +43,4 @@ function startEncryptionStreamWithEmitter(
       },
     }),
   );
-}
-
-const GENERATED_KEY_RANDOMNESS = 256;
-// Minimum IV randomness set by NIST
-const IV_RANDOMNESS = 12;
-
-/**
- * Encrypts a file and returns a ReadableStream
- * @param options - Options
- * @param file - The remote resource to download
- * @param size - Size
- * @returns A readable stream of the encrypted file
- */
-export default function encrypt(
-  options: PenumbraEncryptionOptions | null,
-  file: PenumbraFileWithID,
-  size: number,
-): PenumbraEncryptedFile {
-  // Generate a key if one is not provided // TODO: this is never returned? Nor the IV?
-  if (!options || !options.key) {
-    logger.debug(
-      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
-    );
-    // eslint-disable-next-line no-param-reassign
-    options = {
-      ...options,
-      key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
-    };
-  }
-
-  const { id } = file;
-  // eslint-disable-next-line no-param-reassign
-  size = file.size || size;
-
-  // Convert to Uint8Array
-  const key = parseBase64OrUint8Array(options.key);
-  const iv = (options as PenumbraDecryptionInfo).iv
-    ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
-    : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
-
-  // Encrypt the stream
-  return {
-    ...file,
-    size, // TODO this should just be on the file object
-    id,
-    stream: startEncryptionStreamWithEmitter(id, file.stream, size, key, iv),
-  };
 }

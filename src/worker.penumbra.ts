@@ -21,7 +21,7 @@ import { init } from '@transcend-io/encrypt-web-streams';
 import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
-import encrypt from './encrypt';
+import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
 import { logger } from './logger';
@@ -136,11 +136,13 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
       throw new Error('penumbra.decrypt(): missing decryption options');
     }
 
-    // Convert to Uint8Array TODO: move to main thread
+    // Convert to Uint8Array
     const key = parseBase64OrUint8Array(options.key);
     const iv = parseBase64OrUint8Array(options.iv);
     const authTag = parseBase64OrUint8Array(options.authTag);
+    // TODO move above to main thread
 
+    // Start the decryption stream with an event emitter
     const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
       stream,
       size,
@@ -172,16 +174,44 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
     const remoteReadableStream = fromReadablePort(readablePort);
     // The destination to send encrypted bytes to the main thread
     const remoteWritableStream = fromWritablePort(writablePort);
-    const encrypted = encrypt(
-      options,
-      {
-        stream: remoteReadableStream,
-        size,
-        id,
-      },
+
+    // TODO: move to main thread
+    // Encryption constants
+    const GENERATED_KEY_RANDOMNESS = 256;
+    // Minimum IV randomness set by NIST
+    const IV_RANDOMNESS = 12;
+
+    // Generate a key if one is not provided
+    if (!options || !options.key) {
+      logger.debug(
+        `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+      );
+      // eslint-disable-next-line no-param-reassign
+      options = {
+        ...options,
+        key: crypto.getRandomValues(
+          new Uint8Array(GENERATED_KEY_RANDOMNESS / 8),
+        ),
+      };
+    }
+
+    // Convert to Uint8Array
+    const key = parseBase64OrUint8Array(options.key);
+    const iv = (options as PenumbraDecryptionInfo).iv
+      ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
+      : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
+    // TODO: move above to main thread
+
+    const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
+      id,
+      remoteReadableStream,
       size,
+      key,
+      iv,
     );
-    await encrypted.stream.pipeTo(remoteWritableStream);
+
+    // Start the encryption stream with an event emitter
+    await encryptionStreamWithEmitter.pipeTo(remoteWritableStream);
   }
 
   /**
