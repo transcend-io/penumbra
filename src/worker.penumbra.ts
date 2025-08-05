@@ -19,29 +19,9 @@ import './transferHandlers/penumbra-events';
 import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
-import { PenumbraError } from './error';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
-}
-
-/**
- * Handle an error by emitting an event
- * TODO: move to / consolidate with emitError()
- * @param error - The error
- * @param id - The job ID
- */
-function handleErrorViaEmit(error: unknown, id: JobID<string | number>): void {
-  if (error instanceof PenumbraError) {
-    emitError(error);
-    throw error;
-  }
-  emitError(
-    new PenumbraError(
-      error instanceof Error ? error : new Error(String(error)),
-      id,
-    ),
-  );
 }
 
 /**
@@ -69,10 +49,13 @@ class PenumbraWorker {
        * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
        */
       localStream.pipeTo(remoteStream).catch((error) => {
-        handleErrorViaEmit(error, resource.url); // TODO: switch to JobID?
+        emitError(error, resource.url);
       });
     } catch (error: unknown) {
-      handleErrorViaEmit(error, resource.url); // TODO: switch to JobID?
+      /**
+       * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
+       */
+      emitError(error, resource.url);
       throw error;
     }
   }
@@ -122,10 +105,13 @@ class PenumbraWorker {
       decryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
         .catch((error) => {
-          handleErrorViaEmit(error, id);
+          emitError(error, id);
         });
     } catch (error) {
-      handleErrorViaEmit(error, id);
+      /**
+       * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
+       */
+      emitError(error, id);
       throw error;
     }
   }
@@ -173,10 +159,13 @@ class PenumbraWorker {
       encryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
         .catch((error) => {
-          handleErrorViaEmit(error, id);
+          emitError(error, id);
         });
     } catch (error) {
-      handleErrorViaEmit(error, id);
+      /**
+       * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
+       */
+      emitError(error, id);
       throw error;
     }
   }
