@@ -5,8 +5,8 @@ import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 import {
   PenumbraDecryptionInfo,
   PenumbraEncryptedFile,
-  PenumbraFile,
   JobID,
+  PenumbraFileWithID,
 } from './types';
 import { emitJobCompletion, emitProgress } from './utils';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
@@ -66,7 +66,7 @@ export default function decrypt(
   options: PenumbraDecryptionInfo,
   file: PenumbraEncryptedFile,
   size: number,
-): PenumbraFile {
+): PenumbraFileWithID {
   if (!options || !options.key || !options.iv || !options.authTag) {
     throw new Error('penumbra.decrypt(): missing decryption options');
   }

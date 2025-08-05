@@ -94,6 +94,7 @@ export default function encrypt(
   // Encrypt the stream
   return {
     ...file,
+    size, // TODO this should just be on the file object
     id,
     stream: encryptStream(id, file.stream, size, key, iv),
   };

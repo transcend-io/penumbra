@@ -1,10 +1,11 @@
 // local
 import type { Remote } from 'comlink';
-import type PenumbraAPI from './API';
+import type { Penumbra as PenumbraAPI } from './API';
 import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
 import type { PenumbraError } from './error';
 
 export { PenumbraZipWriter } from './zip';
+
 /**
  * Job ID type
  * @param T - The type of the job ID
@@ -78,7 +79,7 @@ export interface PenumbraEncryptedFile
   extends Omit<PenumbraFileWithID, 'stream' | 'size'> {
   /** Encrypted output stream */
   stream: ReadableStream;
-  /** File size */
+  /** File size */ // TODO this should just be on the file object?
   size: number;
 }
 
@@ -166,7 +167,7 @@ export type JobCompletionEmit = CustomEvent<JobCompletion>;
  */
 export type PenumbraReady = CustomEvent<{
   /** Penumbra API object */
-  penumbra: typeof PenumbraAPI;
+  penumbra: PenumbraAPI;
 }>;
 
 /** Data returned by penumbra.getTextOrURI() */

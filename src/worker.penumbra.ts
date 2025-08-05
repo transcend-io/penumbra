@@ -121,7 +121,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
   async decrypt(
     options: PenumbraDecryptionInfo,
     id: JobID<number>,
-    size: number,
+    size: number, // TODO this should just be on the file object
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): Promise<void> {
@@ -152,7 +152,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
   async encrypt(
     options: PenumbraEncryptionOptions | null,
     id: JobID<number>,
-    size: number,
+    size: number, // TODO this should just be on the file object
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): Promise<void> {

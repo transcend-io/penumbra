@@ -473,5 +473,10 @@ const penumbra = {
   setWorkerLocation,
 };
 
+/**
+ * Penumbra API type
+ */
+export type Penumbra = typeof penumbra;
+
 export default penumbra;
 /* eslint-enable max-lines */
