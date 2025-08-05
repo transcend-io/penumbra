@@ -436,7 +436,7 @@ describe('Penumbra API', () => {
     await penumbra.save(files);
   });
 
-  it.only('penumbra.save() should save a zip when multiple files are provided', async () => {
+  it('penumbra.save() should save a zip when multiple files are provided', async () => {
     const { remoteResource: remoteResource1 } = getFixture(
       'file_example_JPG_500kB',
     );
