@@ -6,12 +6,12 @@ const config: KnipConfig = {
     'src/API.ts',
     'src/worker.penumbra.ts',
     'tests/*.test.ts',
+    'web-test-runner.config.js',
   ],
   ignore: ['fixtures/**'],
   ignoreDependencies: [
     '@types/mocha',
     '@web/dev-server-esbuild',
-    '@web/test-runner',
     '@web/test-runner-playwright',
   ],
 };

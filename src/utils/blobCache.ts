@@ -1,5 +1,5 @@
 /** Blob cache manager */
-export type BlobCacheManager = {
+type BlobCacheManager = {
   /** Get Blob cache (list of in-use object URLs) */
   get: () => URL[];
   /** Write to Blob cache */

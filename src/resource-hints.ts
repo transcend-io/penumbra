@@ -5,12 +5,12 @@ import { getOrigins } from './utils';
 /**
  * Types of rels that a link can take on
  */
-export type LinkRel = 'preconnect' | 'preload';
+type LinkRel = 'preconnect' | 'preload';
 
 /**
  * A function that will cleanup all resource hints
  */
-export type CleanupResourceHints = () => void;
+type CleanupResourceHints = () => void;
 
 /**
  * No-op function generator
