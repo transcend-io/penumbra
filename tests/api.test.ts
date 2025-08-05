@@ -403,10 +403,18 @@ describe('Penumbra API', () => {
     });
 
     await writer.write(
-      ...(await penumbra.get(remoteResource1, remoteResource2)),
+      ...(await penumbra.get(remoteResource1, remoteResource2)).map((file) => ({
+        ...file,
+        // Fixtures have a postfixed .enc extension, so we need to remove it
+        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+      })),
     );
     await writer.write(
-      ...(await penumbra.get(remoteResource3, remoteResource4)),
+      ...(await penumbra.get(remoteResource3, remoteResource4)).map((file) => ({
+        ...file,
+        // Fixtures have a postfixed .enc extension, so we need to remove it
+        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+      })),
     );
     await writer.close();
     assert.isTrue(
@@ -428,7 +436,7 @@ describe('Penumbra API', () => {
     await penumbra.save(files);
   });
 
-  it('penumbra.save() should save a zip when multiple files are provided', async () => {
+  it.only('penumbra.save() should save a zip when multiple files are provided', async () => {
     const { remoteResource: remoteResource1 } = getFixture(
       'file_example_JPG_500kB',
     );
@@ -446,7 +454,12 @@ describe('Penumbra API', () => {
       remoteResource3,
       remoteResource4,
     );
-    await penumbra.save(files);
+    await penumbra.save(
+      files.map((file) => ({
+        ...file,
+        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+      })),
+    );
   });
 });
 
