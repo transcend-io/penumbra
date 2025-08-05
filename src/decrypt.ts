@@ -2,17 +2,11 @@
 import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // utils
-import {
-  PenumbraDecryptionInfo,
-  PenumbraEncryptedFile,
-  JobID,
-  PenumbraFileWithID,
-} from './types';
+import { JobID } from './types';
 import { emitJobCompletion, emitProgress } from './utils';
-import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /**
- * Decrypts a readable stream
+ * Starts a decryption stream with an event emitter
  * @param readableStream - A readable stream of encrypted data
  * @param contentLength - The content length of the file, in bytes
  * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
@@ -22,7 +16,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @param ignoreAuthTag - Dangerously bypass authTag validation. Only use this for testing purposes.
  * @returns A readable stream of decrypted data
  */
-export function decryptStream(
+export function startDecryptionStreamWithEmitter(
   readableStream: ReadableStream,
   contentLength: number | null,
   id: JobID,
@@ -53,45 +47,4 @@ export function decryptStream(
       },
     }),
   );
-}
-
-/**
- * Decrypts a file and returns a ReadableStream
- * @param options - Options
- * @param file - The remote resource to download
- * @param size - Size
- * @returns A readable stream of the deciphered file
- */
-export default function decrypt(
-  options: PenumbraDecryptionInfo,
-  file: PenumbraEncryptedFile,
-  size: number,
-): PenumbraFileWithID {
-  if (!options || !options.key || !options.iv || !options.authTag) {
-    throw new Error('penumbra.decrypt(): missing decryption options');
-  }
-
-  const { id } = file;
-  // eslint-disable-next-line no-param-reassign
-  size = file.size || size;
-
-  // Convert to Uint8Array
-  const key = parseBase64OrUint8Array(options.key);
-  const iv = parseBase64OrUint8Array(options.iv);
-  const authTag = parseBase64OrUint8Array(options.authTag);
-
-  // Encrypt the stream
-  return {
-    ...file,
-    id,
-    stream: decryptStream(
-      file.stream,
-      size,
-      id,
-      key,
-      iv,
-      authTag,
-      file.ignoreAuthTag,
-    ),
-  };
 }

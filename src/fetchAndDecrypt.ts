@@ -1,6 +1,6 @@
 // local
 import { RemoteResource } from './types';
-import { decryptStream } from './decrypt';
+import { startDecryptionStreamWithEmitter } from './decrypt';
 import { PenumbraError } from './error';
 
 import emitError from './utils/emitError';
@@ -55,7 +55,7 @@ export default function fetchAndDecrypt({
         const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
         // Decrypt the stream
-        return decryptStream(
+        return startDecryptionStreamWithEmitter(
           response.body,
           Number(response.headers.get('Content-Length')) || null,
           url,

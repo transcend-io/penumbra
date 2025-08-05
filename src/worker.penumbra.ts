@@ -22,11 +22,12 @@ import fetchAndDecrypt from './fetchAndDecrypt';
 import onPenumbraEvent from './utils/forwardEvents';
 import './transferHandlers/penumbra-events';
 import encrypt from './encrypt';
-import decrypt from './decrypt';
+import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
 import { logger } from './logger';
 import emitError from './utils/emitError';
 import { PenumbraError } from './error';
+import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
@@ -129,16 +130,27 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
     const stream = fromReadablePort(readablePort);
     // The destination to send encrypted bytes to the main thread
     const writable = fromWritablePort(writablePort);
-    const decrypted = decrypt(
-      options,
-      {
-        stream,
-        size,
-        id,
-      },
+
+    // TODO move to main thread
+    if (!options || !options.key || !options.iv || !options.authTag) {
+      throw new Error('penumbra.decrypt(): missing decryption options');
+    }
+
+    // Convert to Uint8Array TODO: move to main thread
+    const key = parseBase64OrUint8Array(options.key);
+    const iv = parseBase64OrUint8Array(options.iv);
+    const authTag = parseBase64OrUint8Array(options.authTag);
+
+    const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
+      stream,
       size,
+      id,
+      key,
+      iv,
+      authTag,
     );
-    await decrypted.stream.pipeTo(writable);
+
+    await decryptionStreamWithEmitter.pipeTo(writable);
   }
 
   /**

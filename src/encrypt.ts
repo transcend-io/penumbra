@@ -24,7 +24,7 @@ import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
  * @param iv - Encryption IV Buffer
  * @returns A readable stream of encrypted data
  */
-export function encryptStream(
+function startEncryptionStreamWithEmitter(
   id: JobID<number>,
   readableStream: ReadableStream,
   contentLength: number,
@@ -69,7 +69,7 @@ export default function encrypt(
   file: PenumbraFileWithID,
   size: number,
 ): PenumbraEncryptedFile {
-  // Generate a key if one is not provided
+  // Generate a key if one is not provided // TODO: this is never returned? Nor the IV?
   if (!options || !options.key) {
     logger.debug(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
@@ -96,6 +96,6 @@ export default function encrypt(
     ...file,
     size, // TODO this should just be on the file object
     id,
-    stream: encryptStream(id, file.stream, size, key, iv),
+    stream: startEncryptionStreamWithEmitter(id, file.stream, size, key, iv),
   };
 }
