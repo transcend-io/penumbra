@@ -34,35 +34,30 @@ const resolver = document.createElementNS(
 
 /**
  * Retrieve and decrypt files (batch job)
- * @param resources - Resources
+ * @param resource - Resource
  * @returns Penumbra files
  */
-async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
-  if (resources.length === 0) {
-    throw new Error('penumbra.get() called without arguments');
-  }
-
+async function getJob(resource: RemoteResource): Promise<PenumbraFile> {
   // Create remote readable streams
-  const remoteStreams = resources.map(() => new RemoteReadableStream());
-  const readables = remoteStreams.map((stream, i) => {
-    const { url } = resources[i];
-    resolver.href = url;
-    const path = resolver.pathname; // derive path from URL
-    return {
-      path,
-      // derived path is overridden if PenumbraFile contains path
-      ...resources[i],
-      stream: stream.readable,
-    };
-  });
-  const writablePorts = remoteStreams.map(({ writablePort }) => writablePort);
+  const remoteStream = new RemoteReadableStream();
+
+  const { url } = resource;
+  resolver.href = url;
+  const path = resolver.pathname; // derive path from URL
+  const readable = {
+    path,
+    ...resource,
+    stream: remoteStream.readable,
+  };
+
+  const { writablePort } = remoteStream;
 
   // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
   const worker = await getWorker();
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
-  await remote.get(transfer(writablePorts, writablePorts), resources);
-  return readables as PenumbraFile[];
+  await remote.get(transfer(writablePort, [writablePort]), resource);
+  return readable;
 }
 
 /**
@@ -95,9 +90,10 @@ async function getJob(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
  * @returns Penumbra files
  */
 export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
-  return Promise.all(
-    resources.map(async (resource) => (await getJob(resource))[0]),
-  );
+  if (resources.length === 0) {
+    throw new Error('penumbra.get() called without arguments');
+  }
+  return Promise.all(resources.map(getJob));
 }
 
 const DEFAULT_FILENAME = 'download';

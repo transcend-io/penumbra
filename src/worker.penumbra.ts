@@ -19,7 +19,6 @@ import './transferHandlers/penumbra-events';
 import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
-import { logger } from './logger';
 import emitError from './utils/emitError';
 import { PenumbraError } from './error';
 
@@ -28,79 +27,53 @@ if (self.document) {
 }
 
 /**
+ * Handle an error
+ * @param error - The error
+ * @param id - The job ID
+ */
+function handleErrorViaEmit(error: unknown, id: JobID<string | number>): void {
+  if (error instanceof PenumbraError) {
+    emitError(error);
+    throw error;
+  }
+  emitError(
+    new PenumbraError(
+      error instanceof Error ? error : new Error(String(error)),
+      id,
+    ),
+  );
+}
+
+/**
  * Penumbra Worker class
  */
 class PenumbraWorker {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
-   * @param writablePorts - Remote Web Stream writable ports
-   * @param resources - The remote resource to download
+   * @param writablePort - Remote Web Stream writable port
+   * @param resource - The remote resource to download
    */
   async get(
-    writablePorts: MessagePort[],
-    resources: RemoteResource[],
+    writablePort: MessagePort,
+    resource: RemoteResource,
   ): Promise<void> {
-    const writableCount = writablePorts.length;
-    const resourceCount = resources.length;
-    if (writableCount !== resourceCount) {
-      // eslint-disable-next-line no-multi-assign, no-param-reassign
-      resources.length = writablePorts.length = Math.min(
-        writableCount,
-        resourceCount,
-      );
-      logger.warn(
-        `Writable ports (${writableCount}) <-> Resources (${resourceCount}) count mismatch. ${
-          '' //
-        }Truncating to common subset (${writablePorts.length}).`,
-      );
-    }
-
     try {
-      // Await successful fetch response (but do not await the pipeTo). i.e., await server reply, but not the whole body
-      const results = await Promise.allSettled(
-        resources.map(async (resource, i) => {
-          if (!('url' in resource)) {
-            throw new Error(
-              'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
-            );
-          }
-          const remoteStream = fromWritablePort(writablePorts[i]);
-          const localStream = await fetchAndDecrypt(resource);
-          localStream.pipeTo(remoteStream);
-        }),
-      );
-
-      // Emit an error for each failed fetch
-      const errors: PenumbraError[] = [];
-      results.forEach((result, i) => {
-        if (result.status === 'rejected') {
-          const err = new PenumbraError(result.reason, resources[i].url);
-          emitError(err);
-          errors.push(err);
-        }
-      });
-      if (errors.length > 0) {
-        throw new PenumbraError(
-          `${errors.length} file${
-            errors.length === 1 ? '' : 's'
-          } failed to fetch and decrypt:
-${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
-          'get',
+      // TODO: move to main thread
+      if (!('url' in resource)) {
+        throw new Error(
+          'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
         );
       }
+
+      const remoteStream = fromWritablePort(writablePort);
+      const localStream = await fetchAndDecrypt(resource);
+
+      // TODO: figure out if we can await this
+      localStream.pipeTo(remoteStream).catch((error) => {
+        handleErrorViaEmit(error, resource.url); // TODO: switch to JobID?
+      });
     } catch (error: unknown) {
-      if (error instanceof PenumbraError) {
-        emitError(error);
-        logger.error(error);
-        throw error;
-      }
-      emitError(
-        new PenumbraError(
-          error instanceof Error ? error : new Error(String(error)),
-          'get',
-        ),
-      );
-      logger.error(error);
+      handleErrorViaEmit(error, resource.url); // TODO: switch to JobID?
       throw error;
     }
   }
@@ -139,6 +112,7 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
       authTag,
     );
 
+    // TODO: make consistent with get() - probably should not await this, wrap everything else in try/catch and await in main for completion of above
     await decryptionStreamWithEmitter.pipeTo(remoteWritableStream);
   }
 
