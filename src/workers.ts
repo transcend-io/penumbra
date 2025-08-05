@@ -22,22 +22,9 @@ import { settings } from './settings';
  * The default worker file locations
  */
 const DEFAULT_WORKERS = {
-  penumbra: import.meta.resolve('./worker.penumbra.ts'),
+  penumbra: 'worker.penumbra.js',
   StreamSaver: 'streamsaver.penumbra.serviceworker.js',
 };
-
-// TODO clean this up
-declare global {
-  interface Window {
-    /** Environment variables */
-    environment: {
-      /** Whether to log events on startup */
-      PENUMBRA_LOG_START?: 'true' | 'false' | undefined;
-    };
-  }
-}
-
-const SHOULD_LOG_EVENTS = self?.environment?.PENUMBRA_LOG_START === 'true';
 
 // //// //
 // Init //
@@ -58,43 +45,6 @@ let initialized = false;
 /** Whether or not Penumbra is currently initializing workers */
 let initializing = false;
 
-// //////////// //
-// Load Workers //
-// //////////// //
-
-if (SHOULD_LOG_EVENTS) {
-  logger.info('Loading penumbra script element...');
-}
-let scriptElement: HTMLScriptElement = (document.currentScript ||
-  document.querySelector('script[data-penumbra]')) as HTMLScriptElement;
-if (!scriptElement) {
-  scriptElement = { dataset: {} } as HTMLScriptElement;
-  if (SHOULD_LOG_EVENTS) {
-    logger.info('Unable to locate Penumbra script element.');
-  }
-}
-
-/**
- * Get the script throwing error if cannot be found
- */
-const scriptUrl = new URL(scriptElement.src, location.href);
-
-/** For resolving URLs */
-const resolver = document.createElementNS(
-  'http://www.w3.org/1999/xhtml',
-  'a',
-) as HTMLAnchorElement;
-
-/**
- * Resolve a potentially relative URL into an absolute URL
- * @param url - URL
- * @returns Url resolved
- */
-function resolve(url: string): URL {
-  resolver.href = url;
-  return new URL(resolver.href, scriptUrl);
-}
-
 // /////// //
 // Methods //
 // /////// //
@@ -104,22 +54,9 @@ function resolve(url: string): URL {
  * @returns Worker location
  */
 function getWorkerLocation(): WorkerLocation {
-  const config = JSON.parse(settings.workers || '{}');
-  const options = {
-    ...DEFAULT_WORKERS,
-    /* Support either worker="penumbra-worker" (non-JSON)
-     *             or workers='"{"penumbra": "...", "StreamSaver": "..."}"' */
-    penumbra: settings.worker || DEFAULT_WORKERS.penumbra,
-    ...(typeof config === 'object' ? config : {}),
-  };
-  const { base, penumbra, StreamSaver } = options;
-
-  const context = resolve(base || scriptUrl);
-
   return {
-    base: context,
-    penumbra: new URL(penumbra, context),
-    StreamSaver: new URL(StreamSaver, context),
+    penumbra: new URL(DEFAULT_WORKERS.penumbra, import.meta.url),
+    StreamSaver: new URL(DEFAULT_WORKERS.StreamSaver, import.meta.url),
   };
 }
 

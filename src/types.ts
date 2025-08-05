@@ -1,7 +1,7 @@
 // local
 import type { Remote } from 'comlink';
 import type { Penumbra as PenumbraAPI } from './API';
-import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
+import type { PenumbraWorker as PenumbraWorkerAPI } from './worker';
 import type { PenumbraError } from './error';
 
 import type { JobID } from './job-id';
@@ -189,8 +189,6 @@ export type { PenumbraWorkerAPI };
  * Worker location URLs. All fields are absolute URLs.
  */
 export interface WorkerLocation {
-  /** The directory where the workers scripts are available */
-  base: URL;
   /** The location of the Penumbra Worker script */
   penumbra: URL;
   /** The location of the StreamSaver ServiceWorker script - TODO: is this in use? */

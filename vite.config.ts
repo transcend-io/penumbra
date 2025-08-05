@@ -11,8 +11,8 @@ export default defineConfig({
     sourcemap: true,
     lib: {
       entry: {
-        main: resolve(__dirname, 'src/index.ts'),
-        worker: resolve(__dirname, 'src/worker.penumbra.ts'),
+        'main.penumbra': resolve(__dirname, 'src/index.ts'),
+        'worker.penumbra': resolve(__dirname, 'src/worker.penumbra.js'),
       },
       name: 'Penumbra',
     },

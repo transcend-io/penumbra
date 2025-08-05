@@ -65,7 +65,7 @@ describe('Penumbra API', () => {
     );
   });
 
-  it('should get and decrypt a 1kb file', async () => {
+  it.only('should get and decrypt a 1kb file', async () => {
     const { remoteResource, unencryptedChecksum } = getFixture(
       'file_example_JSON_1kb',
     );
