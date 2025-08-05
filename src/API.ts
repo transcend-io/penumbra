@@ -22,6 +22,8 @@ import { blobCache, isNumber, isViewableText } from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
+import { createChunkSizeTransformStream } from './createChunkSizeTransformStream';
+import { logger } from './logger';
 
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
@@ -112,14 +114,13 @@ function saveZip(options?: ZipOptions): PenumbraZipWriter {
  * Save files retrieved by Penumbra
  * @param files - Files to save
  * @param fileName - The name of the file to save to
- * @param controller - Controller
- * @returns AbortController
+ * @param controller - AbortController
  */
-function save(
+async function save(
   files: PenumbraFile[],
   fileName?: string,
   controller = new AbortController(),
-): AbortController {
+): Promise<void> {
   let size: number | undefined = 0;
   // eslint-disable-next-line no-restricted-syntax
   for (const file of files) {
@@ -138,8 +139,8 @@ function save(
       files,
       controller,
     });
-    writer.write(...files);
-    return controller;
+    await writer.write(...files);
+    return;
   }
 
   // Single file
@@ -157,11 +158,9 @@ function save(
   const { signal } = controller;
 
   // Write a single readable stream to file
-  file.stream.pipeTo(streamSaver.createWriteStream(singleFileName), {
+  await file.stream.pipeTo(streamSaver.createWriteStream(singleFileName), {
     signal,
   });
-
-  return controller;
 }
 
 /**
@@ -257,7 +256,7 @@ export function getDecryptionInfo(
  */
 async function encryptJob(
   options: PenumbraEncryptionOptions | null,
-  ...files: PenumbraFile[]
+  ...files: PenumbraFile[] // TODO this is always one file. Simplify code
 ): Promise<PenumbraEncryptedFile[]> {
   // Ensure a file is passed
   if (files.length === 0) {
@@ -278,7 +277,7 @@ async function encryptJob(
     }
   });
 
-  // WritableStream constructor supported
+  // Set up remote streams
   const remoteReadableStreams = files.map(() => new RemoteReadableStream());
   const remoteWritableStreams = files.map(() => new RemoteWritableStream());
 
@@ -294,7 +293,9 @@ async function encryptJob(
   const worker = await getWorker();
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
-  remote.encrypt(
+
+  // Set up encryption job, but don't await
+  const encryptionPromise = remote.encrypt(
     options,
     ids,
     sizes,
@@ -302,21 +303,39 @@ async function encryptJob(
     transfer(writablePorts, writablePorts),
   );
 
-  // encryption jobs submitted and still processing. TODO: audit if pipeTo is intentionally not awaited, then update comment
-  remoteWritableStreams.forEach((remoteWritableStream, i) => {
-    // Pipe user input file stream to the worker thread
-    files[i].stream.pipeTo(remoteWritableStream.writable);
+  encryptionPromise.catch((error) => {
+    logger.error(`penumbra.encrypt() - worker failed to encrypt: ${error}`);
   });
 
   // Construct output files with corresponding remote readable streams
-  const readables = remoteReadableStreams.map(
-    (stream, i): PenumbraEncryptedFile => ({
-      ...files[i],
-      // iv: metadata[i].iv,
-      stream: stream.readable,
-      size: sizes[i],
-      id: ids[i],
-    }),
+  const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
+    (_, i): PenumbraEncryptedFile => {
+      // Create a `TransformStream` which sends chunks to the worker, and receives chunks back.
+      const { writable } = remoteWritableStreams[i];
+      const { readable } = remoteReadableStreams[i];
+      const remoteTransformStream: TransformStream<Uint8Array, Uint8Array> = {
+        // The `WritableStream` we write chunks to by reading from `files[i].stream`. Chunks are sent to the Worker.
+        writable,
+        // The `ReadableStream` we read chunks from and ultimately pass to the library consumer. Chunks are received from the Worker.
+        readable,
+      };
+
+      // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
+      const chunkSizeTransformStream = createChunkSizeTransformStream();
+
+      // Return a `ReadableStream` which is transforming through the web worker
+      const stream = files[i].stream
+        .pipeThrough(chunkSizeTransformStream)
+        .pipeThrough(remoteTransformStream);
+
+      return {
+        ...files[i],
+        // iv: metadata[i].iv,
+        stream,
+        size: sizes[i],
+        id: ids[i],
+      };
+    },
   );
   return readables;
 }
@@ -358,7 +377,7 @@ export function encrypt(
  */
 async function decryptJob(
   options: PenumbraDecryptionInfo,
-  ...files: PenumbraEncryptedFile[]
+  ...files: PenumbraEncryptedFile[] // TODO this is always one file. Simplify code
 ): Promise<PenumbraFile[]> {
   if (files.length === 0) {
     throw new Error('penumbra.decrypt() called without arguments');
@@ -389,32 +408,53 @@ async function decryptJob(
     ({ writablePort }) => writablePort,
   );
   // enter worker thread
-  await new RemoteAPI().then((remote) => {
-    /**
-     * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
-     * from the worker thread and starts reading the input stream from
-     * [remoteWritableStream.writable]
-     */
-    remote.decrypt(
-      options,
-      ids,
-      sizes,
-      transfer(readablePorts, readablePorts),
-      transfer(writablePorts, writablePorts),
+  const remote = await new RemoteAPI();
+  /**
+   * PenumbraWorkerAPI.decrypt calls require('./decrypt').decrypt()
+   * from the worker thread and starts reading the input stream from
+   * [remoteWritableStream.writable]
+   */
+  const promise = remote.decrypt(
+    options,
+    ids,
+    sizes,
+    transfer(readablePorts, readablePorts),
+    transfer(writablePorts, writablePorts),
+  );
+  promise.catch((error) => {
+    logger.error(
+      `penumbra.decrypt() failed to set up the decryption job on the worker: ${error}`,
     );
   });
-  // decryption jobs submitted and still processing
-  remoteWritableStreams.forEach((remoteWritableStream, i) => {
-    files[i].stream.pipeTo(remoteWritableStream.writable);
-  });
+
   // construct output files with corresponding remote readable streams
   const readables: PenumbraEncryptedFile[] = remoteReadableStreams.map(
-    (stream, i): PenumbraEncryptedFile => ({
-      ...files[i],
-      size: sizes[i],
-      id: ids[i],
-      stream: stream.readable,
-    }),
+    (_, i): PenumbraEncryptedFile => {
+      // Create a `TransformStream` which sends chunks to the worker, and receives chunks back.
+      const { writable } = remoteWritableStreams[i];
+      const { readable } = remoteReadableStreams[i];
+      const remoteTransformStream: TransformStream<Uint8Array, Uint8Array> = {
+        // The `WritableStream` we write chunks to by reading from `files[i].stream`. Chunks are sent to the Worker.
+        writable,
+        // The `ReadableStream` we read chunks from and ultimately pass to the library consumer. Chunks are received from the Worker.
+        readable,
+      };
+
+      // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
+      const chunkSizeTransformStream = createChunkSizeTransformStream();
+
+      // Return a `ReadableStream` which is transforming through the web worker
+      const stream = files[i].stream
+        .pipeThrough(chunkSizeTransformStream)
+        .pipeThrough(remoteTransformStream);
+
+      return {
+        ...files[i],
+        size: sizes[i],
+        id: ids[i],
+        stream,
+      };
+    },
   );
   return readables;
 }

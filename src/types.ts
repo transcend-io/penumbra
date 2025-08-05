@@ -1,12 +1,10 @@
-/* eslint-disable max-lines */
-
 // local
 import type { Remote } from 'comlink';
-import penumbra from './API';
-import { PenumbraError } from './error';
+import type PenumbraAPI from './API';
+import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
+import type { PenumbraError } from './error';
 
 export { PenumbraZipWriter } from './zip';
-
 /**
  * Job ID type
  * @param T - The type of the job ID
@@ -177,7 +175,7 @@ export type JobCompletionEmit = CustomEvent<JobCompletion>;
  */
 export type PenumbraReady = CustomEvent<{
   /** Penumbra API object */
-  penumbra: PenumbraAPI;
+  penumbra: typeof PenumbraAPI;
 }>;
 
 /** Data returned by penumbra.getTextOrURI() */
@@ -191,91 +189,12 @@ export interface PenumbraTextOrURI {
 }
 
 /** Penumbra API */
-export type PenumbraAPI = typeof penumbra;
+export type { PenumbraAPI };
 
 /**
  * Penumbra Worker API
  */
-export interface PenumbraWorkerAPI {
-  /**
-   * Initializes Penumbra worker progress event forwarding
-   * to the main thread
-   */
-  setup: (id: number, eventListener: (event: Event) => void) => void;
-  /**
-   * Fetches a remote files, deciphers them (if encrypted), and returns ReadableStream[]
-   * @param writablePorts - The RemoteWritableStream MessagePorts corresponding to each resource
-   * @param resources - The remote resources to download
-   */
-  get: (
-    writablePorts: MessagePort[],
-    resources: RemoteResource[],
-  ) => Promise<void>;
-  // /**
-  //  * Fetches remote files, deciphers them (if encrypted), and returns ArrayBuffer[]
-  //  * @param resources - The remote resources to download
-  //  * @returns A readable stream of the deciphered file
-  //  */
-  // getBuffers: (resources: RemoteResource[]) => Promise<ArrayBuffer[]>;
-  /**
-   * Streaming encryption of ReadableStreams
-   * @param ids - Unique identifier for tracking encryption completion
-   * @param sizes - Size of each file to encrypt (in bytes)
-   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
-   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
-   * @returns ReadableStream[] of the encrypted files
-   */
-  encrypt: (
-    options: PenumbraEncryptionOptions | null,
-    ids: JobID<number>[],
-    sizes: number[],
-    readablePorts: MessagePort[],
-    writablePorts: MessagePort[],
-  ) => void;
-  // /**
-  //  * Buffered (non-streaming) encryption of ArrayBuffers
-  //  * @param buffers - The file buffers to encrypt
-  //  * @returns ArrayBuffer[] of the encrypted files
-  //  */
-  // encryptBuffers: (
-  //   options: PenumbraEncryptionOptions | null,
-  //   files: PenumbraFile[],
-  // ) => Promise<ArrayBuffer[]>;
-  /**
-   * Streaming decryption of ReadableStreams
-   * @param ids - Unique identifier for tracking decryption completion
-   * @param sizes - Size of each file to decrypt (in bytes)
-   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
-   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
-   * @returns ReadableStream[] of the decrypted files
-   */
-  decrypt: (
-    options: PenumbraDecryptionInfo,
-    ids: JobID<number>[],
-    sizes: number[],
-    readablePorts: MessagePort[],
-    writablePorts: MessagePort[],
-  ) => void;
-  // /**
-  //  * Buffered (non-streaming) encryption of ArrayBuffers
-  //  * @param buffers - The file buffers to encrypt
-  //  * @returns ArrayBuffer[] of the encrypted files
-  //  */
-  // decryptBuffers: (
-  //   options: PenumbraDecryptionInfo,
-  //   files: PenumbraFile[],
-  // ) => Promise<ArrayBuffer[]>;
-  // /**
-  //  * Creates a zip writer for saving PenumbraFiles which keeps
-  //  * their path data in-tact.
-  //  * @returns PenumbraZipWriter
-  //  */
-  // saveZip: () => PenumbraZipWriter;
-  // /**
-  //  * Query Penumbra's level of support for the current browser.
-  //  */
-  // supported: () => PenumbraSupportLevel;
-}
+export type { PenumbraWorkerAPI };
 
 /**
  * Worker location URLs. All fields are absolute URLs.
@@ -371,4 +290,3 @@ export interface ZipOptions
      */
     onComplete?(event: ZipCompletionEmit): void;
   }> {}
-/* eslint-enable max-lines */

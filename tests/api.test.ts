@@ -215,6 +215,7 @@ describe('Penumbra API', () => {
 
       view.addEventListener(progressEventName, onprogress);
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       (async () => {
         const { remoteResource } = getFixture('zip_10MB');
         const [{ stream }] = await penumbra.get(remoteResource);
@@ -330,13 +331,34 @@ describe('Penumbra API', () => {
     assert.equal(imageHash, unencryptedChecksum, 'getBlob() checksum');
   });
 
+  it('should encrypt large file', async () => {
+    const NUM_BYTES = 2 ** 26; // 67 MB
+
+    const te = new self.TextEncoder();
+    const input = 't'.repeat(NUM_BYTES * 5);
+    const buffer = te.encode(input);
+    const { byteLength: size } = buffer;
+    const stream0 = new Response(buffer).body!;
+    const stream = stream0;
+
+    const options = null;
+    const file = { stream, size } as unknown as PenumbraFile;
+    const t0 = performance.now();
+    const [encrypted] = await penumbra.encrypt(options, file);
+    const t1 = performance.now();
+    logger.log(`encrypt() took ${t1 - t0}ms to return a stream`);
+    await bufferEntireStream(encrypted.stream);
+    const t2 = performance.now();
+    logger.log(`bufferEntireStream() took ${t2 - t1}ms`);
+  });
+
   it('should encrypt and decrypt', async () => {
     const te = new self.TextEncoder();
     const td = new self.TextDecoder();
     const input = 'test';
     const buffer = te.encode(input);
     const { byteLength: size } = buffer;
-    const stream = new Response(buffer).body;
+    const stream = new Response(buffer).body!;
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
     const [encrypted] = await penumbra.encrypt(options, file);
@@ -380,8 +402,12 @@ describe('Penumbra API', () => {
       saveBuffer: true,
     });
 
-    writer.write(...(await penumbra.get(remoteResource1, remoteResource2)));
-    writer.write(...(await penumbra.get(remoteResource3, remoteResource4)));
+    await writer.write(
+      ...(await penumbra.get(remoteResource1, remoteResource2)),
+    );
+    await writer.write(
+      ...(await penumbra.get(remoteResource3, remoteResource4)),
+    );
     await writer.close();
     assert.isTrue(
       progressEventFiredAndWorking,
@@ -403,7 +429,10 @@ describe('Error handling', () => {
       await bufferEntireStream(file.stream);
       assert.fail('Expected an error to be thrown');
     } catch (error) {
-      assert.match(error.message, /Failed to finalize decryption stream/);
+      assert.match(
+        (error as Error).message,
+        /Failed to finalize decryption stream/,
+      );
     }
   });
 

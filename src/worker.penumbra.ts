@@ -1,5 +1,4 @@
 import type {
-  PenumbraWorkerAPI,
   RemoteResource,
   PenumbraEncryptionOptions,
   PenumbraDecryptionInfo,
@@ -36,7 +35,7 @@ if (self.document) {
 /**
  * Penumbra Worker class
  */
-class PenumbraWorker implements PenumbraWorkerAPI {
+class PenumbraWorker {
   /**
    * Fetches remote files from URLs, deciphers them (if encrypted), and returns ReadableStream[]
    * @param writablePorts - Remote Web Stream writable ports
@@ -119,43 +118,42 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
    * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
    */
-  decrypt(
+  async decrypt(
     options: PenumbraDecryptionInfo,
     ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ): void {
+  ): Promise<void> {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
-      // eslint-disable-next-line no-multi-assign, no-param-reassign
-      readablePorts.length = writablePorts.length = Math.min(
-        writableCount,
-        readableCount,
-      );
-      logger.warn(
-        `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
-          '' //
-        }Truncating to common subset (${writablePorts.length}).`,
+      throw new TypeError(
+        `Readable ports (${readableCount}) <-> Writable ports (${writableCount}) count mismatch.`,
       );
     }
-    readablePorts.forEach((readablePort, i) => {
-      const stream = fromReadablePort(readablePorts[i]);
-      const writable = fromWritablePort(writablePorts[i]);
-      const id = ids[i];
-      const size = sizes[i];
-      const decrypted = decrypt(
-        options,
-        {
-          stream,
+
+    // Decrypt each file stream
+    await Promise.all(
+      readablePorts.map(async (_, i) => {
+        // Stream of encrypted bytes flowing from main thread
+        const stream = fromReadablePort(readablePorts[i]);
+        // The destination to send encrypted bytes to the main thread
+        const writable = fromWritablePort(writablePorts[i]);
+        const id = ids[i];
+        const size = sizes[i];
+        const decrypted = decrypt(
+          options,
+          {
+            stream,
+            size,
+            id,
+          },
           size,
-          id,
-        },
-        size,
-      );
-      decrypted.stream.pipeTo(writable);
-    });
+        );
+        await decrypted.stream.pipeTo(writable);
+      }),
+    );
   }
 
   /**
@@ -166,43 +164,42 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
    * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
    * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
    */
-  encrypt(
+  async encrypt(
     options: PenumbraEncryptionOptions | null,
     ids: JobID<number>[],
     sizes: number[],
     readablePorts: MessagePort[],
     writablePorts: MessagePort[],
-  ): void {
+  ): Promise<void> {
     const writableCount = writablePorts.length;
     const readableCount = readablePorts.length;
     if (writableCount !== readableCount) {
-      // eslint-disable-next-line no-multi-assign, no-param-reassign
-      readablePorts.length = writablePorts.length = Math.min(
-        writableCount,
-        readableCount,
-      );
-      logger.warn(
-        `Readable ports (${writableCount}) <-> Writable ports (${readableCount}) count mismatch. ${
-          '' //
-        }Truncating to common subset (${writablePorts.length}).`,
+      throw new TypeError(
+        `Readable ports (${readableCount}) <-> Writable ports (${writableCount}) count mismatch.`,
       );
     }
-    readablePorts.forEach((readablePort, i) => {
-      const stream = fromReadablePort(readablePorts[i]);
-      const writable = fromWritablePort(writablePorts[i]);
-      const id = ids[i];
-      const size = sizes[i];
-      const encrypted = encrypt(
-        options,
-        {
-          stream,
+
+    // Encrypt each file stream
+    await Promise.all(
+      readablePorts.map(async (_, i) => {
+        // Stream of plaintext bytes flowing from main thread
+        const remoteReadableStream = fromReadablePort(readablePorts[i]);
+        // The destination to send encrypted bytes to the main thread
+        const remoteWritableStream = fromWritablePort(writablePorts[i]);
+        const id = ids[i];
+        const size = sizes[i];
+        const encrypted = encrypt(
+          options,
+          {
+            stream: remoteReadableStream,
+            size,
+            id,
+          },
           size,
-          id,
-        },
-        size,
-      );
-      encrypted.stream.pipeTo(writable);
-    });
+        );
+        await encrypted.stream.pipeTo(remoteWritableStream);
+      }),
+    );
   }
 
   /**
@@ -218,5 +215,13 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
   }
 }
 
+/**
+ * The Penumbra Worker API
+ */
+export type { PenumbraWorker };
+
+/**
+ * Expose the PenumbraWorker class to the main thread
+ */
 expose(PenumbraWorker);
 /* eslint-enable class-methods-use-this */

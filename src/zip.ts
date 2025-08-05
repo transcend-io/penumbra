@@ -119,6 +119,7 @@ export class PenumbraZipWriter extends EventTarget {
     signal.addEventListener(
       'abort',
       () => {
+        // TODO: unawaited promise
         this.close();
       },
       { once: true },
@@ -147,6 +148,7 @@ export class PenumbraZipWriter extends EventTarget {
       ReadableStream | null,
     ] = saveBuffer ? readable.tee() : [readable, null];
 
+    // TODO: unawaited promise
     zipStream.pipeTo(saveStream, { signal });
 
     // Buffer zip stream for debug & testing
@@ -156,6 +158,7 @@ export class PenumbraZipWriter extends EventTarget {
     }
 
     if (files) {
+      // TODO: unawaited promise
       this.write(...files);
     }
   }
@@ -291,6 +294,7 @@ export class PenumbraZipWriter extends EventTarget {
               },
             });
 
+            // TODO: unawaited promise
             zip.writer.write({
               name: filePath,
               lastModified,
@@ -313,6 +317,7 @@ export class PenumbraZipWriter extends EventTarget {
   async close(): Promise<number> {
     const size = await this.getSize();
     if (!this.closed) {
+      // TODO: unawaited promise
       this.writer.close();
       this.closed = true;
     }

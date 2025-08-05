@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["mocha"],
     "noEmit": true
-  }
+  },
+  "include": ["../**/*"]
 }
