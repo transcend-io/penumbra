@@ -10,12 +10,19 @@ supported.levels = PenumbraSupportLevel;
 
 const MOCK_API: PenumbraAPI = {
   get: async () => [],
-  save: () => new AbortController(),
+  save: () => Promise.resolve(),
   supported,
   preconnect: () => () => {},
   preload: () => () => {},
-  encrypt: async () => [],
-  decrypt: async () => [],
+  encrypt: async () => ({
+    stream: new Response(new Blob()).body!,
+    size: 0,
+    id: 2,
+  }),
+  decrypt: async () => ({
+    stream: new Response(new Blob()).body!,
+    id: 1,
+  }),
   getDecryptionInfo: async () => ({
     key: 'test',
     iv: 'test',
