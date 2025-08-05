@@ -27,6 +27,18 @@ export interface PenumbraDecryptionOptions extends PenumbraEncryptionOptions {
   authTag: Uint8Array | string;
 }
 
+/**
+ * Result of completion of decryption and encryption jobs
+ */
+export interface PenumbraDecryptionInfo {
+  /** Encryption key */
+  key: Uint8Array;
+  /** Initialization vector */
+  iv: Uint8Array;
+  /** Authentication tag (for AES GCM) */
+  authTag: Uint8Array;
+}
+
 /** The base resource from which RemoteResource and PenumbraFile extend */
 interface Resource {
   /** The name of the underlying file without the extension */
@@ -138,7 +150,7 @@ export interface JobCompletion {
   /** Job ID */
   id: JobID;
   /** Decryption config info */
-  decryptionInfo: PenumbraDecryptionOptions;
+  decryptionInfo: PenumbraDecryptionInfo;
 }
 
 /**

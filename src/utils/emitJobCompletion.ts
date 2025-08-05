@@ -2,7 +2,7 @@
 import { PenumbraEvent } from '../event';
 import {
   JobCompletionEmit,
-  PenumbraDecryptionOptions,
+  PenumbraDecryptionInfo,
   type JobID,
 } from '../types';
 
@@ -14,7 +14,7 @@ import {
  */
 export default function emitJobCompletion(
   id: JobID,
-  decryptionInfo: PenumbraDecryptionOptions,
+  decryptionInfo: PenumbraDecryptionInfo,
   target: EventTarget = self,
 ): void {
   const emitContent: Pick<JobCompletionEmit, 'detail'> = {

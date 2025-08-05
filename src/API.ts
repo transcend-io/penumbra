@@ -16,6 +16,7 @@ import type {
   PenumbraTextOrURI,
   RemoteResource,
   ZipOptions,
+  PenumbraDecryptionInfo,
 } from './types';
 import { PenumbraZipWriter } from './zip';
 import {
@@ -33,14 +34,14 @@ import { generateJobID } from './job-id';
 
 /** Size (and entropy of) generated AES-256 key (in bits) */
 const GENERATED_KEY_RANDOMNESS = 256;
-/** Size (and entropy of) generated initialization vector (in bits) */
-const IV_RANDOMNESS = 12;
+/** Size (and entropy of) generated 12-byte initialization vector (in bits) */
+const IV_RANDOMNESS = 96;
 
-const decryptionConfigs = new Map<JobID, PenumbraDecryptionOptions>();
+const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
 
 const trackJobCompletion = (
   searchForID: JobID,
-): Promise<PenumbraDecryptionOptions> =>
+): Promise<PenumbraDecryptionInfo> =>
   new Promise((resolve) => {
     const listener = ({
       type,
@@ -267,22 +268,20 @@ function getBlob(
  * Get the decryption config for an encrypted file
  *
  * ```ts
- * penumbra.getDecryptionInfo(file: PenumbraFileWithID): Promise<PenumbraDecryptionOptions>
+ * penumbra.getDecryptionInfo(file: PenumbraFileWithID): Promise<PenumbraDecryptionInfo>
  * ```
  * @param file - File to get info for
  * @returns Decryption info
  */
 export function getDecryptionInfo(
   file: PenumbraFileWithID,
-): Promise<PenumbraDecryptionOptions> {
+): Promise<PenumbraDecryptionInfo> {
   const { id } = file;
   if (!decryptionConfigs.has(id)) {
     // decryption config not yet received. waiting for event with promise
     return trackJobCompletion(id);
   }
-  return Promise.resolve(
-    decryptionConfigs.get(id) as PenumbraDecryptionOptions,
-  );
+  return Promise.resolve(decryptionConfigs.get(id) as PenumbraDecryptionInfo);
 }
 
 /**
@@ -306,7 +305,7 @@ export function getDecryptionInfo(
  * @returns Encrypted file
  */
 export async function encrypt(
-  options: PenumbraEncryptionOptions | null,
+  options: Partial<PenumbraEncryptionOptions> | null,
   file: PenumbraFile,
 ): Promise<PenumbraFileWithID> {
   // Ensure a file is passed
@@ -330,7 +329,7 @@ export async function encrypt(
     logger.debug(
       `penumbra.encrypt(): no IV specified. generating a random ${IV_RANDOMNESS}-bit IV`,
     );
-    rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
+    rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS / 8));
   }
 
   // Generate an ID for this job run

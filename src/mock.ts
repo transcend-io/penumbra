@@ -25,9 +25,9 @@ const MOCK_API: PenumbraAPI = {
     id: asJobID('55889332-22e6-420c-91e8-7cc2a6b9106e'),
   }),
   getDecryptionInfo: async () => ({
-    key: 'test',
-    iv: 'test',
-    authTag: 'test',
+    key: new Uint8Array(32).fill(1),
+    iv: new Uint8Array(12).fill(1),
+    authTag: new Uint8Array(16).fill(1),
   }),
   getBlob: async () => new Blob(),
   getTextOrURI: () => [
