@@ -151,7 +151,7 @@ let workerID = 0;
  * @param url - URL
  * @returns Worker
  */
-export async function createPenumbraWorker(
+async function createPenumbraWorker(
   url: URL | string,
 ): Promise<PenumbraWorker> {
   const worker = new Worker(url, { type: 'module' });
@@ -204,7 +204,7 @@ function waitForInit(): Promise<PenumbraWorker> {
 const call = Function.prototype.call.bind(Function.prototype.call);
 
 /** Initializes web worker threads */
-export async function initWorkers(): Promise<void> {
+async function initWorkers(): Promise<void> {
   initializing = true;
   const { penumbra } = getWorkerLocation();
   workers.push(

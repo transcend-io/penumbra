@@ -6,7 +6,7 @@ const ORIGIN_MATCHER = /^[\w-]+:\/{2,}\[?[\w.:-]+\]?(?::[0-9]*)?/;
  * @param url - The URL to extract an origin from
  * @returns The origin of the URL
  */
-export function extractOrigin(url: string): string {
+function extractOrigin(url: string): string {
   const origin = url.match(ORIGIN_MATCHER);
   if (!origin) {
     throw new Error('No origin found. Possibly invalid URL');

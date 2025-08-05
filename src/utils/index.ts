@@ -3,8 +3,6 @@ export { default as emitJobCompletion } from './emitJobCompletion';
 export { default as emitZipProgress } from './emitZipProgress';
 export { default as emitZipCompletion } from './emitZipCompletion';
 export { default as getOrigins } from './getOrigins';
-export { default as getMediaSrcFromRS } from './getMediaSrcFromRS';
-export { default as getTextFromRS } from './getTextFromRS';
 export { default as blobCache } from './blobCache';
 export { default as isViewableText } from './isViewableText';
 export { default as isNumber } from './isNumber';

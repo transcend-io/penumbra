@@ -26,7 +26,7 @@ const nooper = (): CleanupResourceHints => (): void => {};
  * @param fetch - Request resource as a cross-origin fetch
  * @returns A function removing the resource hints
  */
-export function createResourceHintHelper(
+function createResourceHintHelper(
   urls: string[],
   rel: LinkRel,
   fetch = false,
