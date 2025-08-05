@@ -15,3 +15,6 @@
 *.testjs
 *.testts
 *__snapshots__/*
+fixtures/*
+*.config.*
+.*rc*
