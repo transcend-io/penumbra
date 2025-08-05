@@ -31,15 +31,6 @@ export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
 }
 
 /**
- * Only allow Uint8Array for iv
- */
-export interface PenumbraDecryptionInfoAsUint8Array
-  extends Omit<PenumbraDecryptionInfo, 'iv'> {
-  /** iv is a Uint8Array */
-  iv: Uint8Array;
-}
-
-/**
  * A file to download from a remote resource, that is optionally encrypted
  */
 export interface RemoteResource {
@@ -72,8 +63,6 @@ export interface PenumbraFile extends Omit<RemoteResource, 'url'> {
   stream: ReadableStream;
   /** File size (if backed by a ReadableStream) */
   size?: number;
-  /** Optional ID for tracking encryption completion */
-  id?: JobID;
   /** Last modified date */
   lastModified?: Date;
 }
@@ -86,9 +75,11 @@ export interface PenumbraFileWithID extends PenumbraFile {
 
 /** penumbra file (internal) */
 export interface PenumbraEncryptedFile
-  extends Omit<PenumbraFileWithID, 'stream'> {
+  extends Omit<PenumbraFileWithID, 'stream' | 'size'> {
   /** Encrypted output stream */
   stream: ReadableStream;
+  /** File size */
+  size: number;
 }
 
 /** Penumbra event types */
@@ -229,7 +220,7 @@ export interface PenumbraWorker {
   /** PenumbraWorker's Worker interface */
   worker: Worker;
   /** PenumbraWorker's Comlink interface */
-  comlink: PenumbraWorkerComlinkInterface;
+  comlink: PenumbraWorkerComlinkInterface; // TODO: rename to RemoteAPI - this is a class
   /** Busy status (currently processing jobs) */
   busy: boolean;
 }
@@ -241,7 +232,7 @@ export interface PenumbraServiceWorker {
   /** PenumbraWorker's Worker interface */
   worker: ServiceWorker;
   /** PenumbraWorker's Comlink interface */
-  comlink: PenumbraWorkerComlinkInterface;
+  comlink: PenumbraWorkerComlinkInterface; // TODO: rename to RemoteAPI - this is a class
 }
 
 /** The penumbra workers themselves */

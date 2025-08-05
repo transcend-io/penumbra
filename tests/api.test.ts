@@ -344,7 +344,7 @@ describe('Penumbra API', () => {
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
     const t0 = performance.now();
-    const [encrypted] = await penumbra.encrypt(options, file);
+    const encrypted = await penumbra.encrypt(options, file);
     const t1 = performance.now();
     logger.log(`encrypt() took ${t1 - t0}ms to return a stream`);
     await bufferEntireStream(encrypted.stream);
@@ -361,9 +361,9 @@ describe('Penumbra API', () => {
     const stream = new Response(buffer).body!;
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
-    const [encrypted] = await penumbra.encrypt(options, file);
+    const encrypted = await penumbra.encrypt(options, file);
     const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
-    const [decrypted] = await penumbra.decrypt(decryptionInfo, encrypted);
+    const decrypted = await penumbra.decrypt(decryptionInfo, encrypted);
     const decryptedData = await new Response(decrypted.stream).arrayBuffer();
     assert.equal(td.decode(decryptedData), input, 'encrypt() & decrypt()');
   });

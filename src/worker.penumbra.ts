@@ -113,93 +113,63 @@ ${errors.map((err) => `${err.message} (${err.id})`).join('\n')}`,
   /**
    * Streaming decryption of ReadableStreams
    * @param options - Options
-   * @param ids - IDs for tracking decryption completion
-   * @param sizes - Sizes
-   * @param readablePorts - Remote Web Stream readable ports (for processing encrypted files)
-   * @param writablePorts - Remote Web Stream writable ports (for emitting decrypted files)
+   * @param id - ID for tracking decryption completion
+   * @param size - File size in bytes
+   * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
+   * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
   async decrypt(
     options: PenumbraDecryptionInfo,
-    ids: JobID<number>[],
-    sizes: number[],
-    readablePorts: MessagePort[],
-    writablePorts: MessagePort[],
+    id: JobID<number>,
+    size: number,
+    readablePort: MessagePort,
+    writablePort: MessagePort,
   ): Promise<void> {
-    const writableCount = writablePorts.length;
-    const readableCount = readablePorts.length;
-    if (writableCount !== readableCount) {
-      throw new TypeError(
-        `Readable ports (${readableCount}) <-> Writable ports (${writableCount}) count mismatch.`,
-      );
-    }
-
-    // Decrypt each file stream
-    await Promise.all(
-      readablePorts.map(async (_, i) => {
-        // Stream of encrypted bytes flowing from main thread
-        const stream = fromReadablePort(readablePorts[i]);
-        // The destination to send encrypted bytes to the main thread
-        const writable = fromWritablePort(writablePorts[i]);
-        const id = ids[i];
-        const size = sizes[i];
-        const decrypted = decrypt(
-          options,
-          {
-            stream,
-            size,
-            id,
-          },
-          size,
-        );
-        await decrypted.stream.pipeTo(writable);
-      }),
+    // Stream of encrypted bytes flowing from main thread
+    const stream = fromReadablePort(readablePort);
+    // The destination to send encrypted bytes to the main thread
+    const writable = fromWritablePort(writablePort);
+    const decrypted = decrypt(
+      options,
+      {
+        stream,
+        size,
+        id,
+      },
+      size,
     );
+    await decrypted.stream.pipeTo(writable);
   }
 
   /**
    * Streaming encryption of ReadableStreams
    * @param options - Options
-   * @param ids - IDs for tracking encryption completion
-   * @param sizes - Sizes
-   * @param readablePorts - Remote Web Stream readable ports (for processing unencrypted files)
-   * @param writablePorts - Remote Web Stream writable ports (for emitting encrypted files)
+   * @param id - ID for tracking encryption completion
+   * @param size - File size in bytes
+   * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
+   * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
   async encrypt(
     options: PenumbraEncryptionOptions | null,
-    ids: JobID<number>[],
-    sizes: number[],
-    readablePorts: MessagePort[],
-    writablePorts: MessagePort[],
+    id: JobID<number>,
+    size: number,
+    readablePort: MessagePort,
+    writablePort: MessagePort,
   ): Promise<void> {
-    const writableCount = writablePorts.length;
-    const readableCount = readablePorts.length;
-    if (writableCount !== readableCount) {
-      throw new TypeError(
-        `Readable ports (${readableCount}) <-> Writable ports (${writableCount}) count mismatch.`,
-      );
-    }
-
-    // Encrypt each file stream
-    await Promise.all(
-      readablePorts.map(async (_, i) => {
-        // Stream of plaintext bytes flowing from main thread
-        const remoteReadableStream = fromReadablePort(readablePorts[i]);
-        // The destination to send encrypted bytes to the main thread
-        const remoteWritableStream = fromWritablePort(writablePorts[i]);
-        const id = ids[i];
-        const size = sizes[i];
-        const encrypted = encrypt(
-          options,
-          {
-            stream: remoteReadableStream,
-            size,
-            id,
-          },
-          size,
-        );
-        await encrypted.stream.pipeTo(remoteWritableStream);
-      }),
+    // Stream of plaintext bytes flowing from main thread
+    const remoteReadableStream = fromReadablePort(readablePort);
+    // The destination to send encrypted bytes to the main thread
+    const remoteWritableStream = fromWritablePort(writablePort);
+    const encrypted = encrypt(
+      options,
+      {
+        stream: remoteReadableStream,
+        size,
+        id,
+      },
+      size,
     );
+    await encrypted.stream.pipeTo(remoteWritableStream);
   }
 
   /**
