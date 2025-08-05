@@ -1,6 +1,7 @@
 onlyBuiltDependencies:
   - esbuild
   - fsevents
+  - oxc-resolver
   - unrs-resolver
 
 patchedDependencies:

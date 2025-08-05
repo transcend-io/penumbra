@@ -3,8 +3,7 @@ import { RemoteResource } from './types';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { PenumbraError } from './error';
 
-import emitError from './utils/emitError';
-import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
+import { emitError, parseBase64OrUint8Array } from './utils';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream

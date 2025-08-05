@@ -27,7 +27,8 @@
     "lint:eslint": "eslint .",
     "lint:types": "tsc --noEmit",
     "format": "prettier --write .",
-    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
+    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
+    "knip": "knip"
   },
   "repository": {
     "type": "git",
@@ -76,6 +77,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "2.29.0",
     "eslint-plugin-jsdoc": "^46.9.0",
+    "knip": "^5.62.0",
     "prettier": "^3.1.0",
     "tsx": "^4.20.3",
     "typescript": "^5.3.2",

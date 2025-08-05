@@ -9,3 +9,6 @@ export { default as blobCache } from './blobCache';
 export { default as isViewableText } from './isViewableText';
 export { default as isNumber } from './isNumber';
 export { default as throwOutside } from './throwOutside';
+export { default as parseBase64OrUint8Array } from './parseBase64OrUint8Array';
+export { default as emitError } from './emitError';
+export { default as onPenumbraEvent } from './forwardEvents';

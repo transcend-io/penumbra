@@ -3,9 +3,13 @@ import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
 import { streamSaver } from './streamsaver';
 import { PenumbraFile, ZipOptions } from './types';
-import { isNumber, emitZipProgress, emitZipCompletion } from './utils';
+import {
+  isNumber,
+  emitZipProgress,
+  emitZipCompletion,
+  throwOutside,
+} from './utils';
 import { Compression } from './enums';
-import throwOutside from './utils/throwOutside';
 import { logger } from './logger';
 
 const sumWrites = async (writes: Promise<number>[]): Promise<number> => {

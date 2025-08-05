@@ -14,12 +14,11 @@ import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
 import fetchAndDecrypt from './fetchAndDecrypt';
-import onPenumbraEvent from './utils/forwardEvents';
+import { onPenumbraEvent, emitError } from './utils';
 import './transferHandlers/penumbra-events';
 import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
-import emitError from './utils/emitError';
 import { PenumbraError } from './error';
 
 if (self.document) {

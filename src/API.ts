@@ -19,13 +19,17 @@ import type {
   ZipOptions,
 } from './types';
 import { PenumbraZipWriter } from './zip';
-import { blobCache, isNumber, isViewableText } from './utils';
+import {
+  blobCache,
+  isNumber,
+  isViewableText,
+  parseBase64OrUint8Array,
+} from './utils';
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 import { createChunkSizeTransformStream } from './createChunkSizeTransformStream';
 import { logger } from './logger';
-import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
 /** Size (and entropy of) generated AES-256 key (in bits) */
 const GENERATED_KEY_RANDOMNESS = 256;

@@ -103,7 +103,7 @@ function resolve(url: string): URL {
  * Gets worker location configuration
  * @returns Worker location
  */
-export function getWorkerLocation(): WorkerLocation {
+function getWorkerLocation(): WorkerLocation {
   const config = JSON.parse(settings.workers || '{}');
   const options = {
     ...DEFAULT_WORKERS,

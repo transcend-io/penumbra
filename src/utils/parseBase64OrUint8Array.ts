@@ -3,7 +3,7 @@
  * @param base64 - The base64-encoded string to convert
  * @returns A Uint8Array of the decoded string
  */
-export function base64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
+function base64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
   const bin = atob(base64); // decode to binary string
   const { length } = bin;
   const bytes = new Uint8Array(length); // allocate 32-byte array
@@ -24,7 +24,7 @@ export function base64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
  * @param base64OrUint8Array - The base64-encoded string to parse, or a Uint8Array
  * @returns A Uint8Array of the decoded string, or the Uint8Array if it is already a Uint8Array
  */
-export function parseBase64OrUint8Array(
+export default function parseBase64OrUint8Array(
   base64OrUint8Array: string | Uint8Array,
 ): Uint8Array {
   return base64OrUint8Array instanceof Uint8Array
