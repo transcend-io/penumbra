@@ -250,12 +250,26 @@ export function getDecryptionInfo(
 }
 
 /**
- * Encrypt file
+ * penumbra.encrypt() API
+ *
+ * ```ts
+ * await penumbra.encrypt(options, file);
+ * // usage example:
+ * size = 4096 * 64 * 64;
+ * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
+ * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
+ * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
+ * let data = [];
+ * file.then(async ([encrypted]) => {
+ *   console.log('encryption started');
+ *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
+ * });
+ * ```
  * @param options - Options
- * @param file - File to operate on
+ * @param file - File
  * @returns Encrypted file
  */
-async function encryptJob(
+export async function encrypt(
   options: PenumbraEncryptionOptions | null,
   file: PenumbraFile,
 ): Promise<PenumbraEncryptedFile> {
@@ -314,11 +328,14 @@ async function encryptJob(
     stream,
   };
 }
+
 /**
- * penumbra.encrypt() API
+ * penumbra.decrypt() API
+ *
+ * Decrypts files encrypted by penumbra.encrypt()
  *
  * ```ts
- * await penumbra.encrypt(options, file);
+ * await penumbra.decrypt(options, file);
  * // usage example:
  * size = 4096 * 64 * 64;
  * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
@@ -332,22 +349,9 @@ async function encryptJob(
  * ```
  * @param options - Options
  * @param file - File
- * @returns Encrypted file
+ * @returns File
  */
-export function encrypt(
-  options: PenumbraEncryptionOptions | null,
-  file: PenumbraFile,
-): Promise<PenumbraEncryptedFile> {
-  return encryptJob(options, file);
-}
-
-/**
- * Decrypt files encrypted by penumbra.encrypt() (batch job)
- * @param options - Options
- * @param file - File
- * @returns Penumbra file
- */
-async function decryptJob(
+export async function decrypt(
   options: PenumbraDecryptionInfo,
   file: PenumbraEncryptedFile,
 ): Promise<PenumbraFileWithID> {
@@ -404,35 +408,6 @@ async function decryptJob(
     id: jobID,
     stream,
   };
-}
-
-/**
- * penumbra.decrypt() API
- *
- * Decrypts files encrypted by penumbra.encrypt()
- *
- * ```ts
- * await penumbra.decrypt(options, file);
- * // usage example:
- * size = 4096 * 64 * 64;
- * addEventListener('penumbra-progress',(e)=>console.log(e.type, e.detail));
- * addEventListener('penumbra-complete',(e)=>console.log(e.type, e.detail));
- * file = penumbra.encrypt(null, {stream: new Uint8Array(size), size});
- * let data = [];
- * file.then(async ([encrypted]) => {
- *   console.log('encryption started');
- *   data.push(new Uint8Array(await new Response(encrypted.stream).arrayBuffer()));
- * });
- * ```
- * @param options - Options
- * @param file - File
- * @returns File
- */
-export function decrypt(
-  options: PenumbraDecryptionInfo,
-  file: PenumbraEncryptedFile,
-): Promise<PenumbraFileWithID> {
-  return decryptJob(options, file);
 }
 
 /**
