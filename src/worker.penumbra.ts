@@ -77,7 +77,7 @@ class PenumbraWorker {
     iv: Uint8Array,
     authTag: Uint8Array,
     jobID: JobID,
-    size: number,
+    size: number | null,
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): void {
@@ -131,7 +131,7 @@ class PenumbraWorker {
     key: Uint8Array,
     iv: Uint8Array,
     jobID: JobID,
-    size: number,
+    size: number | null,
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): void {

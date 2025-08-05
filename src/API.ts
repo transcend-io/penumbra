@@ -311,9 +311,6 @@ export async function encrypt(
   if (!file) {
     throw new Error('penumbra.encrypt() called without arguments');
   }
-  if (!file.size) {
-    throw new Error('penumbra.encrypt(): Unable to determine file size');
-  }
 
   // Generate a key if one is not provided
   let rawKey = options?.key;
@@ -363,7 +360,7 @@ export async function encrypt(
     key,
     iv,
     jobID,
-    file.size,
+    file.size ?? null,
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );
@@ -378,7 +375,6 @@ export async function encrypt(
 
   return {
     ...file,
-    size: file.size!,
     id: jobID,
     stream,
   };
@@ -452,7 +448,7 @@ export async function decrypt(
     iv,
     authTag,
     jobID,
-    file.size,
+    file.size ?? null,
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );

@@ -27,19 +27,28 @@ export interface PenumbraDecryptionOptions extends PenumbraEncryptionOptions {
   authTag: Uint8Array | string;
 }
 
+/** The base resource from which RemoteResource and PenumbraFile extend */
 interface Resource {
-  /** The mimetype of the resulting file */
-  mimetype?: string;
   /** The name of the underlying file without the extension */
   filePrefix?: string;
-  /** If the file is encrypted, these are the required params */
-  decryptionOptions?: PenumbraDecryptionOptions;
-  /** Relative file path (needed for zipping) */
-  path?: string;
   /** Last modified date */
   lastModified?: Date;
-  /** Expected file size */
+  /** Relative file path (needed for zipping) */
+  path?: string;
+  /** The mimetype of the resulting file */
+  mimetype?: string;
+  /** File size (if backed by a ReadableStream) */
   size?: number;
+}
+
+/** A file to download from a remote resource, that is optionally encrypted */
+export interface RemoteResource extends Partial<Resource> {
+  /** The URL to fetch the encrypted or unencrypted file from */
+  url: string;
+  /** Fetch options */
+  requestInit?: RequestInit;
+  /** If the file is encrypted, these are the required params */
+  decryptionOptions?: PenumbraDecryptionOptions;
   /**
    * Dangerously bypass authTag validation. Only use this for testing purposes.
    * @default false
@@ -47,24 +56,10 @@ interface Resource {
   ignoreAuthTag?: boolean;
 }
 
-/**
- * A file to download from a remote resource, that is optionally encrypted
- */
-export interface RemoteResource extends Resource {
-  /** The URL to fetch the encrypted or unencrypted file from */
-  url: string;
-  /** Fetch options */
-  requestInit?: RequestInit;
-}
-
 /** Penumbra file composition */
-export interface PenumbraFile extends Resource {
+export interface PenumbraFile extends Partial<Resource> {
   /** Backing stream */
   stream: ReadableStream;
-  /** File size (if backed by a ReadableStream) */
-  size?: number;
-  /** Last modified date */
-  lastModified?: Date;
 }
 
 /** Penumbra file that is currently being encrypted */

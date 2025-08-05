@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.2",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.cjs",

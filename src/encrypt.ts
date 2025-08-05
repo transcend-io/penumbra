@@ -19,7 +19,7 @@ import { emitProgress, emitJobCompletion } from './utils';
 export function startEncryptionStreamWithEmitter(
   id: JobID,
   readableStream: ReadableStream,
-  contentLength: number,
+  contentLength: number | null,
   key: Uint8Array,
   iv: Uint8Array,
 ): ReadableStream {
