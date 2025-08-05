@@ -4,14 +4,23 @@
 declare module 'streamsaver/StreamSaver.js' {
   /**
    * Create a write stream
-   * @param filename - Filename
-   * @param size - Size
+   * @param filename - filename that should be used
+   * @param options - options for the stream
    * @returns WritableStream
    */
   export function createWriteStream(
     filename: string,
-    size?: number,
-  ): WritableStream;
+    options?: {
+      /** Size of the stream */
+      size?: number;
+      /** Pathname of the stream */
+      pathname?: string;
+      /** Writable strategy */
+      writableStrategy?: QueuingStrategy<Uint8Array>;
+      /** Readable strategy */
+      readableStrategy?: QueuingStrategy<Uint8Array>;
+    },
+  ): WritableStream<Uint8Array>;
 
   /** MITM URL */
   // eslint-disable-next-line import/no-mutable-exports, vars-on-top, no-var

@@ -261,8 +261,6 @@ export interface ZipOptions
     name?: string;
     /** Total size of archive (if known ahead of time, for 'store' compression level) */
     size?: number;
-    /** Files (in-memory & remote) to add to zip archive */
-    files: PenumbraFile[];
     /** Abort controller for cancelling zip generation and saving */
     controller: AbortController;
     /** Allow & auto-rename duplicate files sent to writer. Defaults to on */

@@ -331,7 +331,7 @@ describe('Penumbra API', () => {
     assert.equal(imageHash, unencryptedChecksum, 'getBlob() checksum');
   });
 
-  it.skip('should encrypt large file', async () => {
+  it('should encrypt large file', async () => {
     const NUM_BYTES = 2 ** 26; // 67 MB
 
     const te = new self.TextEncoder();
@@ -417,6 +417,36 @@ describe('Penumbra API', () => {
 
     // This is a rewrite version of the test below, but this implementation should have checksum tests on the expected zip
     // TODO: https://github.com/transcend-io/penumbra/issues/250
+  });
+
+  it.only('penumbra.save() should save a single file', async () => {
+    const { remoteResource: remoteResource1 } = getFixture(
+      'file_example_JPG_500kB',
+    );
+
+    const files = await penumbra.get(remoteResource1);
+    await penumbra.save(files);
+  });
+
+  it.only('penumbra.save() should save a zip when multiple files are provided', async () => {
+    const { remoteResource: remoteResource1 } = getFixture(
+      'file_example_JPG_500kB',
+    );
+    const { remoteResource: remoteResource2 } = getFixture('htmlfile');
+    const { remoteResource: remoteResource3 } = getFixture(
+      'file_example_CSV_5000',
+    );
+    const { remoteResource: remoteResource4 } = getFixture(
+      'file_example_JSON_1kb',
+    );
+
+    const files = await penumbra.get(
+      remoteResource1,
+      remoteResource2,
+      remoteResource3,
+      remoteResource4,
+    );
+    await penumbra.save(files);
   });
 });
 

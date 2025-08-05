@@ -173,10 +173,10 @@ async function save(
     const writer = saveZip({
       name: fileName || `${DEFAULT_FILENAME}.zip`,
       size,
-      files,
       controller,
     });
     await writer.write(...files);
+    await writer.close();
     return;
   }
 
@@ -190,14 +190,17 @@ async function save(
     .split(/(\.\w+\s*$)/) // split filename extension
     .filter(Boolean); // filter empty matches
 
-  const singleFileName = `${filename}${extension}`;
+  const singleFileName = `${filename}.${extension}`;
 
   const { signal } = controller;
 
   // Write a single readable stream to file
-  await file.stream.pipeTo(streamSaver.createWriteStream(singleFileName), {
-    signal,
-  });
+  await file.stream.pipeTo(
+    streamSaver.createWriteStream(singleFileName, {
+      size: file.size,
+    }),
+    { signal },
+  );
 }
 
 /**

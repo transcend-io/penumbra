@@ -98,7 +98,6 @@ export class PenumbraZipWriter extends EventTarget {
     const {
       name = 'download',
       size,
-      files,
       controller = new AbortController(),
       compressionLevel = Compression.Store,
       saveBuffer = false,
@@ -122,9 +121,8 @@ export class PenumbraZipWriter extends EventTarget {
     const { signal } = controller;
     signal.addEventListener(
       'abort',
-      () => {
-        // TODO: unawaited promise
-        this.close();
+      async () => {
+        await this.close();
       },
       { once: true },
     );
@@ -143,7 +141,7 @@ export class PenumbraZipWriter extends EventTarget {
     const saveStream = streamSaver.createWriteStream(
       // Append .zip to filename unless it is already present
       /\.zip\s*$/i.test(name) ? name : `${name}.zip`,
-      size,
+      { size },
     );
 
     const { readable } = this.conflux;
@@ -152,18 +150,23 @@ export class PenumbraZipWriter extends EventTarget {
       ReadableStream | null,
     ] = saveBuffer ? readable.tee() : [readable, null];
 
-    // TODO: unawaited promise
-    zipStream.pipeTo(saveStream, { signal });
+    /**
+     * TODO: confirm this can't be awaited
+     *
+     * This is intentionally not awaited because it does not complete until the entire stream has finished.
+     * We want the main caller to be able to await the function return any errors during stream setup.
+     *
+     * It only emits an error, but does not have an impact on control flow.
+     * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
+     */
+    zipStream.pipeTo(saveStream, { signal }).catch((error) => {
+      logger.error(error);
+    });
 
     // Buffer zip stream for debug & testing
     if (saveBuffer && bufferedZipStream) {
       this.saveBuffer = saveBuffer;
       this.zipBuffer = new Response(bufferedZipStream).arrayBuffer();
-    }
-
-    if (files) {
-      // TODO: unawaited promise
-      this.write(...files);
     }
   }
 
@@ -298,7 +301,6 @@ export class PenumbraZipWriter extends EventTarget {
               },
             });
 
-            // TODO: unawaited promise
             zip.writer.write({
               name: filePath,
               lastModified,
@@ -321,8 +323,7 @@ export class PenumbraZipWriter extends EventTarget {
   async close(): Promise<number> {
     const size = await this.getSize();
     if (!this.closed) {
-      // TODO: unawaited promise
-      this.writer.close();
+      await this.writer.close();
       this.closed = true;
     }
     return size;
