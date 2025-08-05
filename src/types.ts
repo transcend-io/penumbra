@@ -17,18 +17,18 @@ export type JobID<T extends string | number = string | number> = T;
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
  */
 export interface PenumbraEncryptionOptions {
-  /** Encryption key */
-  key: string | Uint8Array;
+  /** Encryption key, either Uint8Array or base64-encoded string */
+  key: Uint8Array | string;
+  /** Initialization vector, either Uint8Array or base64-encoded string */
+  iv: Uint8Array | string;
 }
 
 /**
  * Parameters (buffers or base64-encoded strings) to decrypt content encrypted with penumbra.encrypt()
  */
 export interface PenumbraDecryptionInfo extends PenumbraEncryptionOptions {
-  /** Initialization vector */
-  iv: string | Uint8Array;
-  /** Authentication tag (for AES GCM) */
-  authTag: string | Uint8Array;
+  /** Authentication tag (for AES GCM), either Uint8Array or base64-encoded string */
+  authTag: Uint8Array | string;
 }
 
 /**

@@ -27,6 +27,32 @@ import { createChunkSizeTransformStream } from './createChunkSizeTransformStream
 import { logger } from './logger';
 import { parseBase64OrUint8Array } from './utils/base64ToUint8Array';
 
+/** Size (and entropy of) generated AES-256 key (in bits) */
+const GENERATED_KEY_RANDOMNESS = 256;
+/** Size (and entropy of) generated initialization vector (in bits) */
+const IV_RANDOMNESS = 12;
+
+let jobIDCounter = 0;
+const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
+
+const trackJobCompletion = (
+  searchForID: JobID,
+): Promise<PenumbraDecryptionInfo> =>
+  new Promise((resolve) => {
+    const listener = ({
+      type,
+      detail: { id, decryptionInfo },
+    }: JobCompletionEmit): void => {
+      decryptionConfigs.set(id, decryptionInfo);
+      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (self.removeEventListener as any)(type, listener);
+        resolve(decryptionInfo);
+      }
+    };
+    self.addEventListener('penumbra-complete', listener);
+  });
+
 const resolver = document.createElementNS(
   'http://www.w3.org/1999/xhtml',
   'a',
@@ -93,7 +119,16 @@ export function get(...resources: RemoteResource[]): Promise<PenumbraFile[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
-  return Promise.all(resources.map(getJob));
+  return Promise.all(
+    resources.map((resource, i) => {
+      if (!('url' in resource)) {
+        throw new TypeError(
+          `penumbra.get(): RemoteResource missing URL at index ${i}`,
+        );
+      }
+      return getJob(resource);
+    }),
+  );
 }
 
 const DEFAULT_FILENAME = 'download';
@@ -205,27 +240,6 @@ function getBlob(
   return new Response(rs, { headers }).blob();
 }
 
-let jobIDCounter = 0;
-const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
-
-const trackJobCompletion = (
-  searchForID: JobID,
-): Promise<PenumbraDecryptionInfo> =>
-  new Promise((resolve) => {
-    const listener = ({
-      type,
-      detail: { id, decryptionInfo },
-    }: JobCompletionEmit): void => {
-      decryptionConfigs.set(id, decryptionInfo);
-      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self.removeEventListener as any)(type, listener);
-        resolve(decryptionInfo);
-      }
-    };
-    self.addEventListener('penumbra-complete', listener);
-  });
-
 /**
  * Get the decryption config for an encrypted file
  *
@@ -278,6 +292,25 @@ export async function encrypt(
     throw new Error('penumbra.encrypt(): Unable to determine file size');
   }
 
+  // Generate a key if one is not provided
+  let rawKey = options?.key;
+  if (!rawKey) {
+    logger.debug(
+      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+    );
+    rawKey = crypto.getRandomValues(
+      new Uint8Array(GENERATED_KEY_RANDOMNESS / 8),
+    );
+  }
+  // Generate an IV if one is not provided
+  let rawIV = options?.iv;
+  if (!rawIV) {
+    logger.debug(
+      `penumbra.encrypt(): no IV specified. generating a random ${IV_RANDOMNESS}-bit IV`,
+    );
+    rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
+  }
+
   // eslint-disable-next-line no-plusplus
   const jobID: JobID<number> = jobIDCounter++;
 
@@ -298,31 +331,12 @@ export async function encrypt(
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
 
-  // Encryption constants
-  const GENERATED_KEY_RANDOMNESS = 256;
-  // Minimum IV randomness set by NIST
-  const IV_RANDOMNESS = 12;
-
-  // Generate a key if one is not provided
-  if (!options || !options.key) {
-    logger.debug(
-      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
-    );
-    // eslint-disable-next-line no-param-reassign
-    options = {
-      ...options,
-      key: crypto.getRandomValues(new Uint8Array(GENERATED_KEY_RANDOMNESS / 8)),
-    };
-  }
-
   // Convert to Uint8Array
-  const key = parseBase64OrUint8Array(options.key);
-  const iv = (options as PenumbraDecryptionInfo).iv
-    ? parseBase64OrUint8Array((options as PenumbraDecryptionInfo).iv)
-    : crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS));
+  const key = parseBase64OrUint8Array(rawKey);
+  const iv = parseBase64OrUint8Array(rawIV);
 
   // Set up encryption job, but don't await
-  const encryptionPromise = remote.encrypt(
+  await remote.encrypt(
     key,
     iv,
     jobID,
@@ -330,9 +344,6 @@ export async function encrypt(
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );
-  encryptionPromise.catch((error) => {
-    logger.error(`penumbra.encrypt() - worker failed to encrypt: ${error}`);
-  });
 
   // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
   const chunkSizeTransformStream = createChunkSizeTransformStream();
@@ -413,7 +424,7 @@ export async function decrypt(
   const authTag = parseBase64OrUint8Array(options.authTag);
 
   // Set up decryption job, but don't await
-  const decryptionPromise = remote.decrypt(
+  await remote.decrypt(
     key,
     iv,
     authTag,
@@ -422,9 +433,6 @@ export async function decrypt(
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );
-  decryptionPromise.catch((error) => {
-    logger.error(`penumbra.decrypt() - worker failed to decrypt: ${error}`);
-  });
 
   // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
   const chunkSizeTransformStream = createChunkSizeTransformStream();

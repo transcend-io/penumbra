@@ -27,7 +27,8 @@ if (self.document) {
 }
 
 /**
- * Handle an error
+ * Handle an error by emitting an event
+ * TODO: move to / consolidate with emitError()
  * @param error - The error
  * @param id - The job ID
  */
@@ -58,17 +59,16 @@ class PenumbraWorker {
     resource: RemoteResource,
   ): Promise<void> {
     try {
-      // TODO: move to main thread
-      if (!('url' in resource)) {
-        throw new Error(
-          'PenumbraDecryptionWorker.get(): RemoteResource missing URL',
-        );
-      }
-
       const remoteStream = fromWritablePort(writablePort);
       const localStream = await fetchAndDecrypt(resource);
 
-      // TODO: figure out if we can await this
+      /**
+       * This is intentionally not awaited because it does not complete until the entire stream has finished.
+       * We want the main caller to be able to await the function return any errors during stream setup.
+       *
+       * It only emits an error, but does not have an impact on control flow.
+       * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
+       */
       localStream.pipeTo(remoteStream).catch((error) => {
         handleErrorViaEmit(error, resource.url); // TODO: switch to JobID?
       });
@@ -88,7 +88,7 @@ class PenumbraWorker {
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
-  async decrypt(
+  decrypt(
     key: Uint8Array,
     iv: Uint8Array,
     authTag: Uint8Array,
@@ -96,24 +96,39 @@ class PenumbraWorker {
     size: number,
     readablePort: MessagePort,
     writablePort: MessagePort,
-  ): Promise<void> {
-    // Stream of encrypted bytes flowing from main thread
-    const remoteReadableStream = fromReadablePort(readablePort);
-    // The destination to send encrypted bytes to the main thread
-    const remoteWritableStream = fromWritablePort(writablePort);
+  ): void {
+    try {
+      // Stream of encrypted bytes flowing from main thread
+      const remoteReadableStream = fromReadablePort(readablePort);
+      // The destination to send encrypted bytes to the main thread
+      const remoteWritableStream = fromWritablePort(writablePort);
 
-    // Start the decryption stream with an event emitter
-    const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
-      id,
-      remoteReadableStream,
-      size,
-      key,
-      iv,
-      authTag,
-    );
+      // Start the decryption stream with an event emitter
+      const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
+        id,
+        remoteReadableStream,
+        size,
+        key,
+        iv,
+        authTag,
+      );
 
-    // TODO: make consistent with get() - probably should not await this, wrap everything else in try/catch and await in main for completion of above
-    await decryptionStreamWithEmitter.pipeTo(remoteWritableStream);
+      /**
+       * This is intentionally not awaited because it does not complete until the entire stream has finished.
+       * We want the main caller to be able to await the function return any errors during stream setup.
+       *
+       * It only emits an error, but does not have an impact on control flow.
+       * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
+       */
+      decryptionStreamWithEmitter
+        .pipeTo(remoteWritableStream)
+        .catch((error) => {
+          handleErrorViaEmit(error, id);
+        });
+    } catch (error) {
+      handleErrorViaEmit(error, id);
+      throw error;
+    }
   }
 
   /**
@@ -125,31 +140,46 @@ class PenumbraWorker {
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
-  async encrypt(
+  encrypt(
     key: Uint8Array,
     iv: Uint8Array,
     id: JobID<number>,
-    size: number, // TODO this should just be on the file object
+    size: number,
     readablePort: MessagePort,
     writablePort: MessagePort,
-  ): Promise<void> {
-    // Stream of plaintext bytes flowing from main thread
-    const remoteReadableStream = fromReadablePort(readablePort);
+  ): void {
+    try {
+      // Stream of plaintext bytes flowing from main thread
+      const remoteReadableStream = fromReadablePort(readablePort);
 
-    // The destination to send encrypted bytes to the main thread
-    const remoteWritableStream = fromWritablePort(writablePort);
+      // The destination to send encrypted bytes to the main thread
+      const remoteWritableStream = fromWritablePort(writablePort);
 
-    // Start the encryption stream with an event emitter
-    const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
-      id,
-      remoteReadableStream,
-      size,
-      key,
-      iv,
-    );
+      // Start the encryption stream with an event emitter
+      const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
+        id,
+        remoteReadableStream,
+        size,
+        key,
+        iv,
+      );
 
-    // Start the encryption stream with an event emitter
-    await encryptionStreamWithEmitter.pipeTo(remoteWritableStream);
+      /**
+       * This is intentionally not awaited because it does not complete until the entire stream has finished.
+       * We want the main caller to be able to await the function return any errors during stream setup.
+       *
+       * It only emits an error, but does not have an impact on control flow.
+       * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
+       */
+      encryptionStreamWithEmitter
+        .pipeTo(remoteWritableStream)
+        .catch((error) => {
+          handleErrorViaEmit(error, id);
+        });
+    } catch (error) {
+      handleErrorViaEmit(error, id);
+      throw error;
+    }
   }
 
   /**
