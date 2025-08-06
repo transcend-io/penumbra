@@ -1,4 +1,3 @@
-// @ts-check
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 /** The timeout for all tests in milliseconds */
@@ -15,7 +14,7 @@ const environment = {
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
-  plugins: [esbuildPlugin({ ts: true, tsconfig: './src/tsconfig.json' })],
+  plugins: [esbuildPlugin({ ts: true })],
   testRunnerHtml: (testFramework) => `
     <html>
       <head>
