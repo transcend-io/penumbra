@@ -1,6 +1,11 @@
 import { assert } from '@esm-bundle/chai';
 
-import type { PenumbraFile, ProgressEmit, RemoteResource } from '../src/types';
+import type {
+  PenumbraFile,
+  ProgressEmit,
+  RemoteResource,
+  ZipProgressEmit,
+} from '../src/types';
 
 import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
@@ -392,7 +397,7 @@ describe('Penumbra API', () => {
       /**
        * @param event - The progress event
        */
-      onProgress(event) {
+      onProgress(event: ZipProgressEmit) {
         progressEventFiredAndWorking = expectedProgressProperties.every(
           (property) => property in event.detail,
         );

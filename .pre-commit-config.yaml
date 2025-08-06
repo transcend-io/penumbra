@@ -17,23 +17,25 @@ repos:
         args: [--allow-missing-credentials]
       - id: check-yaml
         files: (yaml$|yml$)
+
   - repo: local
     hooks:
       - id: lint
         name: Lint
-        description: 'Run static code linting'
+        description: 'Code linting'
         entry: pnpm run lint
         language: node
-        files: \.[t]sx?$ # *.js, *.jsx, *.ts and *.tsx
-        types: [file]
+        types_or: [javascript, jsx, ts, tsx, markdown, json]
+        # Just run global `pnpm run lint` without passing filenames
         pass_filenames: false
 
   - repo: local
     hooks:
       - id: format
         name: Format
-        description: 'Run code formatting'
+        description: 'Code formatting'
         entry: pnpm run format
         language: node
-        files: \.[t]sx?$ # *.js, *.jsx, *.ts and *.tsx
+        types_or: [javascript, jsx, ts, tsx, markdown, json]
+        # Just run global `pnpm run format` without passing filenames
         pass_filenames: false
