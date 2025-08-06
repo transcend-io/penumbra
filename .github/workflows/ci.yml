@@ -55,7 +55,7 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           max_attempts: 2
-          timeout_seconds: 30
+          timeout_seconds: 30 # If changing this, also update the timeout in the web-test-runner.config.js file (we prefer that to timeout first)
           command: |
             pnpm run test
           # The least flakey browser to test on

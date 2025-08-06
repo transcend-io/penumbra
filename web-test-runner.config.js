@@ -1,7 +1,10 @@
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 
-/** The timeout for all tests in milliseconds */
-const TIMEOUT_MS = 2 * 60 * 1000;
+/**
+ * The timeout for all tests in milliseconds.
+ * If changing this, make sure to update the timeout in the GitHub Actions workflow.
+ */
+const TIMEOUT_MS = 25 * 1000;
 
 /**
  * Pass environment variables to the test environment.
