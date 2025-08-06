@@ -8,8 +8,7 @@ const TIMEOUT_MS = 2 * 60 * 1000;
  * @type {Record<string, string>}
  */
 const environment = {
-  /** @type {'true' | 'false'} */
-  PENUMBRA_LOG_START: 'true',
+  PENUMBRA_LOG_START: process.env.PENUMBRA_LOG_START ?? 'false',
 };
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */

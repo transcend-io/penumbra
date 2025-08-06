@@ -37,10 +37,11 @@ const eslintConfig = tseslint.config(
           allowConstantLoopConditions: true,
         },
       ],
+      'no-undef': 'off', // Everything is checked by TypeScript; this is recommended by typescript-eslint.
     },
   },
   {
-    ignores: ['dist', 'build', 'coverage'],
+    ignores: ['dist', '.build', 'coverage'],
   },
 );
 

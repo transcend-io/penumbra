@@ -3,9 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": [
-    "*.config.{js,ts}", // tooling, e.g. vite.config.ts, eslint.config.js, prettier.config.js
-    "fixtures/**/*"
-  ],
+  "include": ["*.config.js", "*.config.ts", "fixtures/**/*"],
   "references": [{ "path": "./tsconfig.web.json" }]
 }

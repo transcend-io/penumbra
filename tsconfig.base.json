@@ -5,7 +5,7 @@
 
     "composite": true,
     "emitDeclarationOnly": true,
-    "outDir": "build",
+    "outDir": ".build",
     "incremental": true,
 
     "target": "es2020",
@@ -32,5 +32,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["dist", "coverage", "node_modules", "build"]
+  "exclude": ["dist", ".build", "coverage", "node_modules"]
 }
