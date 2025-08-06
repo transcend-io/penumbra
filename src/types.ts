@@ -1,6 +1,5 @@
 // local
 import type { Remote } from 'comlink';
-import type { Penumbra as PenumbraAPI } from './api';
 import type { PenumbraWorker as PenumbraWorkerAPI } from './worker';
 import type { PenumbraError } from './error';
 
@@ -157,15 +156,6 @@ export interface JobCompletion {
  * The type that is emitted when a job is complete
  */
 export type JobCompletionEmit = CustomEvent<JobCompletion>;
-
-/**
- * The type that is emitted when penumbra is ready
- * to be used
- */
-export type PenumbraReady = CustomEvent<{
-  /** Penumbra API object */
-  penumbra: PenumbraAPI;
-}>;
 
 /** Data returned by penumbra.getTextOrURI() */
 export interface PenumbraTextOrURI {

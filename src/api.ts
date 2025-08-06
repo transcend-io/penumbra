@@ -500,4 +500,4 @@ const penumbra = {
  */
 export type Penumbra = typeof penumbra;
 
-export default penumbra;
+export { penumbra };

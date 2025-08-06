@@ -51,4 +51,4 @@ const MOCK_API: PenumbraAPI = {
   setWorkerLocation: async () => {},
 };
 
-export default MOCK_API;
+export { MOCK_API };

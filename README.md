@@ -68,8 +68,6 @@ import { penumbra } from '@transcend-io/penumbra';
 penumbra.get(...files).then(penumbra.save);
 ```
 
-_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchronous loading._
-
 ### RemoteResource
 
 `penumbra.get()` uses RemoteResource descriptors to specify where to request resources and their various decryption parameters.
