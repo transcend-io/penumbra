@@ -17,6 +17,7 @@ build
 dist
 ts-build/
 tsconfig.tsbuildinfo
+tsconfig.*.tsbuildinfo
 .expo/
 stats.json
 schema.json

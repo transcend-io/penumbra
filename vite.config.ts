@@ -30,7 +30,7 @@ export default defineConfig({
   },
   plugins: [
     dts({
-      tsconfigPath: './src/tsconfig.json',
+      tsconfigPath: './tsconfig.web.json',
       insertTypesEntry: true,
     }),
   ],

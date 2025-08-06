@@ -13,6 +13,7 @@ const eslintConfig = tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     linterOptions: {
@@ -39,7 +40,7 @@ const eslintConfig = tseslint.config(
     },
   },
   {
-    ignores: ['dist', 'coverage'],
+    ignores: ['dist', 'build', 'coverage'],
   },
 );
 

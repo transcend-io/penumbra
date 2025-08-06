@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // "outDir": "dist/fixtures",
+    "types": ["node"]
+  },
+  "include": [
+    "*.config.{js,ts}", // tooling, e.g. vite.config.ts, eslint.config.js, prettier.config.js
+    "fixtures/**/*"
+  ],
+  "references": [{ "path": "./tsconfig.web.json" }]
+}

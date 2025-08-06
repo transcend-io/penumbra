@@ -1,25 +1,8 @@
 {
-  "compilerOptions": {
-    "rootDir": ".",
-    "incremental": true,
-    "target": "es2020",
-    "module": "ESNext",
-    "lib": ["esnext", "dom", "es2020"],
-    "types": ["node"],
-    "allowJs": true,
-    "checkJs": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "noEmit": true,
-    "composite": true,
-    "strictNullChecks": true,
-    "moduleResolution": "bundler",
-    "strict": true,
-    "typeRoots": ["node_modules/@types", "src/@types"]
-  },
-  "exclude": ["dist", "coverage", "tests", "node_modules"]
+  "extends": "./tsconfig.base.json",
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.web.json" },
+    { "path": "./tsconfig.tests.json" }
+  ]
 }

@@ -27,8 +27,7 @@
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
-    "lint:types": "tsc --noEmit",
-    "lint:types:tests": "tsc --noEmit --project tests/tsconfig.json",
+    "lint:types": "pnpm tsc --build",
     "format": "prettier --write .",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
     "knip": "knip"

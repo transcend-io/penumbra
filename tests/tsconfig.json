@@ -1,8 +1,0 @@
-{
-  "extends": "../src/tsconfig.json",
-  "compilerOptions": {
-    "types": ["mocha"],
-    "noEmit": true
-  },
-  "include": ["**/*", "../src/**/*", "../fixtures/types.ts"]
-}

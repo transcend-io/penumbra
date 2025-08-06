@@ -1,6 +1,6 @@
 import { assert } from '@esm-bundle/chai';
 
-import type { PenumbraFile, ProgressEmit } from '../src/types';
+import type { PenumbraFile, ProgressEmit, RemoteResource } from '../src/types';
 
 import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
@@ -31,7 +31,7 @@ function getFixture(
   remote = false,
 ): {
   /** The remote resource */
-  remoteResource: Omit<Fixture, 'unencryptedChecksum'>;
+  remoteResource: Omit<Fixture, 'unencryptedChecksum'> & RemoteResource;
   /** A checksum of the unencrypted file */
   unencryptedChecksum: string;
 } {

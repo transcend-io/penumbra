@@ -1,12 +1,11 @@
-import type { RemoteResource } from '../src/types';
-
 /**
  * A fixture is a remote resource with a checksum of the unencrypted file
  */
-export interface Fixture extends RemoteResource {
+export interface Fixture {
   url: string;
   filePrefix: string;
-  mimetype: string;
+  mimetype: string | undefined;
+  size?: number;
   decryptionOptions: {
     key: string;
     iv: string;
