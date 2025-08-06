@@ -37,9 +37,6 @@ jobs:
       - name: Ensure no changed files
         run: git diff --exit-code
 
-      - name: Run depcheck
-        run: pnpm exec depcheck
-
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.0
         with:

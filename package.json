@@ -28,9 +28,9 @@
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
     "lint:types": "pnpm tsc --build",
+    "lint:knip": "knip",
     "format": "prettier --write . --log-level warn && doctoc README.md --maxlevel 3",
-    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
-    "knip": "knip"
+    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
   },
   "repository": {
     "type": "git",
@@ -71,7 +71,6 @@
     "@web/dev-server-esbuild": "^1.0.4",
     "@web/test-runner": "^0.20.2",
     "@web/test-runner-playwright": "^0.11.1",
-    "depcheck": "^1.4.7",
     "doctoc": "^2.2.1",
     "eslint": "^9.32.0",
     "eslint-plugin-unicorn": "^60.0.0",

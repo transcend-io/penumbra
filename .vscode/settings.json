@@ -3,12 +3,22 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "eslint.trace.server": "messages",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
+  "search.exclude": {
+    "**/tsconfig.tsbuildinfo": true,
+    "node_modules": true,
+    "**/fixtures/files/**": true,
+    "**/LICENSE": true,
+    "pnpm-lock.yaml": true
+  },
   "workbench.iconTheme": "vscode-icons",
   "todohighlight.keywords": [
     "TODO",
@@ -19,23 +29,6 @@
     "NotImplementedError"
   ],
   "todohighlight.isEnable": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
-  "search.exclude": {
-    "**/tsconfig.tsbuildinfo": true,
-    "**/build": true,
-    "**/builds": true,
-    "**/.caches": true,
-    "node_modules": true,
-    "pnpm-lock.yaml": true
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "always"
-  },
   "cSpell.words": [
     "bowser",
     "browserstack",
@@ -47,7 +40,6 @@
     "compat",
     "const",
     "crossorigin",
-    "depcheck",
     "deps",
     "devtool",
     "doctoc",
@@ -125,6 +117,5 @@
     "unencrypted",
     "webm",
     "zh"
-  ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  ]
 }
