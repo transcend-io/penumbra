@@ -123,9 +123,7 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFileWithID> {
  * @param resources - Resources to fetch
  * @returns Penumbra files
  */
-export function get(
-  ...resources: RemoteResource[]
-): Promise<PenumbraFileWithID[]> {
+function get(...resources: RemoteResource[]): Promise<PenumbraFileWithID[]> {
   if (resources.length === 0) {
     throw new Error('penumbra.get() called without arguments');
   }
@@ -274,7 +272,7 @@ function getBlob(
  * @param file - File to get info for
  * @returns Decryption info
  */
-export function getDecryptionInfo(
+function getDecryptionInfo(
   file: PenumbraFileWithID,
 ): Promise<PenumbraDecryptionInfo> {
   const { id } = file;
@@ -306,7 +304,7 @@ export function getDecryptionInfo(
  * @param file - File
  * @returns Encrypted file
  */
-export async function encrypt(
+async function encrypt(
   options: Partial<PenumbraEncryptionOptions> | null,
   file: PenumbraFile,
 ): Promise<PenumbraFileWithID> {
@@ -400,7 +398,7 @@ export async function encrypt(
  * @param file - File
  * @returns File
  */
-export async function decrypt(
+async function decrypt(
   options: PenumbraDecryptionOptions,
   file: PenumbraFileWithID,
 ): Promise<PenumbraFileWithID> {
