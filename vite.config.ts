@@ -1,18 +1,17 @@
-import { dirname, resolve } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import dts from 'unplugin-dts/vite';
 
-// eslint-disable-next-line no-underscore-dangle
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
       entry: {
-        'main.penumbra': resolve(__dirname, 'src/index.ts'),
-        'worker.penumbra': resolve(__dirname, 'src/worker.penumbra.js'),
+        'main.penumbra': path.resolve(__dirname, 'src/index.ts'),
+        'worker.penumbra': path.resolve(__dirname, 'src/worker.penumbra.js'),
       },
       name: 'Penumbra',
     },
@@ -31,6 +30,7 @@ export default defineConfig({
   },
   plugins: [
     dts({
+      tsconfigPath: './src/tsconfig.json',
       insertTypesEntry: true,
     }),
   ],

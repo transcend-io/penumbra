@@ -5,7 +5,7 @@
     "target": "es2020",
     "module": "ESNext",
     "lib": ["esnext", "dom", "es2020"],
-    "types": [],
+    "types": ["node"],
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
@@ -16,10 +16,10 @@
     "baseUrl": ".",
     "noEmit": true,
     "composite": true,
+    "strictNullChecks": true,
     "moduleResolution": "bundler",
     "strict": true,
     "typeRoots": ["node_modules/@types", "src/@types"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["dist", "coverage", "tests", "node_modules"]
 }

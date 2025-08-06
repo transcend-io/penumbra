@@ -24,7 +24,7 @@ export default async function fetchAndDecrypt(
 
   if (response.status >= 400) {
     throw new Error(
-      `Received invalid status code: ${response.status} -- ${response.body}`,
+      `Received invalid status code: ${response.status.toString()} -- ${response.statusText}`,
     );
   }
 
@@ -45,7 +45,7 @@ export default async function fetchAndDecrypt(
   const bufferKey = parseBase64OrUint8Array(key);
   // Grab from header if possible
   const bufferIv = parseBase64OrUint8Array(
-    response.headers.get('x-penumbra-iv') || iv,
+    response.headers.get('x-penumbra-iv') ?? iv,
   );
   const bufferAuthTag = parseBase64OrUint8Array(authTag);
 

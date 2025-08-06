@@ -5,6 +5,7 @@ import { getOrigins } from './utils';
 /**
  * Types of rels that a link can take on
  */
+// eslint-disable-next-line unicorn/prevent-abbreviations
 type LinkRel = 'preconnect' | 'preload';
 
 /**
@@ -16,8 +17,11 @@ type CleanupResourceHints = () => void;
  * No-op function generator
  * @returns Function
  */
-
-const nooper = (): CleanupResourceHints => (): void => {};
+function nooper(): CleanupResourceHints {
+  return () => {
+    // no-op
+  };
+}
 
 /**
  * A helper function that creates a set resource hints
@@ -28,9 +32,11 @@ const nooper = (): CleanupResourceHints => (): void => {};
  */
 function createResourceHintHelper(
   urls: string[],
+  // eslint-disable-next-line unicorn/prevent-abbreviations
   rel: LinkRel,
   fetch = false,
 ): CleanupResourceHints {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (self.document) {
     const links = urls.map((href) => {
       const link = document.createElement('link');
@@ -40,10 +46,13 @@ function createResourceHintHelper(
         link.crossOrigin = 'use-credentials';
       }
       link.href = href;
-      document.head.appendChild(link);
+      document.head.append(link);
       return link;
     });
-    return () => links.map((link) => link.remove());
+    return () =>
+      links.map((link) => {
+        link.remove();
+      });
   }
 
   return nooper();

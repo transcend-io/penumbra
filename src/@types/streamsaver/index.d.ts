@@ -23,8 +23,7 @@ declare module 'streamsaver/StreamSaver.js' {
   ): WritableStream<Uint8Array>;
 
   /** MITM URL */
-  // eslint-disable-next-line import/no-mutable-exports, vars-on-top, no-var
-  export var mitm: string;
+  export let mitm: string;
 
   /** DOM context WritableStream constructor */
   type DOMContextWritableStream = globalThis.WritableStream;

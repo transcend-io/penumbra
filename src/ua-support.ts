@@ -9,7 +9,7 @@ let supportLevel: PenumbraSupportLevel = PenumbraSupportLevel.none;
 if (
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  self.dispatchEvent &&
+  typeof self.dispatchEvent === 'function' &&
   typeof self.CustomEvent === 'function' &&
   typeof self.Proxy === 'function' &&
   typeof self.Promise === 'function' &&

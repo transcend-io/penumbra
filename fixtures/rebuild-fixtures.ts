@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax,no-await-in-loop,no-console */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { readdir, writeFile, mkdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
@@ -35,7 +34,7 @@ const REMOTE_FIXTURES: Fixture[] = [
  */
 async function main(): Promise<void> {
   const fixtures: Fixture[] = [];
-  const dir = await readdir(path.join(thisDirname, '/files/unencrypted'));
+  const files = await readdir(path.join(thisDirname, '/files/unencrypted'));
 
   // Clear out encrypted folder
   await rm(path.join(thisDirname, '/files/encrypted'), {
@@ -47,7 +46,7 @@ async function main(): Promise<void> {
   });
 
   // Loop through all fixtures
-  for (const file of dir) {
+  for (const file of files) {
     console.debug(`Generating fixture for ${file} ...`);
     const filePrefix = path.basename(file, path.extname(file));
     const encryptedFilePathname = `/files/encrypted/${file}.enc`;
@@ -90,7 +89,7 @@ async function main(): Promise<void> {
     fixtures.push({
       url: encryptedFilePathname,
       filePrefix,
-      mimetype: mime.getType(file) || undefined,
+      mimetype: mime.getType(file) ?? undefined,
       size: encryptedFileSize,
       decryptionOptions: {
         key: TEST_ENCRYPTION_KEY,
@@ -111,5 +110,4 @@ async function main(): Promise<void> {
   console.debug('Done!');
 }
 
-main();
-/* eslint-enable no-restricted-syntax,no-await-in-loop,no-console */
+await main();

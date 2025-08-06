@@ -32,10 +32,11 @@ export type Brand<
   Base,
   Branding,
   ReservedName extends string = '__type__',
-> = Base & { [K in ReservedName]: Branding } & {
-  /** The base type */
-  __witness__: Base;
-};
+> = Base &
+  Record<ReservedName, Branding> & {
+    /** The base type */
+    __witness__: Base;
+  };
 
 /**
  * An `AnyBrand` is a branded type based on any base type branded with any

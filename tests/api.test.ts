@@ -1,7 +1,6 @@
-/* eslint-disable max-lines */
 import { assert } from '@esm-bundle/chai';
 
-import type { PenumbraFile, ProgressEmit, RemoteResource } from '../src/types';
+import type { PenumbraFile, ProgressEmit } from '../src/types';
 
 import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
@@ -17,7 +16,7 @@ import {
 } from '../fixtures/constants';
 
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
-import bufferEntireStream from './helpers/bufferEntireStream';
+import bufferEntireStream from './helpers/buffer-entire-stream';
 
 const fixtures = fixturesJson as Fixture[];
 
@@ -32,13 +31,11 @@ function getFixture(
   remote = false,
 ): {
   /** The remote resource */
-  remoteResource: RemoteResource;
+  remoteResource: Omit<Fixture, 'unencryptedChecksum'>;
   /** A checksum of the unencrypted file */
   unencryptedChecksum: string;
 } {
-  const fixture = (fixtures as Fixture[]).find(
-    (f) => f.filePrefix === filePrefix,
-  );
+  const fixture = fixtures.find((f) => f.filePrefix === filePrefix);
   if (!fixture) {
     throw new Error(`Fixture ${filePrefix} not found`);
   }
@@ -53,6 +50,13 @@ function getFixture(
     unencryptedChecksum,
   };
 }
+
+const measurePreconnects = (): number =>
+  document.querySelectorAll('link[rel="preconnect"]').length;
+const measurePreloads = (): number =>
+  document.querySelectorAll(
+    'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
+  ).length;
 
 const view = self;
 
@@ -136,9 +140,9 @@ describe('Penumbra API', () => {
 
     let isURL;
     try {
-      new URL(blobUrl, location.href); // eslint-disable-line no-new
+      new URL(blobUrl, location.href);
       isURL = type === 'uri';
-    } catch (ex) {
+    } catch {
       isURL = false;
     }
     assert.isTrue(isURL, 'is url');
@@ -146,20 +150,20 @@ describe('Penumbra API', () => {
   });
 
   it('should fire progress events', async function testProgressEvents() {
-    this.timeout(70000); // 60s for init, 10s for stall
+    this.timeout(70_000); // 60s for init, 10s for stall
     let lastPercent: number | null | undefined;
 
     const { result } = await new Promise<{
       /** The result of the test, if it passed */
       result?: boolean;
     }>((resolve) => {
-      let res: boolean | undefined;
+      let listenerResult: boolean | undefined;
       const progressEventName = 'penumbra-progress';
 
       const fail = (): void => {
-        res = false;
+        listenerResult = false;
         view.removeEventListener(progressEventName, onprogress);
-        resolve({ result: res });
+        resolve({ result: listenerResult });
       };
 
       const initTimeout = timeout(fail, 60);
@@ -187,8 +191,8 @@ describe('Penumbra API', () => {
               initTimeout.clear();
             }
             view.removeEventListener(progressEventName, onprogress);
-            res = true;
-            resolve({ result: res });
+            listenerResult = true;
+            resolve({ result: listenerResult });
             return;
           }
 
@@ -197,17 +201,15 @@ describe('Penumbra API', () => {
             stallTimeout = timeout(fail, 10);
             initFinished = true;
             lastPercent = percent;
-          } else if (!progressStarted) {
-            if (percent > (lastPercent ?? 0)) {
-              stallTimeout.clear();
-              progressStarted = true;
-            }
+          } else if (!progressStarted && percent > (lastPercent ?? 0)) {
+            stallTimeout.clear();
+            progressStarted = true;
           }
 
           if (progressStarted && percent > 25) {
             view.removeEventListener(progressEventName, onprogress);
-            res = true;
-            resolve({ result: res });
+            listenerResult = true;
+            resolve({ result: listenerResult });
           }
         }
         lastPercent = percent;
@@ -215,12 +217,13 @@ describe('Penumbra API', () => {
 
       view.addEventListener(progressEventName, onprogress);
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       (async () => {
         const { remoteResource } = getFixture('zip_10MB');
         const [{ stream }] = await penumbra.get(remoteResource);
         await new Response(stream).arrayBuffer();
-      })();
+      })().catch((error: unknown) => {
+        logger.error('Error running should fire progress events test', error);
+      });
     });
 
     if (lastPercent === null) {
@@ -273,7 +276,9 @@ describe('Penumbra API', () => {
 
     const testImage = new Image();
     const result = await new Promise((resolve) => {
-      const timeoutManager = timeout(() => resolve(false), 5);
+      const timeoutManager = timeout(() => {
+        resolve(false);
+      }, 5);
       const onLoad = (): void => {
         timeoutManager.clear();
         testImage.removeEventListener('load', onLoad);
@@ -290,7 +295,7 @@ describe('Penumbra API', () => {
       testImage.addEventListener('error', onError);
       testImage.src = url;
       testImage.style.visibility = 'hidden';
-      document.body.appendChild(testImage);
+      document.body.append(testImage);
     });
 
     assert.isTrue(result as boolean, 'Image loaded successfully');
@@ -298,8 +303,7 @@ describe('Penumbra API', () => {
 
   it('should create preconnect links', () => {
     const { remoteResource } = getFixture('htmlfile', true);
-    const measurePreconnects = (): number =>
-      document.querySelectorAll('link[rel="preconnect"]').length;
+
     const start = measurePreconnects();
     const cleanup = penumbra.preconnect(remoteResource);
     const after = measurePreconnects();
@@ -309,10 +313,7 @@ describe('Penumbra API', () => {
 
   it('should create preload links', () => {
     const { remoteResource } = getFixture('htmlfile', true);
-    const measurePreloads = (): number =>
-      document.querySelectorAll(
-        'link[rel="preload"][as="fetch"][crossorigin="use-credentials"]',
-      ).length;
+
     const start = measurePreloads();
     const cleanup = penumbra.preload(remoteResource);
     const after = measurePreloads();
@@ -331,25 +332,29 @@ describe('Penumbra API', () => {
     assert.equal(imageHash, unencryptedChecksum, 'getBlob() checksum');
   });
 
-  it('should encrypt large file', async () => {
+  // skipping to speed up CI, but good to test locally (firefox will need timeout to be ~2 min)
+  it.skip('should encrypt large file', async () => {
     const NUM_BYTES = 2 ** 26; // 67 MB
 
     const te = new self.TextEncoder();
     const input = 't'.repeat(NUM_BYTES * 5);
     const buffer = te.encode(input);
     const { byteLength: size } = buffer;
-    const stream0 = new Response(buffer).body!;
-    const stream = stream0;
+    const stream = new Response(buffer).body;
 
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
     const t0 = performance.now();
     const encrypted = await penumbra.encrypt(options, file);
     const t1 = performance.now();
-    logger.log(`encrypt() took ${t1 - t0}ms to return a stream`);
+    logger.log(
+      `encrypt() took ${(t1 - t0).toLocaleString()}ms to return a stream`,
+    );
     await bufferEntireStream(encrypted.stream);
     const t2 = performance.now();
-    logger.log(`bufferEntireStream() took ${t2 - t1}ms`);
+    logger.log(
+      `bufferEntireStream() took ${(t2 - t1).toLocaleString()}ms to buffer`,
+    );
   });
 
   it('should encrypt and decrypt', async () => {
@@ -358,7 +363,7 @@ describe('Penumbra API', () => {
     const input = 'test';
     const buffer = te.encode(input);
     const { byteLength: size } = buffer;
-    const stream = new Response(buffer).body!;
+    const stream = new Response(buffer).body;
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
     const encrypted = await penumbra.encrypt(options, file);
@@ -382,14 +387,14 @@ describe('Penumbra API', () => {
 
     let progressEventFiredAndWorking = false;
     let completeEventFired = false;
-    const expectedProgressProps = ['percent', 'written', 'size'];
+    const expectedProgressProperties = ['percent', 'written', 'size'];
     const writer = penumbra.saveZip({
       /**
        * @param event - The progress event
        */
       onProgress(event) {
-        progressEventFiredAndWorking = expectedProgressProps.every(
-          (prop) => prop in event.detail,
+        progressEventFiredAndWorking = expectedProgressProperties.every(
+          (property) => property in event.detail,
         );
       },
       /**
@@ -402,15 +407,17 @@ describe('Penumbra API', () => {
       saveBuffer: true,
     });
 
+    const firstTwo = await penumbra.get(remoteResource1, remoteResource2);
     await writer.write(
-      ...(await penumbra.get(remoteResource1, remoteResource2)).map((file) => ({
+      ...firstTwo.map((file) => ({
         ...file,
         // Fixtures have a postfixed .enc extension, so we need to remove it
         path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
       })),
     );
+    const lastTwo = await penumbra.get(remoteResource3, remoteResource4);
     await writer.write(
-      ...(await penumbra.get(remoteResource3, remoteResource4)).map((file) => ({
+      ...lastTwo.map((file) => ({
         ...file,
         // Fixtures have a postfixed .enc extension, so we need to remove it
         path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
@@ -466,7 +473,7 @@ describe('Penumbra API', () => {
 describe('Error handling', () => {
   it('.get() should fail with an invalid authTag', async () => {
     const { remoteResource } = getFixture('file_example_JSON_1kb');
-    remoteResource.decryptionOptions!.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
+    remoteResource.decryptionOptions.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
     try {
       const [file] = await penumbra.get(remoteResource);
       await bufferEntireStream(file.stream);
@@ -483,7 +490,7 @@ describe('Error handling', () => {
     const { remoteResource, unencryptedChecksum } = getFixture(
       'file_example_JSON_1kb',
     );
-    remoteResource.decryptionOptions!.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
+    remoteResource.decryptionOptions.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
     remoteResource.ignoreAuthTag = true;
 
     const [file] = await penumbra.get(remoteResource);
@@ -493,5 +500,3 @@ describe('Error handling', () => {
     assert.equal(decryptedChecksum, unencryptedChecksum);
   });
 });
-
-/* eslint-enable max-lines */

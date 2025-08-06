@@ -1,13 +1,13 @@
 // local
 import type { Remote } from 'comlink';
-import type { Penumbra as PenumbraAPI } from './API';
+import type { Penumbra as PenumbraAPI } from './api';
 import type { PenumbraWorker as PenumbraWorkerAPI } from './worker';
 import type { PenumbraError } from './error';
 
 import type { JobID } from './job-id';
+import type { Compression } from './enums';
 
 export { PenumbraZipWriter } from './zip';
-export type { JobID };
 
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
@@ -71,7 +71,7 @@ export interface RemoteResource extends Partial<Resource> {
 /** Penumbra file composition */
 export interface PenumbraFile extends Partial<Resource> {
   /** Backing stream */
-  stream: ReadableStream;
+  stream: ReadableStream<Uint8Array>;
 }
 
 /** Penumbra file that is currently being encrypted */
@@ -102,9 +102,9 @@ export interface ProgressDetails {
 }
 
 /**
- * The type that is emitted as progress continuesZipWrite
+ * The type that is emitted as progress continues
  */
-export interface ProgressEmit extends CustomEvent<ProgressDetails> {}
+export type ProgressEmit = CustomEvent<ProgressDetails>;
 
 /**
  * Zip progress event details
@@ -121,15 +121,15 @@ export interface ZipProgressDetails {
 /**
  * The type that is emitted as zip writes progresses
  */
-export interface ZipProgressEmit extends CustomEvent<ZipProgressDetails> {}
+export type ZipProgressEmit = CustomEvent<ZipProgressDetails>;
 
 /**
  * Zip completion event details
  */
-export type ZipCompletionDetails = any; // eslint-disable-line @typescript-eslint/no-explicit-any
+export type ZipCompletionDetails = unknown;
 
 /**
- * The type that is emitted as progress continues
+ * The type that is emitted as when zip is finished
  */
 export type ZipCompletionEmit = CustomEvent<ZipCompletionDetails>;
 
@@ -154,7 +154,7 @@ export interface JobCompletion {
 }
 
 /**
- * The type that is emitted as progress continues
+ * The type that is emitted when a job is complete
  */
 export type JobCompletionEmit = CustomEvent<JobCompletion>;
 
@@ -178,12 +178,10 @@ export interface PenumbraTextOrURI {
 }
 
 /** Penumbra API */
-export type { PenumbraAPI };
 
 /**
  * Penumbra Worker API
  */
-export type { PenumbraWorkerAPI };
 
 /**
  * Worker location URLs. All fields are absolute URLs.
@@ -198,7 +196,7 @@ export interface WorkerLocation {
 /**
  * Worker location options. All options support relative URLs.
  */
-export interface WorkerLocationOptions extends Partial<WorkerLocation> {}
+export type WorkerLocationOptions = Partial<WorkerLocation>;
 
 /**
  * A remote with a type of PenumbraWorkerAPI
@@ -250,28 +248,31 @@ export interface EventForwarder {
 }
 
 /** PenumbraZipWriter constructor options */
-export interface ZipOptions
-  extends Partial<{
-    /** Filename to save to (.zip is optional) */
-    name?: string;
-    /** Total size of archive (if known ahead of time, for 'store' compression level) */
-    size?: number;
-    /** Abort controller for cancelling zip generation and saving */
-    controller: AbortController;
-    /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
-    allowDuplicates: boolean;
-    /** Zip archive compression level */
-    compressionLevel: number;
-    /** Store a copy of the resultant zip file in-memory for inspection & testing */
-    saveBuffer: boolean;
-    /**
-     * Auto-registered `'progress'` event listener. This is equivalent to calling
-     * `PenumbraZipWriter.addEventListener('progress', onProgress)`
-     */
-    onProgress?(event: ZipProgressEmit): void;
-    /**
-     * Auto-registered `'complete'` event listener. This is equivalent to calling
-     * `PenumbraZipWriter.addEventListener('complete', onComplete)`
-     */
-    onComplete?(event: ZipCompletionEmit): void;
-  }> {}
+export type ZipOptions = Partial<{
+  /** Filename to save to (.zip is optional) */
+  name?: string;
+  /** Total size of archive (if known ahead of time, for 'store' compression level) */
+  size?: number;
+  /** Abort controller for cancelling zip generation and saving */
+  controller: AbortController;
+  /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
+  allowDuplicates: boolean;
+  /** Zip archive compression level */
+  compressionLevel: Compression;
+  /** Store a copy of the resultant zip file in-memory for inspection & testing */
+  saveBuffer: boolean;
+  /**
+   * Auto-registered `'progress'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('progress', onProgress)`
+   */
+  onProgress?(event: ZipProgressEmit): void;
+  /**
+   * Auto-registered `'complete'` event listener. This is equivalent to calling
+   * `PenumbraZipWriter.addEventListener('complete', onComplete)`
+   */
+  onComplete?(event: ZipCompletionEmit): void;
+}>;
+
+export { type JobID } from './job-id';
+export { type Penumbra as PenumbraAPI } from './api';
+export { type PenumbraWorker as PenumbraWorkerAPI } from './worker';

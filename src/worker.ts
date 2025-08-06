@@ -7,19 +7,19 @@ import type { RemoteResource, JobID } from './types';
  * @license Apache-2.0
  */
 
-/* eslint-disable class-methods-use-this */
 import { expose } from 'comlink';
 import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
-import fetchAndDecrypt from './fetchAndDecrypt';
+import fetchAndDecrypt from './fetch-and-decrypt';
 import { onPenumbraEvent, emitError } from './utils';
 import './transferHandlers/penumbra-events';
 import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {
   throw new Error('Worker thread should not be included in document');
 }
@@ -50,7 +50,7 @@ class PenumbraWorker {
        * It only emits an error, but does not have an impact on control flow.
        * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
        */
-      localStream.pipeTo(remoteStream).catch((error) => {
+      localStream.pipeTo(remoteStream).catch((error: unknown) => {
         emitError(error, jobID);
       });
     } catch (error: unknown) {
@@ -106,7 +106,7 @@ class PenumbraWorker {
        */
       decryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
-        .catch((error) => {
+        .catch((error: unknown) => {
           emitError(error, jobID);
         });
     } catch (error) {
@@ -160,7 +160,7 @@ class PenumbraWorker {
        */
       encryptionStreamWithEmitter
         .pipeTo(remoteWritableStream)
-        .catch((error) => {
+        .catch((error: unknown) => {
           emitError(error, jobID);
         });
     } catch (error) {
@@ -197,4 +197,3 @@ export type { PenumbraWorker };
  * Expose the PenumbraWorker class to the main thread
  */
 expose(PenumbraWorker);
-/* eslint-enable class-methods-use-this */

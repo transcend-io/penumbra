@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /**
  * Buffer an entire readable stream into a Uint8Array
  * @param readableStream - The readable stream to buffer
@@ -12,9 +11,8 @@ export default async function bufferEntireStream(
   let totalLength = 0;
 
   try {
-    // eslint-disable-next-line no-constant-condition
+    // @typescript-eslint/no-unnecessary-condition
     while (true) {
-      // eslint-disable-next-line no-await-in-loop
       const { done, value } = await reader.read();
       if (done) {
         break;
@@ -33,4 +31,3 @@ export default async function bufferEntireStream(
     reader.releaseLock();
   }
 }
-/* eslint-enable no-restricted-syntax */

@@ -1,12 +1,12 @@
 /** Blob cache manager */
-type BlobCacheManager = {
+interface BlobCacheManager {
   /** Get Blob cache (list of in-use object URLs) */
   get: () => URL[];
   /** Write to Blob cache */
   set: (cache: URL[] | string[]) => void;
   /** Clear Blob cache */
   clear: () => void;
-};
+}
 
 /** Get Blob cache (list of in-use object URLs) */
 const blobCache: BlobCacheManager = {
@@ -15,9 +15,15 @@ const blobCache: BlobCacheManager = {
    * @returns List of URLs
    */
   get(): URL[] {
-    return JSON.parse(localStorage.blobCache || '[]').map(
-      (u: string) => new URL(u),
-    );
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unsafe-argument
+    const parsed: unknown = JSON.parse(localStorage.blobCache || '[]');
+    if (
+      !Array.isArray(parsed) ||
+      parsed.some((url) => !(url instanceof URL) && typeof url !== 'string')
+    ) {
+      throw new TypeError('Invalid blob cache');
+    }
+    return (parsed as (string | URL)[]).map((url) => new URL(url));
   },
   /**
    * Write to Blob cache
@@ -28,9 +34,9 @@ const blobCache: BlobCacheManager = {
   },
   /** Clear Blob cache */
   clear(): void {
-    this.get().forEach((url) => {
+    for (const url of this.get()) {
       URL.revokeObjectURL(url as unknown as string);
-    });
+    }
     this.set([]);
   },
 };

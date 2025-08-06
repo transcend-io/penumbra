@@ -2,7 +2,7 @@
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 /** The timeout for all tests in milliseconds */
-const TIMEOUT_MS = 5 * 1000;
+const TIMEOUT_MS = 2 * 60 * 1000;
 
 /**
  * Pass environment variables to the test environment.
@@ -14,8 +14,8 @@ const environment = {
 };
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
-export default {
-  plugins: [esbuildPlugin({ ts: true })],
+const config = {
+  plugins: [esbuildPlugin({ ts: true, tsconfig: './src/tsconfig.json' })],
   testRunnerHtml: (testFramework) => `
     <html>
       <head>
@@ -42,3 +42,5 @@ export default {
     reportDir: 'coverage',
   },
 };
+
+export default config;

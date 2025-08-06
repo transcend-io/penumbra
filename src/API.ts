@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 // Remote
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
@@ -28,7 +27,7 @@ import {
 import { getWorker, setWorkerLocation } from './workers';
 import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
-import { createChunkSizeTransformStream } from './createChunkSizeTransformStream';
+import { createChunkSizeTransformStream } from './create-chunk-size-transform-stream';
 import { logger } from './logger';
 import { generateJobID } from './job-id';
 
@@ -48,9 +47,11 @@ const trackJobCompletion = (
       detail: { id, decryptionInfo },
     }: JobCompletionEmit): void => {
       decryptionConfigs.set(id, decryptionInfo);
-      if (typeof searchForID !== 'undefined' && `${id}` === `${searchForID}`) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self.removeEventListener as any)(type, listener);
+      if (id === searchForID) {
+        self.removeEventListener(
+          type as keyof WindowEventMap,
+          listener as EventListener,
+        );
         resolve(decryptionInfo);
       }
     };
@@ -129,10 +130,10 @@ export function get(
     throw new Error('penumbra.get() called without arguments');
   }
   return Promise.all(
-    resources.map((resource, i) => {
+    resources.map((resource, index) => {
       if (!('url' in resource)) {
         throw new TypeError(
-          `penumbra.get(): RemoteResource missing URL at index ${i}`,
+          `penumbra.get(): RemoteResource missing URL at index ${index.toString()}`,
         );
       }
       return getJob(resource);
@@ -164,7 +165,7 @@ async function save(
   controller = new AbortController(),
 ): Promise<void> {
   let size: number | undefined = 0;
-  // eslint-disable-next-line no-restricted-syntax
+
   for (const file of files) {
     if (!isNumber(file.size)) {
       size = undefined;
@@ -176,7 +177,7 @@ async function save(
   // Multiple files
   if ('length' in files && files.length > 1) {
     const writer = saveZip({
-      name: fileName || `${DEFAULT_FILENAME}.zip`,
+      name: fileName ?? `${DEFAULT_FILENAME}.zip`,
       size,
       controller,
     });
@@ -191,8 +192,8 @@ async function save(
 
   // Split filename and extension
   const [filename, extensionCandidateFromFilename] = (
-    fileName ||
-    file.filePrefix ||
+    fileName ??
+    file.filePrefix ??
     DEFAULT_FILENAME
   )
     .split(/(\.\w+\s*$)/) // split filename extension
@@ -258,7 +259,7 @@ function getBlob(
   }
 
   const headers = new Headers({
-    'Content-Type': type || fileType || DEFAULT_MIME_TYPE,
+    'Content-Type': type ?? fileType ?? DEFAULT_MIME_TYPE,
   });
 
   return new Response(rs, { headers }).blob();
@@ -281,7 +282,8 @@ export function getDecryptionInfo(
     // decryption config not yet received. waiting for event with promise
     return trackJobCompletion(id);
   }
-  return Promise.resolve(decryptionConfigs.get(id) as PenumbraDecryptionInfo);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- .has() guarantees it exists
+  return Promise.resolve(decryptionConfigs.get(id)!);
 }
 
 /**
@@ -308,16 +310,11 @@ export async function encrypt(
   options: Partial<PenumbraEncryptionOptions> | null,
   file: PenumbraFile,
 ): Promise<PenumbraFileWithID> {
-  // Ensure a file is passed
-  if (!file) {
-    throw new Error('penumbra.encrypt() called without arguments');
-  }
-
   // Generate a key if one is not provided
   let rawKey = options?.key;
   if (!rawKey) {
     logger.debug(
-      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS}-bit key`,
+      `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS.toString()}-bit key`,
     );
     rawKey = crypto.getRandomValues(
       new Uint8Array(GENERATED_KEY_RANDOMNESS / 8),
@@ -327,7 +324,7 @@ export async function encrypt(
   let rawIV = options?.iv;
   if (!rawIV) {
     logger.debug(
-      `penumbra.encrypt(): no IV specified. generating a random ${IV_RANDOMNESS}-bit IV`,
+      `penumbra.encrypt(): no IV specified. generating a random ${IV_RANDOMNESS.toString()}-bit IV`,
     );
     rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS / 8));
   }
@@ -336,8 +333,8 @@ export async function encrypt(
   const jobID = generateJobID();
 
   // Set up remote streams
-  const { writable, readablePort } = new RemoteWritableStream();
-  const { readable, writablePort } = new RemoteReadableStream();
+  const { writable, readablePort } = new RemoteWritableStream<Uint8Array>();
+  const { readable, writablePort } = new RemoteReadableStream<Uint8Array>();
 
   // Create a `TransformStream` which sends chunks to the worker, and receives chunks back.
   const remoteTransformStream: TransformStream<Uint8Array, Uint8Array> = {
@@ -407,14 +404,7 @@ export async function decrypt(
   options: PenumbraDecryptionOptions,
   file: PenumbraFileWithID,
 ): Promise<PenumbraFileWithID> {
-  // Ensure a file is passed
-  if (!file) {
-    throw new Error('penumbra.decrypt() called without arguments');
-  }
-  if (!file.size) {
-    throw new Error('penumbra.decrypt(): Unable to determine file size');
-  }
-  if (!options || !options.key || !options.iv || !options.authTag) {
+  if (!options.key || !options.iv || !options.authTag) {
     throw new Error('penumbra.decrypt(): missing decryption options');
   }
 
@@ -422,8 +412,8 @@ export async function decrypt(
   const jobID = generateJobID();
 
   // Set up remote streams
-  const { writable, readablePort } = new RemoteWritableStream();
-  const { readable, writablePort } = new RemoteReadableStream();
+  const { writable, readablePort } = new RemoteWritableStream<Uint8Array>();
+  const { readable, writablePort } = new RemoteReadableStream<Uint8Array>();
 
   // Create a `TransformStream` which sends chunks to the worker, and receives chunks back.
   const remoteTransformStream: TransformStream<Uint8Array, Uint8Array> = {
@@ -513,4 +503,3 @@ const penumbra = {
 export type Penumbra = typeof penumbra;
 
 export default penumbra;
-/* eslint-enable max-lines */

@@ -11,7 +11,7 @@ declare module '@transcend-io/conflux' {
     constructor();
 
     /** Write stream to filename in zip */
-    write(params: {
+    write(parameters: {
       /** Name */
       name: string;
       /** Last modified */

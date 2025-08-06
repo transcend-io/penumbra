@@ -11,5 +11,8 @@ export default async function hash(
   const digest = new Uint8Array(
     await crypto.subtle.digest(algorithm, await ab),
   );
-  return digest.reduce((memo, i) => memo + i.toString(16).padStart(2, '0'), '');
+  return digest.reduce(
+    (memo, index) => memo + index.toString(16).padStart(2, '0'),
+    '',
+  );
 }

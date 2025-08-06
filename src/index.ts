@@ -7,16 +7,14 @@
  */
 
 // exports
-import penumbra from './API';
-import MOCK_API from './mock';
+import penumbra from './api';
+
 import './transferHandlers/penumbra-events';
 import type { PenumbraAPI } from './types';
-import { PenumbraSupportLevel } from './enums';
+
 import { PenumbraEvent } from './event';
 
 export * from './types';
-
-export { penumbra, MOCK_API, PenumbraSupportLevel };
 
 /** Extend global Window */
 declare global {
@@ -29,8 +27,10 @@ declare global {
 
 self.penumbra = penumbra;
 
-if (self.dispatchEvent && PenumbraEvent) {
-  self.dispatchEvent(
-    new PenumbraEvent('penumbra-ready', { detail: { penumbra } }),
-  );
-}
+self.dispatchEvent(
+  new PenumbraEvent('penumbra-ready', { detail: { penumbra } }),
+);
+
+export { PenumbraSupportLevel } from './enums';
+export { default as MOCK_API } from './mock';
+export { default as penumbra } from './api';

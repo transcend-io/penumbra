@@ -1,5 +1,3 @@
-/* eslint-disable no-plusplus */
-
 // comlink
 import { proxy, wrap } from 'comlink';
 
@@ -34,6 +32,7 @@ const DEFAULT_WORKERS = {
 const view = self;
 
 // Ensure rendering in DOM
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!view.document) {
   throw new Error(
     'Penumbra must be included in a document as an unbundled script element.',
@@ -65,21 +64,21 @@ function getWorkerLocation(): WorkerLocation {
  * @param event - Event
  */
 function reDispatchEvent(event: Event): void {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (view.dispatchEvent) {
     view.dispatchEvent(event);
   }
 }
 
 // Set data-worker-limit to limit the maximum number of Penumbra workers
-const WORKER_LIMIT = +(settings.workerLimit || 16);
+const WORKER_LIMIT = +(settings.workerLimit ?? 16);
 const { hardwareConcurrency } = navigator;
 // Get available processor threads
 const availConcurrency = hardwareConcurrency
   ? // Reserve one thread (if hwConcurrency is supported) for UI renderer to prevent jank
     hardwareConcurrency - 1
   : 4;
-const maxConcurrency =
-  availConcurrency > WORKER_LIMIT ? WORKER_LIMIT : availConcurrency;
+const maxConcurrency = Math.min(availConcurrency, WORKER_LIMIT);
 const workers: PenumbraWorker[] = [];
 let workerID = 0;
 
@@ -96,7 +95,7 @@ async function createPenumbraWorker(
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
-    // eslint-disable-next-line no-spaced-func, func-call-spacing
+
     comlink: wrap<new () => PenumbraWorkerAPI>(worker),
     busy: false,
   };
@@ -118,7 +117,7 @@ function getFreeWorker(): PenumbraWorker {
 
   // return any free worker or a random one if all are busy
   const worker =
-    freeWorker || workers[Math.floor(Math.random() * workers.length)];
+    freeWorker ?? workers[Math.floor(Math.random() * workers.length)];
 
   // Set worker as busy
   worker.busy = true;
@@ -138,6 +137,7 @@ function waitForInit(): Promise<PenumbraWorker> {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const call = Function.prototype.call.bind(Function.prototype.call);
 
 /** Initializes web worker threads */
@@ -147,7 +147,7 @@ async function initWorkers(): Promise<void> {
   workers.push(
     ...(await Promise.all(
       // load all workers in parallel
-      new Array(Math.max(maxConcurrency - workers.length, 0))
+      Array.from({ length: Math.max(maxConcurrency - workers.length, 0) })
         .fill(0) // incorrect built-in types prevent .fill()
         .map(() => createPenumbraWorker(penumbra)),
     )),
@@ -155,7 +155,9 @@ async function initWorkers(): Promise<void> {
   initializing = false;
   initialized = true;
   // Dispatch worker init ready queue
-  onWorkerInitQueue.forEach(call);
+  for (const element of onWorkerInitQueue) {
+    call(element);
+  }
   onWorkerInitQueue.length = 0;
 }
 
@@ -185,9 +187,9 @@ function getActiveWorkers(): PenumbraWorker[] {
  * Terminate Penumbra worker and de-allocate their resources
  */
 function cleanup(): void {
-  getActiveWorkers().forEach((thread) => {
+  for (const thread of getActiveWorkers()) {
     thread.worker.terminate();
-  });
+  }
   workers.length = 0;
   workerID = 0;
 }
@@ -217,7 +219,7 @@ export async function setWorkerLocation(
 ): Promise<void> {
   if (initialized) {
     logger.warn('Penumbra Workers are already active. Reinitializing...');
-    await cleanup();
+    cleanup();
     return;
   }
   settings.workers = JSON.stringify(
@@ -246,4 +248,3 @@ const trackWorkerBusyState = ({
 };
 
 addEventListener('penumbra-progress', trackWorkerBusyState);
-/* eslint-enable no-plusplus */

@@ -24,12 +24,14 @@ export class PenumbraError extends Error {
     } else {
       const { message } = error;
       super(message);
-      Object.keys(error).forEach((key) => {
+      for (const key of Object.keys(error)) {
         if (key !== 'message') {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (this as any)[key] = (error as any)[key];
+          const descriptor = Object.getOwnPropertyDescriptor(error, key);
+          if (descriptor) {
+            Object.defineProperty(this, key, descriptor);
+          }
         }
-      });
+      }
     }
     this.message = typeof error === 'string' ? error : error.message;
     this.id = id;
