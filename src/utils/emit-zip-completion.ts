@@ -1,5 +1,5 @@
 // penumbra
-import { PenumbraZipWriter, ZipCompletionEmit } from '../types';
+import type { PenumbraZipWriter, ZipCompletionEmit } from '../types';
 import { PenumbraEvent } from '../event';
 
 /**

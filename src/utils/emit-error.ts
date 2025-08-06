@@ -1,5 +1,5 @@
 import { PenumbraError } from '../error';
-import { PenumbraErrorEmit, type JobID } from '../types';
+import type { PenumbraErrorEmit, JobID } from '../types';
 import { PenumbraEvent } from '../event';
 
 /**

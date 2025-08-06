@@ -2,7 +2,7 @@
 import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // utils
-import { JobID } from './types';
+import type { JobID } from './types';
 import { emitJobCompletion, emitProgress } from './utils';
 
 /**

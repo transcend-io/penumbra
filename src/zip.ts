@@ -1,7 +1,7 @@
 import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
 import { streamSaver } from './streamsaver';
-import { PenumbraFile, ZipOptions } from './types';
+import type { PenumbraFile, ZipOptions } from './types';
 import {
   isNumber,
   emitZipProgress,

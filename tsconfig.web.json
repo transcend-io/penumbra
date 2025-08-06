@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    // "outDir": "dist/web",
     "types": [] // no node globals
   },
   "include": ["src/**/*"]

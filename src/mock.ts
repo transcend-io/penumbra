@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable @typescript-eslint/no-empty-function */
 // local
-import { PenumbraAPI } from './types';
+import type { PenumbraAPI } from './types';
 import { PenumbraSupportLevel } from './enums';
 import { PenumbraZipWriter } from './zip';
 import { asJobID } from './job-id';

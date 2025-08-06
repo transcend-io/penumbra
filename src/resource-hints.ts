@@ -1,5 +1,5 @@
 // local
-import { RemoteResource } from './types';
+import type { RemoteResource } from './types';
 import { getOrigins } from './utils';
 
 /**

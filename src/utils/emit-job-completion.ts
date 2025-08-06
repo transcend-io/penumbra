@@ -1,9 +1,9 @@
 // penumbra
 import { PenumbraEvent } from '../event';
-import {
+import type {
   JobCompletionEmit,
   PenumbraDecryptionInfo,
-  type JobID,
+  JobID,
 } from '../types';
 
 /**

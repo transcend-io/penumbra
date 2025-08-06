@@ -1,4 +1,4 @@
-import { Brand, make } from './utils/brand';
+import { type Brand, make } from './utils/brand';
 
 /**
  * A unique identifier for a Penumbra job run.

@@ -1,5 +1,5 @@
 // penumbra
-import { PenumbraEventType, ProgressEmit, type JobID } from '../types';
+import type { PenumbraEventType, ProgressEmit, JobID } from '../types';
 import { PenumbraEvent } from '../event';
 
 /**
