@@ -66,7 +66,7 @@ importers:
         specifier: ^5.62.0
         version: 5.62.0(@types/node@20.19.9)(typescript@5.8.3)
       prettier:
-        specifier: ^3.1.0
+        specifier: ^3.6.2
         version: 3.6.2
       tsx:
         specifier: ^4.20.3
