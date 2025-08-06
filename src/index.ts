@@ -7,7 +7,7 @@
  */
 
 // exports
-import penumbra from './api';
+import penumbra from './api-2';
 
 import './transferHandlers/penumbra-events';
 import type { PenumbraAPI } from './types';
@@ -33,4 +33,4 @@ self.dispatchEvent(
 
 export { PenumbraSupportLevel } from './enums';
 export { default as MOCK_API } from './mock';
-export { default as penumbra } from './api';
+export { default as penumbra } from './api-2';

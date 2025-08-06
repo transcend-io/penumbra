@@ -1,6 +1,6 @@
 // local
 import type { Remote } from 'comlink';
-import type { Penumbra as PenumbraAPI } from './api';
+import type { Penumbra as PenumbraAPI } from './api-2';
 import type { PenumbraWorker as PenumbraWorkerAPI } from './worker';
 import type { PenumbraError } from './error';
 
@@ -274,5 +274,5 @@ export type ZipOptions = Partial<{
 }>;
 
 export { type JobID } from './job-id';
-export { type Penumbra as PenumbraAPI } from './api';
+export { type Penumbra as PenumbraAPI } from './api-2';
 export { type PenumbraWorker as PenumbraWorkerAPI } from './worker';
