@@ -1,36 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Penumbra](#penumbra)
-  - [Compatibility](#compatibility)
-  - [Usage](#usage)
-    - [Importing Penumbra](#importing-penumbra)
-    - [RemoteResource](#remoteresource)
-    - [.get](#get)
-    - [.encrypt](#encrypt)
-      - [.encrypt() examples:](#encrypt-examples)
-    - [.getDecryptionInfo](#getdecryptioninfo)
-    - [.decrypt](#decrypt)
-    - [.save](#save)
-    - [.getBlob](#getblob)
-    - [.getTextOrURI](#gettextoruri)
-    - [.saveZip](#savezip)
-    - [.setWorkerLocation](#setworkerlocation)
-  - [Examples](#examples)
-    - [Display encrypted text](#display-encrypted-text)
-    - [Display encrypted image](#display-encrypted-image)
-    - [Download an encrypted file](#download-an-encrypted-file)
-    - [Download many encrypted files](#download-many-encrypted-files)
-  - [Advanced](#advanced)
-    - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
-    - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
-    - [Progress Event Emitter](#progress-event-emitter)
-    - [Querying Penumbra browser support](#querying-penumbra-browser-support)
-  - [Contributing](#contributing)
-  - [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <p align="center">
   <img alt="Penumbra by Transcend" src="https://user-images.githubusercontent.com/7354176/61583246-43519500-aaea-11e9-82a2-e7470f3d4e00.png"/>
 </p>
@@ -44,6 +11,37 @@
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra.svg?type=shield"/></a>
 </p>
 <br />
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Compatibility](#compatibility)
+- [Usage](#usage)
+  - [Importing Penumbra](#importing-penumbra)
+  - [RemoteResource](#remoteresource)
+  - [.get](#get)
+  - [.encrypt](#encrypt)
+  - [.getDecryptionInfo](#getdecryptioninfo)
+  - [.decrypt](#decrypt)
+  - [.save](#save)
+  - [.getBlob](#getblob)
+  - [.getTextOrURI](#gettextoruri)
+  - [.saveZip](#savezip)
+  - [.setWorkerLocation](#setworkerlocation)
+- [Examples](#examples)
+  - [Display encrypted text](#display-encrypted-text)
+  - [Display encrypted image](#display-encrypted-image)
+  - [Download an encrypted file](#download-an-encrypted-file)
+  - [Download many encrypted files](#download-many-encrypted-files)
+- [Advanced](#advanced)
+  - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+  - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
+  - [Progress Event Emitter](#progress-event-emitter)
+  - [Querying Penumbra browser support](#querying-penumbra-browser-support)
+- [Contributing](#contributing)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Compatibility
 
