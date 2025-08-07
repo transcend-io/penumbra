@@ -89,7 +89,12 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFileWithID> {
   // Kick off the worker to fetch and decrypt the files, and start writing to the returned streams
   const worker = await getWorker();
   const RemoteAPI = worker.comlink;
+  logger.debug(
+    `penumbra.get(): connecting to worker with workerID: ${worker.id.toString()}`,
+    jobID,
+  );
   const remote = await new RemoteAPI();
+  logger.debug(`penumbra.get(): requesting file from worker`, jobID);
   await remote.get(transfer(writablePort, [writablePort]), resource, jobID);
   return { ...readable, id: jobID };
 }
@@ -347,7 +352,7 @@ async function encrypt(
   // Enter worker thread and kick off the encryption
   const worker = await getWorker();
   logger.debug(
-    `penumbra.encrypt(): entering worker with workerID: ${worker.id.toString()}`,
+    `penumbra.encrypt(): connecting to worker with workerID: ${worker.id.toString()}`,
     jobID,
   );
   const RemoteAPI = worker.comlink;
@@ -358,6 +363,10 @@ async function encrypt(
   const iv = parseBase64OrUint8Array(rawIV);
 
   // Set up encryption job, but don't await
+  logger.debug(
+    `penumbra.encrypt(): requesting encryption stream from worker`,
+    jobID,
+  );
   await remote.encrypt(
     key,
     iv,
@@ -429,6 +438,10 @@ async function decrypt(
 
   // Enter worker thread and kick off the decryption
   const worker = await getWorker();
+  logger.debug(
+    `penumbra.decrypt(): connecting to worker with workerID: ${worker.id.toString()}`,
+    jobID,
+  );
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
 
@@ -438,6 +451,10 @@ async function decrypt(
   const authTag = parseBase64OrUint8Array(options.authTag);
 
   // Set up decryption job, but don't await
+  logger.debug(
+    `penumbra.decrypt(): requesting decryption stream from worker`,
+    jobID,
+  );
   await remote.decrypt(
     key,
     iv,
