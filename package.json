@@ -26,7 +26,8 @@
     "lint:types": "pnpm tsc --build",
     "lint:knip": "knip",
     "format": "prettier --write . --log-level warn && doctoc README.md --maxlevel 3",
-    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
+    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
+    "prepublishOnly": "pnpm lint && pnpm run build"
   },
   "repository": {
     "type": "git",
