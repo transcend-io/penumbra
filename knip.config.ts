@@ -15,6 +15,8 @@ const config: KnipConfig = {
     'src/**/*.d.ts',
   ],
   ignoreDependencies: ['@web/test-runner-playwright'],
+  // Bypass unlisted binaries "scripts/postbuild.ts package.json"]
+  exclude: ['binaries'],
 };
 
 export default config;
