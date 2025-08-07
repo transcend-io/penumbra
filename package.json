@@ -1,9 +1,10 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "8.0.0-alpha.16",
+  "version": "8.0.0-alpha.17",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.penumbra.umd.cjs",
+  "types": "./dist/main.penumbra.d.ts",
   "exports": {
     ".": {
       "types": "./dist/main.penumbra.d.ts",
@@ -16,8 +17,9 @@
   },
   "scripts": {
     "build": "vite build",
-    "test": "web-test-runner --node-resolve --playwright --browsers chromium firefox webkit --files tests/**/*.test.ts",
-    "test:chromium": "web-test-runner --node-resolve --playwright --browsers chromium --files tests/**/*.test.ts",
+    "postbuild": "scripts/postbuild.ts",
+    "test": "scripts/run-tests.sh",
+    "test:chromium": "scripts/run-tests.sh --browsers chromium",
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
