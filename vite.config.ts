@@ -11,7 +11,6 @@ export default defineConfig({
     lib: {
       entry: {
         'main.penumbra': path.resolve(__dirname, 'src/index.ts'),
-        'worker.penumbra': path.resolve(__dirname, 'src/worker.penumbra.js'),
       },
       name: 'Penumbra',
     },

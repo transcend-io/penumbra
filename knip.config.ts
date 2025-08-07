@@ -4,8 +4,7 @@ const config: KnipConfig = {
   entry: [
     'src/index.ts!',
     'src/api.ts!', // knip needs a little help getting past the actual entrypoint
-    'src/worker.penumbra.js!',
-    'src/worker.ts!', // knip needs a little help getting past the actual entrypoint
+    'src/worker.penumbra.ts!',
     'tests/*.test.ts',
     'web-test-runner.config.js',
   ],

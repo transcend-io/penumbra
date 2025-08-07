@@ -58,7 +58,7 @@ let workerID = 0;
  * @returns Worker
  */
 async function createPenumbraWorker(): Promise<PenumbraWorker> {
-  const worker = new Worker(new URL('worker.penumbra.js', import.meta.url), {
+  const worker = new Worker(new URL('worker.penumbra.ts', import.meta.url), {
     type: 'module',
   });
   const id = workerID++;

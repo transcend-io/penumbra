@@ -1,1 +1,1 @@
-export const PenumbraEvent = self.CustomEvent;
+export const PenumbraEvent = CustomEvent;
