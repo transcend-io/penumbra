@@ -48,6 +48,7 @@ const MOCK_API: PenumbraAPI = {
       controller: new AbortController(),
       aborted: false,
     }) as unknown as PenumbraZipWriter,
+  setLogLevel: () => {},
 };
 
 export { MOCK_API };

@@ -4,6 +4,7 @@ import { proxy, wrap } from 'comlink';
 // local
 import type { PenumbraWorker, PenumbraWorkerAPI, ProgressEmit } from './types';
 import { settings } from './settings';
+import { logger, type LogLevel } from './logger';
 
 // //// //
 // Init //
@@ -65,13 +66,12 @@ async function createPenumbraWorker(): Promise<PenumbraWorker> {
   const penumbraWorker: PenumbraWorker = {
     worker,
     id,
-
     comlink: wrap<new () => PenumbraWorkerAPI>(worker),
     busy: false,
   };
   const RemoteAPI = penumbraWorker.comlink;
   const remote = await new RemoteAPI();
-  await remote.setup(id, proxy(reDispatchEvent));
+  await remote.setup(id, logger.logLevel, proxy(reDispatchEvent));
   return penumbraWorker;
 }
 
@@ -183,3 +183,33 @@ const trackWorkerBusyState = ({
 };
 
 addEventListener('penumbra-progress', trackWorkerBusyState);
+
+/**
+ * Sync a log level update to all workers
+ * @param logLevel - The new log level
+ */
+export async function syncLogLevelUpdateToAllWorkers(
+  logLevel: LogLevel,
+): Promise<void> {
+  if (workers.length > 0) {
+    logger.info(
+      `penumbra.setLogLevel(): Syncing log level update to ${workers.length.toString()} active workers.` +
+        ` It's recommended to set the log level before calling penumbra's worker methods.`,
+    );
+  }
+
+  const results = await Promise.allSettled(
+    workers.map(async (penumbraWorker) => {
+      const RemoteAPI = penumbraWorker.comlink;
+      const remote = await new RemoteAPI();
+      await remote.updateLogLevel(logLevel);
+    }),
+  );
+  const errorResults = results.filter((result) => result.status === 'rejected');
+  if (errorResults.length > 0) {
+    throw new Error(
+      `Failed to update log level for ${errorResults.length.toString()}/${workers.length.toString()} workers:\n` +
+        ` ${errorResults.map((error) => (error.reason instanceof Error ? error.reason.message : String(error.reason))).join('\n')}`,
+    );
+  }
+}

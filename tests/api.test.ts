@@ -9,7 +9,7 @@ import type {
 
 import { penumbra } from '../src/index';
 import { PenumbraSupportLevel } from '../src/enums';
-import { logger } from '../src/logger';
+import { LogLevel } from '../src/logger';
 
 import { hash, timeout } from './helpers';
 import type { TimeoutManager } from './helpers/timeout';
@@ -23,6 +23,13 @@ import {
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
 import bufferEntireStream from './helpers/buffer-entire-stream';
 
+// Penumbra config
+penumbra.setLogLevel(LogLevel.DEBUG);
+
+// For logging in tests, don't use the logger from src/logger.ts which is intended for Penumbra's internal logging
+const logger = console;
+
+// Fixtures
 const fixtures = fixturesJson as Fixture[];
 
 /**
@@ -352,12 +359,12 @@ describe('Penumbra API', () => {
     const t0 = performance.now();
     const encrypted = await penumbra.encrypt(options, file);
     const t1 = performance.now();
-    logger.log(
+    logger.debug(
       `encrypt() took ${(t1 - t0).toLocaleString()}ms to return a stream`,
     );
     await bufferEntireStream(encrypted.stream);
     const t2 = performance.now();
-    logger.log(
+    logger.debug(
       `bufferEntireStream() took ${(t2 - t1).toLocaleString()}ms to buffer`,
     );
   });
@@ -472,6 +479,10 @@ describe('Penumbra API', () => {
         path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
       })),
     );
+  });
+
+  it('should set the log level', () => {
+    penumbra.setLogLevel(LogLevel.DEBUG);
   });
 });
 

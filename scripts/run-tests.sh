@@ -30,6 +30,8 @@ pnpm exec web-test-runner \
   --files tests/**/*.test.ts \
   --node-resolve \
   --playwright \
+  --debug \
+  --coverage \
   --browsers "${BROWSERS[@]}" \
   "$@"
 

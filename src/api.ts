@@ -24,11 +24,11 @@ import {
   isViewableText,
   parseBase64OrUint8Array,
 } from './utils';
-import { getWorker } from './workers';
+import { getWorker, syncLogLevelUpdateToAllWorkers } from './workers';
 import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 import { createChunkSizeTransformStream } from './create-chunk-size-transform-stream';
-import { logger } from './logger';
+import { logger, type LogLevel } from './logger';
 import { generateJobID } from './job-id';
 
 /** Size (and entropy of) generated AES-256 key (in bits) */
@@ -480,6 +480,20 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   });
 }
 
+function setLogLevel(logLevel: LogLevel): void {
+  logger.setLogLevel(logLevel);
+
+  /**
+   * This is intentionally not awaited because it adds complexity for library consumers to have to await setLogLevel().
+   * In the recommended usage, the `setLogLevel()` should be called before any worker methods are called, in which case this runs synchronously.
+   */
+  syncLogLevelUpdateToAllWorkers(logLevel).catch((error: unknown) => {
+    logger.error(
+      `penumbra.setLogLevel(): Failed to sync log level update to all workers: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  });
+}
+
 const penumbra = {
   preconnect,
   preload,
@@ -492,6 +506,7 @@ const penumbra = {
   getBlob,
   getTextOrURI,
   saveZip,
+  setLogLevel,
 };
 
 /**

@@ -18,6 +18,7 @@ import './transferHandlers/penumbra-events';
 import { startEncryptionStreamWithEmitter } from './encrypt';
 import { startDecryptionStreamWithEmitter } from './decrypt';
 import { setWorkerID } from './worker-id';
+import { logger, LogLevel } from './logger';
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {
@@ -173,17 +174,35 @@ class PenumbraWorker {
   }
 
   /**
+   * Update the log level for the worker
+   * @param logLevel - The new log level
+   */
+  updateLogLevel(logLevel: LogLevel): void {
+    logger.setLogLevel(logLevel);
+  }
+
+  /**
    * Forward events to main thread
    * @param workerID - Worker ID
    * @param handler - handler
    */
   async setup(
     workerID: number,
+    logLevel: LogLevel,
     handler: (event: Event) => void,
   ): Promise<void> {
     // Initialize the Wasm from the encrypt-web-streams library
     await init();
+
+    // Give this worker a unique ID
     setWorkerID(workerID);
+
+    // Set up logging
+    logger.setLogLevel(logLevel);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- safer to use a `number` in the template type
+    logger.setThread(`[Thread:worker-${workerID}]`);
+
+    // Set up the event handler
     onPenumbraEvent.handler = handler;
   }
 }
