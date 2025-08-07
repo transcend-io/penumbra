@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["*.config.js", "*.config.ts", "fixtures/**/*"],
+  "include": ["*.config.js", "*.config.ts", "scripts/**/*", "fixtures/**/*"],
   "references": [{ "path": "./tsconfig.web.json" }]
 }
