@@ -15,7 +15,7 @@
   "search.exclude": {
     "**/tsconfig.tsbuildinfo": true,
     "node_modules": true,
-    "**/fixtures/files/**": true,
+    "**/fixtures/files/*/**": true,
     "**/LICENSE": true,
     "pnpm-lock.yaml": true
   },
