@@ -27,7 +27,6 @@
   - [.getBlob](#getblob)
   - [.getTextOrURI](#gettextoruri)
   - [.saveZip](#savezip)
-  - [.setWorkerLocation](#setworkerlocation)
 - [Examples](#examples)
   - [Display encrypted text](#display-encrypted-text)
   - [Display encrypted image](#display-encrypted-image)
@@ -304,14 +303,6 @@ const files = [
 const writer = penumbra.saveZip();
 await writer.write(...(await penumbra.get(...files)));
 await writer.close();
-```
-
-### .setWorkerLocation
-
-Configure the location of Penumbra's worker threads.
-
-```ts
-penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
 ```
 
 ## Examples

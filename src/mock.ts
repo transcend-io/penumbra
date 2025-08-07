@@ -48,7 +48,6 @@ const MOCK_API: PenumbraAPI = {
       controller: new AbortController(),
       aborted: false,
     }) as unknown as PenumbraZipWriter,
-  setWorkerLocation: async () => {},
 };
 
 export { MOCK_API };

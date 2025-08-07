@@ -24,7 +24,7 @@ import {
   isViewableText,
   parseBase64OrUint8Array,
 } from './utils';
-import { getWorker, setWorkerLocation } from './workers';
+import { getWorker } from './workers';
 import { supported } from './ua-support';
 import { preconnect, preload } from './resource-hints';
 import { createChunkSizeTransformStream } from './create-chunk-size-transform-stream';
@@ -492,7 +492,6 @@ const penumbra = {
   getBlob,
   getTextOrURI,
   saveZip,
-  setWorkerLocation,
 };
 
 /**

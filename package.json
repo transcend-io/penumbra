@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.10",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.penumbra.cjs",
@@ -30,7 +30,8 @@
     "lint:types": "pnpm tsc --build",
     "lint:knip": "knip",
     "format": "prettier --write . --log-level warn && doctoc README.md --maxlevel 3",
-    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts"
+    "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
+    "prepublishOnly": "pnpm run build && pnpm run lint && pnpm dlx publint"
   },
   "repository": {
     "type": "git",

@@ -174,21 +174,6 @@ export interface PenumbraTextOrURI {
  */
 
 /**
- * Worker location URLs. All fields are absolute URLs.
- */
-export interface WorkerLocation {
-  /** The location of the Penumbra Worker script */
-  penumbra: URL;
-  /** The location of the StreamSaver ServiceWorker script - TODO: is this in use? */
-  StreamSaver: URL;
-}
-
-/**
- * Worker location options. All options support relative URLs.
- */
-export type WorkerLocationOptions = Partial<WorkerLocation>;
-
-/**
  * A remote with a type of PenumbraWorkerAPI
  */
 export type PenumbraWorkerComlinkInterface = Remote<

@@ -2,27 +2,8 @@
 import { proxy, wrap } from 'comlink';
 
 // local
-import type {
-  PenumbraWorker,
-  PenumbraWorkerAPI,
-  WorkerLocation,
-  WorkerLocationOptions,
-  ProgressEmit,
-} from './types';
-import { logger } from './logger';
+import type { PenumbraWorker, PenumbraWorkerAPI, ProgressEmit } from './types';
 import { settings } from './settings';
-
-// ////// //
-// Config //
-// ////// //
-
-/**
- * The default worker file locations
- */
-const DEFAULT_WORKERS = {
-  penumbra: 'worker.penumbra.js',
-  StreamSaver: 'streamsaver.penumbra.serviceworker.js',
-};
 
 // //// //
 // Init //
@@ -47,17 +28,6 @@ let initializing = false;
 // /////// //
 // Methods //
 // /////// //
-
-/**
- * Gets worker location configuration
- * @returns Worker location
- */
-function getWorkerLocation(): WorkerLocation {
-  return {
-    penumbra: new URL(DEFAULT_WORKERS.penumbra, import.meta.url),
-    StreamSaver: new URL(DEFAULT_WORKERS.StreamSaver, import.meta.url),
-  };
-}
 
 /**
  * Re-dispatch events
@@ -87,10 +57,10 @@ let workerID = 0;
  * @param url - URL
  * @returns Worker
  */
-async function createPenumbraWorker(
-  url: URL | string,
-): Promise<PenumbraWorker> {
-  const worker = new Worker(url, { type: 'module' });
+async function createPenumbraWorker(): Promise<PenumbraWorker> {
+  const worker = new Worker(new URL('worker.penumbra.js', import.meta.url), {
+    type: 'module',
+  });
   const id = workerID++;
   const penumbraWorker: PenumbraWorker = {
     worker,
@@ -143,13 +113,12 @@ const call = Function.prototype.call.bind(Function.prototype.call);
 /** Initializes web worker threads */
 async function initWorkers(): Promise<void> {
   initializing = true;
-  const { penumbra } = getWorkerLocation();
   workers.push(
     ...(await Promise.all(
       // load all workers in parallel
       Array.from({ length: Math.max(maxConcurrency - workers.length, 0) })
         .fill(0) // incorrect built-in types prevent .fill()
-        .map(() => createPenumbraWorker(penumbra)),
+        .map(() => createPenumbraWorker()),
     )),
   );
   initializing = false;
@@ -195,40 +164,6 @@ function cleanup(): void {
 }
 
 view.addEventListener('beforeunload', cleanup);
-
-/**
- * Configure the location of Penumbra's worker threads
- *
- *
- * ```ts
- * // Set only the Penumbra Worker URL by passing a string. Base URL is derived from this
- * penumbra.setWorkerLocation('/penumbra-workers/worker.penumbra.js')
- * // Set all worker URLs by passing a WorkerLocation object
- * penumbra.setWorkerLocation({
- * base: '/penumbra-workers/',
- * penumbra: 'worker.penumbra.js',
- * StreamSaver: 'StreamSaver.js',
- * });
- * // Set a single worker's location
- * penumbra.setWorkerLocation({decrypt: 'penumbra.decrypt.js'});
- * ```
- * @param options - Worker location options
- */
-export async function setWorkerLocation(
-  options: WorkerLocationOptions | string,
-): Promise<void> {
-  if (initialized) {
-    logger.warn('Penumbra Workers are already active. Reinitializing...');
-    cleanup();
-    return;
-  }
-  settings.workers = JSON.stringify(
-    typeof options === 'string'
-      ? { ...DEFAULT_WORKERS, base: options, penumbra: options }
-      : { ...DEFAULT_WORKERS, ...options },
-  );
-  await initWorkers();
-}
 
 /**
  * Set worker busy state based on current progress events
