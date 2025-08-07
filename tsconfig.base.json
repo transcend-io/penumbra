@@ -25,7 +25,7 @@
 
     "moduleDetection": "force",
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false, // Prevent worker from getting bundled into main based on a type import
     "strict": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
