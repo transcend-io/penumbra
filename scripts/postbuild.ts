@@ -41,6 +41,7 @@ async function patchWebWorkerUrl(
 }
 
 async function main() {
+  console.group('Postbuild: Patch Web Worker URL');
   try {
     const results = await Promise.allSettled([
       patchWebWorkerUrl('dist/main.penumbra.js'),
@@ -58,6 +59,7 @@ async function main() {
     console.error(error);
     process.exit(1);
   }
+  console.groupEnd();
 }
 
 await main();
