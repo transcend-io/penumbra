@@ -5,7 +5,7 @@ import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 import type { JobID } from './types';
 
 // utils
-import { emitProgress, emitJobCompletion } from './utils';
+import { emitJobProgress, emitJobCompletion } from './utils';
 
 /**
  * Encrypts a readable stream with an event emitter
@@ -29,17 +29,16 @@ export function startEncryptionStreamWithEmitter(
   });
 
   let totalBytesRead = 0;
-
   return readableStream.pipeThrough(encryptionStream).pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
         totalBytesRead += chunk.length;
-        emitProgress('encrypt', totalBytesRead, contentLength, id);
+        emitJobProgress('encrypt', totalBytesRead, contentLength, id);
       },
       flush: () => {
         const authTag = encryptionStream.getAuthTag();
-        emitJobCompletion(id, { key, iv, authTag });
+        emitJobCompletion('encrypt', id, { key, iv, authTag });
       },
     }),
   );

@@ -1,4 +1,4 @@
-export { default as emitProgress } from './emit-progress';
+export { default as emitJobProgress } from './emit-job-progress';
 export { default as emitJobCompletion } from './emit-job-completion';
 export { default as emitZipProgress } from './emit-zip-progress';
 export { default as emitZipCompletion } from './emit-zip-completion';

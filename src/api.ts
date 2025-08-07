@@ -308,11 +308,15 @@ async function encrypt(
   options: Partial<PenumbraEncryptionOptions> | null,
   file: PenumbraFile,
 ): Promise<PenumbraFileWithID> {
+  // Generate an ID for this job run
+  const jobID = generateJobID();
+
   // Generate a key if one is not provided
   let rawKey = options?.key;
   if (!rawKey) {
-    logger.debug(
+    logger.info(
       `penumbra.encrypt(): no key specified. generating a random ${GENERATED_KEY_RANDOMNESS.toString()}-bit key`,
+      jobID,
     );
     rawKey = crypto.getRandomValues(
       new Uint8Array(GENERATED_KEY_RANDOMNESS / 8),
@@ -321,14 +325,12 @@ async function encrypt(
   // Generate an IV if one is not provided
   let rawIV = options?.iv;
   if (!rawIV) {
-    logger.debug(
+    logger.info(
       `penumbra.encrypt(): no IV specified. generating a random ${IV_RANDOMNESS.toString()}-bit IV`,
+      jobID,
     );
     rawIV = crypto.getRandomValues(new Uint8Array(IV_RANDOMNESS / 8));
   }
-
-  // Generate an ID for this job run
-  const jobID = generateJobID();
 
   // Set up remote streams
   const { writable, readablePort } = new RemoteWritableStream<Uint8Array>();
@@ -344,6 +346,10 @@ async function encrypt(
 
   // Enter worker thread and kick off the encryption
   const worker = await getWorker();
+  logger.debug(
+    `penumbra.encrypt(): entering worker with workerID: ${worker.id.toString()}`,
+    jobID,
+  );
   const RemoteAPI = worker.comlink;
   const remote = await new RemoteAPI();
 
@@ -480,18 +486,30 @@ function getTextOrURI(files: PenumbraFile[]): Promise<PenumbraTextOrURI>[] {
   });
 }
 
-function setLogLevel(logLevel: LogLevel): void {
+function setLogLevel(logLevel: LogLevel, wait?: false): void;
+function setLogLevel(logLevel: LogLevel, wait: true): Promise<void>;
+function setLogLevel(logLevel: LogLevel, wait?: boolean): Promise<void> | void {
   logger.setLogLevel(logLevel);
 
   /**
    * This is intentionally not awaited because it adds complexity for library consumers to have to await setLogLevel().
    * In the recommended usage, the `setLogLevel()` should be called before any worker methods are called, in which case this runs synchronously.
    */
-  syncLogLevelUpdateToAllWorkers(logLevel).catch((error: unknown) => {
-    logger.error(
-      `penumbra.setLogLevel(): Failed to sync log level update to all workers: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  });
+  const promise = syncLogLevelUpdateToAllWorkers(logLevel).catch(
+    (error: unknown) => {
+      const errorMessage = `penumbra.setLogLevel(): Failed to sync log level update to all workers: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+      if (wait) {
+        throw new Error(errorMessage);
+      } else {
+        logger.error(errorMessage, null);
+      }
+    },
+  );
+  if (wait) {
+    return promise;
+  }
 }
 
 const penumbra = {

@@ -3,7 +3,7 @@ import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // utils
 import type { JobID } from './types';
-import { emitJobCompletion, emitProgress } from './utils';
+import { emitJobCompletion, emitJobProgress } from './utils';
 
 /**
  * Starts a decryption stream with an event emitter
@@ -40,10 +40,10 @@ export function startDecryptionStreamWithEmitter(
 
         // Emit a progress update
         totalBytesRead += chunk.length;
-        emitProgress('decrypt', totalBytesRead, contentLength, id);
+        emitJobProgress('decrypt', totalBytesRead, contentLength, id);
       },
       flush: () => {
-        emitJobCompletion(id, { key, iv, authTag });
+        emitJobCompletion('decrypt', id, { key, iv, authTag });
       },
     }),
   );

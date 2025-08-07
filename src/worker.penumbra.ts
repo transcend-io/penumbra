@@ -137,6 +137,7 @@ class PenumbraWorker {
     writablePort: MessagePort,
   ): void {
     try {
+      logger.debug(`worker.encrypt(): called`, jobID);
       // Stream of plaintext bytes flowing from main thread
       const remoteReadableStream = fromReadablePort(readablePort);
 
@@ -200,7 +201,7 @@ class PenumbraWorker {
     // Set up logging
     logger.setLogLevel(logLevel);
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- safer to use a `number` in the template type
-    logger.setThread(`[Thread:worker-${workerID}]`);
+    logger.setThread(`worker-${workerID}`);
 
     // Set up the event handler
     onPenumbraEvent.handler = handler;

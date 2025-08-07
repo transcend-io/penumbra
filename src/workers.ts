@@ -100,9 +100,9 @@ function getFreeWorker(): PenumbraWorker {
  * @returns Worker
  */
 function waitForInit(): Promise<PenumbraWorker> {
-  return new Promise((resolveWorker) => {
+  return new Promise((resolve) => {
     onWorkerInitQueue.push(() => {
-      resolveWorker(getFreeWorker());
+      resolve(getFreeWorker());
     });
   });
 }
@@ -127,6 +127,7 @@ async function initWorkers(): Promise<void> {
   for (const element of onWorkerInitQueue) {
     call(element);
   }
+  logger.debug(`Initialized ${workers.length.toString()} workers`, null);
   onWorkerInitQueue.length = 0;
 }
 
@@ -136,9 +137,11 @@ async function initWorkers(): Promise<void> {
  */
 export async function getWorker(): Promise<PenumbraWorker> {
   if (initializing) {
+    logger.debug('getWorker() waiting for initialization', null);
     return waitForInit();
   }
   if (!initialized) {
+    logger.debug('getWorker() initializing workers', null);
     await initWorkers();
   }
   return getFreeWorker();
@@ -157,6 +160,10 @@ function getActiveWorkers(): PenumbraWorker[] {
  */
 function cleanup(): void {
   for (const thread of getActiveWorkers()) {
+    logger.debug(
+      `cleanup(): terminating workerID: ${thread.id.toString()}`,
+      null,
+    );
     thread.worker.terminate();
   }
   workers.length = 0;
@@ -195,6 +202,7 @@ export async function syncLogLevelUpdateToAllWorkers(
     logger.info(
       `penumbra.setLogLevel(): Syncing log level update to ${workers.length.toString()} active workers.` +
         ` It's recommended to set the log level before calling penumbra's worker methods.`,
+      null,
     );
   }
 

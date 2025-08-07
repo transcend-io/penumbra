@@ -80,7 +80,7 @@ export interface PenumbraFileWithID extends PenumbraFile {
 }
 
 /** Penumbra event types */
-export type PenumbraEventType = 'decrypt' | 'encrypt' | 'zip';
+export type PenumbraEventType = 'decrypt' | 'encrypt';
 
 /**
  * Progress event details

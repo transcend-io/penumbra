@@ -32,7 +32,7 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
     ) as PromiseRejectedResult[];
 
     for (const error of errors) {
-      logger.error(error.reason);
+      logger.error(error.reason, null);
     }
     // Throw AggregateError to console
     throwOutside(
@@ -127,6 +127,7 @@ export class PenumbraZipWriter extends EventTarget {
         this.close().catch((error: unknown) => {
           logger.error(
             `Failed to close zip writer: ${error instanceof Error ? error.message : String(error)}`,
+            null,
           );
         });
       },
@@ -170,7 +171,7 @@ export class PenumbraZipWriter extends EventTarget {
             ? new Error(error)
             : new Error('Unknown error');
       finalError.message = `penumbra.saveZip() failed to create zip: ${finalError.message}`;
-      logger.error(finalError);
+      logger.error(finalError, null);
     });
 
     // Buffer zip stream for debug & testing
@@ -255,7 +256,10 @@ export class PenumbraZipWriter extends EventTarget {
               dupe,
             )}`;
             if (zip.allowDuplicates) {
-              logger.warn(`${warning} renamed to ${JSON.stringify(filePath)}`);
+              logger.warn(
+                `${warning} renamed to ${JSON.stringify(filePath)}`,
+                null,
+              );
             } else {
               zip.abort();
               throw new Error(warning);
