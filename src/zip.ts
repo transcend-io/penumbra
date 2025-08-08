@@ -8,7 +8,6 @@ import {
   emitZipCompletion,
   throwOutside,
 } from './utils';
-import { Compression } from './enums';
 import { logger } from './logger';
 
 /**
@@ -102,18 +101,11 @@ export class PenumbraZipWriter extends EventTarget {
       name = 'download',
       size,
       controller = new AbortController(),
-      compressionLevel = Compression.Store,
       saveBuffer = false,
       allowDuplicates = true,
       onProgress,
       onComplete,
     } = options;
-
-    if (compressionLevel !== Compression.Store) {
-      throw new Error(
-        'penumbra.saveZip() does not support compression yet. Voice your support here: https://github.com/transcend-io/penumbra/issues',
-      );
-    }
 
     if (isNumber(size)) {
       this.byteSize = size;

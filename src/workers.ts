@@ -7,7 +7,6 @@ import type {
   PenumbraWorker,
   PenumbraWorkerAPI,
 } from './types';
-import { settings } from './settings';
 import { logger, type LogLevel } from './logger';
 
 // //// //
@@ -46,14 +45,12 @@ function reDispatchEvent(event: Event): void {
 }
 
 // Set data-worker-limit to limit the maximum number of Penumbra workers
-const WORKER_LIMIT = +(settings['workerLimit'] ?? 16);
 const { hardwareConcurrency } = navigator;
 // Get available processor threads
-const availConcurrency = hardwareConcurrency
+const maxConcurrency = hardwareConcurrency
   ? // Reserve one thread (if hwConcurrency is supported) for UI renderer to prevent jank
     hardwareConcurrency - 1
   : 4;
-const maxConcurrency = Math.min(availConcurrency, WORKER_LIMIT);
 const workers: PenumbraWorker[] = [];
 let workerID = 0;
 

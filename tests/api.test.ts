@@ -483,9 +483,6 @@ describe('Penumbra API', () => {
       'zip progress event fired & emitted expected properties',
     );
     assert.isTrue(completeEventFired, 'zip complete event fired');
-
-    // This is a rewrite version of the test below, but this implementation should have checksum tests on the expected zip
-    // TODO: https://github.com/transcend-io/penumbra/issues/250
   });
 
   it('penumbra.save() should save a single file', async () => {

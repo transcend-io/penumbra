@@ -4,7 +4,6 @@ import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
 import type { PenumbraError } from './error';
 
 import type { JobID } from './job-id';
-import type { Compression } from './enums';
 
 export { PenumbraZipWriter } from './zip';
 
@@ -232,8 +231,6 @@ export type ZipOptions = Partial<{
   controller: AbortController;
   /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
   allowDuplicates: boolean;
-  /** Zip archive compression level */
-  compressionLevel: Compression;
   /** Store a copy of the resultant zip file in-memory for inspection & testing */
   saveBuffer: boolean;
   /**
