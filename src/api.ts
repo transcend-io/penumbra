@@ -38,24 +38,26 @@ const IV_RANDOMNESS = 96;
 
 const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
 
+// TODO: this is jank. Earlier implementation had a race condition where the job completion event was firing before this started listening.
+const listener = ({
+  detail: { id, decryptionInfo },
+}: JobCompletionEmit): void => {
+  decryptionConfigs.set(id, decryptionInfo);
+};
+self.addEventListener('penumbra-complete', listener);
 const trackJobCompletion = (
   searchForID: JobID,
 ): Promise<PenumbraDecryptionInfo> =>
   new Promise((resolve) => {
-    const listener = ({
-      type,
-      detail: { id, decryptionInfo },
-    }: JobCompletionEmit): void => {
-      decryptionConfigs.set(id, decryptionInfo);
-      if (id === searchForID) {
-        self.removeEventListener(
-          type as keyof WindowEventMap,
-          listener as EventListener,
-        );
-        resolve(decryptionInfo);
+    const interval = setInterval(() => {
+      if (decryptionConfigs.has(searchForID)) {
+        const decryptionInfo = decryptionConfigs.get(searchForID);
+        decryptionConfigs.delete(searchForID);
+        clearInterval(interval);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- .has() guarantees it exists
+        resolve(decryptionInfo!);
       }
-    };
-    self.addEventListener('penumbra-complete', listener);
+    }, 100);
   });
 
 const resolver = document.createElementNS(

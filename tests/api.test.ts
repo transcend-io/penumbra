@@ -372,16 +372,24 @@ describe('Penumbra API', () => {
   it('should encrypt and decrypt', async () => {
     const te = new self.TextEncoder();
     const td = new self.TextDecoder();
-    const input = 'test';
+    const input = 'test'.repeat(2 ** 20);
     const buffer = te.encode(input);
     const { byteLength: size } = buffer;
     const stream = new Response(buffer).body;
     const options = null;
     const file = { stream, size } as unknown as PenumbraFile;
     const encrypted = await penumbra.encrypt(options, file);
+
+    // Must finish streaming before calling getDecryptionInfo()
+    const encryptedBuffer = await bufferEntireStream(encrypted.stream);
+
     const decryptionInfo = await penumbra.getDecryptionInfo(encrypted);
-    const decrypted = await penumbra.decrypt(decryptionInfo, encrypted);
-    const decryptedData = await new Response(decrypted.stream).arrayBuffer();
+    const decrypted = await penumbra.decrypt(decryptionInfo, {
+      ...encrypted,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      stream: new Response(encryptedBuffer).body!,
+    });
+    const decryptedData = await bufferEntireStream(decrypted.stream);
     assert.equal(td.decode(decryptedData), input, 'encrypt() & decrypt()');
   });
 
