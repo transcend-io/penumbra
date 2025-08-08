@@ -10,7 +10,7 @@ export class PenumbraError extends Error {
   public worker: number | null;
 
   /** Error message */
-  public message: string;
+  public override message: string;
 
   /**
    * Extend new Error

@@ -28,7 +28,7 @@ export function startDecryptionStreamWithEmitter(
   // Construct the decryption stream
   const decryptionStream = createDecryptionStream(key, iv, {
     authTag,
-    __dangerouslyIgnoreAuthTag: ignoreAuthTag,
+    __dangerouslyIgnoreAuthTag: ignoreAuthTag ?? false,
   });
 
   let totalBytesRead = 0;

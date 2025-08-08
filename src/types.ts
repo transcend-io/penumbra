@@ -41,15 +41,15 @@ export interface PenumbraDecryptionInfo {
 /** The base resource from which RemoteResource and PenumbraFile extend */
 interface Resource {
   /** The name of the underlying file without the extension */
-  filePrefix?: string;
+  filePrefix?: string | undefined;
   /** Last modified date */
-  lastModified?: Date;
+  lastModified?: Date | undefined;
   /** Relative file path (needed for zipping) */
-  path?: string;
+  path?: string | undefined;
   /** The mimetype of the resulting file */
-  mimetype?: string;
+  mimetype?: string | undefined;
   /** File size (if backed by a ReadableStream) */
-  size?: number;
+  size?: number | undefined;
 }
 
 /** A file to download from a remote resource, that is optionally encrypted */
@@ -57,14 +57,14 @@ export interface RemoteResource extends Partial<Resource> {
   /** The URL to fetch the encrypted or unencrypted file from */
   url: string;
   /** Fetch options */
-  requestInit?: RequestInit;
+  requestInit?: RequestInit | undefined;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: PenumbraDecryptionOptions;
+  decryptionOptions?: PenumbraDecryptionOptions | undefined;
   /**
    * Dangerously bypass authTag validation. Only use this for testing purposes.
    * @default false
    */
-  ignoreAuthTag?: boolean;
+  ignoreAuthTag?: boolean | undefined;
 }
 
 /** Penumbra file composition */
@@ -225,9 +225,9 @@ export interface EventForwarder {
 /** PenumbraZipWriter constructor options */
 export type ZipOptions = Partial<{
   /** Filename to save to (.zip is optional) */
-  name?: string;
+  name?: string | undefined;
   /** Total size of archive (if known ahead of time, for 'store' compression level) */
-  size?: number;
+  size?: number | undefined;
   /** Abort controller for cancelling zip generation and saving */
   controller: AbortController;
   /** Allow & auto-rename duplicate files sent to writer. Defaults to on */

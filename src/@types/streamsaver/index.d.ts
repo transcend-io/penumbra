@@ -12,7 +12,7 @@ declare module 'streamsaver/StreamSaver.js' {
     filename: string,
     options?: {
       /** Size of the stream */
-      size?: number;
+      size?: number | undefined;
       /** Pathname of the stream */
       pathname?: string;
       /** Writable strategy */

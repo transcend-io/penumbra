@@ -58,7 +58,7 @@ class Logger {
 
   /** The header for the logger */
   private makeHeader(jobID: JobID | null) {
-    const jobIDShort = jobID ? `:${jobID.split('-')[0]}` : '';
+    const jobIDShort = jobID ? `:${jobID.split('-')[0] ?? ''}` : '';
     return `[penumbra${jobIDShort}:${this.thread}]`.padEnd(29, ' ');
   }
 }

@@ -63,6 +63,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@esm-bundle/chai": "4.3.4-fix.0",
+    "@tsconfig/strictest": "^2.0.5",
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.10.3",
     "@web/dev-server-esbuild": "^1.0.4",

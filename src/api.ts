@@ -192,8 +192,10 @@ async function save(
   }
 
   // Single file
-  const file: PenumbraFile =
-    'stream' in files ? (files as unknown as PenumbraFile) : files[0];
+  const file = 'stream' in files ? (files as PenumbraFile) : files[0];
+  if (!file) {
+    throw new Error('penumbra.save(): No file to save');
+  }
 
   // Split filename and extension
   const [filename, extensionCandidateFromFilename] = (
@@ -245,6 +247,9 @@ function getBlob(
     rs = files;
   } else {
     const file = 'length' in files ? files[0] : files;
+    if (!file) {
+      throw new Error('penumbra.getBlob(): No file to get blob for');
+    }
     if (file.stream instanceof ArrayBuffer || ArrayBuffer.isView(file.stream)) {
       return Promise.resolve(
         new Blob(
@@ -255,7 +260,7 @@ function getBlob(
               file.stream.byteLength,
             ),
           ],
-          { type: file.mimetype },
+          { ...(file.mimetype ? { type: file.mimetype } : {}) },
         ),
       );
     }

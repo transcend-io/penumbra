@@ -38,6 +38,9 @@ importers:
       '@esm-bundle/chai':
         specifier: 4.3.4-fix.0
         version: 4.3.4-fix.0
+      '@tsconfig/strictest':
+        specifier: ^2.0.5
+        version: 2.0.5
       '@types/mocha':
         specifier: ^10.0.10
         version: 10.0.10
@@ -583,6 +586,9 @@ packages:
 
   '@transcend-io/encrypt-web-streams@1.0.3':
     resolution: {integrity: sha512-qVBJeG/ys9YY1TsKNowWeJx6ftIzVEKHmtRhrFRy0gdC31lfUrYnA8oeS7tNi6H8l3fpJmNgYj5+3su2OxN2wA==}
+
+  '@tsconfig/strictest@2.0.5':
+    resolution: {integrity: sha512-ec4tjL2Rr0pkZ5hww65c+EEPYwxOi4Ryv+0MtjeaSQRJyq322Q27eOQiFbuNgw2hpL4hB1/W/HBGk3VKS43osg==}
 
   '@tybys/wasm-util@0.10.0':
     resolution: {integrity: sha512-VyyPYFlOMNylG45GoAe0xDoLwWuowvf92F9kySqzYh8vmYm7D2u4iUJKa1tOUpS70Ku13ASrOkS4ScXFsTaCNQ==}
@@ -4282,6 +4288,8 @@ snapshots:
       pako: 2.1.0
 
   '@transcend-io/encrypt-web-streams@1.0.3': {}
+
+  '@tsconfig/strictest@2.0.5': {}
 
   '@tybys/wasm-util@0.10.0':
     dependencies:

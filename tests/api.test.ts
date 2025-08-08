@@ -87,6 +87,9 @@ describe('Penumbra API', () => {
     );
 
     const [file] = await penumbra.get(remoteResource);
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
     const response = new Response(file.stream);
     const decryptedChecksum = await hash(
       'SHA-256',
@@ -100,6 +103,9 @@ describe('Penumbra API', () => {
     const { remoteResource, unencryptedChecksum } = getFixture('zip_10MB');
 
     const [file] = await penumbra.get(remoteResource);
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
     const response = new Response(file.stream);
     const decryptedChecksum = await hash(
       'SHA-256',
@@ -116,6 +122,9 @@ describe('Penumbra API', () => {
     );
 
     const [file] = await penumbra.get(remoteResource);
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
     const response = new Response(file.stream);
     const decryptedChecksum = await hash(
       'SHA-256',
@@ -129,7 +138,14 @@ describe('Penumbra API', () => {
     const { remoteResource, unencryptedChecksum } = getFixture('htmlfile');
 
     const [file] = await penumbra.get(remoteResource);
-    const { type, data } = await penumbra.getTextOrURI([file])[0];
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
+    const response = await penumbra.getTextOrURI([file])[0];
+    if (!response) {
+      throw new Error('No response returned from penumbra.getTextOrURI()');
+    }
+    const { type, data } = response;
     const decryptedChecksum = await hash(
       'SHA-256',
       new TextEncoder().encode(data),
@@ -145,7 +161,14 @@ describe('Penumbra API', () => {
     );
 
     const [file] = await penumbra.get(remoteResource);
-    const { type, data: blobUrl } = await penumbra.getTextOrURI([file])[0];
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
+    const response = await penumbra.getTextOrURI([file])[0];
+    if (!response) {
+      throw new Error('No response returned from penumbra.getTextOrURI()');
+    }
+    const { type, data: blobUrl } = response;
 
     const mediaBytes = await fetch(blobUrl).then((r) => r.arrayBuffer());
     const mediaChecksum = await hash('SHA-256', mediaBytes);
@@ -231,7 +254,11 @@ describe('Penumbra API', () => {
 
       (async () => {
         const { remoteResource } = getFixture('zip_10MB');
-        const [{ stream }] = await penumbra.get(remoteResource);
+        const [file] = await penumbra.get(remoteResource);
+        if (!file) {
+          throw new Error('No file returned from penumbra.get()');
+        }
+        const { stream } = file;
         await new Response(stream).arrayBuffer();
       })().catch((error: unknown) => {
         logger.error('Error running should fire progress events test', error);
@@ -284,7 +311,14 @@ describe('Penumbra API', () => {
     const { remoteResource } = getFixture('file_example_JPG_500kB');
 
     const [file] = await penumbra.get(remoteResource);
-    const { data: url } = await penumbra.getTextOrURI([file])[0];
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
+    const response = await penumbra.getTextOrURI([file])[0];
+    if (!response) {
+      throw new Error('No response returned from penumbra.getTextOrURI()');
+    }
+    const { data: url } = response;
 
     const testImage = new Image();
     const result = await new Promise((resolve) => {
@@ -432,7 +466,7 @@ describe('Penumbra API', () => {
       ...firstTwo.map((file) => ({
         ...file,
         // Fixtures have a postfixed .enc extension, so we need to remove it
-        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+        path: file.path?.split('.enc')[0]?.replaceAll('/encrypted/', '/'),
       })),
     );
     const lastTwo = await penumbra.get(remoteResource3, remoteResource4);
@@ -440,7 +474,7 @@ describe('Penumbra API', () => {
       ...lastTwo.map((file) => ({
         ...file,
         // Fixtures have a postfixed .enc extension, so we need to remove it
-        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+        path: file.path?.split('.enc')[0]?.replaceAll('/encrypted/', '/'),
       })),
     );
     await writer.close();
@@ -484,7 +518,7 @@ describe('Penumbra API', () => {
     await penumbra.save(
       files.map((file) => ({
         ...file,
-        path: file.path?.split('.enc')[0].replaceAll('/encrypted/', '/'),
+        path: file.path?.split('.enc')[0]?.replaceAll('/encrypted/', '/'),
       })),
     );
   });
@@ -500,6 +534,9 @@ describe('Error handling', () => {
     remoteResource.decryptionOptions.authTag = 'fo4LmWCZMNlvCsmp/nj6Cg=='; // invalid authTag
     try {
       const [file] = await penumbra.get(remoteResource);
+      if (!file) {
+        throw new Error('No file returned from penumbra.get()');
+      }
       await bufferEntireStream(file.stream);
       assert.fail('Expected an error to be thrown');
     } catch (error) {
@@ -518,6 +555,9 @@ describe('Error handling', () => {
     remoteResource.ignoreAuthTag = true;
 
     const [file] = await penumbra.get(remoteResource);
+    if (!file) {
+      throw new Error('No file returned from penumbra.get()');
+    }
     const buffer = await bufferEntireStream(file.stream);
     const decryptedChecksum = await hash('SHA-256', buffer);
 

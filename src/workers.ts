@@ -2,7 +2,11 @@
 import { proxy, wrap } from 'comlink';
 
 // local
-import type { PenumbraWorker, PenumbraWorkerAPI, ProgressEmit } from './types';
+import type {
+  JobCompletionEmit,
+  PenumbraWorker,
+  PenumbraWorkerAPI,
+} from './types';
 import { settings } from './settings';
 import { logger, type LogLevel } from './logger';
 
@@ -42,7 +46,7 @@ function reDispatchEvent(event: Event): void {
 }
 
 // Set data-worker-limit to limit the maximum number of Penumbra workers
-const WORKER_LIMIT = +(settings.workerLimit ?? 16);
+const WORKER_LIMIT = +(settings['workerLimit'] ?? 16);
 const { hardwareConcurrency } = navigator;
 // Get available processor threads
 const availConcurrency = hardwareConcurrency
@@ -81,7 +85,7 @@ const onWorkerInitQueue: (() => void)[] = [];
  * Get any free worker thread
  * @returns Worker
  */
-function getFreeWorker(): PenumbraWorker {
+async function getFreeWorker(attempt = 0): Promise<PenumbraWorker> {
   // Poll for any available free workers
   const freeWorker = workers.find(({ busy }) => !busy);
 
@@ -89,9 +93,22 @@ function getFreeWorker(): PenumbraWorker {
   const worker =
     freeWorker ?? workers[Math.floor(Math.random() * workers.length)];
 
-  // Set worker as busy
-  worker.busy = true;
+  if (!worker) {
+    if (attempt > 3) {
+      logger.warn('No workers available, giving up', null);
+      throw new Error('Penumbra could not find a worker');
+    }
+    logger.warn(
+      `No workers available, retrying (attempt ${attempt.toString()})`,
+      null,
+    );
+    await initWorkers();
+    return getFreeWorker(attempt + 1);
+  }
 
+  // Set worker as busy
+  logger.debug(`Freeing worker with ID: ${worker.id.toString()}`, null);
+  worker.busy = true;
   return worker;
 }
 
@@ -177,19 +194,19 @@ view.addEventListener('beforeunload', cleanup);
  * @param options - Options
  */
 const trackWorkerBusyState = ({
-  detail: { worker, totalBytesRead, contentLength },
-}: ProgressEmit): void => {
-  if (
-    typeof worker === 'number' &&
-    // TODO: Switch to a more robust check whether we're streaming which doesn't require contentLength being known
-    contentLength !== null &&
-    totalBytesRead >= contentLength
-  ) {
-    workers[worker].busy = false;
+  detail: { worker },
+}: JobCompletionEmit): void => {
+  if (typeof worker === 'number') {
+    const penumbraWorker = workers[worker];
+    if (!penumbraWorker) {
+      logger.debug(`Worker ${worker.toString()} not found`, null);
+      return;
+    }
+    penumbraWorker.busy = false;
   }
 };
 
-addEventListener('penumbra-progress', trackWorkerBusyState);
+addEventListener('penumbra-complete', trackWorkerBusyState);
 
 /**
  * Sync a log level update to all workers

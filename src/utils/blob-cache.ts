@@ -16,7 +16,7 @@ const blobCache: BlobCacheManager = {
    */
   get(): URL[] {
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unsafe-argument
-    const parsed: unknown = JSON.parse(localStorage.blobCache || '[]');
+    const parsed: unknown = JSON.parse(localStorage['blobCache'] || '[]');
     if (
       !Array.isArray(parsed) ||
       parsed.some((url) => !(url instanceof URL) && typeof url !== 'string')
@@ -30,7 +30,7 @@ const blobCache: BlobCacheManager = {
    * @param cache - Cache
    */
   set(cache: URL[] | string[]): void {
-    localStorage.blobCache = JSON.stringify(cache);
+    localStorage['blobCache'] = JSON.stringify(cache);
   },
   /** Clear Blob cache */
   clear(): void {

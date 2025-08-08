@@ -15,6 +15,6 @@ export default function isViewableText(mimetype: string): boolean {
   if (typeof mimetype !== 'string') {
     return false;
   }
-  const type = mimetype.split('/')[0].trim().toLowerCase();
+  const type = mimetype.split('/')[0]?.trim().toLowerCase();
   return type === 'text' || TEXT_TYPES.test(mimetype);
 }
