@@ -1,13 +1,6 @@
-import streamSaver from 'streamsaver';
-import { settings } from './settings';
-import { WritableStreamIsNative, WritableStreamPonyfill } from './streams';
+import streamSaver from 'streamsaver/StreamSaver.js';
 
-streamSaver.mitm =
-  settings.streamsaverEndpoint || 'https://streaming.transcend.io/mitm.html';
+// TODO: allow this to be set via JS API
+streamSaver.mitm = 'https://streaming.transcend.io/endpoint.html';
 
-if (!WritableStreamIsNative) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (streamSaver as any).WritableStream = WritableStreamPonyfill;
-}
-
-export { streamSaver };
+export { default as streamSaver } from 'streamsaver/StreamSaver.js';

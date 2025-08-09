@@ -1,6 +1,8 @@
 onlyBuiltDependencies:
-  - core-js
-  - core-js-pure
   - esbuild
   - fsevents
+  - oxc-resolver
   - unrs-resolver
+
+patchedDependencies:
+  streamsaver: patches/streamsaver.patch

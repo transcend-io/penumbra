@@ -1,43 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-## Table of Contents
-
-- [Penumbra](#penumbra)
-  - [Compatibility](#compatibility)
-  - [Usage](#usage)
-    - [Importing Penumbra](#importing-penumbra)
-      - [With NPM](#with-npm)
-      - [Vanilla JS](#vanilla-js)
-    - [RemoteResource](#remoteresource)
-    - [.get](#get)
-    - [.encrypt](#encrypt)
-      - [.encrypt() examples:](#encrypt-examples)
-    - [.getDecryptionInfo](#getdecryptioninfo)
-    - [.decrypt](#decrypt)
-    - [.save](#save)
-    - [.getBlob](#getblob)
-    - [.getTextOrURI](#gettextoruri)
-    - [.saveZip](#savezip)
-    - [.setWorkerLocation](#setworkerlocation)
-  - [Examples](#examples)
-    - [Display encrypted text](#display-encrypted-text)
-    - [Display encrypted image](#display-encrypted-image)
-    - [Download an encrypted file](#download-an-encrypted-file)
-    - [Download many encrypted files](#download-many-encrypted-files)
-  - [Advanced](#advanced)
-    - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
-    - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
-    - [Progress Event Emitter](#progress-event-emitter)
-    - [Configure worker location](#configure-worker-location)
-    - [Waiting for the `penumbra-ready` event](#waiting-for-the-penumbra-ready-event)
-    - [Querying Penumbra browser support](#querying-penumbra-browser-support)
-  - [Webpack](#webpack)
-  - [Contributing](#contributing)
-  - [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <p align="center">
   <img alt="Penumbra by Transcend" src="https://user-images.githubusercontent.com/7354176/61583246-43519500-aaea-11e9-82a2-e7470f3d4e00.png"/>
 </p>
@@ -47,11 +7,40 @@
   <br /><br />
   <i>Quickly and efficiently decrypt remote resources in the browser. Display the files in the DOM, or download them with <a href="https://github.com/transcend-io/conflux">conflux</a>.</i>
   <br /><br />
-<!--   <a href="https://automate.browserstack.com/public-build/SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%"><img src='https://automate.browserstack.com/badge.svg?badge_key=SmJHL1l4Q1hTZkFZMlBCWnBDcElEZndaWFgxbklqdTd5UkxDMFBISUdEST0tLUU2SFdLazhFd1BWU2NjSU1NcWdpS3c9PQ==--1c3006209d588dbf401864442d5b60b191f05025%'/></a> -->
   <a href="https://snyk.io//test/github/transcend-io/penumbra?targetFile=package.json"><img src="https://snyk.io//test/github/transcend-io/penumbra/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftranscend-io%2Fpenumbra.svg?type=shield"/></a>
 </p>
 <br />
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Compatibility](#compatibility)
+- [Usage](#usage)
+  - [Importing Penumbra](#importing-penumbra)
+  - [RemoteResource](#remoteresource)
+  - [.get](#get)
+  - [.encrypt](#encrypt)
+  - [.getDecryptionInfo](#getdecryptioninfo)
+  - [.decrypt](#decrypt)
+  - [.save](#save)
+  - [.getBlob](#getblob)
+  - [.getTextOrURI](#gettextoruri)
+  - [.saveZip](#savezip)
+- [Examples](#examples)
+  - [Display encrypted text](#display-encrypted-text)
+  - [Display encrypted image](#display-encrypted-image)
+  - [Download an encrypted file](#download-an-encrypted-file)
+  - [Download many encrypted files](#download-many-encrypted-files)
+- [Advanced](#advanced)
+  - [Prepare connections for file downloads in advance](#prepare-connections-for-file-downloads-in-advance)
+  - [Encrypt/Decrypt Job Completion Event Emitter](#encryptdecrypt-job-completion-event-emitter)
+  - [Progress Event Emitter](#progress-event-emitter)
+  - [Querying Penumbra browser support](#querying-penumbra-browser-support)
+- [Contributing](#contributing)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Compatibility
 
@@ -61,23 +50,12 @@
 | Edge >18     |       ✅ |       ✅ |       ✅ |
 | Safari ≥14.1 |       ✅ |       ✅ |       ✅ |
 | Firefox ≥102 |       ✅ |       ✅ |       ✅ |
-| Safari <14.1 |       🐢 |       🐢 |       🟡 |
-| Firefox <102 |       🐢 |       🐢 |       🟡 |
-| Edge 18      |       ❌ |       ❌ |       ❌ |
 
 ✅ = Full support with workers
-
-🐢 = Uses main thread (lacks native WritableStream support)
-
-🟡 = 32 MiB limit
-
-❌ = No support
 
 ## Usage
 
 ### Importing Penumbra
-
-#### With NPM
 
 ```sh
 npm install --save @transcend-io/penumbra
@@ -88,20 +66,6 @@ import { penumbra } from '@transcend-io/penumbra';
 
 penumbra.get(...files).then(penumbra.save);
 ```
-
-#### Vanilla JS
-
-```html
-<script src="lib/main.penumbra.js"></script>
-<script>
-  penumbra
-    .get(...files)
-    .then(penumbra.getTextOrURI)
-    .then(displayInDOM);
-</script>
-```
-
-_Check out [this guide](#waiting-for-the-penumbra-ready-event) for asynchronous loading._
 
 ### RemoteResource
 
@@ -119,7 +83,7 @@ type RemoteResource = {
   /** The name of the underlying file without the extension */
   filePrefix?: string;
   /** If the file is encrypted, these are the required params */
-  decryptionOptions?: PenumbraDecryptionInfo;
+  decryptionOptions?: PenumbraDecryptionOptions;
   /** Relative file path (needed for zipping) */
   path?: string;
   /** Fetch options */
@@ -147,11 +111,11 @@ Encrypt files.
 penumbra.encrypt(options: PenumbraEncryptionOptions, ...files: PenumbraFile[]): Promise<PenumbraEncryptedFile[]>
 
 /**
- * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
+ * penumbra.encrypt() encryption options config (Uint8Array or base64-encoded string)
  */
 type PenumbraEncryptionOptions = {
   /** Encryption key */
-  key: string | Buffer;
+  key: string | Uint8Array;
 };
 ```
 
@@ -201,7 +165,7 @@ console.log('decrypted text:', decryptedText);
 Get decryption info for a file, including the iv, authTag, and key. This may only be called on files that have finished being encrypted.
 
 ```ts
-penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionInfo>
+penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionOptions>
 ```
 
 ### .decrypt
@@ -209,7 +173,7 @@ penumbra.getDecryptionInfo(file: PenumbraFile): Promise<PenumbraDecryptionInfo>
 Decrypt files.
 
 ```ts
-penumbra.decrypt(options: PenumbraDecryptionInfo, ...files: PenumbraEncryptedFile[]): Promise<PenumbraFile[]>
+penumbra.decrypt(options: PenumbraDecryptionOptions, ...files: PenumbraEncryptedFile[]): Promise<PenumbraFile[]>
 ```
 
 ```ts
@@ -326,8 +290,8 @@ Example:
 ```ts
 const files = [
   {
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
-    name: 'tortoise.jpg',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/tortoise.jpg.enc',
+    filePrefix: 'tortoise.jpg',
     mimetype: 'image/jpeg',
     decryptionOptions: {
       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
@@ -341,14 +305,6 @@ await writer.write(...(await penumbra.get(...files)));
 await writer.close();
 ```
 
-### .setWorkerLocation
-
-Configure the location of Penumbra's worker threads.
-
-```ts
-penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<void>
-```
-
 ## Examples
 
 ### Display encrypted text
@@ -356,7 +312,7 @@ penumbra.setWorkerLocation(location: WorkerLocationOptions | string): Promise<vo
 ```js
 const decryptedText = await penumbra
   .get({
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/NYT.txt.enc',
     mimetype: 'text/plain',
     filePrefix: 'NYT',
     decryptionOptions: {
@@ -376,7 +332,7 @@ const decryptedText = await penumbra
 ```js
 const imageSrc = await penumbra
   .get({
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/tortoise.jpg.enc',
     filePrefix: 'tortoise',
     mimetype: 'image/jpeg',
     decryptionOptions: {
@@ -396,9 +352,9 @@ const imageSrc = await penumbra
 ```js
 penumbra
   .get({
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
-    filePrefix: 'africa',
-    mimetype: 'image/jpeg',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/africa.topo.json.enc',
+    filePrefix: 'africa.topo.json',
+    mimetype: 'application/json',
     decryptionOptions: {
       key: 'vScyqmJKqGl73mJkuwm/zPBQk0wct9eQ5wPE8laGcWM=',
       iv: '6lNU+2vxJw6SFgse',
@@ -407,16 +363,16 @@ penumbra
   })
   .then((file) => penumbra.save(file));
 
-// saves africa.jpg file to disk
+// saves africa.topo.json file to disk
 ```
 
 ### Download many encrypted files
 
 ```js
 penumbra
-  .get([
+  .get(
     {
-      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/africa.topo.json.enc',
+      url: 'https://s3-us-west-2.amazonaws.com/your-bucket/africa.topo.json.enc',
       filePrefix: 'africa',
       mimetype: 'image/jpeg',
       decryptionOptions: {
@@ -426,7 +382,7 @@ penumbra
       },
     },
     {
-      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+      url: 'https://s3-us-west-2.amazonaws.com/your-bucket/NYT.txt.enc',
       mimetype: 'text/plain',
       filePrefix: 'NYT',
       decryptionOptions: {
@@ -436,12 +392,12 @@ penumbra
       },
     },
     {
-      url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg', // this is not encrypted
+      url: 'https://s3-us-west-2.amazonaws.com/your-bucket/tortoise.jpg', // this is not encrypted
       filePrefix: 'tortoise',
       mimetype: 'image/jpeg',
     },
-  ])
-  .then((files) => penumbra.save({ data: files, fileName: 'example' }));
+  )
+  .then((files) => penumbra.save(files, 'example'));
 
 // saves example.zip file to disk
 ```
@@ -454,7 +410,7 @@ penumbra
 // Resources to load
 const resources = [
   {
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/NYT.txt.enc',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/NYT.txt.enc',
     filePrefix: 'NYT',
     mimetype: 'text/plain',
     decryptionOptions: {
@@ -464,7 +420,7 @@ const resources = [
     },
   },
   {
-    url: 'https://s3-us-west-2.amazonaws.com/bencmbrook/tortoise.jpg.enc',
+    url: 'https://s3-us-west-2.amazonaws.com/your-bucket/tortoise.jpg.enc',
     filePrefix: 'tortoise',
     mimetype: 'image/jpeg',
     decryptionOptions: {
@@ -520,93 +476,32 @@ On Amazon S3, this means adding the following line to your bucket policy, inside
 <ExposeHeader>Content-Length</ExposeHeader>
 ```
 
-### Configure worker location
-
-```ts
-// Set only the base URL by passing a string
-penumbra.setWorkerLocation('/penumbra-workers/');
-
-// Set all worker URLs by passing a WorkerLocation object
-penumbra.setWorkerLocation({
-  base: '/penumbra-workers/',
-  penumbra: 'worker.penumbra.js',
-  StreamSaver: 'StreamSaver.js',
-});
-
-// Set a single worker's location
-penumbra.setWorkerLocation({ penumbra: 'worker.penumbra.js' });
-```
-
-### Waiting for the `penumbra-ready` event
-
-```html
-<script src="lib/main.penumbra.js" async defer></script>
-```
-
-```ts
-const onReady = async ({ detail: { penumbra } } = { detail: self }) => {
-  await penumbra.get(...files).then(penumbra.save);
-};
-
-if (!self.penumbra) {
-  self.addEventListener('penumbra-ready', onReady);
-} else {
-  onReady();
-}
-```
-
 ### Querying Penumbra browser support
 
 You can check if Penumbra is supported by the current browser by comparing `penumbra.supported(): PenumbraSupportLevel` with `penumbra.supported.levels`.
 
 ```ts
-if (penumbra.supported() > penumbra.supported.levels.possible) {
-  // penumbra is partially or fully supported
+if (penumbra.supported() > penumbra.supported.levels.none) {
+  // penumbra is supported
 }
 
 /** penumbra.supported.levels - Penumbra user agent support levels */
 enum PenumbraSupportLevel {
   /** Old browser where Penumbra does not work at all */
   none = -0,
-  /** Modern browser where Penumbra is not yet supported */
-  possible = 0,
-  /** Modern browser where file size limit is low */
-  size_limited = 1,
   /** Modern browser with full support */
   full = 2,
 }
 ```
 
-## Webpack
+Everything Penumbra uses is widely supported by modern browsers, but depending on your browser target, you can load polyfills for:
 
-Penumbra is compiled and bundled on npm. The recommended use is to copy in the penumbra build files into your webpack build.
-We do this with `copy-webpack-plugin`
-
-i.e.
-
-```js
-const fs = require('fs');
-const CopyPlugin = require('copy-webpack-plugin');
-const path = require('path');
-const PENUMBRA_DIRECTORY = path.join(
-  __dirname,
-  'node_modules',
-  '@transcend-io/penumbra',
-  'dist',
-);
-
-module.exports = {
-  plugins: [
-    new CopyPlugin({
-      patterns: fs.readdirSync(PENUMBRA_DIRECTORY)
-        .filter((fil) => fil.indexOf('.') > 0)
-        .map((fil) => ({
-          from: `${PENUMBRA_DIRECTORY}/${fil}`,
-          to: `${outputPath}/${fil}`,
-        })),
-    }),
-  ]
-```
+- `TransformStream`
+- `WritableStream`
+- `ReadableStream`
+- `CustomEvent`
+- `Proxy`
+- `BigInt` (if using `penumbra.saveZip`)
 
 ## Contributing
 
@@ -616,10 +511,7 @@ pnpm install
 pnpm build
 
 # run tests
-pnpm test:local
-
-# run tests in the browser console
-pnpm test:interactive
+pnpm test
 ```
 
 ## License

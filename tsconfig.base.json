@@ -1,0 +1,37 @@
+{
+  "extends": ["@tsconfig/strictest/tsconfig"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": ".build",
+    "incremental": true,
+
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom", "es2020"],
+    "types": [],
+    "typeRoots": ["node_modules/@types", "src/@types"],
+
+    "allowJs": true,
+    "checkJs": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false, // Prevent worker from getting bundled into main based on a type import
+    "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["dist", ".build", "coverage", "node_modules"]
+}

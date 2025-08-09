@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["*.config.js", "*.config.ts", "scripts/**/*", "fixtures/**/*"],
+  "references": [{ "path": "./tsconfig.web.json" }]
+}

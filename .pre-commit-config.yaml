@@ -1,13 +1,7 @@
 # See http://pre-commit.com for more information
 # See http://pre-commit.com/hooks.html for more hooks
+exclude: (pnpm-lock.yaml|node_modules/|dist/|build/)
 repos:
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    # Use the sha / tag you want to point at, this needs
-    # to stay in sync with the package.json version
-    rev: 'v2.3.2'
-    hooks:
-      - id: prettier
-        args: [--write, --list-different]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
     hooks:
@@ -16,26 +10,32 @@ repos:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-added-large-files
-        exclude: (node_modules/|pnpm-lock.yaml)
       - id: check-json
-        exclude: (.vscode/|tsconfig.json)
+        exclude: (.vscode/|tsconfig.json|tsconfig.*.json)
       - id: detect-private-key
       - id: detect-aws-credentials
         args: [--allow-missing-credentials]
       - id: check-yaml
         files: (yaml$|yml$)
-  - repo: https://github.com/thlorenz/doctoc
-    rev: v1.4.0
-    hooks:
-      - id: doctoc
-        exclude: (.github)
-        args: [--title, "\n## Table of Contents", --maxlevel, '5']
+
   - repo: local
     hooks:
-      - id: eslint
-        name: Eslint
-        description: 'Run static code linting'
-        entry: pnpm run lint --fix
+      - id: lint
+        name: Lint
+        description: 'Code linting'
+        entry: pnpm run lint
         language: node
-        files: \.[t]sx?$ # *.js, *.jsx, *.ts and *.tsx
-        types: [file]
+        types_or: [javascript, jsx, ts, tsx, markdown, json]
+        # Just run global `pnpm run lint` without passing filenames
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: format
+        name: Format
+        description: 'Code formatting'
+        entry: pnpm run format
+        language: node
+        types_or: [javascript, jsx, ts, tsx, markdown, json]
+        # Just run global `pnpm run format` without passing filenames
+        pass_filenames: false
