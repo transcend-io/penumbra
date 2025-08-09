@@ -71,6 +71,9 @@ importers:
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
+      tinybench:
+        specifier: ^4.0.1
+        version: 4.0.1
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
@@ -3469,6 +3472,10 @@ packages:
   timers-browserify@2.0.12:
     resolution: {integrity: sha512-9phl76Cqm6FhSX9Xe1ZUAMLtm1BLkKj2Qd5ApyWkXzsMRaA7dgr81kf4wJmQf/hAvg8EEyJxDo3du/0KlhPiKQ==}
     engines: {node: '>=0.6.0'}
+
+  tinybench@4.0.1:
+    resolution: {integrity: sha512-Nb1srn7dvzkVx0J5h1vq8f48e3TIcbrS7e/UfAI/cDSef/n8yLh4zsAEsFkfpw6auTY+ZaspEvam/xs8nMnotQ==}
+    engines: {node: '>=18.0.0'}
 
   tinyglobby@0.2.14:
     resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
@@ -8154,6 +8161,8 @@ snapshots:
     dependencies:
       setimmediate: 1.0.5
     optional: true
+
+  tinybench@4.0.1: {}
 
   tinyglobby@0.2.14:
     dependencies:

@@ -32,6 +32,6 @@ pnpm exec web-test-runner \
   --playwright \
   --debug \
   --coverage \
+  --files !tests/speed.test.ts \
   --browsers "${BROWSERS[@]}" \
   "$@"
-
