@@ -1,32 +1,21 @@
-// external modules
 import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
-
-// local
-import type { JobID } from './types.js';
-
-// utils
 import { emitJobCompletion, emitJobProgress } from './utils/index.js';
+import type { CreateDecryptionStreamParameters } from './worker-types.js';
 
 /**
  * Starts a decryption stream with an event emitter
- * @param id - The ID number (for arbitrary decryption) or URL to read the encrypted file from (only used for the event emitter)
- * @param readableStream - A readable stream of encrypted data
- * @param contentLength - The content length of the file, in bytes
- * @param key - Decryption key Uint8Array
- * @param iv - Decryption IV Uint8Array
- * @param authTag - Decryption authTag Uint8Array
- * @param ignoreAuthTag - Dangerously bypass authTag validation. Only use this for testing purposes.
+ *
  * @returns A readable stream of decrypted data
  */
-export function startDecryptionStreamWithEmitter(
-  id: JobID,
-  readableStream: ReadableStream,
-  contentLength: number | null,
-  key: Uint8Array,
-  iv: Uint8Array,
-  authTag: Uint8Array,
-  ignoreAuthTag?: boolean,
-): ReadableStream {
+export function startDecryptionStreamWithEmitter({
+  id,
+  readableStream,
+  contentLength,
+  key,
+  iv,
+  authTag,
+  ignoreAuthTag,
+}: CreateDecryptionStreamParameters): ReadableStream {
   // Construct the decryption stream
   const decryptionStream = createDecryptionStream(key, iv, {
     authTag,

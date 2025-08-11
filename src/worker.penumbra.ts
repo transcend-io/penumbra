@@ -18,6 +18,7 @@ import { startEncryptionStreamWithEmitter } from './encrypt.js';
 import { startDecryptionStreamWithEmitter } from './decrypt.js';
 import { setWorkerID } from './worker-id.js';
 import { logger, LogLevel } from './logger.js';
+import type { DecryptParameters, EncryptParameters } from './worker-types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {
@@ -72,15 +73,15 @@ class PenumbraWorker {
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
-  decrypt(
-    key: Uint8Array,
-    iv: Uint8Array,
-    authTag: Uint8Array,
-    jobID: JobID,
-    size: number | null,
-    readablePort: MessagePort,
-    writablePort: MessagePort,
-  ): void {
+  decrypt({
+    key,
+    iv,
+    authTag,
+    jobID,
+    contentLength,
+    readablePort,
+    writablePort,
+  }: DecryptParameters): void {
     try {
       // Stream of encrypted bytes flowing from main thread
       const remoteReadableStream = fromReadablePort(readablePort);
@@ -88,14 +89,14 @@ class PenumbraWorker {
       const remoteWritableStream = fromWritablePort(writablePort);
 
       // Start the decryption stream with an event emitter
-      const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
-        jobID,
-        remoteReadableStream,
-        size,
+      const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter({
+        id: jobID,
+        readableStream: remoteReadableStream,
+        contentLength,
         key,
         iv,
         authTag,
-      );
+      });
 
       /**
        * This is intentionally not awaited because it does not complete until the entire stream has finished.
@@ -127,14 +128,14 @@ class PenumbraWorker {
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
-  encrypt(
-    key: Uint8Array,
-    iv: Uint8Array,
-    jobID: JobID,
-    size: number | null,
-    readablePort: MessagePort,
-    writablePort: MessagePort,
-  ): void {
+  encrypt({
+    key,
+    iv,
+    jobID,
+    contentLength,
+    readablePort,
+    writablePort,
+  }: EncryptParameters): void {
     try {
       logger.debug(`worker.encrypt(): called`, jobID);
       // Stream of plaintext bytes flowing from main thread
@@ -144,13 +145,13 @@ class PenumbraWorker {
       const remoteWritableStream = fromWritablePort(writablePort);
 
       // Start the encryption stream with an event emitter
-      const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
-        jobID,
-        remoteReadableStream,
-        size,
+      const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter({
+        id: jobID,
+        readableStream: remoteReadableStream,
+        contentLength,
         key,
         iv,
-      );
+      });
 
       /**
        * This is intentionally not awaited because it does not complete until the entire stream has finished.

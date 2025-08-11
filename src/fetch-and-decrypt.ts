@@ -51,13 +51,13 @@ export default async function fetchAndDecrypt(
   const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
   // Decrypt the stream
-  return startDecryptionStreamWithEmitter(
-    jobID,
-    response.body,
-    Number(response.headers.get('Content-Length')) || null,
-    bufferKey,
-    bufferIv,
-    bufferAuthTag,
+  return startDecryptionStreamWithEmitter({
+    id: jobID,
+    readableStream: response.body,
+    contentLength: Number(response.headers.get('Content-Length')) || null,
+    key: bufferKey,
+    iv: bufferIv,
+    authTag: bufferAuthTag,
     ignoreAuthTag,
-  );
+  });
 }
