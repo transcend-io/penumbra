@@ -21,8 +21,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: |
-            dist/
+          path: dist/**
 
   lint:
     runs-on: ubuntu-latest
@@ -85,6 +84,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
+          path: dist/
 
       - name: Ensure no changed files
         run: git diff --exit-code
