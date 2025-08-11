@@ -18,6 +18,10 @@ jobs:
         run: |
           pnpm dlx @arethetypeswrong/cli
 
+      # TMP: Ensure no changed files
+      - name: Ensure no changed files
+        run: git diff --exit-code
+
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
@@ -85,6 +89,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
+
+      - name: Ensure no changed files
+        run: git diff --exit-code
 
       - name: Configure npm authentication
         run: |
