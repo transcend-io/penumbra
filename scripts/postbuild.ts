@@ -40,7 +40,12 @@ async function patchWebWorkerUrl(
   }
 }
 
-async function createCtsTypes() {
+/**
+ * vite.config.ts dts() reads package.json "types" field to create a d.cts file.
+ * We then copy that to a d.ts file (ESM) and patch it to use the correct path for the worker.
+ * Switching to something like Rollup might solve this, but realistically we will just deprecate CJS first.
+ */
+async function createDtsTypes() {
   const ctsPath = path.join(process.cwd(), 'dist/main.penumbra.d.cts');
   const dtsPath = path.join(process.cwd(), 'dist/main.penumbra.d.ts');
   await copyFile(ctsPath, dtsPath);
@@ -63,7 +68,7 @@ async function main() {
     const results = await Promise.allSettled([
       patchWebWorkerUrl('dist/main.penumbra.js'),
       patchWebWorkerUrl('dist/main.penumbra.umd.cjs'),
-      createCtsTypes(),
+      createDtsTypes(),
     ]);
 
     const errors = results
