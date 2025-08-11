@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { transferHandlers } from 'comlink';
-import { PenumbraEvent } from '../event';
-import { getWorkerID } from '../worker-id';
+import { PenumbraEvent } from '../event.js';
+import { getWorkerID } from '../worker-id.js';
 import type {
   JobCompletionEmit,
   PenumbraErrorEmit,
   ProgressEmit,
-} from '../types';
+} from '../types.js';
 
 /** TODO: abstract this into a re-usable event registration & serialization helper */
 
@@ -133,6 +133,7 @@ transferHandlers.set('error', {
         ) {
           const descriptor = Object.getOwnPropertyDescriptor(detail, key);
           if (descriptor) {
+            // With extremely strict TypeScript in this repo, this is the only acceptable way of patching the Error.
             Object.defineProperty(event, key, descriptor);
           }
         }

@@ -1,5 +1,3 @@
-import type { RemoteResource, JobID } from './types';
-
 /**
  * Penumbra Worker
  * Fetch and decrypt files in the browser using whatwg streams and web workers.
@@ -12,13 +10,18 @@ import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
-import fetchAndDecrypt from './fetch-and-decrypt';
-import { onPenumbraEvent, emitError } from './utils';
-import './transferHandlers/penumbra-events';
-import { startEncryptionStreamWithEmitter } from './encrypt';
-import { startDecryptionStreamWithEmitter } from './decrypt';
-import { setWorkerID } from './worker-id';
-import { logger, LogLevel } from './logger';
+import type { RemoteResource, JobID } from './types.js';
+import fetchAndDecrypt from './fetch-and-decrypt.js';
+import { onPenumbraEvent, emitError } from './utils/index.js';
+import './transferHandlers/penumbra-events.js';
+import { startEncryptionStreamWithEmitter } from './encrypt.js';
+import { startDecryptionStreamWithEmitter } from './decrypt.js';
+import { setWorkerID } from './worker-id.js';
+import { logger, LogLevel } from './logger.js';
+import type {
+  DecryptionJobParameters,
+  EncryptionJobParameters,
+} from './worker-types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {
@@ -65,20 +68,12 @@ class PenumbraWorker {
 
   /**
    * Streaming decryption of ReadableStreams
-   * @param key - Decryption key
-   * @param iv - Decryption IV
-   * @param authTag - Decryption authTag
-   * @param jobID - Job ID for tracking decryption completion
-   * @param size - File size in bytes
+   * @param decryptionParameters - Decryption parameters
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
   decrypt(
-    key: Uint8Array,
-    iv: Uint8Array,
-    authTag: Uint8Array,
-    jobID: JobID,
-    size: number | null,
+    { key, iv, authTag, jobID, contentLength }: DecryptionJobParameters,
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): void {
@@ -89,14 +84,14 @@ class PenumbraWorker {
       const remoteWritableStream = fromWritablePort(writablePort);
 
       // Start the decryption stream with an event emitter
-      const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter(
+      const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter({
         jobID,
-        remoteReadableStream,
-        size,
+        readableStream: remoteReadableStream,
+        contentLength,
         key,
         iv,
         authTag,
-      );
+      });
 
       /**
        * This is intentionally not awaited because it does not complete until the entire stream has finished.
@@ -121,18 +116,12 @@ class PenumbraWorker {
 
   /**
    * Streaming encryption of ReadableStreams
-   * @param key - Encryption key
-   * @param iv - Encryption IV
-   * @param jobID - ID for tracking encryption completion
-   * @param size - File size in bytes
+   * @param encryptionParameters - Encryption parameters
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
   encrypt(
-    key: Uint8Array,
-    iv: Uint8Array,
-    jobID: JobID,
-    size: number | null,
+    { key, iv, jobID, contentLength }: EncryptionJobParameters,
     readablePort: MessagePort,
     writablePort: MessagePort,
   ): void {
@@ -145,13 +134,13 @@ class PenumbraWorker {
       const remoteWritableStream = fromWritablePort(writablePort);
 
       // Start the encryption stream with an event emitter
-      const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter(
+      const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter({
         jobID,
-        remoteReadableStream,
-        size,
+        readableStream: remoteReadableStream,
+        contentLength,
         key,
         iv,
-      );
+      });
 
       /**
        * This is intentionally not awaited because it does not complete until the entire stream has finished.

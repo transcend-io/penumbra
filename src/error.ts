@@ -1,5 +1,5 @@
-import type { JobID } from './types';
-import { getWorkerID } from './worker-id';
+import type { JobID } from './types.js';
+import { getWorkerID } from './worker-id.js';
 
 /** Penumbra error class */
 export class PenumbraError extends Error {
@@ -28,6 +28,7 @@ export class PenumbraError extends Error {
         if (key !== 'message') {
           const descriptor = Object.getOwnPropertyDescriptor(error, key);
           if (descriptor) {
+            // With extremely strict TypeScript in this repo, this is the only acceptable way of patching the Error.
             Object.defineProperty(this, key, descriptor);
           }
         }

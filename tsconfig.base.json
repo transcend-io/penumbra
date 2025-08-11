@@ -9,11 +9,11 @@
     "outDir": ".build",
     "incremental": true,
 
-    "target": "es2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "target": "es2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
-    "lib": ["esnext", "dom", "es2020"],
+    "lib": ["esnext", "dom", "es2022"],
     "types": [],
     "typeRoots": ["node_modules/@types", "src/@types"],
 

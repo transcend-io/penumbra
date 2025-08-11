@@ -8,8 +8,8 @@
 
 import './transferHandlers/penumbra-events';
 
-export * from './types';
+export * from './types.js';
 
-export { PenumbraSupportLevel } from './enums';
-export { MOCK_API } from './mock';
-export { penumbra } from './api';
+export { PenumbraSupportLevel } from './enums.js';
+export { MOCK_API } from './mock.js';
+export { penumbra } from './api.js';

@@ -1,28 +1,20 @@
-// external modules
 import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
+import type { CreateEncryptionStreamParameters } from './worker-types.js';
 
-// local
-import type { JobID } from './types';
-
-// utils
-import { emitJobProgress, emitJobCompletion } from './utils';
+import { emitJobProgress, emitJobCompletion } from './utils/index.js';
 
 /**
  * Encrypts a readable stream with an event emitter
- * @param id - Job ID
- * @param readableStream - A readable stream of plaintext data
- * @param contentLength - The content length of the file, in bytes
- * @param key - Encryption key Buffer
- * @param iv - Encryption IV Buffer
+ *
  * @returns A readable stream of encrypted data
  */
-export function startEncryptionStreamWithEmitter(
-  id: JobID,
-  readableStream: ReadableStream,
-  contentLength: number | null,
-  key: Uint8Array,
-  iv: Uint8Array,
-): ReadableStream {
+export function startEncryptionStreamWithEmitter({
+  jobID,
+  readableStream,
+  contentLength,
+  key,
+  iv,
+}: CreateEncryptionStreamParameters): ReadableStream {
   // Construct the encryption stream
   const encryptionStream = createEncryptionStream(key, iv, {
     detachAuthTag: true,
@@ -34,11 +26,11 @@ export function startEncryptionStreamWithEmitter(
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
         totalBytesRead += chunk.length;
-        emitJobProgress('encrypt', totalBytesRead, contentLength, id);
+        emitJobProgress('encrypt', totalBytesRead, contentLength, jobID);
       },
       flush: () => {
         const authTag = encryptionStream.getAuthTag();
-        emitJobCompletion('encrypt', id, { key, iv, authTag });
+        emitJobCompletion('encrypt', jobID, { key, iv, authTag });
       },
     }),
   );

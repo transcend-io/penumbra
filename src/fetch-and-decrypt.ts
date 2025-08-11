@@ -1,8 +1,9 @@
 // local
-import type { RemoteResource, JobID } from './types';
-import { startDecryptionStreamWithEmitter } from './decrypt';
+import type { RemoteResource, JobID } from './types.js';
+import { startDecryptionStreamWithEmitter } from './decrypt.js';
 
-import { parseBase64OrUint8Array } from './utils';
+// utils
+import { parseBase64OrUint8Array } from './utils/index.js';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream
@@ -50,13 +51,13 @@ export default async function fetchAndDecrypt(
   const bufferAuthTag = parseBase64OrUint8Array(authTag);
 
   // Decrypt the stream
-  return startDecryptionStreamWithEmitter(
+  return startDecryptionStreamWithEmitter({
     jobID,
-    response.body,
-    Number(response.headers.get('Content-Length')) || null,
-    bufferKey,
-    bufferIv,
-    bufferAuthTag,
+    readableStream: response.body,
+    contentLength: Number(response.headers.get('Content-Length')) || null,
+    key: bufferKey,
+    iv: bufferIv,
+    authTag: bufferAuthTag,
     ignoreAuthTag,
-  );
+  });
 }

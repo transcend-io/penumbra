@@ -2,7 +2,10 @@
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import mime from 'mime';
-import { StreamSaverInstance, type StreamSaverEndpoint } from './streamsaver';
+import {
+  StreamSaverInstance,
+  type StreamSaverEndpoint,
+} from './streamsaver.js';
 
 // Local
 import type {
@@ -16,20 +19,20 @@ import type {
   RemoteResource,
   ZipOptions,
   PenumbraDecryptionInfo,
-} from './types';
-import { PenumbraZipWriter } from './zip';
+} from './types.js';
+import { PenumbraZipWriter } from './zip.js';
 import {
   blobCache,
   isNumber,
   isViewableText,
   parseBase64OrUint8Array,
-} from './utils';
-import { getWorker, syncLogLevelUpdateToAllWorkers } from './workers';
-import { supported } from './ua-support';
-import { preconnect, preload } from './resource-hints';
-import { createChunkSizeTransformStream } from './create-chunk-size-transform-stream';
-import { logger, type LogLevel } from './logger';
-import { generateJobID } from './job-id';
+} from './utils/index.js';
+import { getWorker, syncLogLevelUpdateToAllWorkers } from './workers.js';
+import { supported } from './ua-support.js';
+import { preconnect, preload } from './resource-hints.js';
+import { createChunkSizeTransformStream } from './create-chunk-size-transform-stream.js';
+import { logger, type LogLevel } from './logger.js';
+import { generateJobID } from './job-id.js';
 
 /** Size (and entropy of) generated AES-256 key (in bits) */
 const GENERATED_KEY_RANDOMNESS = 256;
@@ -378,10 +381,12 @@ async function encrypt(
     jobID,
   );
   await remote.encrypt(
-    key,
-    iv,
-    jobID,
-    file.size ?? null,
+    {
+      key,
+      iv,
+      jobID,
+      contentLength: file.size ?? null,
+    },
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );
@@ -466,11 +471,13 @@ async function decrypt(
     jobID,
   );
   await remote.decrypt(
-    key,
-    iv,
-    authTag,
-    jobID,
-    file.size ?? null,
+    {
+      key,
+      iv,
+      authTag,
+      jobID,
+      contentLength: file.size ?? null,
+    },
     transfer(readablePort, [readablePort]),
     transfer(writablePort, [writablePort]),
   );

@@ -6,5 +6,5 @@
  */
 
 // local
-export { default as timeout } from './timeout';
-export { default as hash } from './hash';
+export { default as timeout } from './timeout.js';
+export { default as hash } from './hash.js';

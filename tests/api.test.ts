@@ -5,23 +5,23 @@ import type {
   ProgressEmit,
   RemoteResource,
   ZipProgressEmit,
-} from '../src/types';
+} from '../src/types.js';
 
-import { penumbra } from '../src/index';
-import { PenumbraSupportLevel } from '../src/enums';
-import { LogLevel } from '../src/logger';
+import { penumbra } from '../src/index.js';
+import { PenumbraSupportLevel } from '../src/enums.js';
+import { LogLevel } from '../src/logger.js';
 
-import { hash, timeout } from './helpers';
-import type { TimeoutManager } from './helpers/timeout';
+import { hash, timeout } from './helpers/index.js';
+import type { TimeoutManager } from './helpers/timeout.js';
 
-import type { Fixture } from '../fixtures/types';
+import type { Fixture } from '../fixtures/types.js';
 import {
   FIXTURES_SERVER_URL,
   REMOTE_FIXTURES_URL,
-} from '../fixtures/constants';
+} from '../fixtures/constants.js';
 
 import fixturesJson from '../fixtures/files/fixtures.json' with { type: 'json' };
-import bufferEntireStream from './helpers/buffer-entire-stream';
+import bufferEntireStream from './helpers/buffer-entire-stream.js';
 
 // Penumbra config
 penumbra.setLogLevel(LogLevel.DEBUG);

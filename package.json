@@ -1,15 +1,18 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "8.0.0",
+  "version": "8.0.0-alpha.22",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.penumbra.umd.cjs",
-  "types": "./dist/main.penumbra.d.ts",
+  "types": "./dist/main.penumbra.d.cts",
   "exports": {
-    ".": {
+    "import": {
       "types": "./dist/main.penumbra.d.ts",
-      "import": "./dist/main.penumbra.js",
-      "require": "./dist/main.penumbra.umd.cjs"
+      "default": "./dist/main.penumbra.js"
+    },
+    "require": {
+      "types": "./dist/main.penumbra.d.cts",
+      "default": "./dist/main.penumbra.umd.cjs"
     }
   },
   "directories": {
@@ -23,7 +26,7 @@
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
-    "lint:types": "pnpm tsc --build",
+    "lint:types": "tsc --build",
     "lint:knip": "knip",
     "format": "prettier --write . --log-level warn && doctoc README.md --maxlevel 3",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",
@@ -48,8 +51,7 @@
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
@@ -58,7 +60,8 @@
     "comlink": "^4.4.1",
     "mime": "^4.0.7",
     "remote-web-streams": "^0.2.0",
-    "streamsaver": "^2.0.6"
+    "streamsaver": "^2.0.6",
+    "uint8array-extras": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

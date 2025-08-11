@@ -1,12 +1,12 @@
 // penumbra
-import { PenumbraEvent } from '../event';
+import { PenumbraEvent } from '../event.js';
 import type {
   JobCompletionEmit,
   PenumbraDecryptionInfo,
   JobID,
   PenumbraEventType,
-} from '../types';
-import { logger } from '../logger';
+} from '../types.js';
+import { logger } from '../logger.js';
 
 /**
  * An event emitter for job completion

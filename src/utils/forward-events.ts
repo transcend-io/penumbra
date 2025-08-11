@@ -3,7 +3,7 @@ import type {
   EventForwarder,
   PenumbraErrorEmit,
   ProgressEmit,
-} from '../types';
+} from '../types.js';
 
 const progressEventQueue: ProgressEmit[] = [];
 let progressEventQueueInit = false;

@@ -1,6 +1,6 @@
-import { PenumbraError } from '../error';
-import type { PenumbraErrorEmit, JobID } from '../types';
-import { PenumbraEvent } from '../event';
+import { PenumbraError } from '../error.js';
+import type { PenumbraErrorEmit, JobID } from '../types.js';
+import { PenumbraEvent } from '../event.js';
 
 /**
  * An event emitter for errors and exceptions

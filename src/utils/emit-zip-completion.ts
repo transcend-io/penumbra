@@ -1,6 +1,6 @@
 // penumbra
-import type { PenumbraZipWriter, ZipCompletionEmit } from '../types';
-import { PenumbraEvent } from '../event';
+import type { PenumbraZipWriter, ZipCompletionEmit } from '../types.js';
+import { PenumbraEvent } from '../event.js';
 
 /**
  * An event emitter for zip writer file completion

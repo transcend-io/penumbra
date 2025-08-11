@@ -1,4 +1,4 @@
-import type { JobID } from './job-id';
+import type { JobID } from './job-id.js';
 
 export enum LogLevel {
   DEBUG = 0,

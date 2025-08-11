@@ -1,4 +1,4 @@
-import { PenumbraSupportLevel } from './enums';
+import { PenumbraSupportLevel } from './enums.js';
 
 /** Whether WritableStream and TransformStream are natively supported */
 const advancedStreamsSupported =

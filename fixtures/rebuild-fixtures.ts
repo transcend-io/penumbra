@@ -6,8 +6,8 @@ import { pipeline } from 'node:stream/promises';
 
 import mime from 'mime';
 
-import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants';
-import type { Fixture } from './types';
+import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants.js';
+import type { Fixture } from './types.js';
 
 const thisDirname = import.meta.dirname;
 

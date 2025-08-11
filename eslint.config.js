@@ -17,7 +17,7 @@ const eslintConfig = tseslint.config(
       },
     },
     linterOptions: {
-      reportUnusedDisableDirectives: true,
+      reportUnusedDisableDirectives: 'error',
     },
   },
   {
