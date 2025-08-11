@@ -11,12 +11,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-
-      # TMP: Ensure no changed files
-      - name: Ensure no changed files
-        run: git diff --exit-code
-
-
       - name: Publint
         run: pnpm dlx publint
 
