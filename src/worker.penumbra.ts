@@ -90,7 +90,7 @@ class PenumbraWorker {
 
       // Start the decryption stream with an event emitter
       const decryptionStreamWithEmitter = startDecryptionStreamWithEmitter({
-        id: jobID,
+        jobID,
         readableStream: remoteReadableStream,
         contentLength,
         key,
@@ -146,7 +146,7 @@ class PenumbraWorker {
 
       // Start the encryption stream with an event emitter
       const encryptionStreamWithEmitter = startEncryptionStreamWithEmitter({
-        id: jobID,
+        jobID,
         readableStream: remoteReadableStream,
         contentLength,
         key,

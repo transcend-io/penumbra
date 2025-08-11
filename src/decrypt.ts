@@ -8,7 +8,7 @@ import type { CreateDecryptionStreamParameters } from './worker-types.js';
  * @returns A readable stream of decrypted data
  */
 export function startDecryptionStreamWithEmitter({
-  id,
+  jobID,
   readableStream,
   contentLength,
   key,
@@ -31,10 +31,10 @@ export function startDecryptionStreamWithEmitter({
 
         // Emit a progress update
         totalBytesRead += chunk.length;
-        emitJobProgress('decrypt', totalBytesRead, contentLength, id);
+        emitJobProgress('decrypt', totalBytesRead, contentLength, jobID);
       },
       flush: () => {
-        emitJobCompletion('decrypt', id, { key, iv, authTag });
+        emitJobCompletion('decrypt', jobID, { key, iv, authTag });
       },
     }),
   );

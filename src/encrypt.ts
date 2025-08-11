@@ -9,7 +9,7 @@ import { emitJobProgress, emitJobCompletion } from './utils/index.js';
  * @returns A readable stream of encrypted data
  */
 export function startEncryptionStreamWithEmitter({
-  id,
+  jobID,
   readableStream,
   contentLength,
   key,
@@ -26,11 +26,11 @@ export function startEncryptionStreamWithEmitter({
       transform: (chunk, controller) => {
         controller.enqueue(chunk);
         totalBytesRead += chunk.length;
-        emitJobProgress('encrypt', totalBytesRead, contentLength, id);
+        emitJobProgress('encrypt', totalBytesRead, contentLength, jobID);
       },
       flush: () => {
         const authTag = encryptionStream.getAuthTag();
-        emitJobCompletion('encrypt', id, { key, iv, authTag });
+        emitJobCompletion('encrypt', jobID, { key, iv, authTag });
       },
     }),
   );

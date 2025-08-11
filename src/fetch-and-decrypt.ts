@@ -52,7 +52,7 @@ export default async function fetchAndDecrypt(
 
   // Decrypt the stream
   return startDecryptionStreamWithEmitter({
-    id: jobID,
+    jobID,
     readableStream: response.body,
     contentLength: Number(response.headers.get('Content-Length')) || null,
     key: bufferKey,
