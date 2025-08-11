@@ -11,16 +11,18 @@ jobs:
       - name: Build
         run: pnpm run build
 
+
+      # TMP: Ensure no changed files
+      - name: Ensure no changed files
+        run: git diff --exit-code
+
+
       - name: Publint
         run: pnpm dlx publint
 
       - name: Are the types wrong?
         run: |
-          pnpm dlx @arethetypeswrong/cli
-
-      # TMP: Ensure no changed files
-      - name: Ensure no changed files
-        run: git diff --exit-code
+          pnpm dlx @arethetypeswrong/cli --pack -f json
 
       - uses: actions/upload-artifact@v4
         with:
