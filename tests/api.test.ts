@@ -479,6 +479,7 @@ describe('Penumbra API', () => {
       })),
     );
     await writer.close();
+    await writer.done();
     assert.isTrue(
       progressEventFiredAndWorking,
       'zip progress event fired & emitted expected properties',
