@@ -26,7 +26,7 @@
     "lint": "pnpm run \"/^lint:.*/\"",
     "lint:prettier": "prettier --check . --log-level warn",
     "lint:eslint": "eslint .",
-    "lint:types": "pnpm tsc --build",
+    "lint:types": "tsc --build",
     "lint:knip": "knip",
     "format": "prettier --write . --log-level warn && doctoc README.md --maxlevel 3",
     "rebuild-fixtures": "tsx fixtures/rebuild-fixtures.ts",

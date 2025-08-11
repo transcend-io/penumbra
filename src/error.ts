@@ -28,6 +28,7 @@ export class PenumbraError extends Error {
         if (key !== 'message') {
           const descriptor = Object.getOwnPropertyDescriptor(error, key);
           if (descriptor) {
+            // With extremely strict TypeScript in this repo, this is the only acceptable way of patching the Error.
             Object.defineProperty(this, key, descriptor);
           }
         }

@@ -133,6 +133,7 @@ transferHandlers.set('error', {
         ) {
           const descriptor = Object.getOwnPropertyDescriptor(detail, key);
           if (descriptor) {
+            // With extremely strict TypeScript in this repo, this is the only acceptable way of patching the Error.
             Object.defineProperty(event, key, descriptor);
           }
         }
