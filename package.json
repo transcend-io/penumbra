@@ -60,7 +60,8 @@
     "comlink": "^4.4.1",
     "mime": "^4.0.7",
     "remote-web-streams": "^0.2.0",
-    "streamsaver": "^2.0.6"
+    "streamsaver": "^2.0.6",
+    "uint8array-extras": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
