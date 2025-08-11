@@ -45,8 +45,8 @@ importers:
         specifier: ^10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: ^20.10.3
-        version: 20.19.9
+        specifier: ^22.17.1
+        version: 22.17.1
       '@web/dev-server-esbuild':
         specifier: ^1.0.4
         version: 1.0.4
@@ -67,7 +67,7 @@ importers:
         version: 60.0.0(eslint@9.32.0(jiti@2.5.1))
       knip:
         specifier: ^5.62.0
-        version: 5.62.0(@types/node@20.19.9)(typescript@5.8.3)
+        version: 5.62.0(@types/node@22.17.1)(typescript@5.8.3)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -82,10 +82,10 @@ importers:
         version: 8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.8.3)
       unplugin-dts:
         specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4(esbuild@0.25.8)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9)(jiti@2.5.1)(tsx@4.20.3))(webpack@4.47.0)
+        version: 1.0.0-beta.4(esbuild@0.25.8)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.6(@types/node@22.17.1)(jiti@2.5.1)(tsx@4.20.3))(webpack@4.47.0)
       vite:
         specifier: ^7.0.6
-        version: 7.0.6(@types/node@20.19.9)(jiti@2.5.1)(tsx@4.20.3)
+        version: 7.0.6(@types/node@22.17.1)(jiti@2.5.1)(tsx@4.20.3)
 
 packages:
 
@@ -673,6 +673,9 @@ packages:
 
   '@types/node@20.19.9':
     resolution: {integrity: sha512-cuVNgarYWZqxRJDQHEB58GEONhOK79QVR/qYx4S7kcUObQvUwvFnYxJuuHUKm2aieN9X3yZB4LZsuYNU1Qphsw==}
+
+  '@types/node@22.17.1':
+    resolution: {integrity: sha512-y3tBaz+rjspDTylNjAX37jEC3TETEFGNJL6uQDxwF9/8GLLIjW1rvVHlynyuUKMnMr1Roq8jOv3vkopBjC4/VA==}
 
   '@types/parse5@6.0.3':
     resolution: {integrity: sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==}
@@ -4393,6 +4396,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@22.17.1':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/parse5@6.0.3': {}
 
   '@types/qs@6.14.0': {}
@@ -6710,10 +6717,10 @@ snapshots:
   kind-of@6.0.3:
     optional: true
 
-  knip@5.62.0(@types/node@20.19.9)(typescript@5.8.3):
+  knip@5.62.0(@types/node@22.17.1)(typescript@5.8.3):
     dependencies:
       '@nodelib/fs.walk': 1.2.8
-      '@types/node': 20.19.9
+      '@types/node': 22.17.1
       fast-glob: 3.3.3
       formatly: 0.2.4
       jiti: 2.5.1
@@ -8358,7 +8365,7 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  unplugin-dts@1.0.0-beta.4(esbuild@0.25.8)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9)(jiti@2.5.1)(tsx@4.20.3))(webpack@4.47.0):
+  unplugin-dts@1.0.0-beta.4(esbuild@0.25.8)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.6(@types/node@22.17.1)(jiti@2.5.1)(tsx@4.20.3))(webpack@4.47.0):
     dependencies:
       '@rollup/pluginutils': 5.2.0(rollup@4.45.1)
       '@volar/typescript': 2.4.22
@@ -8372,7 +8379,7 @@ snapshots:
     optionalDependencies:
       esbuild: 0.25.8
       rollup: 4.45.1
-      vite: 7.0.6(@types/node@20.19.9)(jiti@2.5.1)(tsx@4.20.3)
+      vite: 7.0.6(@types/node@22.17.1)(jiti@2.5.1)(tsx@4.20.3)
       webpack: 4.47.0
     transitivePeerDependencies:
       - supports-color
@@ -8449,7 +8456,7 @@ snapshots:
       unist-util-stringify-position: 2.0.3
       vfile-message: 2.0.4
 
-  vite@7.0.6(@types/node@20.19.9)(jiti@2.5.1)(tsx@4.20.3):
+  vite@7.0.6(@types/node@22.17.1)(jiti@2.5.1)(tsx@4.20.3):
     dependencies:
       esbuild: 0.25.8
       fdir: 6.4.6(picomatch@4.0.3)
@@ -8458,7 +8465,7 @@ snapshots:
       rollup: 4.45.1
       tinyglobby: 0.2.14
     optionalDependencies:
-      '@types/node': 20.19.9
+      '@types/node': 22.17.1
       fsevents: 2.3.3
       jiti: 2.5.1
       tsx: 4.20.3
