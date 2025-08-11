@@ -1,6 +1,6 @@
 import type { JobID } from './job-id.js';
 
-interface EncryptionJobBaseParameters {
+export interface EncryptionJobParameters {
   /** Job ID */
   jobID: JobID;
   /** The content length of the file, in bytes */
@@ -11,35 +11,21 @@ interface EncryptionJobBaseParameters {
   iv: Uint8Array;
 }
 
-interface DecryptionJobBaseParameters extends EncryptionJobBaseParameters {
+export interface DecryptionJobParameters extends EncryptionJobParameters {
   /** Authentication tag */
   authTag: Uint8Array;
 }
 
 export interface CreateEncryptionStreamParameters
-  extends EncryptionJobBaseParameters {
+  extends EncryptionJobParameters {
   /** A readable stream of plaintext data */
   readableStream: ReadableStream;
 }
 
 export interface CreateDecryptionStreamParameters
-  extends DecryptionJobBaseParameters {
+  extends DecryptionJobParameters {
   /** A readable stream of encrypted data */
   readableStream: ReadableStream;
   /** Dangerously bypass authTag validation. Only use this for testing purposes. */
   ignoreAuthTag?: boolean;
-}
-
-export interface EncryptParameters extends EncryptionJobBaseParameters {
-  /** Readable port */
-  readablePort: MessagePort;
-  /** Writable port */
-  writablePort: MessagePort;
-}
-
-export interface DecryptParameters extends DecryptionJobBaseParameters {
-  /** Readable port */
-  readablePort: MessagePort;
-  /** Writable port */
-  writablePort: MessagePort;
 }

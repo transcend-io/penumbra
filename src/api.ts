@@ -380,14 +380,16 @@ async function encrypt(
     `penumbra.encrypt(): requesting encryption stream from worker`,
     jobID,
   );
-  await remote.encrypt({
-    key,
-    iv,
-    jobID,
-    contentLength: file.size ?? null,
-    readablePort: transfer(readablePort, [readablePort]),
-    writablePort: transfer(writablePort, [writablePort]),
-  });
+  await remote.encrypt(
+    {
+      key,
+      iv,
+      jobID,
+      contentLength: file.size ?? null,
+    },
+    transfer(readablePort, [readablePort]),
+    transfer(writablePort, [writablePort]),
+  );
 
   // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
   const chunkSizeTransformStream = createChunkSizeTransformStream();
@@ -468,15 +470,17 @@ async function decrypt(
     `penumbra.decrypt(): requesting decryption stream from worker`,
     jobID,
   );
-  await remote.decrypt({
-    key,
-    iv,
-    authTag,
-    jobID,
-    contentLength: file.size ?? null,
-    readablePort: transfer(readablePort, [readablePort]),
-    writablePort: transfer(writablePort, [writablePort]),
-  });
+  await remote.decrypt(
+    {
+      key,
+      iv,
+      authTag,
+      jobID,
+      contentLength: file.size ?? null,
+    },
+    transfer(readablePort, [readablePort]),
+    transfer(writablePort, [writablePort]),
+  );
 
   // Create a `TransformStream` which breaks huge chunks into smaller chunks. Otherwise, it will basically "one-shot" slowly.
   const chunkSizeTransformStream = createChunkSizeTransformStream();

@@ -18,7 +18,10 @@ import { startEncryptionStreamWithEmitter } from './encrypt.js';
 import { startDecryptionStreamWithEmitter } from './decrypt.js';
 import { setWorkerID } from './worker-id.js';
 import { logger, LogLevel } from './logger.js';
-import type { DecryptParameters, EncryptParameters } from './worker-types.js';
+import type {
+  DecryptionJobParameters,
+  EncryptionJobParameters,
+} from './worker-types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {
@@ -65,23 +68,15 @@ class PenumbraWorker {
 
   /**
    * Streaming decryption of ReadableStreams
-   * @param key - Decryption key
-   * @param iv - Decryption IV
-   * @param authTag - Decryption authTag
-   * @param jobID - Job ID for tracking decryption completion
-   * @param size - File size in bytes
+   * @param decryptionParameters - Decryption parameters
    * @param readablePort - Remote Web Stream readable port (for processing encrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting decrypted files)
    */
-  decrypt({
-    key,
-    iv,
-    authTag,
-    jobID,
-    contentLength,
-    readablePort,
-    writablePort,
-  }: DecryptParameters): void {
+  decrypt(
+    { key, iv, authTag, jobID, contentLength }: DecryptionJobParameters,
+    readablePort: MessagePort,
+    writablePort: MessagePort,
+  ): void {
     try {
       // Stream of encrypted bytes flowing from main thread
       const remoteReadableStream = fromReadablePort(readablePort);
@@ -121,21 +116,15 @@ class PenumbraWorker {
 
   /**
    * Streaming encryption of ReadableStreams
-   * @param key - Encryption key
-   * @param iv - Encryption IV
-   * @param jobID - ID for tracking encryption completion
-   * @param size - File size in bytes
+   * @param encryptionParameters - Encryption parameters
    * @param readablePort - Remote Web Stream readable port (for processing unencrypted files)
    * @param writablePort - Remote Web Stream writable port (for emitting encrypted files)
    */
-  encrypt({
-    key,
-    iv,
-    jobID,
-    contentLength,
-    readablePort,
-    writablePort,
-  }: EncryptParameters): void {
+  encrypt(
+    { key, iv, jobID, contentLength }: EncryptionJobParameters,
+    readablePort: MessagePort,
+    writablePort: MessagePort,
+  ): void {
     try {
       logger.debug(`worker.encrypt(): called`, jobID);
       // Stream of plaintext bytes flowing from main thread
