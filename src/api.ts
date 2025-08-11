@@ -2,7 +2,7 @@
 import { transfer } from 'comlink';
 import { RemoteReadableStream, RemoteWritableStream } from 'remote-web-streams';
 import mime from 'mime';
-import { streamSaver } from './streamsaver';
+import { StreamSaverInstance, type StreamSaverEndpoint } from './streamsaver';
 
 // Local
 import type {
@@ -154,7 +154,7 @@ const DEFAULT_MIME_TYPE = 'application/octet-stream';
  * @param options - ZipOptions
  * @returns PenumbraZipWriter class instance
  */
-function saveZip(options?: ZipOptions): PenumbraZipWriter {
+function saveZip(options: ZipOptions): PenumbraZipWriter {
   return new PenumbraZipWriter(options);
 }
 
@@ -166,6 +166,7 @@ function saveZip(options?: ZipOptions): PenumbraZipWriter {
  */
 async function save(
   files: PenumbraFile[],
+  streamSaverEndpoint: StreamSaverEndpoint,
   fileName?: string,
   controller = new AbortController(),
 ): Promise<void> {
@@ -185,6 +186,7 @@ async function save(
       name: fileName ?? `${DEFAULT_FILENAME}.zip`,
       size,
       controller,
+      streamSaverEndpoint,
     });
     await writer.write(...files);
     await writer.close();
@@ -218,6 +220,8 @@ async function save(
   const singleFileName = `${filename}.${extension}`;
 
   const { signal } = controller;
+
+  const { streamSaver } = new StreamSaverInstance(streamSaverEndpoint);
 
   // Write a single readable stream to file
   await file.stream.pipeTo(

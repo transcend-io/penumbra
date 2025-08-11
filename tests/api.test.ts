@@ -443,6 +443,7 @@ describe('Penumbra API', () => {
     let completeEventFired = false;
     const expectedProgressProperties = ['percent', 'written', 'size'];
     const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
       /**
        * @param event - The progress event
        */
@@ -491,7 +492,7 @@ describe('Penumbra API', () => {
     );
 
     const files = await penumbra.get(remoteResource1);
-    await penumbra.save(files);
+    await penumbra.save(files, 'https://streaming.transcend.io/endpoint.html');
   });
 
   it('penumbra.save() should save a zip when multiple files are provided', async () => {
@@ -517,6 +518,7 @@ describe('Penumbra API', () => {
         ...file,
         path: file.path?.split('.enc')[0]?.replaceAll('/encrypted/', '/'),
       })),
+      'https://streaming.transcend.io/endpoint.html',
     );
   });
 

@@ -1,6 +1,6 @@
 import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
-import { streamSaver } from './streamsaver';
+import { StreamSaverInstance } from './streamsaver';
 import type { PenumbraFile, ZipOptions } from './types';
 import {
   isNumber,
@@ -94,18 +94,17 @@ export class PenumbraZipWriter extends EventTarget {
    * @param options - ZipOptions
    * @returns PenumbraZipWriter class instance
    */
-  constructor(options: ZipOptions = {}) {
+  constructor({
+    streamSaverEndpoint,
+    name = 'download',
+    size,
+    controller = new AbortController(),
+    saveBuffer = false,
+    allowDuplicates = true,
+    onProgress,
+    onComplete,
+  }: ZipOptions) {
     super();
-
-    const {
-      name = 'download',
-      size,
-      controller = new AbortController(),
-      saveBuffer = false,
-      allowDuplicates = true,
-      onProgress,
-      onComplete,
-    } = options;
 
     if (isNumber(size)) {
       this.byteSize = size;
@@ -136,6 +135,8 @@ export class PenumbraZipWriter extends EventTarget {
         once: true,
       });
     }
+
+    const { streamSaver } = new StreamSaverInstance(streamSaverEndpoint);
 
     const saveStream = streamSaver.createWriteStream(
       // Append .zip to filename unless it is already present

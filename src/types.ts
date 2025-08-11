@@ -4,6 +4,7 @@ import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
 import type { PenumbraError } from './error';
 
 import type { JobID } from './job-id';
+import type { StreamSaverEndpoint } from './streamsaver';
 
 export { PenumbraZipWriter } from './zip';
 
@@ -222,28 +223,30 @@ export interface EventForwarder {
 }
 
 /** PenumbraZipWriter constructor options */
-export type ZipOptions = Partial<{
+export interface ZipOptions {
+  /** Where to load the the service worker from. This file can be self-hosted */
+  streamSaverEndpoint: StreamSaverEndpoint;
   /** Filename to save to (.zip is optional) */
   name?: string | undefined;
   /** Total size of archive (if known ahead of time, for 'store' compression level) */
   size?: number | undefined;
   /** Abort controller for cancelling zip generation and saving */
-  controller: AbortController;
+  controller?: AbortController;
   /** Allow & auto-rename duplicate files sent to writer. Defaults to on */
-  allowDuplicates: boolean;
+  allowDuplicates?: boolean;
   /** Store a copy of the resultant zip file in-memory for inspection & testing */
-  saveBuffer: boolean;
+  saveBuffer?: boolean;
   /**
    * Auto-registered `'progress'` event listener. This is equivalent to calling
    * `PenumbraZipWriter.addEventListener('progress', onProgress)`
    */
-  onProgress?(event: ZipProgressEmit): void;
+  onProgress?: (event: ZipProgressEmit) => void;
   /**
    * Auto-registered `'complete'` event listener. This is equivalent to calling
    * `PenumbraZipWriter.addEventListener('complete', onComplete)`
    */
-  onComplete?(event: ZipCompletionEmit): void;
-}>;
+  onComplete?: (event: ZipCompletionEmit) => void;
+}
 
 export { type JobID } from './job-id';
 export { type Penumbra as PenumbraAPI } from './api';
