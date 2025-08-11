@@ -36,9 +36,8 @@ const GENERATED_KEY_RANDOMNESS = 256;
 /** Size (and entropy of) generated 12-byte initialization vector (in bits) */
 const IV_RANDOMNESS = 96;
 
+// Track completion of unawaited decryption pipelines for `getDecryptionInfo()`
 const decryptionConfigs = new Map<JobID, PenumbraDecryptionInfo>();
-
-// TODO: this is jank. Earlier implementation had a race condition where the job completion event was firing before this started listening.
 const listener = ({
   detail: { id, decryptionInfo },
 }: JobCompletionEmit): void => {
