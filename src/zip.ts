@@ -89,6 +89,9 @@ export class PenumbraZipWriter extends EventTarget {
   /** Current zip archive size */
   private bytesWritten = 0;
 
+  /** Promise representing completion of the zip stream piping to the file sink */
+  private pipePromise?: Promise<void>;
+
   /**
    * Penumbra zip writer constructor
    * @param options - ZipOptions
@@ -150,13 +153,10 @@ export class PenumbraZipWriter extends EventTarget {
       ReadableStream | null,
     ] = saveBuffer ? readable.tee() : [readable, null];
 
-    /**
-     * This is intentionally not awaited because it does not complete until the entire stream has finished.
-     * We want the main caller to be able to error-handle the function for any errors during stream setup.
-     *
-     * The consumer can handle the event via the streams interface.
-     */
-    zipStream.pipeTo(saveStream, { signal }).catch((error: unknown) => {
+    this.pipePromise = zipStream.pipeTo(saveStream, { signal });
+    // Attach a rejection handler for logging to avoid unhandledrejection, but
+    // keep the original promise's rejection for callers that await done().
+    this.pipePromise.catch((error: unknown) => {
       const finalError =
         error instanceof Error
           ? error
@@ -369,6 +369,16 @@ export class PenumbraZipWriter extends EventTarget {
       this.closed = true;
     }
     return size;
+  }
+
+  /**
+   * Await completion of the underlying zip stream being written to the sink
+   * @returns Promise that resolves when the sink write completes
+   */
+  async done(): Promise<void> {
+    if (this.pipePromise) {
+      await this.pipePromise;
+    }
   }
 
   /** Cancel Penumbra zip writer */
