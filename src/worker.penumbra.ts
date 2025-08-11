@@ -1,5 +1,3 @@
-import type { RemoteResource, JobID } from './types';
-
 /**
  * Penumbra Worker
  * Fetch and decrypt files in the browser using whatwg streams and web workers.
@@ -12,13 +10,14 @@ import { fromWritablePort, fromReadablePort } from 'remote-web-streams';
 import { init } from '@transcend-io/encrypt-web-streams';
 
 // local
-import fetchAndDecrypt from './fetch-and-decrypt';
-import { onPenumbraEvent, emitError } from './utils';
-import './transferHandlers/penumbra-events';
-import { startEncryptionStreamWithEmitter } from './encrypt';
-import { startDecryptionStreamWithEmitter } from './decrypt';
-import { setWorkerID } from './worker-id';
-import { logger, LogLevel } from './logger';
+import type { RemoteResource, JobID } from './types.js';
+import fetchAndDecrypt from './fetch-and-decrypt.js';
+import { onPenumbraEvent, emitError } from './utils/index.js';
+import './transferHandlers/penumbra-events.js';
+import { startEncryptionStreamWithEmitter } from './encrypt.js';
+import { startDecryptionStreamWithEmitter } from './decrypt.js';
+import { setWorkerID } from './worker-id.js';
+import { logger, LogLevel } from './logger.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (self.document) {

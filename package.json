@@ -4,12 +4,15 @@
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.penumbra.umd.cjs",
-  "types": "./dist/main.penumbra.d.ts",
+  "types": "./dist/main.penumbra.d.cts",
   "exports": {
-    ".": {
+    "import": {
       "types": "./dist/main.penumbra.d.ts",
-      "import": "./dist/main.penumbra.js",
-      "require": "./dist/main.penumbra.umd.cjs"
+      "default": "./dist/main.penumbra.js"
+    },
+    "require": {
+      "types": "./dist/main.penumbra.d.cts",
+      "default": "./dist/main.penumbra.umd.cjs"
     }
   },
   "directories": {
@@ -48,8 +51,7 @@
     "url": "https://github.com/transcend-io/penumbra/issues"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {

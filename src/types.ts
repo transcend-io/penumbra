@@ -1,12 +1,12 @@
 // local
 import type { Remote } from 'comlink';
-import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
-import type { PenumbraError } from './error';
+import type { PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra.js';
+import type { PenumbraError } from './error.js';
 
-import type { JobID } from './job-id';
-import type { StreamSaverEndpoint } from './streamsaver';
+import type { JobID } from './job-id.js';
+import type { StreamSaverEndpoint } from './streamsaver.js';
 
-export { PenumbraZipWriter } from './zip';
+export { PenumbraZipWriter } from './zip.js';
 
 /**
  * penumbra.encrypt() encryption options config (buffers or base64-encoded strings)
@@ -248,6 +248,6 @@ export interface ZipOptions {
   onComplete?: (event: ZipCompletionEmit) => void;
 }
 
-export { type JobID } from './job-id';
-export { type Penumbra as PenumbraAPI } from './api';
-export { type PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra';
+export { type JobID } from './job-id.js';
+export { type Penumbra as PenumbraAPI } from './api.js';
+export { type PenumbraWorker as PenumbraWorkerAPI } from './worker.penumbra.js';

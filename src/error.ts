@@ -1,5 +1,5 @@
-import type { JobID } from './types';
-import { getWorkerID } from './worker-id';
+import type { JobID } from './types.js';
+import { getWorkerID } from './worker-id.js';
 
 /** Penumbra error class */
 export class PenumbraError extends Error {

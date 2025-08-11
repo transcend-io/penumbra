@@ -1,6 +1,6 @@
 // local
-import type { RemoteResource } from './types';
-import { getOrigins } from './utils';
+import type { RemoteResource } from './types.js';
+import { getOrigins } from './utils/index.js';
 
 /**
  * Types of rels that a link can take on

@@ -1,9 +1,11 @@
 // external modules
 import { createDecryptionStream } from '@transcend-io/encrypt-web-streams';
 
+// local
+import type { JobID } from './types.js';
+
 // utils
-import type { JobID } from './types';
-import { emitJobCompletion, emitJobProgress } from './utils';
+import { emitJobCompletion, emitJobProgress } from './utils/index.js';
 
 /**
  * Starts a decryption stream with an event emitter

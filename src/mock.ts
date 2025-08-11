@@ -2,10 +2,10 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable @typescript-eslint/no-empty-function */
 // local
-import type { PenumbraAPI } from './types';
-import { PenumbraSupportLevel } from './enums';
-import { PenumbraZipWriter } from './zip';
-import { asJobID } from './job-id';
+import type { PenumbraAPI } from './types.js';
+import { PenumbraSupportLevel } from './enums.js';
+import { PenumbraZipWriter } from './zip.js';
+import { asJobID } from './job-id.js';
 
 const supported = (): PenumbraSupportLevel => -0;
 supported.levels = PenumbraSupportLevel;

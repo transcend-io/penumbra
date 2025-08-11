@@ -1,8 +1,9 @@
 // local
-import type { RemoteResource, JobID } from './types';
-import { startDecryptionStreamWithEmitter } from './decrypt';
+import type { RemoteResource, JobID } from './types.js';
+import { startDecryptionStreamWithEmitter } from './decrypt.js';
 
-import { parseBase64OrUint8Array } from './utils';
+// utils
+import { parseBase64OrUint8Array } from './utils/index.js';
 
 /**
  * Fetches a remote file from a URL, deciphers it (if encrypted), and returns a ReadableStream

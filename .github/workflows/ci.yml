@@ -14,6 +14,10 @@ jobs:
       - name: Publint
         run: pnpm dlx publint
 
+      - name: Are the types wrong?
+        run: |
+          pnpm dlx @arethetypeswrong/cli
+
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact

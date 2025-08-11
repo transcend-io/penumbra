@@ -1,7 +1,7 @@
 // penumbra
-import type { PenumbraEventType, ProgressEmit, JobID } from '../types';
-import { PenumbraEvent } from '../event';
-import { logger } from '../logger';
+import type { PenumbraEventType, ProgressEmit, JobID } from '../types.js';
+import { PenumbraEvent } from '../event.js';
+import { logger } from '../logger.js';
 
 /**
  * An event emitter for the decryption progress

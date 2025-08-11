@@ -1,6 +1,6 @@
 // penumbra
-import type { PenumbraZipWriter, ZipProgressEmit } from '../types';
-import { PenumbraEvent } from '../event';
+import type { PenumbraZipWriter, ZipProgressEmit } from '../types.js';
+import { PenumbraEvent } from '../event.js';
 
 /**
  * An event emitter for PenumbraZipWriter progress

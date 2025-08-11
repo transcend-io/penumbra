@@ -2,10 +2,10 @@
 import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 
 // local
-import type { JobID } from './types';
+import type { JobID } from './types.js';
 
 // utils
-import { emitJobProgress, emitJobCompletion } from './utils';
+import { emitJobProgress, emitJobCompletion } from './utils/index.js';
 
 /**
  * Encrypts a readable stream with an event emitter

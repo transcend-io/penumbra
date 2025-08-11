@@ -6,8 +6,8 @@ import type {
   JobCompletionEmit,
   PenumbraWorker,
   PenumbraWorkerAPI,
-} from './types';
-import { logger, type LogLevel } from './logger';
+} from './types.js';
+import { logger, type LogLevel } from './logger.js';
 
 // //// //
 // Init //

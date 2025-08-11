@@ -1,14 +1,14 @@
 import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
-import { StreamSaverInstance } from './streamsaver';
-import type { PenumbraFile, ZipOptions } from './types';
+import { StreamSaverInstance } from './streamsaver.js';
+import type { PenumbraFile, ZipOptions } from './types.js';
 import {
   isNumber,
   emitZipProgress,
   emitZipCompletion,
   throwOutside,
-} from './utils';
-import { logger } from './logger';
+} from './utils/index.js';
+import { logger } from './logger.js';
 
 /**
  * Sum the total size of all writes

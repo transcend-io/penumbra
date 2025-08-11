@@ -31,6 +31,7 @@ export default defineConfig({
     dts({
       tsconfigPath: './tsconfig.web.json',
       insertTypesEntry: true,
+      copyDtsFiles: true,
     }),
   ],
 });
