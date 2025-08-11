@@ -1,24 +1,15 @@
-/* eslint-disable no-restricted-syntax,no-await-in-loop,no-console */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { readdir, writeFile, mkdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { createCipheriv, createHash } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
 
-import mime from 'mime-types';
+import mime from 'mime';
 
-import type { RemoteResource } from '../src/types';
 import { TEST_ENCRYPTION_IV, TEST_ENCRYPTION_KEY } from './constants';
+import type { Fixture } from './types';
 
-/**
- * A fixture is a remote resource with a checksum of the unencrypted file
- */
-export interface Fixture extends RemoteResource {
-  /** The checksum of the unencrypted file */
-  unencryptedChecksum: string;
-}
-
-const thisDirname = __dirname;
+const thisDirname = import.meta.dirname;
 
 /**
  * Fixtures which are not local, but hosted at https://fixtures-for-conflux-and-penumbra.s3.us-east-1.amazonaws.com
@@ -43,7 +34,7 @@ const REMOTE_FIXTURES: Fixture[] = [
  */
 async function main(): Promise<void> {
   const fixtures: Fixture[] = [];
-  const dir = await readdir(path.join(thisDirname, '/files/unencrypted'));
+  const files = await readdir(path.join(thisDirname, '/files/unencrypted'));
 
   // Clear out encrypted folder
   await rm(path.join(thisDirname, '/files/encrypted'), {
@@ -55,7 +46,7 @@ async function main(): Promise<void> {
   });
 
   // Loop through all fixtures
-  for (const file of dir) {
+  for (const file of files) {
     console.debug(`Generating fixture for ${file} ...`);
     const filePrefix = path.basename(file, path.extname(file));
     const encryptedFilePathname = `/files/encrypted/${file}.enc`;
@@ -98,7 +89,7 @@ async function main(): Promise<void> {
     fixtures.push({
       url: encryptedFilePathname,
       filePrefix,
-      mimetype: mime.lookup(file) || undefined,
+      mimetype: mime.getType(file) ?? undefined,
       size: encryptedFileSize,
       decryptionOptions: {
         key: TEST_ENCRYPTION_KEY,
@@ -119,5 +110,4 @@ async function main(): Promise<void> {
   console.debug('Done!');
 }
 
-main();
-/* eslint-enable no-restricted-syntax,no-await-in-loop,no-console */
+await main();

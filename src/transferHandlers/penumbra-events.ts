@@ -2,6 +2,11 @@
 import { transferHandlers } from 'comlink';
 import { PenumbraEvent } from '../event';
 import { getWorkerID } from '../worker-id';
+import type {
+  JobCompletionEmit,
+  PenumbraErrorEmit,
+  ProgressEmit,
+} from '../types';
 
 /** TODO: abstract this into a re-usable event registration & serialization helper */
 
@@ -11,7 +16,7 @@ transferHandlers.set('penumbra-progress', {
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any): object is CustomEvent {
+  canHandle(object: unknown): object is CustomEvent {
     return (
       object instanceof PenumbraEvent && object.type === 'penumbra-progress'
     );
@@ -21,7 +26,7 @@ transferHandlers.set('penumbra-progress', {
    * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
-  serialize(object: any) {
+  serialize(object: ProgressEmit) {
     return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
@@ -29,7 +34,7 @@ transferHandlers.set('penumbra-progress', {
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
-  deserialize(detail: any) {
+  deserialize(detail: CustomEventInit) {
     return new PenumbraEvent('penumbra-progress', { detail });
   },
 });
@@ -40,7 +45,7 @@ transferHandlers.set('penumbra-complete', {
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any): object is CustomEvent {
+  canHandle(object: unknown): object is CustomEvent {
     return (
       object instanceof PenumbraEvent && object.type === 'penumbra-complete'
     );
@@ -50,7 +55,7 @@ transferHandlers.set('penumbra-complete', {
    * @param object - Reference to the penumbra-complete PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
-  serialize(object: any) {
+  serialize(object: JobCompletionEmit) {
     return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
@@ -58,7 +63,7 @@ transferHandlers.set('penumbra-complete', {
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-complete PenumbraEvent
    */
-  deserialize(detail: any) {
+  deserialize(detail: unknown) {
     return new PenumbraEvent('penumbra-complete', {
       detail,
     });
@@ -71,7 +76,7 @@ transferHandlers.set('penumbra-error', {
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any): object is CustomEvent {
+  canHandle(object: unknown): object is CustomEvent {
     return object instanceof PenumbraEvent && object.type === 'penumbra-error';
   },
   /**
@@ -79,7 +84,8 @@ transferHandlers.set('penumbra-error', {
    * @param object - Reference to the penumbra-progress PenumbraEvent
    * @returns [Clonables (structured-clone-compatible objects), [Transferables]]
    */
-  serialize(object: any) {
+  serialize(object: PenumbraErrorEmit) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
     return [{ ...object.detail, worker: getWorkerID() }, []];
   },
   /**
@@ -87,7 +93,7 @@ transferHandlers.set('penumbra-error', {
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
-  deserialize(detail: any) {
+  deserialize(detail: unknown) {
     return new PenumbraEvent('penumbra-error', { detail });
   },
 });
@@ -98,7 +104,7 @@ transferHandlers.set('error', {
    * @param object - Object being passed through Comlink.transfer()
    * @returns true if the object is a penumbra-progress PenumbraEvent
    */
-  canHandle(object: any): object is ErrorEvent {
+  canHandle(object: unknown): object is ErrorEvent {
     return object instanceof ErrorEvent && object.type === 'error';
   },
   /**
@@ -114,19 +120,23 @@ transferHandlers.set('error', {
    * @param detail - Structured-clone data from serialize()
    * @returns A re-created penumbra-progress PenumbraEvent
    */
-  deserialize(detail: any) {
+  deserialize(detail: ErrorEventInit) {
     const event = new ErrorEvent('error', detail);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (detail) {
-      Object.keys(detail).forEach((key) => {
+      for (const key of Object.keys(detail)) {
         const descriptor = Object.getOwnPropertyDescriptor(event, key);
         if (
           key !== 'isTrusted' &&
           descriptor &&
           (descriptor.configurable || 'set' in descriptor)
         ) {
-          (event as any)[key] = detail[key];
+          const descriptor = Object.getOwnPropertyDescriptor(detail, key);
+          if (descriptor) {
+            Object.defineProperty(event, key, descriptor);
+          }
         }
-      });
+      }
     }
     return event;
   },

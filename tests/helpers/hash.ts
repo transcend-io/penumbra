@@ -6,10 +6,13 @@
  */
 export default async function hash(
   algorithm: string,
-  ab: ArrayBuffer | Promise<ArrayBuffer>,
+  ab: Uint8Array | ArrayBuffer | Promise<ArrayBuffer>,
 ): Promise<string> {
   const digest = new Uint8Array(
     await crypto.subtle.digest(algorithm, await ab),
   );
-  return digest.reduce((memo, i) => memo + i.toString(16).padStart(2, '0'), '');
+  return digest.reduce(
+    (memo, index) => memo + index.toString(16).padStart(2, '0'),
+    '',
+  );
 }

@@ -1,0 +1,43 @@
+diff --git a/StreamSaver.js b/StreamSaver.js
+index f0ba6d9f573caafb22ecfcfffbcd42e87a32507b..5ce56cf61a4fccffddac29e2d4c1b421caade2c6 100644
+--- a/StreamSaver.js
++++ b/StreamSaver.js
+@@ -2,15 +2,6 @@
+ 
+ /* global chrome location ReadableStream define MessageChannel TransformStream */
+ 
+-;((name, definition) => {
+-  typeof module !== 'undefined'
+-    ? module.exports = definition()
+-    : typeof define === 'function' && typeof define.amd === 'object'
+-      ? define(definition)
+-      : this[name] = definition()
+-})('streamSaver', () => {
+-  'use strict'
+-
+   const global = typeof window === 'object' ? window : this
+   if (!global.HTMLElement) console.warn('streamsaver is meant to run on browsers main thread')
+ 
+@@ -313,5 +304,4 @@
+     }, opts.writableStrategy)
+   }
+ 
+-  return streamSaver
+-})
++  export default streamSaver;
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index d5b506d3c127a85812908778776d907ea44c9a59..dea9f7cc3a3d8d9e4ad7123590dcd1ca71ce55e8 100644
+--- a/package.json
++++ b/package.json
+@@ -29,5 +29,9 @@
+         "type": "github",
+         "url": "https://github.com/sponsors/jimmywarting"
+       }
+-    ]
++    ],
++    "type": "module",
++    "exports": {
++        "./*.js": "./*.js"
++    }
+ }

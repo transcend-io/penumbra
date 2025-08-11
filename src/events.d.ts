@@ -1,10 +1,5 @@
 // penumbra
-import {
-  JobCompletionEmit,
-  PenumbraErrorEmit,
-  PenumbraReady,
-  ProgressEmit,
-} from './types';
+import { JobCompletionEmit, PenumbraErrorEmit, ProgressEmit } from './types';
 
 declare global {
   /**
@@ -17,7 +12,5 @@ declare global {
     'penumbra-complete': JobCompletionEmit;
     /** Emit whenever the Penumbra worker encounters any errors */
     'penumbra-error': PenumbraErrorEmit;
-    /** Emit once Penumbra is ready to be used */
-    'penumbra-ready': PenumbraReady;
   }
 }

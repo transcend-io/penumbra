@@ -1,24 +1,9 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-    "rootDir": ".",
-    "incremental": true,
-    "target": "es2020",
-    "module": "commonjs",
-    "lib": ["esnext", "dom", "es2020"],
-    "allowJs": false,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "outDir": "ts-build",
-    "composite": true,
-    "moduleResolution": "node",
-    "strict": true,
-    "typeRoots": ["node_modules/@types", "src/@types"]
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "files": [],
+  "extends": "./tsconfig.base.json",
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.web.json" },
+    { "path": "./tsconfig.tests.json" }
+  ]
 }
