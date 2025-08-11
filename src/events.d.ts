@@ -1,5 +1,5 @@
 // penumbra
-import { JobCompletionEmit, PenumbraErrorEmit, ProgressEmit } from './types';
+import { JobCompletionEmit, PenumbraErrorEmit, ProgressEmit } from './types.js';
 
 declare global {
   /**
