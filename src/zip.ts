@@ -368,17 +368,12 @@ export class PenumbraZipWriter extends EventTarget {
       await this.writer.close();
       this.closed = true;
     }
+    /**
+     * Await completion of the underlying zip stream being written to the sink
+     * @returns Promise that resolves when the sink write completes
+     */
+    await this.pipePromise;
     return size;
-  }
-
-  /**
-   * Await completion of the underlying zip stream being written to the sink
-   * @returns Promise that resolves when the sink write completes
-   */
-  async done(): Promise<void> {
-    if (this.pipePromise) {
-      await this.pipePromise;
-    }
   }
 
   /** Cancel Penumbra zip writer */

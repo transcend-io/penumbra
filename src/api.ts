@@ -192,7 +192,6 @@ async function save(
     });
     await writer.write(...files);
     await writer.close();
-    await writer.done();
     return;
   }
 
