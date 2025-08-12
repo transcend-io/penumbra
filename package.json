@@ -15,9 +15,6 @@
       "default": "./dist/main.penumbra.umd.cjs"
     }
   },
-  "directories": {
-    "example": "example"
-  },
   "scripts": {
     "build": "vite build",
     "postbuild": "scripts/postbuild.ts",
