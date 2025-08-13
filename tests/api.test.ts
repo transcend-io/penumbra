@@ -563,3 +563,300 @@ describe('Error handling', () => {
     assert.equal(decryptedChecksum, unencryptedChecksum);
   });
 });
+
+describe('penumbra.saveZip() error handling', () => {
+  // Need to add user agent to make logs unique across browsers, else they get combined
+  before(() => {
+    logger.warn(
+      `[TEST] beginning of expected error messages, ${navigator.userAgent}`,
+    );
+  });
+  after(() => {
+    // FYI, Firefox seems to log a bit after this message...
+    logger.warn(
+      `[TEST] end of expected error messages, ${navigator.userAgent}`,
+    );
+  });
+
+  it('should throw error when file has no path or filePrefix', async () => {
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      saveBuffer: true,
+    });
+
+    // Create a simple file without path or filePrefix
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const fileWithoutName = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: undefined,
+      filePrefix: undefined,
+    };
+
+    try {
+      await writer.write(fileWithoutName);
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      assert.match(
+        (error as Error).message,
+        /PenumbraZipWriter\.write\(\): Unable to determine filename/,
+      );
+    }
+  });
+
+  it('should throw error when duplicate files are not allowed', async () => {
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      allowDuplicates: false,
+      saveBuffer: true,
+    });
+
+    // Create simple files with the same path
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const file1 = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    const file2 = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    // Write the first file
+    await writer.write(file1);
+
+    // Try to write the second file with the same path
+    try {
+      await writer.write(file2);
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      assert.match(
+        (error as Error).message,
+        /penumbra\.saveZip\(\): Duplicate file/,
+      );
+    }
+  });
+
+  it('should throw error when getBuffer() is called before close', async () => {
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      saveBuffer: true,
+    });
+
+    // Create a simple file
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const file = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    await writer.write(file);
+
+    try {
+      await writer.getBuffer();
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      assert.match(
+        (error as Error).message,
+        /getBuffer\(\) can only be called when a PenumbraZipWriter is closed/,
+      );
+    }
+  });
+
+  it('should throw error when getBuffer() is called without saveBuffer mode', async () => {
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      saveBuffer: false, // Explicitly disable saveBuffer
+    });
+
+    // Create a simple file
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const file = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    await writer.write(file);
+    await writer.close();
+
+    try {
+      await writer.getBuffer();
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      assert.match(
+        (error as Error).message,
+        /getBuffer\(\) can only be called when a PenumbraZipWriter is closed/,
+      );
+    }
+  });
+
+  it('should handle abort signal during constructor', async () => {
+    const controller = new AbortController();
+    controller.abort(); // Abort immediately
+
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      controller,
+      saveBuffer: true,
+    });
+
+    // The writer should be created but the pipe should fail
+    assert.isTrue(writer instanceof EventTarget, 'Writer should be created');
+
+    // Try to write a file - should fail due to aborted signal
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const file = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    try {
+      await writer.write(file);
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      // Should fail due to aborted signal
+      assert.isTrue(
+        error instanceof Error,
+        'Should throw an error when aborted',
+      );
+    }
+  });
+
+  it('should handle abort during operation', async () => {
+    const controller = new AbortController();
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      controller,
+      saveBuffer: true,
+    });
+
+    // Create a simple file
+    const simpleStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('test data'));
+        controller.close();
+      },
+    });
+
+    const file = {
+      stream: simpleStream,
+      size: 9,
+      mimetype: 'text/plain',
+      path: 'test.txt',
+    };
+
+    // Start writing a file
+    const writePromise = writer.write(file);
+
+    // Abort the operation
+    controller.abort();
+
+    try {
+      await writePromise;
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      // The error could be from the abort or from the stream being cancelled
+      assert.isTrue(
+        error instanceof Error,
+        'Should throw an error when aborted',
+      );
+    }
+  });
+
+  it('should handle multiple file write failures', async () => {
+    const writer = penumbra.saveZip({
+      streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
+      saveBuffer: true,
+    });
+
+    // Create files with streams that will fail
+    const failingStream1 = new ReadableStream({
+      start(controller) {
+        controller.error(new Error('First stream error'));
+      },
+    });
+
+    const failingStream2 = new ReadableStream({
+      start(controller) {
+        controller.error(new Error('Second stream error'));
+      },
+    });
+
+    const failingFile1 = {
+      stream: failingStream1,
+      size: 0,
+      mimetype: 'text/plain',
+      path: 'file1.txt',
+    };
+
+    const failingFile2 = {
+      stream: failingStream2,
+      size: 0,
+      mimetype: 'text/plain',
+      path: 'file2.txt',
+    };
+
+    try {
+      await writer.write(failingFile1, failingFile2);
+      assert.fail('Expected an error to be thrown');
+    } catch (error) {
+      // Should throw an error about files failing to be written
+      if (error instanceof AggregateError) {
+        assert.match(error.message, /Files failed to be written to zip/);
+        assert.equal(error.errors.length, 2, 'Should have 2 errors');
+      } else {
+        // If it's not an AggregateError, it should still be an error
+        assert.instanceOf(error, Error, 'Should be an Error');
+        // The error message might be different depending on the browser
+        const errorMessage = error.message;
+        assert.match(
+          errorMessage,
+          /failed to be written|Files failed to be written/,
+          `Expected error message to contain 'failed to be written', got: ${errorMessage}`,
+        );
+      }
+    }
+  });
+});

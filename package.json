@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/penumbra",
-  "version": "8.0.1",
+  "version": "8.1.0",
   "description": "Crypto streams for the browser.",
   "type": "module",
   "main": "./dist/main.penumbra.umd.cjs",
@@ -14,9 +14,6 @@
       "types": "./dist/main.penumbra.d.cts",
       "default": "./dist/main.penumbra.umd.cjs"
     }
-  },
-  "directories": {
-    "example": "example"
   },
   "scripts": {
     "build": "vite build",
@@ -55,7 +52,7 @@
   ],
   "homepage": "https://github.com/transcend-io/penumbra#readme",
   "dependencies": {
-    "@transcend-io/conflux": "5.0.0",
+    "@transcend-io/conflux": "6.0.1",
     "@transcend-io/encrypt-web-streams": "1.0.3",
     "comlink": "^4.4.1",
     "mime": "^4.0.7",

@@ -6,7 +6,6 @@ export { default as getOrigins } from './get-origins.js';
 export { default as blobCache } from './blob-cache.js';
 export { default as isViewableText } from './is-viewable-text.js';
 export { default as isNumber } from './is-number.js';
-export { default as throwOutside } from './throw-outside.js';
 export { default as parseBase64OrUint8Array } from './parse-base64-or-uint8array.js';
 export { default as emitError } from './emit-error.js';
 export { default as onPenumbraEvent } from './forward-events.js';

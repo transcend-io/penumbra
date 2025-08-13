@@ -2,12 +2,7 @@ import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
 import { StreamSaverInstance } from './streamsaver.js';
 import type { PenumbraFile, ZipOptions } from './types.js';
-import {
-  isNumber,
-  emitZipProgress,
-  emitZipCompletion,
-  throwOutside,
-} from './utils/index.js';
+import { isNumber, emitZipProgress, emitZipCompletion } from './utils/index.js';
 import { logger } from './logger.js';
 
 /**
@@ -34,11 +29,9 @@ const sumWrites = async (writes: Promise<number>[]): Promise<number> => {
       logger.error(error.reason, null);
     }
     // Throw AggregateError to console
-    throwOutside(
-      new AggregateError(
-        errors,
-        `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
-      ),
+    throw new AggregateError(
+      errors,
+      `File${errors.length > 1 ? 's' : ''} failed to be written to zip`,
     );
   }
 
@@ -65,8 +58,11 @@ export class PenumbraZipWriter extends EventTarget {
   /** Save complete buffer */
   private saveBuffer = false;
 
+  /** Promise representing completion of the zip stream piping to the file sink */
+  private pipePromise?: Promise<void>;
+
   /** Zip buffer used for testing */
-  private zipBuffer: Promise<ArrayBuffer> | undefined;
+  private zipBufferPromise: Promise<ArrayBuffer> | undefined;
 
   /** Allow & auto-rename duplicate files sent to writer */
   private allowDuplicates: boolean;
@@ -150,27 +146,40 @@ export class PenumbraZipWriter extends EventTarget {
       ReadableStream | null,
     ] = saveBuffer ? readable.tee() : [readable, null];
 
-    /**
-     * This is intentionally not awaited because it does not complete until the entire stream has finished.
-     * We want the main caller to be able to error-handle the function for any errors during stream setup.
-     *
-     * The consumer can handle the event via the streams interface.
-     */
-    zipStream.pipeTo(saveStream, { signal }).catch((error: unknown) => {
-      const finalError =
+    this.pipePromise = zipStream.pipeTo(saveStream, { signal });
+    // Attach a rejection handler for logging to avoid unhandledrejection, but
+    // keep the original promise's rejection for callers that await `done()`.
+    // This is intentionally not chained to the `zipStream.pipeTo()` promise, so that `this.pipePromise` throws as normal.
+    this.pipePromise.catch((error: unknown) => {
+      const asError =
         error instanceof Error
           ? error
           : typeof error === 'string'
             ? new Error(error)
             : new Error('Unknown error');
-      finalError.message = `penumbra.saveZip() failed to create zip: ${finalError.message}`;
+      const finalError = new Error(
+        `penumbra.saveZip() failed to create zip: ${asError.message}`,
+      );
       logger.error(finalError, null);
     });
 
     // Buffer zip stream for debug & testing
     if (saveBuffer && bufferedZipStream) {
       this.saveBuffer = saveBuffer;
-      this.zipBuffer = new Response(bufferedZipStream).arrayBuffer();
+      this.zipBufferPromise = new Response(bufferedZipStream).arrayBuffer();
+      // Like `this.pipePromise.catch()`, ditto
+      this.zipBufferPromise.catch((error: unknown) => {
+        const asError =
+          error instanceof Error
+            ? error
+            : typeof error === 'string'
+              ? new Error(error)
+              : new Error('Unknown error');
+        const finalError = new Error(
+          `penumbra.saveZip() failed to buffer zip: ${asError.message}`,
+        );
+        logger.error(finalError, null);
+      });
     }
   }
 
@@ -254,7 +263,7 @@ export class PenumbraZipWriter extends EventTarget {
                 null,
               );
             } else {
-              zip.abort();
+              zip.abort(new Error(warning));
               throw new Error(warning);
             }
           }
@@ -315,16 +324,19 @@ export class PenumbraZipWriter extends EventTarget {
                 controller.close();
                 reader.releaseLock();
               },
-              cancel: (reason) => {
-                const error =
+              cancel: (reason: unknown) => {
+                const asError =
                   reason instanceof Error
                     ? reason
                     : typeof reason === 'string'
                       ? new Error(reason)
                       : new Error('Unknown error');
 
-                error.message = `penumbra.saveZip() stream was cancelled: ${error.message}`;
-                reject(error);
+                const finalError = new Error(
+                  `penumbra.saveZip(): stream was cancelled: ${asError.message}`,
+                );
+                logger.error(finalError, null);
+                reject(finalError);
               },
             });
 
@@ -338,14 +350,17 @@ export class PenumbraZipWriter extends EventTarget {
                 stream: () => completionTrackerStream,
               })
               .catch((error: unknown) => {
-                const finalError =
+                const asError =
                   error instanceof Error
                     ? error
                     : typeof error === 'string'
                       ? new Error(error)
                       : new Error('Unknown error');
 
-                finalError.message = `penumbra.saveZip() failed to write file ${filePath}: ${finalError.message}`;
+                const finalError = new Error(
+                  `penumbra.saveZip(): failed to write file ${filePath}: ${asError.message}`,
+                );
+                logger.error(finalError, null);
                 reject(finalError);
               });
           });
@@ -365,16 +380,49 @@ export class PenumbraZipWriter extends EventTarget {
   async close(): Promise<number> {
     const size = await this.getSize();
     if (!this.closed) {
-      await this.writer.close();
-      this.closed = true;
+      try {
+        await this.writer.close();
+      } catch (error: unknown) {
+        const asError =
+          error instanceof Error
+            ? error
+            : typeof error === 'string'
+              ? new Error(error)
+              : new Error('Unknown error');
+        const finalError = new Error(
+          `penumbra.saveZip(): failed to close zip writer: ${asError.message}`,
+        );
+        logger.error(finalError, null);
+        throw finalError;
+      }
+    }
+
+    try {
+      /**
+       * Await completion of the underlying zip stream being written to the sink
+       * @returns Promise that resolves when the sink write completes
+       */
+      await this.pipePromise;
+    } catch (error: unknown) {
+      const asError =
+        error instanceof Error
+          ? error
+          : typeof error === 'string'
+            ? new Error(error)
+            : new Error('Unknown error');
+      const finalError = new Error(
+        `penumbra.saveZip(): finished writing zip, but failed to download: ${asError.message}`,
+      );
+      logger.error(finalError, null);
+      throw finalError;
     }
     return size;
   }
 
   /** Cancel Penumbra zip writer */
-  abort(): void {
+  abort(reason?: Error): void {
     if (!this.controller.signal.aborted) {
-      this.controller.abort();
+      this.controller.abort(reason);
     }
   }
 
@@ -388,12 +436,12 @@ export class PenumbraZipWriter extends EventTarget {
         'getBuffer() can only be called when a PenumbraZipWriter is closed',
       );
     }
-    if (!this.saveBuffer || !this.zipBuffer) {
+    if (!this.saveBuffer || !this.zipBufferPromise) {
       throw new Error(
         'getBuffer() can only be called on a PenumbraZipWriter in buffered mode, e.g. createZip({ saveBuffer: true })',
       );
     }
-    return this.zipBuffer;
+    return this.zipBufferPromise;
   }
 
   /**
