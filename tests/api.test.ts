@@ -565,11 +565,17 @@ describe('Error handling', () => {
 });
 
 describe('penumbra.saveZip() error handling', () => {
+  // Need to add user agent to make logs unique across browsers, else they get combined
   before(() => {
-    logger.warn('[TEST] beginning of expected error messages');
+    logger.warn(
+      `[TEST] beginning of expected error messages, ${navigator.userAgent}`,
+    );
   });
   after(() => {
-    logger.warn('[TEST] end of expected error messages');
+    // FYI, Firefox seems to log a bit after this message...
+    logger.warn(
+      `[TEST] end of expected error messages, ${navigator.userAgent}`,
+    );
   });
 
   it('should throw error when file has no path or filePrefix', async () => {
