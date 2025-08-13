@@ -647,8 +647,6 @@ describe('penumbra.saveZip() error handling', () => {
         /penumbra\.saveZip\(\): Duplicate file/,
       );
     }
-
-    await writer.pipePromise;
   });
 
   it('should throw error when getBuffer() is called before close', async () => {
@@ -801,7 +799,7 @@ describe('penumbra.saveZip() error handling', () => {
     }
   });
 
-  it.only('should handle multiple file write failures', async () => {
+  it('should handle multiple file write failures', async () => {
     const writer = penumbra.saveZip({
       streamSaverEndpoint: 'https://streaming.transcend.io/endpoint.html',
       saveBuffer: true,

@@ -58,6 +58,9 @@ export class PenumbraZipWriter extends EventTarget {
   /** Save complete buffer */
   private saveBuffer = false;
 
+  /** Promise representing completion of the zip stream piping to the file sink */
+  private pipePromise?: Promise<void>;
+
   /** Zip buffer used for testing */
   private zipBufferPromise: Promise<ArrayBuffer> | undefined;
 
@@ -81,9 +84,6 @@ export class PenumbraZipWriter extends EventTarget {
 
   /** Current zip archive size */
   private bytesWritten = 0;
-
-  /** Promise representing completion of the zip stream piping to the file sink */
-  public pipePromise?: Promise<void>;
 
   /**
    * Penumbra zip writer constructor
@@ -112,7 +112,6 @@ export class PenumbraZipWriter extends EventTarget {
       'abort',
       () => {
         this.close().catch((error: unknown) => {
-          logger.error(error, null);
           logger.error(
             `Failed to close zip writer: ${error instanceof Error ? error.message : String(error)}`,
             null,
@@ -168,6 +167,7 @@ export class PenumbraZipWriter extends EventTarget {
     if (saveBuffer && bufferedZipStream) {
       this.saveBuffer = saveBuffer;
       this.zipBufferPromise = new Response(bufferedZipStream).arrayBuffer();
+      // Like `this.pipePromise.catch()`, ditto
       this.zipBufferPromise.catch((error: unknown) => {
         const asError =
           error instanceof Error
