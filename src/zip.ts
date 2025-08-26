@@ -1,7 +1,7 @@
 import { Writer } from '@transcend-io/conflux';
 import mime from 'mime';
 import { StreamSaverInstance } from './streamsaver.js';
-import type { PenumbraFile, ZipOptions } from './types.js';
+import type { PenumbraFile, RemoteResource, ZipOptions } from './types.js';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils/index.js';
 import { logger } from './logger.js';
 import type { JobID } from './types.js';
@@ -223,7 +223,11 @@ export class PenumbraZipWriter extends EventTarget {
     }
 
     logger.debug(
-      `penumbra.saveZip(): writing ${files.length.toString()} files with total size: ${totalWriteSize?.toString() ?? 'unknown'}. Files: ${JSON.stringify(files)}`,
+      `penumbra.saveZip(): writing ${files.length.toString()} files with total size: ${totalWriteSize?.toString() ?? 'unknown'}. Files: ${JSON.stringify(
+        files.map((file) =>
+          logger.redactRemoteResource(file as unknown as RemoteResource),
+        ),
+      )}`,
       this.jobID,
     );
 
