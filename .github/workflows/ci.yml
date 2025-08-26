@@ -52,7 +52,7 @@ jobs:
       - uses: ./.github/commands/dependencies/install_deps
 
       - name: Install Playwright browsers
-        run: pnpm dlx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Run tests
         uses: nick-fields/retry@v2

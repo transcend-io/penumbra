@@ -44,6 +44,7 @@ class PenumbraWorker {
     jobID: JobID,
   ): Promise<void> {
     try {
+      logger.debug(`worker.get(): called`, jobID);
       const remoteStream = fromWritablePort(writablePort);
       const localStream = await fetchAndDecrypt(jobID, resource);
 
@@ -54,9 +55,14 @@ class PenumbraWorker {
        * It only emits an error, but does not have an impact on control flow.
        * The consumer can handle the event via the streams interface (preferred), or via this event emitter.
        */
-      localStream.pipeTo(remoteStream).catch((error: unknown) => {
-        emitError(error, jobID);
-      });
+      localStream
+        .pipeTo(remoteStream)
+        .catch((error: unknown) => {
+          emitError(error, jobID);
+        })
+        .finally(() => {
+          logger.debug(`worker.get(): completed`, jobID);
+        });
     } catch (error: unknown) {
       /**
        * For any errors that happened in the control flow (i.e., not a stream error), throw out to the main thread caller to catch.
@@ -78,6 +84,7 @@ class PenumbraWorker {
     writablePort: MessagePort,
   ): void {
     try {
+      logger.debug(`worker.decrypt(): called`, jobID);
       // Stream of encrypted bytes flowing from main thread
       const remoteReadableStream = fromReadablePort(readablePort);
       // The destination to send encrypted bytes to the main thread
@@ -104,6 +111,9 @@ class PenumbraWorker {
         .pipeTo(remoteWritableStream)
         .catch((error: unknown) => {
           emitError(error, jobID);
+        })
+        .finally(() => {
+          logger.debug(`worker.decrypt(): completed`, jobID);
         });
     } catch (error) {
       /**
@@ -153,6 +163,9 @@ class PenumbraWorker {
         .pipeTo(remoteWritableStream)
         .catch((error: unknown) => {
           emitError(error, jobID);
+        })
+        .finally(() => {
+          logger.debug(`worker.encrypt(): completed`, jobID);
         });
     } catch (error) {
       /**

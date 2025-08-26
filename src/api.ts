@@ -98,7 +98,14 @@ async function getJob(resource: RemoteResource): Promise<PenumbraFileWithID> {
     jobID,
   );
   const remote = await new RemoteAPI();
-  logger.debug(`penumbra.get(): requesting file from worker`, jobID);
+
+  logger.debug(
+    `penumbra.get(): requesting remote resource from worker: ${JSON.stringify(
+      logger.redactRemoteResource(resource),
+    )}`,
+    jobID,
+  );
+
   await remote.get(transfer(writablePort, [writablePort]), resource, jobID);
   return { ...readable, id: jobID };
 }
@@ -157,7 +164,15 @@ const DEFAULT_MIME_TYPE = 'application/octet-stream';
  * @returns PenumbraZipWriter class instance
  */
 function saveZip(options: ZipOptions): PenumbraZipWriter {
-  return new PenumbraZipWriter(options);
+  // Generate an ID for this job run
+  const jobID = generateJobID();
+  logger.debug(
+    `penumbra.saveZip(): creating zip writer with options: ${JSON.stringify(
+      options,
+    )}`,
+    jobID,
+  );
+  return new PenumbraZipWriter(options, jobID);
 }
 
 /**
