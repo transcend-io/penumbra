@@ -2,6 +2,7 @@ import { createEncryptionStream } from '@transcend-io/encrypt-web-streams';
 import type { CreateEncryptionStreamParameters } from './worker-types.js';
 
 import { emitJobProgress, emitJobCompletion } from './utils/index.js';
+import { logger } from './logger.js';
 
 /**
  * Encrypts a readable stream with an event emitter
@@ -29,6 +30,10 @@ export function startEncryptionStreamWithEmitter({
         emitJobProgress('encrypt', totalBytesRead, contentLength, jobID);
       },
       flush: () => {
+        logger.debug(
+          `penumbra.encrypt(): flush() called after ${totalBytesRead.toString()} bytes read (content-length: ${contentLength?.toString() ?? 'unknown'})`,
+          jobID,
+        );
         const authTag = encryptionStream.getAuthTag();
         emitJobCompletion('encrypt', jobID, { key, iv, authTag });
       },

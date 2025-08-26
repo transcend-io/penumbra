@@ -4,6 +4,7 @@ import { StreamSaverInstance } from './streamsaver.js';
 import type { PenumbraFile, ZipOptions } from './types.js';
 import { isNumber, emitZipProgress, emitZipCompletion } from './utils/index.js';
 import { logger } from './logger.js';
+import type { JobID } from './types.js';
 
 /**
  * Sum the total size of all writes
@@ -85,22 +86,30 @@ export class PenumbraZipWriter extends EventTarget {
   /** Current zip archive size */
   private bytesWritten = 0;
 
+  /** Job ID */
+  private jobID: JobID;
+
   /**
    * Penumbra zip writer constructor
    * @param options - ZipOptions
    * @returns PenumbraZipWriter class instance
    */
-  constructor({
-    streamSaverEndpoint,
-    name = 'download',
-    size,
-    controller = new AbortController(),
-    saveBuffer = false,
-    allowDuplicates = true,
-    onProgress,
-    onComplete,
-  }: ZipOptions) {
+  constructor(
+    {
+      streamSaverEndpoint,
+      name = 'download',
+      size,
+      controller = new AbortController(),
+      saveBuffer = false,
+      allowDuplicates = true,
+      onProgress,
+      onComplete,
+    }: ZipOptions,
+    jobID: JobID,
+  ) {
     super();
+
+    this.jobID = jobID;
 
     if (isNumber(size)) {
       this.byteSize = size;
@@ -213,6 +222,11 @@ export class PenumbraZipWriter extends EventTarget {
       }
     }
 
+    logger.debug(
+      `penumbra.saveZip(): writing ${files.length.toString()} files with total size: ${totalWriteSize?.toString() ?? 'unknown'}. Files: ${JSON.stringify(files)}`,
+      this.jobID,
+    );
+
     return sumWrites(
       files.map(
         ({ path, filePrefix, stream, mimetype, lastModified = new Date() }) => {
@@ -278,6 +292,11 @@ export class PenumbraZipWriter extends EventTarget {
                * @param controller - Controller
                */
               async start(controller) {
+                logger.debug(
+                  `penumbra.saveZip(): start zipping file: ${filePath}`,
+                  zip.jobID,
+                );
+
                 while (true) {
                   const { done, value } = await reader.read();
                   if (value) {
@@ -291,6 +310,10 @@ export class PenumbraZipWriter extends EventTarget {
                   // When no more data needs to be consumed, break the reading
                   if (done) {
                     resolve(writeSize);
+                    logger.debug(
+                      `penumbra.saveZip(): done zipping file: ${filePath} with size: ${writeSize.toString()} bytes`,
+                      zip.jobID,
+                    );
 
                     zip.completedWrites++;
                     // Emit file-granular progress events when total byte size can't be determined
@@ -378,6 +401,7 @@ export class PenumbraZipWriter extends EventTarget {
    * @returns Total observed zip size in bytes after close completes
    */
   async close(): Promise<number> {
+    logger.debug(`penumbra.saveZip(): close() called`, this.jobID);
     const size = await this.getSize();
     if (!this.closed) {
       try {
@@ -421,6 +445,7 @@ export class PenumbraZipWriter extends EventTarget {
 
   /** Cancel Penumbra zip writer */
   abort(reason?: Error): void {
+    logger.debug(`penumbra.saveZip(): abort() called`, this.jobID);
     if (!this.controller.signal.aborted) {
       this.controller.abort(reason);
     }

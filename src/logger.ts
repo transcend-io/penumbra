@@ -1,4 +1,6 @@
 import type { JobID } from './job-id.js';
+import type { RemoteResource } from './types.js';
+import parseBase64OrUint8Array from './utils/parse-base64-or-uint8array.js';
 
 export enum LogLevel {
   DEBUG = 0,
@@ -23,6 +25,7 @@ class Logger {
     this.logLevel = logLevel;
   }
 
+  /** Set the thread that the logger is running in */
   public setThread(thread: 'main' | `worker-${number}`) {
     this.thread = thread;
   }
@@ -31,6 +34,20 @@ class Logger {
   public workerJobTracker = this.isMainThread
     ? null
     : new Map<JobID, { progressEmitted?: boolean }>();
+
+  /** Redact a RemoteResource for logging purposes */
+  public redactRemoteResource(resource: RemoteResource): RemoteResource {
+    if (!resource.decryptionOptions) {
+      return resource;
+    }
+    return {
+      ...resource,
+      decryptionOptions: {
+        ...resource.decryptionOptions,
+        key: `[REDACTED] ${parseBase64OrUint8Array(resource.decryptionOptions.key).length.toString()}-byte key`,
+      },
+    };
+  }
 
   public debug(message: unknown, jobID: JobID | null) {
     if (this.logLevel <= LogLevel.DEBUG) {
