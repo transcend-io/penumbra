@@ -10,11 +10,17 @@ runs:
         run_install: false
 
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         cache: 'pnpm'
         node-version-file: '.nvmrc'
         registry-url: https://registry.npmjs.org
+
+    # See: https://docs.npmjs.com/trusted-publishers
+    # See: https://github.com/actions/setup-node/issues/1445
+    - name: Set npm to version that supports trusted publishers
+      run: npm install -g npm@11.5.1
+      shell: bash
 
     - name: Get pnpm store directory
       shell: bash
