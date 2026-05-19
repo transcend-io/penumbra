@@ -16,7 +16,8 @@ jobs:
 
       - name: Are the types wrong?
         run: |
-          pnpm dlx @arethetypeswrong/cli --pack -f json
+          pnpm pack
+          pnpm exec attw -f json ./*.tgz
 
       - uses: actions/upload-artifact@v4
         with:
