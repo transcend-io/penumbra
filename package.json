@@ -61,6 +61,7 @@
     "uint8array-extras": "^1.4.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.2",
     "@eslint/js": "^9.32.0",
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@tsconfig/strictest": "^2.0.5",
@@ -79,14 +80,13 @@
     "typescript": "^5.3.2",
     "typescript-eslint": "^8.38.0",
     "unplugin-dts": "1.0.0-beta.6",
-    "vite": "^7.3.0",
-    "webpack": "^5.104.1"
+    "vite": "^7.3.2",
+    "webpack": "^5.106.2"
   },
+  "packageManager": "pnpm@10.13.1+sha256.0f9ed48d808996ae007835fb5c4641cf9a300def2eddc9e957d9bbe4768c5f28",
   "pnpm": {
     "overrides": {
-      "braces": ">=3.0.3",
-      "micromatch": ">=4.0.8"
+      "@arethetypeswrong/core>fflate": "0.8.2"
     }
-  },
-  "packageManager": "pnpm@10.13.1+sha256.0f9ed48d808996ae007835fb5c4641cf9a300def2eddc9e957d9bbe4768c5f28"
+  }
 }
