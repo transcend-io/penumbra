@@ -24,7 +24,7 @@ repos:
         name: Lint
         description: 'Code linting'
         entry: pnpm run lint
-        language: node
+        language: system
         types_or: [javascript, jsx, ts, tsx, markdown, json]
         # Just run global `pnpm run lint` without passing filenames
         pass_filenames: false
@@ -35,7 +35,11 @@ repos:
         name: Format
         description: 'Code formatting'
         entry: pnpm run format
-        language: node
+        language: system
         types_or: [javascript, jsx, ts, tsx, markdown, json]
         # Just run global `pnpm run format` without passing filenames
         pass_filenames: false
+
+default_language_version:
+  # renovate: datasource=node-version depName=node
+  node: '22.22.3'
