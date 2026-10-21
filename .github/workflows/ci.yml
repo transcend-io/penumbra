@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/commands/dependencies/install_deps
 
       - name: Build
@@ -27,9 +27,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
-          fetch-depth: 100 # need the history to do a changed files check below (source, origin)    
+          fetch-depth: 100 # need the history to do a changed files check below (source, origin)
       - uses: ./.github/commands/dependencies/install_deps
 
       - name: Run lint
@@ -49,7 +49,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/commands/dependencies/install_deps
 
       - name: Install Playwright browsers
@@ -79,10 +79,10 @@ jobs:
       - test
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - uses: ./.github/commands/dependencies/install_deps
 
-      - name: Download Build 
+      - name: Download Build
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
