@@ -54,7 +54,7 @@ importers:
         specifier: ^10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: ^24.0.0
+        specifier: 24.19.2
         version: 24.19.2
       '@web/dev-server-esbuild':
         specifier: ^1.0.4
