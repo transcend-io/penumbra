@@ -17,8 +17,8 @@ importers:
   .:
     dependencies:
       '@transcend-io/conflux':
-        specifier: 6.0.1
-        version: 6.0.1
+        specifier: 6.2.0
+        version: 6.2.0
       '@transcend-io/encrypt-web-streams':
         specifier: 1.0.3
         version: 1.0.3
@@ -981,8 +981,8 @@ packages:
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
-  '@transcend-io/conflux@6.0.1':
-    resolution: {integrity: sha512-19Ft/bJzxlq8sZffLKToGJl3VGZTlrOjMDWcgUNYmObNESFoCQIefFgYLN6NboR8Gju66Cte80FCb6yZrg2VnA==}
+  '@transcend-io/conflux@6.2.0':
+    resolution: {integrity: sha512-vW4sQ99dRH/GYjOPTtp7DmL9iG2wD4wKdXnShdADi/Hf37Je6nLXfyeEsmed+Fmp9ZWxUkcTitTBoA/f50iatw==}
 
   '@transcend-io/encrypt-web-streams@1.0.3':
     resolution: {integrity: sha512-qVBJeG/ys9YY1TsKNowWeJx6ftIzVEKHmtRhrFRy0gdC31lfUrYnA8oeS7tNi6H8l3fpJmNgYj5+3su2OxN2wA==}
@@ -4318,7 +4318,7 @@ snapshots:
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
-  '@transcend-io/conflux@6.0.1':
+  '@transcend-io/conflux@6.2.0':
     dependencies:
       pako: 2.1.0
 
