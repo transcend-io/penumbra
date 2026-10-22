@@ -56,7 +56,7 @@ jobs:
         run: pnpm exec playwright install --with-deps
 
       - name: Run tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 2
           timeout_seconds: 30 # If changing this, also update the timeout in the web-test-runner.config.js file (we prefer that to timeout first)
