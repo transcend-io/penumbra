@@ -61,7 +61,7 @@
     "uint8array-extras": "^1.4.0"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.2",
+    "@arethetypeswrong/cli": "0.18.5",
     "@eslint/js": "^9.32.0",
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@tsconfig/strictest": "^2.0.5",
@@ -70,18 +70,18 @@
     "@web/dev-server-esbuild": "^1.0.4",
     "@web/test-runner": "^0.20.2",
     "@web/test-runner-playwright": "^0.11.1",
-    "doctoc": "^2.2.1",
+    "doctoc": "^2.5.0",
     "eslint": "^9.32.0",
     "eslint-plugin-unicorn": "^60.0.0",
     "knip": "^5.62.0",
     "playwright": "^1.57.0",
     "prettier": "^3.6.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.3.2",
-    "typescript-eslint": "^8.38.0",
-    "unplugin-dts": "1.0.0-beta.6",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.39.0",
+    "unplugin-dts": "1.1.2",
     "vite": "^7.3.2",
-    "webpack": "^5.106.2"
+    "webpack": "^5.112.0"
   },
   "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
   "pnpm": {
