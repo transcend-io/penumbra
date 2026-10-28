@@ -42,4 +42,4 @@ repos:
 
 default_language_version:
   # renovate: datasource=node-version depName=node
-  node: '24.22.1'
+  node: '26.13.0'
