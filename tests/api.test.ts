@@ -344,7 +344,7 @@ describe('Penumbra API', () => {
       document.body.append(testImage);
     });
 
-    assert.isTrue(result as boolean, 'Image loaded successfully');
+    assert.isTrue(result, 'Image loaded successfully');
   });
 
   it('should create preconnect links', () => {
@@ -421,7 +421,7 @@ describe('Penumbra API', () => {
     const decrypted = await penumbra.decrypt(decryptionInfo, {
       ...encrypted,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      stream: new Response(encryptedBuffer).body!,
+      stream: new Response(encryptedBuffer as BodyInit).body!,
     });
     const decryptedData = await bufferEntireStream(decrypted.stream);
     assert.equal(td.decode(decryptedData), input, 'encrypt() & decrypt()');

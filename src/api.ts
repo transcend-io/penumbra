@@ -276,7 +276,7 @@ function getBlob(
         new Blob(
           [
             new Uint8Array(
-              file.stream as ArrayBufferLike,
+              file.stream as ArrayBuffer,
               0,
               file.stream.byteLength,
             ),

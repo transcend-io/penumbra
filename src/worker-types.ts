@@ -16,14 +16,12 @@ export interface DecryptionJobParameters extends EncryptionJobParameters {
   authTag: Uint8Array;
 }
 
-export interface CreateEncryptionStreamParameters
-  extends EncryptionJobParameters {
+export interface CreateEncryptionStreamParameters extends EncryptionJobParameters {
   /** A readable stream of plaintext data */
   readableStream: ReadableStream;
 }
 
-export interface CreateDecryptionStreamParameters
-  extends DecryptionJobParameters {
+export interface CreateDecryptionStreamParameters extends DecryptionJobParameters {
   /** A readable stream of encrypted data */
   readableStream: ReadableStream;
   /** Dangerously bypass authTag validation. Only use this for testing purposes. */

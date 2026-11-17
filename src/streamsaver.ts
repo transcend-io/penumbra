@@ -5,9 +5,7 @@ import streamSaver from 'streamsaver/StreamSaver.js';
  * @see https://github.com/jimmywarting/StreamSaver.js/blob/5b372f7ba5f1e82ef80e2466023930ee2c616a28/mitm.html
  */
 export type StreamSaverEndpoint =
-  | 'streamsaver-default'
-  | `http${string}`
-  | `/${string}`;
+  'streamsaver-default' | `http${string}` | `/${string}`;
 
 class StreamSaverInstance {
   constructor(

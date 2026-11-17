@@ -1,9 +1,10 @@
 import eslint from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
 /** @type {import('typescript-eslint').Config} */
-const eslintConfig = tseslint.config(
+const eslintConfig = defineConfig(
   eslint.configs.recommended,
   eslintPluginUnicorn.configs.recommended,
   ...tseslint.configs.recommended,
