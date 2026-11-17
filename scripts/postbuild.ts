@@ -53,7 +53,7 @@ async function createDtsTypes() {
   const content = await readFile(ctsPath, 'utf8');
   const patchedContent = content.replaceAll(
     / from '(\.\/.*?)'/g,
-    (_, a: string) => ` from '${a}.js'`,
+    (_, a: string) => ` from '${a.endsWith('.js') ? a : `${a}.js`}'`,
   );
   await writeFile(dtsPath, patchedContent, 'utf8');
 

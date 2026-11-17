@@ -7,7 +7,7 @@ import { PenumbraSupportLevel } from './enums.js';
 import { PenumbraZipWriter } from './zip.js';
 import { asJobID } from './job-id.js';
 
-const supported = (): PenumbraSupportLevel => -0;
+const supported = (): PenumbraSupportLevel => PenumbraSupportLevel.none;
 supported.levels = PenumbraSupportLevel;
 
 const MOCK_API: PenumbraAPI = {

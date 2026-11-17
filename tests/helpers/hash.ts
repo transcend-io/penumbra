@@ -9,7 +9,7 @@ export default async function hash(
   ab: Uint8Array | ArrayBuffer | Promise<ArrayBuffer>,
 ): Promise<string> {
   const digest = new Uint8Array(
-    await crypto.subtle.digest(algorithm, await ab),
+    await crypto.subtle.digest(algorithm, (await ab) as BufferSource),
   );
   return digest.reduce(
     (memo, index) => memo + index.toString(16).padStart(2, '0'),
