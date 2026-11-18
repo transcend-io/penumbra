@@ -20,8 +20,8 @@ importers:
         specifier: 6.2.0
         version: 6.2.0
       '@transcend-io/encrypt-web-streams':
-        specifier: 1.0.3
-        version: 1.0.3
+        specifier: 1.1.0
+        version: 1.1.0
       comlink:
         specifier: ^4.4.1
         version: 4.4.2
@@ -862,8 +862,8 @@ packages:
   '@transcend-io/conflux@6.2.0':
     resolution: {integrity: sha512-vW4sQ99dRH/GYjOPTtp7DmL9iG2wD4wKdXnShdADi/Hf37Je6nLXfyeEsmed+Fmp9ZWxUkcTitTBoA/f50iatw==}
 
-  '@transcend-io/encrypt-web-streams@1.0.3':
-    resolution: {integrity: sha512-qVBJeG/ys9YY1TsKNowWeJx6ftIzVEKHmtRhrFRy0gdC31lfUrYnA8oeS7tNi6H8l3fpJmNgYj5+3su2OxN2wA==}
+  '@transcend-io/encrypt-web-streams@1.1.0':
+    resolution: {integrity: sha512-CXP8XCaLqSlQY20VIlB/239tMqMmfvQBz184jMQy1fzEvpgyG1NdSr/99Zq9rxuXvUi8eoo7GeqDK2xRRCwYFQ==}
 
   '@tsconfig/strictest@2.0.9':
     resolution: {integrity: sha512-CbwIySRXoGapLZYXqQHF15cg0wQImJa25Ynmubb7816vnHqTdQrmQlSbZxkJrrBusHLbF1kFbNVn8XtxmQ3EpQ==}
@@ -3857,7 +3857,7 @@ snapshots:
     dependencies:
       pako: 2.1.0
 
-  '@transcend-io/encrypt-web-streams@1.0.3': {}
+  '@transcend-io/encrypt-web-streams@1.1.0': {}
 
   '@tsconfig/strictest@2.0.9': {}
 
