@@ -72,7 +72,7 @@
     "@web/test-runner-playwright": "1.0.2",
     "doctoc": "2.5.0",
     "eslint": "9.39.5",
-    "eslint-plugin-unicorn": "60.0.0",
+    "eslint-plugin-unicorn": "79.0.0",
     "knip": "5.88.1",
     "playwright": "1.65.1",
     "prettier": "3.10.1",
