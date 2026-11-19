@@ -1,8 +1,8 @@
-onlyBuiltDependencies:
-  - esbuild
-  - fsevents
-  - oxc-resolver
-  - unrs-resolver
+allowBuilds:
+  esbuild: true
+  fsevents: true
+  oxc-resolver: true
+  unrs-resolver: true
 
 patchedDependencies:
   streamsaver: patches/streamsaver.patch
