@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
-    "@eslint/js": "9.39.5",
+    "@eslint/js": "10.0.1",
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@tsconfig/strictest": "2.0.9",
     "@types/mocha": "10.0.10",
@@ -71,7 +71,7 @@
     "@web/test-runner": "1.0.1",
     "@web/test-runner-playwright": "1.0.2",
     "doctoc": "2.5.0",
-    "eslint": "9.39.5",
+    "eslint": "10.15.0",
     "eslint-plugin-unicorn": "60.0.0",
     "knip": "5.88.1",
     "playwright": "1.65.1",
