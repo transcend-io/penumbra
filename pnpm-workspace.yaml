@@ -1,8 +1,11 @@
-onlyBuiltDependencies:
-  - esbuild
-  - fsevents
-  - oxc-resolver
-  - unrs-resolver
+allowBuilds:
+  esbuild: true
+  fsevents: true
+  oxc-resolver: true
+  unrs-resolver: true
 
 patchedDependencies:
   streamsaver: patches/streamsaver.patch
+
+overrides:
+  '@arethetypeswrong/core>fflate': 0.8.3
