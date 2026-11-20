@@ -171,6 +171,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@arethetypeswrong/core>fflate': 0.8.3
+
 patchedDependencies:
   streamsaver: 6bc4a1db6a5e2780604bd747a5bfd0d2b03dfbb860ad27df5ed9957c21457627
 
